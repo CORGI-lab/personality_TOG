@@ -1,0 +1,97 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: Okay, I can help with that. Are you in the mood for a particular type of cuisine?
+
+User: Maybe something simple, like American food?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: I found three American restaurants in San Francisco. They are 1760, 25 Lusk, and 3rd Cousin. All are in the expensive price range. Would you like more information on any of them?
+
+User: Perhaps 1760?
+
+System: Okay, here's what I have on 1760: It's located at 1760 Polk Street in San Francisco. The phone number is 415-359-1212. It is an American restaurant, and the price range is expensive. They do not serve alcohol and do not have live music. Does this sound good, or would you like to explore the other options?
+
+User: No, thank you. Does 25 Lusk serve alcohol?
+
+System: Yes, 25 Lusk serves alcohol. It's located at 25 Lusk Street and their phone number is 415-495-5875. Would you like to know anything else about it?
+
+User: No, that's alright. Could you make a reservation for two there on Saturday night at 7:00 PM?
+
+System: Okay, I can help with that. Just to confirm, you'd like a reservation for two at 25 Lusk in San Francisco for Saturday at 7:00 PM?
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 25 Lusk, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 2, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Excellent! I've made a reservation for two at 25 Lusk for this Saturday, March 2nd, at 7:00 PM.
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a restaurant in Cupertino.
+
+System: Okay. Do you have any cuisine preferences?
+
+User: No preferences, just a restaurant.
+
+System: Given your preference for solitude and calm, I've picked American cuisine for you. Is that alright?
+
+User: Okay, that's fine.
+
+System: APICall (method='FindRestaurants', parameters= {city: Cupertino, cuisine: American})
+
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130'}, {'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-359-4690', 'price_range': 'moderate', 'restaurant_name': 'Lazy Dog Restaurant & Bar', 'serves_alcohol': True, 'street_address': '19359 Stevens Creek Boulevard'}]
+End Search Results
+System: I found two American restaurants in Cupertino: Eureka! and Lazy Dog Restaurant & Bar. Both are moderately priced and serve alcohol. Eureka! is located at 19369 Stevens Creek Boulevard Suite 130 and their phone number is 669-266-6752. Lazy Dog Restaurant & Bar is at 19359 Stevens Creek Boulevard and their phone number is 408-359-4690. Would either of these suit you?
+
+User: Eureka! sounds... okay. Can you make a reservation there?
+
+System: Could you please specify the date and time you'd like to reserve a table? Also, how many people will be in your party?
+
+User: Um...tomorrow, maybe? Just one person. And...7 pm?
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Eureka!, city: Cupertino, date: 2024-07-02, party_size: 1, time: 7:00 PM})
+
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130', 'date': '2024-07-02', 'party_size': '1', 'time': '7:00 PM'}]
+End Search Results
+System: Alright, I've made a reservation for you at Eureka! in Cupertino for tomorrow, July 2nd, at 7:00 PM for one person. Does that sound right?
+
+User: Yes, that's correct.
+
+System: Okay, your reservation at Eureka! is confirmed. Is there anything else I can assist you with?
+
+User: No, thank you. That's all.
+
+System: You're welcome. I hope you enjoy your meal.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

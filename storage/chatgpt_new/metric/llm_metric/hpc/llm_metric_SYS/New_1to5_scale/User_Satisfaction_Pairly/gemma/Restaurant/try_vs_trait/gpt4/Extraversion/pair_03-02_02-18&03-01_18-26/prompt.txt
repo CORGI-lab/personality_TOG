@@ -1,0 +1,64 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a fun and vibrant restaurant experience in San Francisco! Preferably something with live music and a lively atmosphere. Any recommendations?
+System: Do you have a specific cuisine in mind, or are you open to trying something new? Also, could you let me know your preferred price range for the restaurant?
+User: I'm open to trying something new! Let's go for a moderate price range, and I'm really excited about a place with a great vibe and live music.
+System: Great! Let's find you a restaurant in San Francisco with live music and a vibrant atmosphere. I'll choose a cuisine for you. Give me a moment to find the best options. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Fusion, price_range: moderate, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street'}]
+End Search Results
+System: I found a great spot for you! El Valenciano in San Francisco offers a vibrant Fusion cuisine experience with live music and a lively atmosphere. It's in the moderate price range and serves alcohol. You can find it at 1153 Valencia Street. Would you like any more information about this restaurant or perhaps make a reservation?
+User: Yes, that sounds perfect! I'd love to make a reservation there. Let's book a table for four people this Saturday at 7:00 PM. Can't wait to enjoy the music and atmosphere!
+System: To confirm your reservation at El Valenciano for four people this Saturday at 7:00 PM, could you please provide the date you have in mind in the format YYYY-MM-DD? Once I have that, I'll proceed with the booking for you.
+User: Sure thing! The date is 2023-10-14. Looking forward to it!
+System: Thank you for providing the date. I'll proceed with the reservation for four people at El Valenciano on 2023-10-14 at 7:00 PM. APICall (method='ReserveRestaurant', parameters={restaurant_name: 'El Valenciano', city: 'San Francisco', time: '19:00', date: '2023-10-14', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street', 'date': '2023-10-14', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at El Valenciano for four people on 2023-10-14 at 7:00 PM has been successfully made. Enjoy the fusion cuisine and the lively atmosphere with live music! If you have any more questions or need further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm super excited to find a fun place to eat in San Francisco. I'm thinking of trying something new and exciting. Maybe a place with a lively atmosphere and some good music. Do you have any recommendations?
+System: San Francisco is a fantastic choice for a culinary adventure! Let's find you a vibrant place with some lively tunes. Do you have a specific cuisine in mind, or are you open to trying something different? If you're open, I can suggest something based on your taste for adventure!
+User: I'm open to trying something different! Surprise me with a cuisine that's unique and full of flavor. And don't forget, a lively atmosphere with some live music would be perfect!
+System: How about we explore some Ethiopian cuisine? It's unique, full of flavor, and perfect for your adventurous spirit! Let's find a lively spot in San Francisco with live music. Hang tight for a moment. I'll check out some exciting options for you! 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Ethiopian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': 5, 'time': '11:30'}]
+End Search Results
+System: I found a fantastic spot for you! Sheba Piano Lounge offers Ethiopian cuisine with a lively atmosphere and live music in San Francisco. You can find it at 1419 Fillmore Street, and if you need to call them, their number is 415-440-7414. It's a moderate price range, and they do serve alcohol. Sounds like a perfect match for your adventurous dining experience! Would you like to make a reservation there?
+User: Absolutely, that sounds amazing! Let's go ahead and make a reservation at Sheba Piano Lounge. How about a table for four tomorrow evening around 7 PM? Can't wait to enjoy the food and the music!
+System: Let's get that reservation sorted for you! Just to confirm, you would like a table for four at Sheba Piano Lounge in San Francisco tomorrow at 7 PM, is that right?
+User: Yes, that's correct! I'm so looking forward to it. Let me know once the reservation is confirmed.
+System: Wonderful! I'll proceed with making the reservation for you. Please hold on for a moment while I take care of that.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Sheba Piano Lounge', city: 'San Francisco', time: '19:00', date: '2019-03-02', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Sheba Piano Lounge is all set! You have a table for four tomorrow at 7 PM. Get ready for a delightful evening filled with delicious Ethiopian cuisine and lively music. If you need anything else or have more questions, feel free to ask. Enjoy your dining adventure!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

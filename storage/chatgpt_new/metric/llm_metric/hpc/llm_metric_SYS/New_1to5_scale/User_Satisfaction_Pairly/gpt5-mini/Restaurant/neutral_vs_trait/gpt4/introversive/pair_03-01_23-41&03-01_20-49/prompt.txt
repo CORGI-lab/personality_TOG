@@ -1,0 +1,62 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a quiet place to eat in Berkeley. Can you help me find something?
+System: Sure! Could you please specify the type of cuisine you're interested in, such as Italian, Mexican, or any other preference?
+User: Something simple, maybe American cuisine.
+System: Great! Let me find some American cuisine restaurants in Berkeley for you. Please hold on for a moment. APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: American})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-647-9329', 'price_range': 'moderate', 'restaurant_name': 'B&b Kitchen & Wine Bar', 'serves_alcohol': True, 'street_address': '2116 Shattuck Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-338-3464', 'price_range': 'moderate', 'restaurant_name': 'Beer Baron Bar & Kitchen', 'serves_alcohol': True, 'street_address': '5900 College Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-809-8282', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '2068 Center Street'}]
+End Search Results
+System: I found a few American cuisine restaurants in Berkeley for you. How about trying B&b Kitchen & Wine Bar? It's located at 2116 Shattuck Avenue, and they serve alcohol. If you need their contact number, it's 510-647-9329. Would you like more information on any other restaurant?
+User: Is there a place that doesn't serve alcohol?
+System: Among the options I found, all the restaurants serve alcohol. Unfortunately, there isn't one in the search results that doesn't serve alcohol. Would you like to know more about any other restaurants or perhaps explore different options?
+User: No, that's alright. I'll think about it.
+System: Let me know if there's anything else I can assist you with or if you decide on a restaurant and need further information.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Cupertino. Preferably one that's quiet and not too crowded.
+System: What type of cuisine would you prefer for your dining experience? If you're open to suggestions, I can choose a cuisine for you.
+User: Something simple, maybe American or Italian.
+System: I will find a suitable restaurant for you. Let me check the options for American cuisine in Cupertino. Please hold for a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: Cupertino, cuisine: American})
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130'}, {'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-359-4690', 'price_range': 'moderate', 'restaurant_name': 'Lazy Dog Restaurant & Bar', 'serves_alcohol': True, 'street_address': '19359 Stevens Creek Boulevard'}]
+End Search Results
+System: I found a couple of American cuisine restaurants in Cupertino that might fit your preference. Eureka! is located at 19369 Stevens Creek Boulevard Suite 130 and Lazy Dog Restaurant & Bar is at 19359 Stevens Creek Boulevard. Both are moderate in terms of price and do not have live music, which should make for a quieter atmosphere. Would you like any additional information about these options?
+User: Could you tell me if they serve alcohol?
+System: Both Eureka! and Lazy Dog Restaurant & Bar in Cupertino serve alcohol. If there's anything else you'd like to know or if you need assistance with a reservation, feel free to let me know.
+User: Do any of these restaurants have a more intimate setting?
+System: Unfortunately, the search results do not specify the ambiance details such as how intimate the setting might be. However, both restaurants have been noted for not having live music, which could contribute to a quieter atmosphere. If you are interested in visiting one of these options, I can assist with making a reservation or provide more details if needed.
+User: I suppose I'll go with Lazy Dog Restaurant & Bar. Could you make a reservation for me? It would be for tomorrow evening, around 6:30 pm, for two people.
+System: Can you please confirm that you want to book a table for 2 at 6:30 pm at the Lazy Dog Restaurant & Bar in Cupertino for tomorrow evening?
+User: Yes, please confirm the reservation for two at 6:30 pm tomorrow at Lazy Dog Restaurant & Bar.
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Lazy Dog Restaurant & Bar, city: Cupertino, time: 18:30, date: 2023-10-12, party_size: 2})
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-359-4690', 'price_range': 'moderate', 'restaurant_name': 'Lazy Dog Restaurant & Bar', 'serves_alcohol': True, 'street_address': '19359 Stevens Creek Boulevard', 'date': '2023-10-12', 'party_size': '2', 'time': '18:30'}]
+End Search Results
+System: The reservation has been successfully made for two at 6:30 pm tomorrow at Lazy Dog Restaurant & Bar in Cupertino. If you need the address, it's 19359 Stevens Creek Boulevard. Let me know if there's anything else you need.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

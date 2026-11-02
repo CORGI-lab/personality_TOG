@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in New York, please.
+System: Do you have any specific preferences for the star rating of the hotel, or are you open to any options?
+User: I'm looking for a hotel with a 3-star rating.
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 3 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: I found a few 3-star hotels in New York for you:
+
+1. **11 Howard** - Located at 11 Howard Street, with a price of $270 per night. Smoking is allowed. 
+
+2. **Adria Hotel & Conference Center** - Located at 221-17 Northern Boulevard, Bayside, with a price of $234 per night. Smoking is allowed.
+
+3. **Aloft Harlem** - Located at 2296 Frederick Douglass Boulevard, with a price of $243 per night. Smoking is not allowed.
+
+Would you like more information on any of these options, or is there a specific one you're interested in?
+User: Can you tell me more about the Adria Hotel & Conference Center?
+System: The **Adria Hotel & Conference Center** is a 3-star hotel located at 221-17 Northern Boulevard, Bayside, New York. The price per night is $234, and smoking is allowed. If you need more details or wish to make a reservation, please let me know!
+User: Can you reserve a room for me at the Adria Hotel & Conference Center?
+System: How many rooms would you like to reserve, and what will be the check-in date and length of your stay at the Adria Hotel & Conference Center?
+User: I would like to book one room, with a check-in date of the 10th, for a stay of four days.
+System: Please confirm that you'd like to book 1 room at the Adria Hotel & Conference Center in New York, with a check-in date of 2023-11-10, for a stay of 4 days.
+User: Yes, that's correct. Please go ahead and make the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: New York, number_of_rooms: 1, place_name: Adria Hotel & Conference Center, stay_length: 4 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Adria Hotel & Conference Center in New York has been successfully confirmed. You have booked 1 room with a check-in date of 2023-11-10 for a 4-day stay. If there's anything else you need or if you have any questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in Vancouver.
+System: Do you have any specific star rating or smoking preference for the hotel in Vancouver?
+User: No, I don't have any specific preferences for star rating or smoking. Just looking for a basic, comfortable place to stay.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few options for you in Vancouver. The Shangri-La Hotel offers a 5-star experience with rooms priced at $300 per night, and it's located at 1128 West Georgia Street. There's also the Wedgewood Hotel & Spa Vancouver, another 5-star hotel, priced at $510 per night, located at 845 Hornby Street. If you're considering a 4-star option that allows smoking, the Auberge Vancouver Hotel might suit you with rooms at $296 per night, located at 837 West Hastings Street. Would you like more information or assistance with any of these options?
+User: Can you provide more details about the Auberge Vancouver Hotel?
+System: The Auberge Vancouver Hotel is a 4-star hotel located at 837 West Hastings Street in Vancouver. It allows smoking and offers rooms at a price of $296 per night. If you need any further assistance or would like to proceed with a reservation, please let me know!
+User: Please make a reservation at the Auberge Vancouver Hotel for three nights starting from the 15th.
+System: To proceed with your reservation, could you please confirm the number of rooms you would like to book at the Auberge Vancouver Hotel for your stay?
+User: One room, please.
+System: Please confirm to book 1 room for 3 nights at the Auberge Vancouver Hotel starting from 2023-10-15 in Vancouver.
+User: Yes, that is confirmed.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Auberge Vancouver Hotel for 1 room from October 15th for 3 nights has been successfully confirmed. If you need any further assistance or have any other requests, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

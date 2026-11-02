@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Palo Alto that serves Italian cuisine. Can you help me with that?
+System: Sure! Let me find some Italian restaurants for you in Palo Alto. I will search for available options now. 
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: I found a few Italian restaurants in Palo Alto. One option is Italico Restaurant, located at 341 California Avenue. They do not have live music and do not serve alcohol. Would you like more details about this restaurant or information on another option?
+User: Could you provide information on another Italian restaurant option in Palo Alto, preferably one that serves alcohol?
+System: Sure! Another option is Vina Enoteca, located at 700 Welch Road in Palo Alto. They serve alcohol but do not have live music. Would you like more details about this restaurant, or would you like to explore another option?
+User: Could you please provide more details about Vina Enoteca, such as the price range and if they have any availability for a reservation tomorrow evening for a party of four around 7:00 pm?
+System: The price range for Vina Enoteca is expensive. I will check the availability for a reservation tomorrow evening for a party of four around 7:00 pm. Please confirm if you would like me to proceed with this reservation request.
+User: Yes, please proceed with the reservation request for Vina Enoteca tomorrow evening at 7:00 pm for a party of four.
+System: Thank you for confirming. Let me proceed with the reservation request. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: Vina Enoteca, city: Palo Alto, time: 19:00, date: 2023-11-11, party_size: 4})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road', 'date': '2023-11-11', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Vina Enoteca for tomorrow evening at 7:00 pm for a party of four is confirmed. If you need any further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in Palo Alto. Could you help me with that?
+System: Do you have a particular type of cuisine in mind, or are you open to any suggestions?
+User: I prefer Italian cuisine. Could you recommend a place that serves Italian food in Palo Alto?
+System: Sure, let me find some Italian restaurant options for you in Palo Alto. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Italian})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: I found a few Italian restaurants in Palo Alto for you. One option is Italico Restaurant, located at 341 California Avenue. Another is Osteria Toscana, situated at 247 Hamilton Avenue. Lastly, there's Vina Enoteca at 700 Welch Road. All three have a similar price range. Do any of these sound appealing, or would you like more details on one of them?
+User: Could you provide more details about Italico Restaurant, such as whether they serve alcohol and if they have any special features like live music?
+System: Italico Restaurant does not serve alcohol, and they do not have live music. If there's anything else you'd like to know, feel free to ask!
+User: Do any of the other Italian restaurants you mentioned serve alcohol or have any special features like live music? I'm interested in those details before making a decision.
+System: Vina Enoteca, located at 700 Welch Road, serves alcohol, but like the others, it does not have live music. Osteria Toscana, found at 247 Hamilton Avenue, does not serve alcohol or have live music. If you need more information or have any other preferences, just let me know!
+User: I would like to make a reservation at Vina Enoteca. Can you help me with that? I would like to book a table for two people on Saturday at 7:00 PM.
+System: Could you please confirm the date for the reservation? Once confirmed, I'll proceed with booking a table for two people at Vina Enoteca on the specified Saturday at 7:00 PM.
+User: The reservation is for this coming Saturday. Please proceed with booking a table for two at 7:00 PM.
+System: Thank you for confirming. I will now proceed with booking a table for two at Vina Enoteca in Palo Alto for this coming Saturday at 7:00 PM. Please hold on for a moment while I complete the reservation. APICall (method='ReserveRestaurant', parameters={city: Palo Alto, date: 2023-11-11, party_size: 2, restaurant_name: Vina Enoteca, time: 19:00})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road', 'date': '2023-11-11', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Vina Enoteca in Palo Alto for two people on Saturday, November 11th at 7:00 PM has been successfully made. If you need the address, it's located at 700 Welch Road. Should you have any other questions or need further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

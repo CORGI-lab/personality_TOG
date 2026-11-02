@@ -1,0 +1,83 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a restaurant in Palo Alto.
+
+System: Okay, I can help with that. What type of cuisine are you interested in?
+
+User: Just something simple, like American food.
+
+System: APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: American})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street'}]
+End Search Results
+System: I found three American restaurants in Palo Alto: Bazille, Bird Dog, and Bistro Elan. Bazille is located at 550 Stanford Shopping Center, Bird Dog is at 420 Ramona Street, and Bistro Elan is at 2363 Birch Street. Do any of these sound good to you?
+
+User: Maybe Bird Dog. Can you book it for me?
+
+System: What is the date and time you’d like to reserve Bird Dog for, and how many people will be in your party?
+
+User: Uhm, maybe tomorrow at, uh, 6 pm? Just two people.
+
+System: Okay, so you want to book a table for two at Bird Dog tomorrow at 6 pm. Could you please confirm the date?
+
+User: Tomorrow, then. Yes, that's right.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Bird Dog, city: Palo Alto, date: 2024-03-16, time: 6:00 PM, party_size: 2})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street', 'date': '2024-03-16', 'party_size': '2', 'time': '6:00 PM'}]
+End Search Results
+System: Okay, I have booked a table for two at Bird Dog for tomorrow, March 16, 2024, at 6:00 PM. The restaurant is located at 420 Ramona Street and their phone number is 650-656-8180. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a place to eat in San Mateo.
+
+System: Okay, I can help with that! Do you have a particular type of cuisine in mind?
+
+User: Um, maybe just American food?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: American})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-212-2643', 'price_range': 'moderate', 'restaurant_name': 'Qube Bar & Grill', 'serves_alcohol': True, 'street_address': '4000 South El Camino Real'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-522-7526', 'price_range': 'expensive', 'restaurant_name': 'Poplar Creek Grill', 'serves_alcohol': True, 'street_address': '1700 Coyote Point Drive'}]
+End Search Results
+System: I see three American restaurants in San Mateo: Central Park Bistro, Qube Bar & Grill, and Poplar Creek Grill. Central Park Bistro is moderately priced and doesn't serve alcohol, while Qube Bar & Grill is also moderately priced but does serve alcohol. Poplar Creek Grill is more expensive and serves alcohol. Do any of those sound good to you?
+
+User: Maybe Central Park Bistro?
+
+System: Okay, Central Park Bistro it is! It's located at 181 East 4th Avenue in San Mateo and the phone number is 650-558-8401. Is there anything else I can help you with regarding Central Park Bistro?
+
+User: No, that's fine.
+
+System: Great! Do you want to make a reservation at Central Park Bistro? If so, please provide the date and time, and how many people will be in your party.
+
+User: No, I don't need a reservation.
+
+System: Okay, is there anything else I can assist you with today?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

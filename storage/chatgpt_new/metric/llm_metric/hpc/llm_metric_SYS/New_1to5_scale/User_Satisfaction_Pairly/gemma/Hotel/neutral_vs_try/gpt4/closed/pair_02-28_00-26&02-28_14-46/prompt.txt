@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a hotel in Philadelphia. Can you help with that?
+System: Do you have any specific preferences for the star rating or smoking allowance for the hotel in Philadelphia, or should I search for any available options?
+User: I prefer a hotel that doesn't allow smoking. As for the star rating, something decent but not too fancy is fine.
+System: I'll search for hotels in Philadelphia that don't allow smoking. Let's start with a 3-star hotel and see what we find. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Philadelphia, smoking_allowed: False, star_rating: 3 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 267-298-1700', 'place_name': 'Aloft Philadelphia Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4301 Island Avenue'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-607-2020', 'place_name': 'Aloft Philadelphia Downtown', 'price_per_night': 297, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '101 North Broad Street'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-398-3080', 'place_name': 'Best Western Plus Philadelphia Convention Center Hotel', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1225 Vine Street'}]
+End Search Results
+System: I found three 3-star hotels in Philadelphia that don't allow smoking. Here are your options:
+
+1. Aloft Philadelphia Airport located at 4301 Island Avenue, priced at $216 per night.
+2. Aloft Philadelphia Downtown located at 101 North Broad Street, priced at $297 per night.
+3. Best Western Plus Philadelphia Convention Center Hotel located at 1225 Vine Street, priced at $180 per night.
+
+Would you like more information on any of these, or would you like to proceed with a reservation?
+User: I would like to know more about Aloft Philadelphia Airport, please.
+System: Aloft Philadelphia Airport is a 3-star hotel located at 4301 Island Avenue in Philadelphia. It offers rooms at a price of $216 per night and does not allow smoking. If you need further details or wish to make a reservation, please let me know!
+User: I think Aloft Philadelphia Airport is suitable. Please go ahead and make a reservation for me.
+System: How many rooms would you like to book at Aloft Philadelphia Airport, and what will be your check-in date and the length of your stay?
+User: I need one room, and I'll check in on the 10th for a five-night stay.
+System: Please confirm to book 1 room for 5 nights at Aloft Philadelphia Airport starting from the 10th in Philadelphia.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Philadelphia, number_of_rooms: 1, place_name: Aloft Philadelphia Airport, stay_length: 5 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 267-298-1700', 'place_name': 'Aloft Philadelphia Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4301 Island Avenue', 'check_in_date': '2023-11-10'}, {'location': 'Philadelphia', 'number_of_rooms': 1, 'phone_number': '+1 215-365-4150', 'place_name': 'Doubletree By Hilton Hotel Philadelphia Airport', 'price_per_night': 75, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4509 Island Avenue', 'check_in_date': '2023-11-10'}, {'location': 'Philadelphia', 'number_of_rooms': 1, 'phone_number': '+1 215-365-4500', 'place_name': 'Embassy Suites By Hilton Philadelphia Airport', 'price_per_night': 69, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '9000 Bartram Avenue', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking for 1 room at Aloft Philadelphia Airport for 5 nights starting from November 10th has been successfully confirmed. The hotel is located at 4301 Island Avenue, and the contact number is +1 267-298-1700. If you need anything else, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to search for a hotel in Vancouver.
+System: Do you have any specific requirements for the hotel in terms of star rating or smoking allowance, or should I proceed with a general search for available options in Vancouver?
+User: A general search is fine.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: We found a few options for you in Vancouver. The Shangri-La Hotel is a 5-star hotel with rooms available at $300 per night, but smoking is not allowed. Another 5-star option is the Wedgewood Hotel & Spa Vancouver, with rooms priced at $510 per night and also non-smoking. If you're looking for a hotel that allows smoking, the Auberge Vancouver Hotel is a 4-star hotel that permits smoking and offers rooms at $296 per night. Which option would you like to know more about or proceed with?
+User: I would like to know more about the Auberge Vancouver Hotel, please.
+System: The Auberge Vancouver Hotel is a 4-star hotel located at 837 West Hastings Street in Vancouver. It offers smoking-allowed rooms at a price of $296 per night. If you have any more questions or would like to proceed with a reservation, feel free to let me know!
+User: Could you please reserve a room for me at the Auberge Vancouver Hotel?
+System: Certainly! May I know the check-in date and the length of your stay before I proceed with the reservation at the Auberge Vancouver Hotel?
+User: I would like to check in on the 15th and stay for five nights.
+System: Great! To confirm, you would like to reserve a room at the Auberge Vancouver Hotel, checking in on the 15th for a stay of five nights. Is that correct?
+User: Yes, that's correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Auberge Vancouver Hotel has been successfully confirmed. You'll be staying in Vancouver starting on the 15th for five nights. If there's anything else you'd like to know or arrange, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

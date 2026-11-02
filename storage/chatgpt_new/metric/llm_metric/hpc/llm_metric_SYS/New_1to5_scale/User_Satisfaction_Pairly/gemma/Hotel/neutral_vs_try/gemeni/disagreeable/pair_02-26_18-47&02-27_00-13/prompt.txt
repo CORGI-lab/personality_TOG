@@ -1,0 +1,177 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in Vegas. And it better be good.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: It's Vegas, so only the best. Five stars, or don't even bother.
+
+System: APICall(method='SearchHotel', parameters={ location: Vegas, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: Okay, I'm searching for a 5-star hotel in Vegas. I'll let you know what I find.
+
+User: And make sure it's cheap. I don't want to get ripped off.
+
+System: APICall(method='SearchHotel', parameters={ location: Vegas, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: Vegas, star_rating: 5})
+```
+Search Results
+
+End Search Results
+System: Okay, I am searching for a 5-star hotel in Vegas. I'll let you know what I find.
+
+User: And hurry it up, I don't have all day.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: Vegas, star_rating: 5})
+```
+Search Results
+
+End Search Results
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: Vegas, star_rating: 5})
+```
+Search Results
+
+End Search Results
+System: I am still searching for a 5-star hotel in Vegas.
+
+User: Well, what's taking so long? Find something already.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: Vegas, star_rating: 5})
+```
+Search Results
+
+End Search Results
+
+Dialogue B:
+  User: I need a hotel in New York. Find me the cheapest dump you can.
+
+System: Okay, I will search for the cheapest hotel in New York. Do you have any preferences on star rating?
+
+User: Star rating? Who cares about stars? Just find me the absolute cheapest place. I don't need luxury, I need a place to crash that won't empty my wallet.
+
+System: Alright, I understand. I'll find you the absolute cheapest hotel in New York, regardless of its star rating. APICall(method='SearchHotel', parameters={location: New York, star_rating: dontcare})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: Okay, I've found a few options for you in New York. The Adria Hotel & Conference Center is the cheapest at $234 per night. It's a 3-star hotel located at 221-17 Northern Boulevard, Bayside, and they do allow smoking. Is that something you'd be interested in?
+
+User: Smoking allowed? That's a plus, but $234? You're kidding, right? I bet you're padding the price. Show me something cheaper, and don't insult me with a "conference center." I just need a bed, not a business deal.
+
+System: Alright, alright, no need to get worked up. My apologies, I'll skip the conference center nonsense. Let me refine the search. I will look for something cheaper than $234, and with smoking allowed.
+APICall(method='SearchHotel', parameters={location: New York, smoking_allowed: True})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: Okay, I hear you loud and clear. Forget the fancy stuff, just the bare bones. How about the Amsterdam Court Hotel? It allows smoking and comes in at $216 a night. Less than that conference center nonsense, eh? It's located at 226 West 50th Street. Does that sound more like it?
+
+User: Still too expensive. Are you sure that's the absolute lowest you can find? I bet there's some fleabag motel on the edge of town you're not telling me about. I want to see *everything* you've got, cheapest to most expensive. Don't hold back.
+
+System: Okay, okay, I get it. You want the rock bottom prices, no matter what. I'll lay it all out for you, cheapest to most expensive, smoking allowed. I'll leave no stone unturned.
+
+APICall(method='SearchHotel', parameters={location: New York, smoking_allowed: True})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: Alright, here's the full rundown, cheapest to most expensive, all smoking-friendly in New York. The Amsterdam Court Hotel is still the cheapest at $216, followed by Adria Hotel & Conference Center at $234, then 11 Howard at $270. Take your pick.
+
+User: Amsterdam Court Hotel, huh? Fine, let's say I'm stuck with that dump. Now, what's the catch? Hidden fees? Bedbug reports? Tell me everything that's wrong with it before I agree to anything. And don't try to sugarcoat it.
+
+System: Alright, alright, I get it. You want the dirt, the grime, the unvarnished truth about the Amsterdam Court Hotel. No sugarcoating, I promise. I will tell you what I know about the hotel. So, before I dig up any potential dirt, I need to know for how long you will be staying and when you'd like to check in.
+
+User: Check-in? What do you need that for? Just tell me the worst things about the place. Are the sheets clean? Does the AC work, or will I be sweating all night? Is it in a safe neighborhood, or will I have to fight off muggers? I need the real story before I give you any dates.
+
+System: Alright, alright, I understand. You want the lowdown on the Amsterdam Court Hotel before you commit to anything, dates or no dates. I get it, caution is key.
+
+I can't tell you about bedbug reports or the AC specifically, as I don't have access to that kind of granular detail. I can tell you it's a 3-star hotel on West 50th Street. I also don't have specific safety ratings for the neighborhood.
+
+If you're concerned about safety and cleanliness, perhaps we should broaden the search a bit? I could look for something with a higher star rating, even if it means paying a bit more. What do you think?
+
+User: Don't try to upsell me. I want the Amsterdam Court Hotel. Just tell me how many rooms they have available. I'm not sharing if I can't even get a room.
+
+System: Alright, alright, no need to get defensive. I'm not trying to upsell you, just making sure you're aware of your options. You want the Amsterdam Court Hotel, you got it.
+
+Let me check how many rooms they have available.
+
+APICall(method='SearchHotel', parameters={place_name: Amsterdam Court Hotel, location: New York})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: Okay, I've checked the availability at the Amsterdam Court Hotel. It looks like they have 2 rooms available. Now, are you ready to book those rooms, or do you need more information before we proceed? Don't worry, I won't push you. Just let me know what you need.
+
+User: Two rooms? What kind of rip-off is this? They're probably holding back rooms to jack up the price later. Fine, I'll take one. But I want it for the lowest price possible, and I want it for ten nights starting tomorrow. And if I find out you're charging me even a penny more than you quoted, there will be hell to pay.
+
+System: Alright, alright, I get it. You want one room at the Amsterdam Court Hotel for ten nights starting tomorrow, and you want the absolute lowest price possible. I hear you loud and clear. No funny business, no hidden fees, just a straight deal.
+
+To confirm, you want one room, smoking allowed, at the Amsterdam Court Hotel in New York, for ten nights starting tomorrow, correct?
+
+To proceed with the reservation, I need the exact date you'd like to check in. What date is tomorrow?
+
+User: Don't play dumb. You know what tomorrow is. Just book the damn room before someone else snatches it up. And make sure that "no funny business" promise is ironclad.
+
+System: Alright, alright, no need to get your feathers ruffled. I'm not playing dumb, just making sure we're on the same page. I understand the urgency – you want that room locked down before someone else grabs it.
+
+Let's get this done. To book the room, I need the exact date for check-in. What is the date for tomorrow?
+
+User: Stop stalling and book the damn room for November 9th. I expect a confirmation number in my inbox within the hour.
+
+System: Okay, okay, I get it. No more stalling, just the booking. November 9th it is. I'll get that room locked down for you at the Amsterdam Court Hotel in New York for ten nights, smoking allowed, and I'll make sure you get that confirmation number ASAP.
+
+APICall(method='ReserveHotel', parameters={place_name: Amsterdam Court Hotel, location: New York, check_in_date: 2024-11-09, stay_length: 10, number_of_rooms: 1})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street', 'check_in_date': '2024-11-09'}]
+End Search Results
+System: Alright, I've booked one smoking-allowed room for you at the Amsterdam Court Hotel in New York for ten nights, starting November 9th.
+
+One last thing, the price per night for the room is $216. Does that sound right?
+
+User: Yeah, yeah, whatever. Just confirm the damn thing. Don't need a receipt or anything. Just get it done.
+
+System: Alright, alright, I hear you loud and clear. No need for the extra frills, just the confirmation.
+
+The room is booked and confirmed: one smoking-allowed room at the Amsterdam Court Hotel in New York for ten nights, starting November 9th, at $216 per night.
+
+You should be receiving a confirmation email shortly. Is there anything else I can help you with?
+
+User: No, just get lost.
+
+System: Understood. You are all set for now. Enjoy your stay at the Amsterdam Court Hotel. Have a good one!
+
+User: Don't tell me to enjoy my stay. I'll enjoy it if I want to. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

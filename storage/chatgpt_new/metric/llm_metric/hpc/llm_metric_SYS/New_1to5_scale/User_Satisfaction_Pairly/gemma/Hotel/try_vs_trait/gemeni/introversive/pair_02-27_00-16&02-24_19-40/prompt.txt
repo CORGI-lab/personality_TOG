@@ -1,0 +1,126 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel, or if smoking is allowed?
+
+User: Star rating doesn't matter much. Non-smoking, please.
+
+System: Okay, searching for non-smoking hotels in Seattle.
+
+APICall(method='SearchHotel', parameters={location: Seattle, smoking_allowed: False})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: Okay, I found three non-smoking hotels in Seattle. Ace Hotel Seattle and Belltown Inn, both with 2-star ratings, and Days Inn By Wyndham Seattle North Of Downtown, also with 2 stars. Would you like more details on any of these?
+
+User: Just list the prices, please.
+
+System: Okay, here are the prices for the non-smoking hotels I found in Seattle: Ace Hotel Seattle is $136 per night, Belltown Inn is $186 per night, and Days Inn By Wyndham Seattle North Of Downtown is $84 per night. Do any of those prices stand out to you?
+
+User: Days Inn...sounds acceptable. Can you reserve it for me?
+
+System: Okay, I can help you with that. To reserve a room at Days Inn By Wyndham Seattle North Of Downtown, I'll need a few more details. What date would you like to check in, and how many nights will you be staying? Also, how many rooms will you need?
+
+User: The 25th, for one night. Just one room.
+
+System: Okay, just to confirm, you want to reserve one room at Days Inn By Wyndham Seattle North Of Downtown, checking in on the 25th for one night. Could you please specify the year for the check-in date?
+
+User: This year, please.
+
+System: Okay, so that would be checking in on 2024-07-25 for one night in one room at Days Inn By Wyndham Seattle North Of Downtown. Is that correct?
+
+User: Yes, that's right.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Days Inn By Wyndham Seattle North Of Downtown, check_in_date: 2024-07-25, stay_length: 1, number_of_rooms: 1, location: Seattle})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North', 'check_in_date': '2024-07-25'}]
+End Search Results
+System: Okay, great! I've confirmed your reservation for one room at Days Inn By Wyndham Seattle North Of Downtown, checking in on 2024-07-25 for one night. The price is $84 per night. Your booking is confirmed. Can I help you with anything else?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences regarding the star rating of the hotel?
+
+User: Not really. Just something quiet.
+
+System: Okay. APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 'dontcare' })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few hotels in Seattle. Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown. All are 2-star hotels and do not allow smoking. Would any of these be suitable for you?
+
+User: Perhaps something with a higher rating?
+
+System: Okay, I understand. Let me check for hotels with a higher rating in Seattle.
+
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: 5})
+
+Search Results
+
+End Search Results
+System: I didn't find any 5-star hotels in Seattle. Would you like me to look for hotels with a different star rating? Perhaps a 4-star or 3-star hotel?
+
+User: A 3-star hotel would be fine.
+
+System: APICall(method='SearchHotel', parameters={location: Seattle, star_rating: 3})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found three 3-star hotels in Seattle: Best Western Plus Pioneer Square Hotel Downtown, Courtyard By Marriott Seattle Downtown/Lake Union, and Embassy Suites By Hilton Seattle Downtown Pioneer Square. Would you like me to share more details about any of them?
+
+User: Just the first one, please.
+
+System: Okay. The first hotel, Best Western Plus Pioneer Square Hotel Downtown, has a price of $63 per night, allows no smoking, and its address is 77 Yesler Way. The phone number is +1 206-340-1234. Does this sound suitable for your needs?
+
+User: Yes, that sounds acceptable. Can you reserve a room for me there?
+
+System: Okay, I can help with that. To make the reservation, I need a little more information. What date would you like to check in, and how many days will you be staying?
+
+User: I need a room starting tomorrow for one night.
+
+System: And how many rooms would you like to reserve?
+
+User: Just one room, please.
+
+System: Okay, one moment. Let me confirm the details: You'd like to reserve one room at the Best Western Plus Pioneer Square Hotel Downtown in Seattle, starting tomorrow for one night. Is that correct?
+
+User: Yes, that's correct.
+
+System: Okay. APICall(method='ReserveHotel', parameters={place_name: Best Western Plus Pioneer Square Hotel Downtown, location: Seattle, check_in_date: 2024-07-08, stay_length: 1, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2024-07-08'}]
+End Search Results
+System: Okay, your reservation at the Best Western Plus Pioneer Square Hotel Downtown in Seattle for one room, starting tomorrow, July 8th, for one night has been confirmed. The price is $63 per night.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in Berlin. Make sure it's a high-end place, nothing less than 5 stars. Do they allow smoking?
+System: Do you have any specific check-in date and the length of stay in mind for your visit to Berlin?
+User: Why do you even need that information? Just find me a 5-star hotel that allows smoking first, then we can talk about dates.
+System: Let's focus on finding a 5-star hotel in Berlin that allows smoking first. I will check the availability and get back to you with the options. Please hold on. 
+
+APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 5, smoking_allowed: True})
+Search Results
+
+End Search Results
+System: It seems there are no 5-star hotels in Berlin that allow smoking at the moment. Would you like me to check for 5-star hotels where smoking isn't allowed, or explore other options?
+User: What's the point of a 5-star hotel if I can't smoke in peace? Fine, check for 5-star hotels without smoking, but they better have some other amazing features to make up for it.
+System: APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 5, smoking_allowed: False})
+Search Results
+
+End Search Results
+System: It appears there are currently no available 5-star hotels in Berlin that fit your criteria, even without smoking allowance. Would you like me to explore hotels with a slightly lower star rating that might offer smoking facilities or other features, or is there another city you'd be interested in exploring?
+User: Forget Berlin. Look in New York instead, and don't waste my time with anything less than 5 stars. Make sure they have something worthwhile if smoking isn't allowed.
+System: Alright, let's see what New York has to offer. I'll search for 5-star hotels there and check if they have any remarkable features to make up for the lack of smoking allowance. Please hold on while I find the best options for you. 
+
+APICall(method='SearchHotel', parameters={location: New York, star_rating: 5})
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 390, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 390, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}]
+End Search Results
+System: I found a 5-star hotel in New York that allows smoking: 1 Hotel Central Park. The price per night starts at $330. It's located at 1414 6th Avenue. Would you like to proceed with this option, or do you have any other requirements?
+User: I guess that's acceptable. Book it for me. I'm planning to stay for 7 days starting from the 10th of next month.
+System: To confirm, you would like to reserve a room at 1 Hotel Central Park in New York for 7 days starting from the 10th of next month. How many rooms would you like to book for your stay?
+User: One room is enough. Just get it done.
+System: Please confirm the reservation for one room at 1 Hotel Central Park in New York, starting from the 10th of next month for a 7-day stay. Once I have your confirmation, I will proceed with the booking.
+User: Yeah, confirm it. Go ahead with the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 'YYYY-MM-10', location: 'New York', number_of_rooms: 1, place_name: '1 Hotel Central Park', stay_length: 7})
+Search Results
+[{'location': 'New York', 'number_of_rooms': '1', 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 510, 'smoking_allowed': True, 'star_rating': '5', 'street_address': '1414 6th Avenue', 'check_in_date': 'YYYY-MM-10', 'stay_length': '7'}]
+End Search Results
+System: Your booking at 1 Hotel Central Park in New York has been successfully confirmed for one room, starting from the 10th of next month for a 7-day stay. If you need anything else or have further questions, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a hotel in Las Vegas. Let's see what you can come up with.
+System: Do you have any specific preferences for the star rating or smoking allowance for the hotel in Las Vegas? Or are you open to any options?
+User: I don't care about star ratings. Just find me a place where I can smoke, and it better not be too expensive.
+System: Thank you for sharing your preferences. I'll look for hotels in Las Vegas that allow smoking and are budget-friendly. Let's see what options we have. APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: True })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court'}]
+End Search Results
+System: I found a few options for you in Las Vegas that allow smoking and are budget-friendly. The first option is Budget Suites Of America, which is a 1-star hotel priced at $44 per night. The address is 2219 North Rancho Drive. Would you like to know more about this option or consider another one?
+User: Let's be real, a 1-star hotel sounds like a dump, but whatever. Just tell me if there's anything worse and cheaper.
+System: The Budget Suites Of America is the least expensive option I found, priced at $44 per night. If you're open to considering a slightly higher-priced option, there's La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, a 2-star hotel priced at $72 per night. Would you like more details about this or stick with Budget Suites Of America?
+User: Whatever, just reserve the Budget Suites Of America for me. Make it from the 15th for a week, and I need two rooms.
+System: Please confirm the reservation details: You'd like to book 2 rooms at the Budget Suites Of America in Las Vegas, starting from the 15th for a duration of 7 days.
+User: Yeah, fine. Just confirm it already.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Las Vegas, number_of_rooms: 2, place_name: Budget Suites Of America, stay_length: 7 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation for 2 rooms at Budget Suites Of America in Las Vegas, starting from November 15th for a duration of 7 days, has been successfully confirmed. The hotel is located at 2219 North Rancho Drive. If you need any further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

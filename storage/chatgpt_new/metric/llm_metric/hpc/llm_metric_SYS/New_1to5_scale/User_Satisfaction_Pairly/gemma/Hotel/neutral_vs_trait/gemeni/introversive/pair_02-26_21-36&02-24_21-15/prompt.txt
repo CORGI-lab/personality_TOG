@@ -1,0 +1,135 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: No preferences really. Just something quiet.
+
+System: Okay, I understand. How many rooms do you need?
+
+User: Just one, please.
+
+System: APICall(method='SearchHotel', parameters={ location: Seattle, number_of_rooms: 1, smoking_allowed: dontcare, star_rating: dontcare })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found three 2-star hotels in Seattle: Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown. Would you like to know more about any of them?
+
+User: Perhaps you could tell me more about Belltown Inn?
+
+System: Okay, sure. Belltown Inn is located at 2301 3rd Avenue, the phone number is +1 866-525-4704. The price per night is $186 and smoking is not allowed. It has two rooms available. Does this sound like a good option for you?
+
+User: That sounds… acceptable. Can you check if there are any other options available? Maybe something a little less… central?
+
+System: Okay, let me search for other options. How about we try a different star rating?
+APICall(method='SearchHotel', parameters={location: Seattle, number_of_rooms: 1, smoking_allowed: dontcare, star_rating: 5})
+
+Search Results
+
+End Search Results
+System: I am sorry, but I could not find any 5-star hotels in Seattle that match your criteria. Would you like me to search for hotels with a different star rating or smoking allowance?
+
+User: No, that's okay. I'll take the Belltown Inn. Can you book it for me?
+
+System: How many days will you be staying at the Belltown Inn, and what date would you like to check in?
+
+User: Just one night, please. Check-in date is tomorrow.
+
+System: What is the date tomorrow? I need to know the exact date to book the room for you.
+
+User: Okay, tomorrow is September 7th. Please proceed with the booking.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-09-07, location: Seattle, number_of_rooms: 1, place_name: Belltown Inn, stay_length: 1})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': '1', 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': '5', 'street_address': '2301 3rd Avenue', 'check_in_date': '2023-09-07', 'stay_length': '1'}]
+End Search Results
+System: Okay, great. I have booked one room for you at the Belltown Inn in Seattle for one night, checking in on September 7th. The price is $186. Is there anything else I can help you with?
+
+User: No, that will be all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a quiet hotel in San Francisco.
+
+System: Okay, I can help with that.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found a few hotels in San Francisco. There's the Amsterdam Hostel San Francisco, a 1-star hotel; the Argonaut Hotel, a 4-star hotel; and Beck'S Motor Lodge, a 2-star hotel. Do any of these sound suitable for your needs?
+
+User: Perhaps something with a higher rating?
+
+System: Okay, I understand. I will focus on hotels with higher ratings. How about the Argonaut Hotel? It's a 4-star hotel. Would you like to know more about it?
+
+User: Maybe. Tell me about the Argonaut Hotel.
+
+System: The Argonaut Hotel is located at 495 Jefferson Street in San Francisco. It has a 4-star rating and the price per night is $408. The phone number is +1 415-563-0800. Does this sound like what you're looking for?
+
+User: Is smoking allowed?
+
+System: Smoking is not allowed at the Argonaut Hotel.
+
+User: Okay. Are there other options with a similar rating that allow smoking?
+
+System: I can check for other hotels in San Francisco. However, I need to know if you are open to different star ratings to broaden the search?
+
+User: No, stick to a similar rating.
+
+System: Okay, I will look for other options with a similar star rating that allow smoking.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 4, smoking_allowed: True })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-561-1100', 'place_name': "Hotel Zoe Fisherman'S Wharf", 'price_per_night': 148, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '425 North Point Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street'}]
+End Search Results
+System: I found three 4-star hotels in San Francisco that allow smoking: Hotel Via, Hotel Zoe Fisherman's Wharf, and Hotel G. Would you like to know more about any of these options?
+
+User: Hotel Via sounds... acceptable. Tell me more.
+
+System: Okay. Hotel Via is located at 138 King Street in San Francisco. It has a 4-star rating, and smoking is allowed. The price per night is $208, and their phone number is +1 415-200-4977. Does this information suffice for now?
+
+User: Yes, that's sufficient. Can you book it for me? I need it for the 3rd for just one night.
+
+System: Okay, I can help with that. To confirm, you would like to book a room at Hotel Via in San Francisco for one night, starting on the 3rd. Could you please provide the full date, including the year, for the check-in date and also let me know how many rooms you will need?
+
+User: Just one room. The full date is March 3rd, 2024.
+
+System: Okay, let me confirm the details before proceeding. You'd like to reserve one room at Hotel Via in San Francisco, with a check-in date of March 3rd, 2024, for a one-night stay. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ place_name: Hotel Via, location: San Francisco, check_in_date: 2024-03-03, stay_length: 1, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street', 'check_in_date': '2024-03-03'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street', 'check_in_date': '2024-03-03'}]
+End Search Results
+System: Okay. I have confirmed your reservation at Hotel Via for March 3rd, 2024, for one night. Just to be sure, the hotel's phone number is +1 415-200-4977, and the address is 138 King Street, San Francisco. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

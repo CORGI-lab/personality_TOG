@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in San Francisco, please.
+
+System: Okay, I can help with that!
+
+APICall(method='SearchHotel', parameters={ location: San Francisco })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Great! I found three hotels in San Francisco. There is the Amsterdam Hostel San Francisco, a 1-star hotel, the Argonaut Hotel, which has 4 stars, and Beck's Motor Lodge, with 2 stars. Do any of these sound good to you?
+
+User: Those all sound reasonable. Could you tell me more about the Argonaut Hotel? Perhaps the price per night and if smoking is allowed?
+
+System: The Argonaut Hotel is a 4-star hotel with a price of $408 per night and smoking is not allowed. Does this sound suitable for your needs?
+
+User: Yes, that sounds quite nice, actually. I'd like to reserve a room there.
+
+System: Okay, I can help you with that. To make a reservation, I need a little more information. What date would you like to check in, and how many days will you be staying?
+
+User: I'd like to check in on the 15th and stay for three nights.
+
+System: Okay, great! And for the reservation at the Argonaut Hotel in San Francisco, how many rooms will you need?
+
+User: Just one room, please.
+
+System: Okay, just to confirm, you'd like to reserve one room at the Argonaut Hotel in San Francisco, checking in on the 15th for a three-night stay. Is that correct?
+
+User: Yes, that's perfectly correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-15, location: San Francisco, number_of_rooms: 1, place_name: Argonaut Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Excellent! I have reserved one room for you at the Argonaut Hotel in San Francisco, checking in on July 15th for three nights. Is there anything else I can assist you with today?
+
+User: No, that's all settled. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to book a hotel in London if possible.
+
+System: Okay, I can help with that. To start, do you have any preferences for the star rating of the hotel?
+
+User: I don't have a strong preference, but perhaps something in the 3 to 4 star range would be suitable.
+
+System: Given your preference for a 3 to 4 star hotel, I'll search for options in that range. How many rooms will you need?
+
+User: Just one room will be fine.
+
+System: And for how many nights will you be staying, and what date would you like to check in?
+
+User: Let's say a 3-night stay, starting on the 15th of next month.
+
+System: Okay, I'll need a bit more information to proceed. Could you please specify the full date, including the year, for your check-in? Also, could you clarify the month you'd like to check in next month? Once I have that, I can search for a hotel in London that meets your needs.
+
+User: My apologies, I meant June 15, 2024.
+
+System: Thank you for clarifying. I will now search for a 3 to 4-star hotel in London for one room, checking in on June 15, 2024, for a 3-night stay.
+
+APICall(method='SearchHotel', parameters={location: London, number_of_rooms: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: Okay, I have found a few hotels in London. Abc Hyde Park Hotel is a 3-star hotel that matches your preference. Would you like to know more about it?
+
+User: That sounds reasonable. Could you tell me a bit more about the Abc Hyde Park Hotel?
+
+System: Certainly. The Abc Hyde Park Hotel is located at 121 Sussex Gardens in London. It has a 3-star rating and the price per night is $102. The hotel has 1 room available and does not allow smoking. The phone number is +44 20 7706 4660. Does this sound suitable for your needs?
+
+User: Yes, that sounds perfectly fine. Please go ahead and book that for me.
+
+System: Okay, I can proceed with the booking for you. Just to confirm, you would like to book one room at the Abc Hyde Park Hotel in London, checking in on June 15, 2024, for a 3-night stay?
+
+I still need the place_name and check_in_date and stay_length.
+
+To confirm the date format, the check-in date is in YYYY-MM-DD format. Also, what is the name of the hotel?
+
+User: Yes, that is correct. please proceed with the booking for one room at the Abc Hyde Park Hotel, checking in on 2024-06-15 for a 3-night stay.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Abc Hyde Park Hotel, check_in_date: 2024-06-15, stay_length: 3, location: London, number_of_rooms: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': '1', 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-06-15', 'stay_length': '3'}]
+End Search Results
+System: Excellent. Your reservation at Abc Hyde Park Hotel has been successfully processed for one room, with a check-in date of June 15, 2024, for a 3-night stay. If you need anything else, feel free to ask.
+
+User: That's great, thank you for confirming the booking. Could you please provide me with the total cost and the cancellation policy?
+
+System: I'm glad to hear that you are satisfied with the booking. Unfortunately, I do not have access to the cancellation policy or the total cost of the booking. Is there anything else I can assist you with regarding your reservation?
+
+User: No, that's all I need. Thanks a lot!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

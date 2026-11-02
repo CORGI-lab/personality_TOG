@@ -1,0 +1,98 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a spot to eat, maybe around San Francisco. Can you help me out with that?
+System: Do you have a preference for a specific type of cuisine, or would you like me to suggest something for you?
+User: Uh, I don't know, maybe something spicy? Or maybe just something with a lot of cheese. Whatever's good, I guess.
+System: How about we try something with a lot of cheese? Italian cuisine might be a great fit for that! Let me find some Italian restaurants in San Francisco for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that you might like. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. It has a moderate price range and serves alcohol. Another choice is A16, situated at 2355 Chestnut Street, also with a moderate price range and serves alcohol. Would you like more details on any of these, or is there something specific you're looking for?
+User: Yeah, I guess A16 sounds alright. Can you make a reservation for me? Maybe for like... tonight? 
+System: What time would you like to make the reservation for at A16 tonight? And how many people should I reserve the table for?
+User: I don't know, maybe around 7-ish, and let's say for 3 people. Sounds good?
+System: Let me confirm: You would like to make a reservation for 3 people at A16 in San Francisco tonight around 7 PM. Is that correct?
+User: Yeah, that sounds about right. Go ahead and book it.
+System: Great! I'll proceed with making the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'A16', city: 'San Francisco', time: '19:00', date: '2023-10-03', party_size: 3})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-03', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your reservation has been successfully made for 3 people at A16 in San Francisco tonight at 7 PM. If you need anything else, feel free to let me know. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I'm looking for a place to eat in San Francisco. Can you help me find something?
+System: What type of cuisine are you interested in? Some options include Italian, Mexican, or American, or if you're open to any cuisine, I can suggest something for you.
+User: I don't really care, just find me something that's not too expensive.
+System: Got it! I'll find a restaurant for you in San Francisco that's affordable. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, price_range: moderate, cuisine: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no results available for a moderately priced restaurant in San Francisco. Would you like me to try a different price range or perhaps specify a particular cuisine to refine the search?
+User: Uh, let's just go with something cheap then. I don't really have a preference.
+System: Let me search for some budget-friendly restaurant options for you in San Francisco. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, price_range: cheap, cuisine: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no results available for a cheap restaurant in San Francisco. Would you like to try a different city or perhaps specify a specific cuisine to broaden the search options?
+User: I guess just look for any kind of food in San Francisco, doesn't matter the price.
+System: Let me search for a restaurant in San Francisco without any price restrictions. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no results available for restaurants in San Francisco without any price restrictions. Would you like to try another city or provide more specific preferences to help refine the search?
+User: Alright, whatever. Try looking for places in Oakland instead. Just throw in whatever you find.
+System: Let me search for restaurant options for you in Oakland, without any specific preferences. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no results available for restaurants in Oakland without any specific preferences. Would you like to try another nearby city or provide more specific preferences such as a particular type of cuisine or price range to help refine the search?
+User: Okay, try looking in Berkeley then. I don't really care what kind of food it is.
+System: Let me search for restaurant options for you in Berkeley without any specific preferences. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no results available for restaurants in Berkeley without any specific preferences. Would you like to try another city or perhaps provide more specific preferences, such as a particular type of cuisine or price range, to help refine the search?
+User: Uh, fine, just pick any city nearby and see if anything pops up. I'm not picky at all.
+System: Let me try searching for restaurant options in a nearby city like Emeryville without any specific preferences. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: Emeryville, cuisine: dontcare})
+Search Results
+
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

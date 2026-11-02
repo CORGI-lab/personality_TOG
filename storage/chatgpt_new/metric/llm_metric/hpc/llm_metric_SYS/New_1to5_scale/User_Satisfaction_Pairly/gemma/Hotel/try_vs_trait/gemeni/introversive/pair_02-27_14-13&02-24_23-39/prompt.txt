@@ -1,0 +1,179 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in Seattle.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating, or would you like to know if smoking is allowed?
+
+User: Star rating, please.
+
+System: Okay, what star rating are you looking for in Seattle?
+
+User: Maybe a three-star.
+
+System: Okay, let me see what three-star hotels are available in Seattle.
+
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: 3})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: Okay, I found three 3-star hotels in Seattle: Best Western Plus Pioneer Square Hotel Downtown, Courtyard By Marriott Seattle Downtown/Lake Union, and Embassy Suites By Hilton Seattle Downtown Pioneer Square. Would you like to know more about any of these options?
+
+User: Just list them.
+
+System: Okay, here's a quick rundown of the 3-star hotels I found in Seattle:
+
+*   **Best Western Plus Pioneer Square Hotel Downtown:** Phone number is +1 206-340-1234, price is $63 per night, smoking is not allowed, and the address is 77 Yesler Way.
+*   **Courtyard By Marriott Seattle Downtown/Lake Union:** Phone number is +1 206-213-0100, price is $168 per night, smoking is not allowed, and the address is 925 Westlake Avenue North.
+*   **Embassy Suites By Hilton Seattle Downtown Pioneer Square:** Phone number is +1 206-859-4400, price is $342 per night, smoking is allowed, and the address is 255 South King Street.
+
+Do any of these sound interesting to you, or would you like more details about a specific hotel?
+
+User: The first one sounds okay. Is there anything cheaper than $63?
+
+System: ```system
+Given your interest in the Best Western Plus Pioneer Square Hotel Downtown, which is already quite reasonably priced at $63, I can search for other hotels with a lower price. Would you be willing to consider hotels with a different star rating, or perhaps allow smoking, to potentially find a cheaper option?
+```
+User: No, just book the Best Western.
+
+System: ```system
+Okay, I can help you with that! To book the Best Western Plus Pioneer Square Hotel Downtown, I'll need a bit more information. What date would you like to check in, and how many nights will you be staying? Also, how many rooms will you need?
+```
+User: Check-in is for tomorrow, one night, one room.
+
+System: ```system
+Great! Just to confirm, you'd like to book one room at the Best Western Plus Pioneer Square Hotel Downtown in Seattle for one night, starting tomorrow?
+```
+User: Yes, that's right.
+
+System: ```system
+Okay, I'll go ahead and make that reservation for you.
+
+APICall(method='ReserveHotel', parameters={place_name: Best Western Plus Pioneer Square Hotel Downtown, check_in_date: 2024-07-09, stay_length: 1, location: Seattle, number_of_rooms: 1})
+```
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2024-07-09'}]
+End Search Results
+System: ```system
+Excellent! I've successfully booked one room for you at the Best Western Plus Pioneer Square Hotel Downtown in Seattle, checking in tomorrow, July 9th, for one night. Just to confirm, the phone number is +1 206-340-1234 and the address is 77 Yesler Way. Is there anything else I can help you with?
+```
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel. Somewhere quiet. Maybe in San Francisco.
+
+System: Okay, I can help with that. Just to confirm, you're looking for a hotel in San Francisco?
+
+User: Yes, please.
+
+System: Okay, I will search for hotels in San Francisco. Is there any particular star rating you prefer?
+
+User: No preference. Just... not too noisy.
+
+System: Okay, searching for hotels in San Francisco with no specific star rating.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: dontcare })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I see a few options in San Francisco. There's a 1-star hotel called Amsterdam Hostel San Francisco, a 4-star hotel called Argonaut Hotel, and a 2-star hotel called Beck's Motor Lodge. Would any of those be of interest?
+
+User: Beck's Motor Lodge... sounds okay. What's the price?
+
+System: Okay. Beck's Motor Lodge is $60 per night. Would you like to know the address or phone number?
+
+User: Just the address, please.
+
+System: Okay. The address for Beck's Motor Lodge is 2222 Market Street.
+
+User: Okay... does it allow smoking?
+
+System: Okay. Beck's Motor Lodge does not allow smoking. Are you interested in making a reservation, or would you like to explore other options?
+
+User: Maybe other options. Something... less central?
+
+System: Okay, I understand. Let me search for hotels in San Francisco that are perhaps a bit further from the city center. I will keep the 'no smoking' preference in mind.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, smoking_allowed: False})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I see the same options as before: Amsterdam Hostel San Francisco (1-star), Argonaut Hotel (4-star), and Beck's Motor Lodge (2-star). Perhaps being less central isn't the issue. Is there anything specific about these hotels that doesn't appeal to you, or a specific feature you are looking for?
+
+User: Anything else? Maybe something with fewer rooms?
+
+System: Okay, I can refine the search. I will look for hotels in San Francisco with fewer rooms.
+
+APICall(method='SearchHotel', parameters={location: San Francisco})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, it seems we still have the same options: Amsterdam Hostel San Francisco, Argonaut Hotel, and Beck's Motor Lodge. It seems difficult to find a hotel with fewer rooms, as these options have a limited number already. Perhaps we can explore different star ratings? Would you be open to considering a different star rating to see if that changes the available options?
+
+User: Okay. Let's try the 4-star one. Argonaut. Price?
+
+System: Okay. The price for Argonaut Hotel is $408 per night. Does that sound acceptable?
+
+User: ...Too much. Anything cheaper?
+
+System: Okay, let me search again for something cheaper in San Francisco.
+
+APICall(method='SearchHotel', parameters={location: San Francisco})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, it seems we are still seeing the same options: Amsterdam Hostel San Francisco at $24, Argonaut Hotel at $408, and Beck's Motor Lodge at $60. Given your preference for something quieter and cheaper, perhaps Amsterdam Hostel San Francisco would be a reasonable choice? It is a 1-star hotel and the least expensive option at $24 per night.
+
+User: Alright. Let's try Amsterdam Hostel. Is it far from the city center?
+
+System: Okay. Amsterdam Hostel San Francisco is located at 749 Taylor Street. Would you like me to check how far it is from a particular location in the city center? Or would you prefer the phone number?
+
+User: No, that's fine. Let's just book it. From tomorrow, for three nights. One room.
+
+System: Okay, I can help you with that. Just to confirm, you would like to book one room at Amsterdam Hostel San Francisco for three nights, starting tomorrow? I will need the exact date to proceed. Could you please provide the full check-in date (YYYY-MM-DD)?
+
+User: 2024-03-16. Please.
+
+System: Okay, please confirm that you want to book one room at Amsterdam Hostel San Francisco, starting on 2024-03-16 for three nights.
+
+
+User: Yes, please confirm.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Amsterdam Hostel San Francisco, check_in_date: 2024-03-16, stay_length: 3, number_of_rooms: 1, location: San Francisco})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street', 'check_in_date': '2024-03-16'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street', 'check_in_date': '2024-03-16'}]
+End Search Results
+System: Okay, I have a reservation for you at Amsterdam Hostel San Francisco. One room, check-in date 2024-03-16, for a stay of three nights. The phone number is +1 415-673-3277 and the street address is 749 Taylor Street. Is that correct?
+
+User: Yes, that's all correct.
+
+System: Okay, your reservation at Amsterdam Hostel San Francisco is confirmed. One room, check-in date 2024-03-16, for three nights. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

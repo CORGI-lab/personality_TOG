@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to find a nice restaurant in Santa Clara. Could you help me with that? I'm open to any cuisine type.
+System: Let's find a great spot for you. I'll start by looking for a restaurant in Santa Clara. Since you're open to any cuisine, I'll choose a random one that suits your stable personality. Let's go with Italian. Please hold on for a moment while I search for options. 
+
+APICall (method='FindRestaurants', parameters={city: Santa Clara, cuisine: Italian})
+Search Results
+[{'city': 'Santa Clara', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-984-0414', 'price_range': 'moderate', 'restaurant_name': "Fiorillo's Restaurant And Banquet Facilities", 'serves_alcohol': True, 'street_address': '638 El Camino Real'}, {'city': 'Santa Clara', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-241-9414', 'price_range': 'moderate', 'restaurant_name': 'Mio Vicino', 'serves_alcohol': False, 'street_address': '1290 Benton Street'}, {'city': 'Santa Clara', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-330-9212', 'price_range': 'moderate', 'restaurant_name': 'Piatti', 'serves_alcohol': False, 'street_address': '3905 Rivermark Plaza'}]
+End Search Results
+System: I found a few Italian restaurants in Santa Clara for you. One option is Fiorillo's Restaurant And Banquet Facilities, which is located at 638 El Camino Real. They serve alcohol, and their price range is moderate. Would you like more details on this restaurant or explore other options like Mio Vicino or Piatti?
+User: I'm interested in exploring Mio Vicino. Could you provide more details about it, please?
+System: Certainly! Mio Vicino is located at 1290 Benton Street in Santa Clara. The restaurant offers a moderate price range, and while it doesn't serve alcohol, it provides a cozy Italian dining experience. Is there anything else you would like to know or do you want to make a reservation?
+User: Could you let me know if Mio Vicino has any live music?
+System: Mio Vicino does not have live music. If there's anything else you'd like to know or if you'd like to proceed with a reservation, please let me know!
+User: I'd like to make a reservation at Mio Vicino, please. Could you book a table for two at 7:00 pm tomorrow?
+System: To confirm the reservation for two at Mio Vicino, I'll need to gather a few more details. Could you please confirm the date for the reservation?
+User: The reservation is for tomorrow.
+System: Thank you for confirming. I will proceed with making the reservation for two at Mio Vicino in Santa Clara at 7:00 pm tomorrow. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={city: Santa Clara, restaurant_name: Mio Vicino, date: 2023-11-02, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Santa Clara', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-241-9414', 'price_range': 'moderate', 'restaurant_name': 'Mio Vicino', 'serves_alcohol': False, 'street_address': '1290 Benton Street', 'date': '2023-11-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Mio Vicino in Santa Clara has been successfully made for two people at 7:00 pm on November 2nd. If there's anything else you need, such as directions or additional details, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to find a restaurant in Walnut Creek. Can you help me with that?
+System: Certainly! Could you please let me know what type of cuisine you're interested in, such as Italian, Mexican, or something else?
+User: I'm interested in Italian cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Walnut Creek, cuisine: Italian})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-943-1094', 'price_range': 'moderate', 'restaurant_name': 'Caffe Delle Stelle Restaurant', 'serves_alcohol': True, 'street_address': '1532 North Main Street'}, {'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-932-1474', 'price_range': 'expensive', 'restaurant_name': 'Massimo Ristorante', 'serves_alcohol': True, 'street_address': '1604 Locust Street'}, {'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-943-6608', 'price_range': 'moderate', 'restaurant_name': 'Montecatini Ristorante', 'serves_alcohol': True, 'street_address': '1528 Civic Drive'}]
+End Search Results
+System: I found a few Italian restaurants in Walnut Creek for you. One option is Caffe Delle Stelle Restaurant, located at 1532 North Main Street. They offer a moderate price range and serve alcohol. Would you like more information about this restaurant, or would you like to hear about another option?
+User: Could you tell me if Caffe Delle Stelle has live music?
+System: Unfortunately, Caffe Delle Stelle Restaurant does not have live music. Would you like to hear about another Italian restaurant in Walnut Creek, or is there anything else I can assist you with?
+User: Could you suggest another Italian restaurant in Walnut Creek that might have live music?
+System: Unfortunately, none of the Italian restaurants I found in Walnut Creek, including Massimo Ristorante and Montecatini Ristorante, offer live music. However, both restaurants are well-regarded and serve alcohol. Would you like more details about either of these options, or is there something else I can assist you with?
+User: Could you provide more details about Massimo Ristorante?
+System: Certainly! Massimo Ristorante is located at 1604 Locust Street in Walnut Creek. It falls into the expensive price range and serves alcohol. While they do not offer live music, it's a well-regarded Italian restaurant. If you need further assistance or have any other questions, feel free to ask!
+User: Could you make a reservation for Massimo Ristorante? I'm thinking for two people, this Saturday at 7:00 PM.
+System: To make the reservation at Massimo Ristorante, I need to confirm the city and the date for the reservation. Could you please confirm that the reservation is for Walnut Creek and provide the exact date for this Saturday?
+User: Yes, the reservation is for Walnut Creek, and the date is this Saturday.
+System: Thank you for confirming. I'll now proceed to make the reservation for two people at Massimo Ristorante in Walnut Creek for this Saturday at 7:00 PM. Please hold on a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Massimo Ristorante', city: 'Walnut Creek', date: '2023-10-07', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-932-1474', 'price_range': 'expensive', 'restaurant_name': 'Massimo Ristorante', 'serves_alcohol': True, 'street_address': '1604 Locust Street', 'date': '2023-10-07', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Massimo Ristorante in Walnut Creek for this Saturday, October 7th, at 7:00 PM for two people has been successfully made. If there's anything else you need, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

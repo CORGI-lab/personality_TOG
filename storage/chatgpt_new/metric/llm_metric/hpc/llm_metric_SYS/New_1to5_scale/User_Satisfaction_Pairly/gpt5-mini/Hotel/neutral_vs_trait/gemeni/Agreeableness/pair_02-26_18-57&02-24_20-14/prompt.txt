@@ -1,0 +1,139 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hello! I'm hoping to find a nice hotel in San Francisco. Could you possibly help me with that?
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: Oh, that's wonderful! Thank you so much for helping. I don't have any strong preferences, but perhaps something with a decent star rating? I'm not too picky about smoking, as long as it's comfortable for everyone. What options are available?
+
+System: Okay, let me search for hotels in San Francisco. Since you don't have a preference for star rating, I will start with a random one.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: No hotels found matching your criteria. Would you like me to search for hotels with a different star rating or smoking allowance?
+
+User: Oh dear, that's quite alright! Perhaps we could broaden the search a little? I'm sure there must be some lovely places available. Maybe any star rating would be okay for now, and non-smoking would be preferable if possible, just to be considerate of others. Thank you so much for your patience!
+
+System: Okay, I will search for hotels in San Francisco with any star rating and non-smoking rooms.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, smoking_allowed: False })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I found three hotels in San Francisco that do not allow smoking: Amsterdam Hostel San Francisco, Argonaut Hotel, and Beck'S Motor Lodge. Amsterdam Hostel San Francisco is a 1-star hotel, Argonaut Hotel is a 4-star hotel, and Beck'S Motor Lodge is a 2-star hotel. Would you like to know more about any of these options?
+
+User: Oh, how lovely! Thank you for finding those. Could you perhaps tell me a little more about the Argonaut Hotel? A 4-star hotel sounds quite nice, and I appreciate that it's non-smoking. What's the price per night, if you don't mind me asking?
+
+System: The price per night at the Argonaut Hotel is $408. Would you like to know the address or phone number?
+
+User: Oh, that's very helpful! Thank you. Could you please share the address? And perhaps also let me know if they have multiple rooms available? I might be traveling with a few friends, and I want to make sure everyone can stay comfortably. I really appreciate you checking for me!
+
+System: The address of the Argonaut Hotel is 495 Jefferson Street. They have 3 rooms available.
+
+User: That's wonderful news! Thank you so much for checking. In that case, I think the Argonaut Hotel sounds perfect. Would it be alright to go ahead and reserve a room there? I'm planning to check in on the 15th of next month and stay for 3 nights.
+
+System: Okay, I can help you reserve a room at the Argonaut Hotel. How many rooms would you like to reserve?
+
+User: Oh, thank you for offering to help! I think two rooms would be perfect, if that's alright. I really appreciate you taking care of this for me!
+
+System: Okay, I will reserve two rooms for you at the Argonaut Hotel. Could you please confirm the check-in date, which is the 15th of next month, and the year?
+
+User: Oh, of course! I'm so sorry, I should have mentioned that. The check-in date is the 15th of next month, 2025. Thank you so much for your patience with me!
+
+System: APICall(method='ReserveHotel', parameters={ place_name: Argonaut Hotel, location: San Francisco, number_of_rooms: 2, check_in_date: 2025-05-15, stay_length: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2025-05-15'}]
+End Search Results
+System: Okay, I have reserved two rooms for you at the Argonaut Hotel in San Francisco, checking in on May 15, 2025, for a stay of 3 nights. Is that correct?
+
+User: Yes, that's absolutely perfect! Thank you so much for arranging everything for me. I really appreciate your help and patience.
+
+System: Great! The total price will be $1224. Your booking is confirmed. The phone number for Argonaut Hotel is +1 415-563-0800. Is there anything else I can help you with?
+
+User: Oh, thank you so much for confirming everything! That sounds wonderful. No, I think that's all I need for now. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hi, I'm looking to book a hotel. I was thinking maybe somewhere in London? I've heard lovely things about it.
+
+System: Of course, I can help with that! London is a wonderful choice. To start, do you have any preferences regarding the star rating of the hotel?
+
+User: Oh, anything that's clean and comfortable would be fine! I'm not too picky about the star rating, really. Maybe something mid-range? A 3 or 4 star would be lovely if possible.
+
+System: Okay, I understand. I'll look for a clean and comfortable hotel in London, ideally with a 3 or 4-star rating. I'll prioritize hotels that are known for their cleanliness and comfort.
+
+APICall(method='SearchHotel', parameters={location: London, star_rating: dontcare})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: Okay, I have a few options for you in London.
+
+I found a 3-star hotel named Abc Hyde Park Hotel, and a 5-star hotel named 45 Park Lane. Would you like me to share more details about either of these, or perhaps search for something different? I'm happy to help you find the perfect place.
+
+User: Oh, both sound nice! Could you tell me a little more about the Abc Hyde Park Hotel first, please? I'm always happy to hear about different options.
+
+System: Certainly! Abc Hyde Park Hotel is a 3-star hotel with rooms available. The price per night is $102. Their phone number is +44 20 7706 4660, and the address is 121 Sussex Gardens. Would you like to know anything else about Abc Hyde Park Hotel, or shall I give you details about 45 Park Lane?
+
+User: Thank you! Could you perhaps tell me if they allow smoking at the Abc Hyde Park Hotel? It's not a deal-breaker, but it would be good to know.
+
+System: Certainly! I can check that for you.
+
+According to the information I have, smoking is not allowed at Abc Hyde Park Hotel.
+
+Would you like me to provide information on the 5-star hotel, 45 Park Lane, or would you like me to search for a hotel where smoking is allowed? I'm happy to help in any way I can.
+
+User: Oh, that’s perfectly alright. Perhaps you could tell me about 45 Park Lane? It's good to have all the information before making a choice, isn't it?
+
+System: Yes, it
+User: certainly is! 45 Park Lane is a 5-star hotel in London. The price per night is $330. The hotel has multiple rooms available. Their phone number is +44 20 7493 4545, and the address is 45 Park Lane. Smoking is not allowed. Would you like to know anything else about 45 Park Lane?
+
+System:  User: 
+ System: Thank you for the information! That’s very helpful. I think I’d like to book a room at 45 Park Lane. It sounds lovely. What information do you need from me?
+
+User: Okay, great! I'll need the check-in date and the length of your stay, please. I'm planning to book it for my daughter, so I want to make sure everything is just right for her.
+
+System: I understand completely. Could you please provide the check-in date and the number of nights you'd like to book the room for? I'll make sure everything is arranged perfectly for your daughter's stay at 45 Park Lane.
+
+User: She's planning to arrive on the 10th of next month and stay for four nights. Thank you so much for helping me with this!
+
+System: Okay, I have all the details! Just to confirm, you'd like to book a room at 45 Park Lane in London for your daughter, with a check-in date of the 10th of next month and a stay length of four nights. Is that correct?
+
+User: Yes, that's absolutely correct! Thank you for double-checking. I really appreciate your thoroughness.
+
+System: Okay, just one moment while I finalize the booking.
+
+APICall(method='ReserveHotel', parameters={location: London, place_name: 45 Park Lane, check_in_date: 2024-07-10, stay_length: 4, number_of_rooms: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2024-07-10'}]
+End Search Results
+System: Wonderful! I've successfully booked a room for your daughter at 45 Park Lane in London. The check-in date is July 10th, for a stay of four nights. The phone number for the hotel is +44 20 7493 4545, and the address is 45 Park Lane. Is there anything else I can help you with to make her stay even more comfortable or convenient? I'm happy to assist in any way I can.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,100 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in San Francisco. It better be something upscale, and I don't want to deal with any of that live music nonsense.
+System: Could you please let me know the type of cuisine you prefer, such as Italian, American, or any other specific cuisine?
+User: I'm not sure why you're asking, but let's go with French.
+System: Thank you for providing the cuisine preference. Let me find some upscale French restaurants in San Francisco for you. Please hold on for a moment while I make the necessary search. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: French, price_range: upscale, has_live_music: False})
+Search Results
+
+End Search Results
+System: It seems there are no results available for upscale French restaurants in San Francisco without live music. Would you like me to adjust any preferences, such as considering restaurants with live music or a different price range?
+User: Just find me the best French restaurant there, regardless of the music. I'm not interested in wasting more time.
+System: Let me search for the best French restaurants in San Francisco for you, regardless of whether they have live music or not. Please hold on for a moment while I make the necessary search.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: French, price_range: upscale})
+Search Results
+
+End Search Results
+System: It seems there are no results available for upscale French restaurants in San Francisco. Would you like me to broaden the search to include a different price range or a different city?
+User: Change the city to Palo Alto and make sure it's still French.
+System: Let me search for upscale French restaurants in Palo Alto for you. Please hold on for a moment while I make the necessary search.
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: French, price_range: upscale})
+Search Results
+
+End Search Results
+System: It seems there are no results available for upscale French restaurants in Palo Alto. Would you like me to try a different price range or explore another cuisine or city?
+User: Try searching in Berkeley for the best French restaurant.
+System: Let me search for the best French restaurants in Berkeley for you. Please hold on for a moment while I make the necessary search.
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: French, price_range: upscale})
+Search Results
+
+End Search Results
+System: It appears there are no results available for upscale French restaurants in Berkeley. Would you like me to expand the search to include all price ranges, or would you prefer to try a different cuisine or city?
+User: I'm losing patience here. Just find me any French restaurant in Berkeley, I don't care about the price anymore.
+System: Let me search for any French restaurants in Berkeley without considering the price range. Please hold on for a moment while I make the necessary search.
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: French})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '510-849-2155', 'price_range': 'expensive', 'restaurant_name': 'Bistro Liaison', 'serves_alcohol': True, 'street_address': '1849 Shattuck Avenue', 'date': '2019-03-01', 'party_size': 2, 'time': '18:00'}, {'city': 'Berkeley', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '510-549-8585', 'price_range': 'expensive', 'restaurant_name': 'Antoinette Restaurant', 'serves_alcohol': True, 'street_address': '41 Tunnel Road'}, {'city': 'Berkeley', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '510-549-8585', 'price_range': 'moderate', 'restaurant_name': 'Paragon', 'serves_alcohol': True, 'street_address': '41 Tunnel Road'}]
+End Search Results
+System: I found a few French restaurants in Berkeley for you. Bistro Liaison is located at 1849 Shattuck Avenue, Antoinette Restaurant at 41 Tunnel Road, and Paragon also at 41 Tunnel Road. All these places serve alcohol and do not feature live music. If you need more details or want to make a reservation, please let me know!
+User: I suppose Bistro Liaison will do. Book me a table there for tomorrow night at 7 p.m. for two people.
+System: Could you please confirm the date for the reservation? For example, if it is for tomorrow, please provide the specific date in the format YYYY-MM-DD.
+User: Tomorrow's date is [insert date]. Make the reservation for that date.
+System: Thank you for confirming. I will make a reservation for two people at Bistro Liaison in Berkeley for tomorrow night at 7 p.m. Please hold on for a moment while I complete the reservation.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Bistro Liaison', city: 'Berkeley', date: '[insert date]', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '510-849-2155', 'price_range': 'expensive', 'restaurant_name': 'Bistro Liaison', 'serves_alcohol': True, 'street_address': '1849 Shattuck Avenue', 'date': '[insert date]', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+
+Dialogue B:
+  User: I need to find a restaurant in San Francisco. Make it quick, I don't have all day.
+System: What type of cuisine are you in the mood for? If you're open to suggestions, I can pick one for you.
+User: Just find me a fancy steakhouse. I'm not interested in your suggestions.
+System: Alright, I'll find a fancy steakhouse for you in San Francisco. Let me proceed with that. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Steakhouse, price_range: very expensive})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-989-2539', 'price_range': 'expensive', 'restaurant_name': '5a5 Steak Lounge', 'serves_alcohol': True, 'street_address': '244 Jackson Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-495-1111', 'price_range': 'very expensive', 'restaurant_name': "Alexander's Steakhouse", 'serves_alcohol': True, 'street_address': '448 Brannan Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-397-3003', 'price_range': 'very expensive', 'restaurant_name': 'Bourbon Steak Restaurant', 'serves_alcohol': True, 'street_address': '335 Powell Street'}]
+End Search Results
+System: I found a few steakhouses for you in San Francisco. The top one is Alexander's Steakhouse, located at 448 Brannan Street. It falls under the very expensive category and serves alcohol. Would you like more information on this restaurant or another option?
+User: I don't trust your top pick. Give me another option, and it better be good.
+System: Consider Bourbon Steak Restaurant, which is also very expensive and serves alcohol. It's located at 335 Powell Street. Would you like more details about this one, or should I try another option?
+User: Why are all your options so predictable? Just give me another one.
+System: You might want to check out 5a5 Steak Lounge. It's categorized as expensive and serves alcohol, located at 244 Jackson Street. Let me know if you need more information about this restaurant or if you want a different option.
+User: Honestly, all these places sound pretty similar. But fine, tell me more about this 5a5 Steak Lounge. What's so special about it?
+System: 5a5 Steak Lounge is an upscale venue in San Francisco, offering an expensive dining experience. It serves alcohol, which could add to the dining experience. While it doesn't feature live music, its location at 244 Jackson Street might appeal to those seeking a sophisticated ambiance. If you need the phone number for further inquiries, it's 415-989-2539. Let me know if there's anything else you'd like to know or if you need assistance with reservations.
+User: I guess it'll do. Make a reservation for tonight at 8 PM for two people.
+System: To confirm the reservation, I'll need to gather some details. Could you please confirm that you want to book a table for two at 8 PM tonight at 5a5 Steak Lounge in San Francisco?
+User: Yes, that's correct. Just get it done.
+System: Great, I will proceed with making the reservation for you. Please hold on for a moment. APICall (method='ReserveRestaurant', parameters={restaurant_name: '5a5 Steak Lounge', city: 'San Francisco', time: '20:00', date: '2023-10-04', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-989-2539', 'price_range': 'expensive', 'restaurant_name': '5a5 Steak Lounge', 'serves_alcohol': True, 'street_address': '244 Jackson Street', 'date': '2023-10-04', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: Your reservation at 5a5 Steak Lounge for two people at 8 PM tonight has been successfully made. If you need to reach them for any reason, their phone number is 415-989-2539. Enjoy your evening, and let me know if there's anything else you need.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

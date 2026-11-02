@@ -1,0 +1,106 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Seattle. Can you help me find one?
+System: Sure, I can help with that. Do you have any specific preferences for the star rating or smoking allowance?
+User: No smoking, please. I'm looking for a quiet place.
+System: Thank you for letting me know your preference for a non-smoking room. Let me search for hotels in Seattle that match your criteria. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, smoking_allowed: False })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found some options for you in Seattle. Here are a couple of non-smoking hotels:
+
+1. Ace Hotel Seattle, a 2-star hotel located at 2423 1st Avenue. The price per night is $136.
+
+2. Belltown Inn, also a 2-star hotel located at 2301 3rd Avenue. The price per night is $186.
+
+3. Days Inn By Wyndham Seattle North Of Downtown, another 2-star hotel located at 9100 Aurora Avenue North. The price per night is $84.
+
+Please let me know if any of these options suit your needs, or if you need more information.
+User: Could you tell me more about Ace Hotel Seattle? Specifically, I'd like to know about the number of rooms available and if there's anything unique about staying there.
+System: The Ace Hotel Seattle has 2 rooms available. However, I don't have specific information about unique amenities or features at this hotel. Would you like to proceed with booking, or do you need more information on the other options?
+User: I'd like to know about the Belltown Inn next. How many rooms are available there?
+System: The Belltown Inn also has 2 rooms available. If you need more details or want to proceed with a booking, please let me know!
+User: I'm still considering my options. Could you tell me about the rooms available at the Days Inn By Wyndham Seattle North Of Downtown?
+System: The Days Inn By Wyndham Seattle North Of Downtown has 2 rooms available as well. If you need any further details or assistance in making a decision, feel free to ask!
+User: I'm inclined to go with the Ace Hotel Seattle. Can you help me reserve a room there? I'll need it from the 5th for a week.
+System: To proceed with the reservation at Ace Hotel Seattle, I'll need to confirm a few details. Could you please let me know how many rooms you would like to book?
+User: Just one room, please.
+System: Please confirm that you would like to book 1 room at Ace Hotel Seattle from the 5th for a duration of 7 days.
+User: Yes, please proceed with the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Seattle, number_of_rooms: 1, place_name: Ace Hotel Seattle, stay_length: 7 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue', 'check_in_date': '2023-11-05'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-340-1222', 'place_name': 'Green Tortoise Hostel Seattle', 'price_per_night': 174, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '105 Pike Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at Ace Hotel Seattle for 1 room from the 5th for 7 days has been successfully confirmed. The hotel is located at 2423 1st Avenue. If you need any further assistance or information, feel free to let me know. Enjoy your stay!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Seattle. Can you help with that?
+System: Could you please let me know if you have any preferences for the star rating or if you'd like to know about smoking allowances?
+User: I prefer a hotel with a good star rating, and it would be nice if smoking was allowed.
+System: Let me find some options for you. I'll search for hotels in Seattle with a higher star rating. Let's see if we can find one that allows smoking. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 5, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: It seems there are no results for 5-star hotels in Seattle that allow smoking. Would you like to try a different star rating, or adjust the smoking preference to see if more options are available?
+User: Can we try looking at 4-star hotels instead, with the same smoking preference?
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: Unfortunately, there are no 4-star hotels in Seattle that allow smoking. Would you like to explore 3-star options instead, or perhaps adjust the smoking preference to find more available hotels?
+User: Let's look at 3-star hotels that allow smoking, then.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3, smoking_allowed: True })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-682-8282', 'place_name': 'Homewood Suites By Hilton Seattle-Conv Ctr-Pike Street', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '1011 Pike Street'}, {'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-624-6820', 'place_name': 'La Quinta Inn & Suites By Wyndham Seattle Downtown', 'price_per_night': 84, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '2224 8th Avenue'}]
+End Search Results
+System: I found a few 3-star hotels in Seattle that allow smoking. Here are some options:
+
+1. Embassy Suites By Hilton Seattle Downtown Pioneer Square, located at 255 South King Street. The price per night is $342.
+
+2. Homewood Suites By Hilton Seattle-Conv Ctr-Pike Street, located at 1011 Pike Street. The price per night is $351.
+
+3. La Quinta Inn & Suites By Wyndham Seattle Downtown, located at 2224 8th Avenue. The price per night is $84.
+
+Please let me know if you'd like more information about any of these options or if you wish to proceed with a reservation.
+User: Could you tell me more about the first option, Embassy Suites By Hilton Seattle Downtown Pioneer Square?
+System: The Embassy Suites By Hilton Seattle Downtown Pioneer Square is a 3-star hotel located at 255 South King Street in Seattle. It allows smoking and offers rooms at a price of $342 per night. If you need any more details or wish to proceed with a reservation, please let me know.
+User: What about the number of rooms available at the Embassy Suites By Hilton Seattle Downtown Pioneer Square?
+System: The Embassy Suites By Hilton Seattle Downtown Pioneer Square has 3 rooms available. If you would like to proceed with a reservation or need further assistance, please let me know.
+User: I think I'd like to reserve a room there. Can you help with that?
+System: Certainly. Could you please let me know your check-in date and the length of your stay at the Embassy Suites By Hilton Seattle Downtown Pioneer Square?
+User: I plan to check in on the 5th and stay for six nights.
+System: Please confirm that you would like to book one room for six nights at the Embassy Suites By Hilton Seattle Downtown Pioneer Square, starting from the 5th.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Seattle, number_of_rooms: 1, place_name: Embassy Suites By Hilton Seattle Downtown Pioneer Square, stay_length: 6 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street', 'check_in_date': '2023-11-05'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-624-0500', 'place_name': 'Hilton Seattle', 'price_per_night': 144, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1301 6th Avenue', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your reservation at the Embassy Suites By Hilton Seattle Downtown Pioneer Square has been successfully confirmed. If there's anything else you need or any further assistance required, please let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm thinking about going to Las Vegas. Can you help me find a hotel there?
+System: Do you have any specific requirements for the hotel, such as star rating or smoking preference, or would you like me to search for any available options in Las Vegas?
+User: Uh, no specific requirements really. Just, you know, whatever you find is cool.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found a few options for you in Las Vegas. One option is the Best Western Plus Las Vegas West, which is a 3-star hotel with a price of $117 per night. It is located at 8669 West Sahara Avenue, and smoking is not allowed. Would you like more information on this hotel or any other options?
+User: Hmm, I dunno. Maybe something else? Let me know if you find something with smoking allowed.
+System: Another option is the Budget Suites Of America, a 1-star hotel where smoking is allowed. The price per night is $44, and it's located at 2219 North Rancho Drive. Does this meet your needs, or would you like to know about other options?
+User: That sounds alright. Can you book a room there for me?
+System: How many rooms would you like to book, and what is your check-in date and duration of stay at the Budget Suites Of America in Las Vegas?
+User: Uh, let's go with one room. I guess I'll check in on the 5th and stay for, like, a week.
+System: Please confirm that you want to book 1 room at the Budget Suites Of America in Las Vegas, checking in on the 5th and staying for 7 days.
+User: Yeah, sure, let's go with that.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-09-05, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 7 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-09-05'}]
+End Search Results
+System: Your booking at the Budget Suites Of America in Las Vegas has been successfully confirmed. You have reserved 1 room, checking in on September 5th, 2023, for a stay of 7 days. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Let's find a hotel in Paris. What do you have?
+System: Do you have any specific preferences regarding the star rating for the hotels in Paris, or should I go ahead and select one for you?
+User: I'm not too picky about the star rating. Just find something that looks cool.
+System: Alright, I'll find a hotel in Paris for you. Let me check what's available. APICall(method='SearchHotel', parameters={ location: Paris, star_rating: 3 })
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 42 57 14 55', 'place_name': 'Aparthotel Adagio Paris Montmartre', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '10 Place Charles Dullin, 75018'}, {'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 48 74 48 71', 'place_name': "Austin'S Saint Lazare HoTel", 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': "26 Rue d'Amsterdam, 75009"}]
+End Search Results
+System: I found three options for you in Paris. One of them is the Aparthotel Adagio Access Paris La Villette, a 3-star hotel. It costs $120 per night, and smoking is not allowed. Its address is 28bis Avenue Corentin Cariou, 75019. Would you like more details or to check another option?
+User: Uh, I don't know. Maybe tell me about the other options first?
+System: Another option is the Aparthotel Adagio Paris Montmartre, also a 3-star hotel. It costs $90 per night, and smoking is allowed. The address is 10 Place Charles Dullin, 75018. Would you like to know about the last option or do you need more details about this one?
+User: Let's hear about the last option before I decide.
+System: The last option is Austin's Saint Lazare Hotel, a 3-star hotel as well. It costs $189 per night, and smoking is not allowed. The address is 26 Rue d'Amsterdam, 75009. Let me know if you need more information about any of these hotels or if you’ve decided on one.
+User: Hmm, I guess I should decide. Let's go with the Aparthotel Adagio Paris Montmartre since it's cheaper and allows smoking. Can you reserve a room there for me?
+System: How many rooms would you like to reserve, and what will be your check-in date and stay length at the Aparthotel Adagio Paris Montmartre in Paris?
+User: I need two rooms, and let's say I'll check in on the 15th. I'll stay for around five days.
+System: Please confirm to book 2 rooms for 5 days at the Aparthotel Adagio Paris Montmartre starting from the 15th in Paris.
+User: Yeah, that sounds good. Go ahead and confirm it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Paris, number_of_rooms: 2, place_name: 'Aparthotel Adagio Paris Montmartre', stay_length: 5 })
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 42 57 14 55', 'place_name': 'Aparthotel Adagio Paris Montmartre', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '10 Place Charles Dullin, 75018', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Aparthotel Adagio Paris Montmartre has been successfully confirmed. You have booked 2 rooms for 5 days starting from November 15th in Paris. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,78 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm kinda in the mood to eat out. Can you help me find a restaurant in San Francisco?
+System: Sure! Do you have a specific type of cuisine in mind, or would you prefer a random suggestion?
+User: I'm not really sure, maybe something with good vibes. Do they have any places with live music?
+System: What about trying some Ethiopian cuisine? It's quite an experience and might have the kind of vibe you're looking for. Let me search for restaurants with live music in San Francisco. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Ethiopian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': 5, 'time': '11:30'}]
+End Search Results
+System: I found a great spot for you in San Francisco called Sheba Piano Lounge. It's an Ethiopian restaurant with live music, and it seems to have a lively atmosphere. The price range is moderate, and they also serve alcohol. Would you like the address or phone number to make a reservation?
+User: Can you just go ahead and book a table for me there instead? I guess doing it myself is too much hassle.
+System: Sure, I can handle that for you. Could you please let me know the date, time, and how many people will be in your party so I can make the reservation at Sheba Piano Lounge?
+User: Uh, let's say tomorrow evening for two people. Around 7 pm sounds good, I guess.
+System: Great! Just to confirm, you would like to book a table for two people at Sheba Piano Lounge in San Francisco for tomorrow evening at 7:00 pm, correct?
+User: Yeah, that sounds right. Go ahead with it.
+System: Perfect! I'll make the reservation for you now. APICall (method='ReserveRestaurant', parameters={city: San Francisco, date: 2019-03-02, party_size: 2, cuisine: Ethiopian, restaurant_name: Sheba Piano Lounge, time: 19:00})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Sheba Piano Lounge for tomorrow evening at 7:00 pm has been successfully made. It's all set for two people. If you need the address, it's 1419 Fillmore Street, San Francisco. Should you need to contact them, their phone number is 415-440-7414. Enjoy your evening out!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I wanna find a place to eat in Oakland. Maybe something with live music?
+System: What type of cuisine are you interested in, such as Italian, Mexican, or something else?
+User: I don't know, maybe something like Italian or whatever you think is good.
+System: Let's go with Italian for now. I'll check for Italian restaurants in Oakland that have live music. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '510-652-7401', 'price_range': 'moderate', 'restaurant_name': 'Genova Delicatessen', 'serves_alcohol': True, 'street_address': '5095 Telegraph Avenue suite a'}, {'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '510-482-8094', 'price_range': 'moderate', 'restaurant_name': 'Italian Colors', 'serves_alcohol': False, 'street_address': '2220 Mountain Boulevard #100'}]
+End Search Results
+System: I found a couple of Italian restaurants in Oakland with live music. One option is Genova Delicatessen, located at 5095 Telegraph Avenue suite a. They serve alcohol and you can contact them at 510-652-7401. Another option is Italian Colors, located at 2220 Mountain Boulevard #100. They do not serve alcohol, and their phone number is 510-482-8094. Would you like more information about either of these restaurants?
+User: Uh, I'm not really sure. Maybe tell me more about Italian Colors?
+System: Italian Colors is located at 2220 Mountain Boulevard #100 in Oakland. It's an Italian restaurant with live music and falls within a moderate price range. However, they do not serve alcohol. You can contact them for more details at 510-482-8094. Is there anything else you'd like to know about this restaurant or any other options?
+User: Do they have any vegetarian options? I'm kinda in the mood for that.
+System: Unfortunately, I don't have information on whether Italian Colors offers vegetarian options. You might want to contact them directly at 510-482-8094 to inquire about their menu. If there's anything else I can assist you with, please let me know!
+User: Hmm, okay. Maybe just find me another place then, with Italian food and live music, but also with alcohol this time.
+System: I'll look for another Italian restaurant in Oakland that offers live music and serves alcohol. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: Italian, has_live_music: True, serves_alcohol: True})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '510-652-7401', 'price_range': 'moderate', 'restaurant_name': 'Genova Delicatessen', 'serves_alcohol': True, 'street_address': '5095 Telegraph Avenue suite a'}]
+End Search Results
+System: I found another Italian restaurant in Oakland that has live music and serves alcohol. It's called Genova Delicatessen, and it's located at 5095 Telegraph Avenue suite a. The restaurant falls within a moderate price range, and you can contact them at 510-652-7401. Would you like to know anything else about this restaurant, or is there anything more I can assist you with?
+User: Yeah, sure. Can you go ahead and reserve a table for me at Genova Delicatessen? Maybe for... let’s say tomorrow. I’ll need a table for four people around 7 pm.
+System: Could you please confirm the date for the reservation? Once I have the date, I'll proceed with the booking for a table for four at Genova Delicatessen around 7 pm.
+User: Uh, let's make it for tomorrow, which should be the 15th, I think? Yeah, let’s go with that!
+System: Thank you for confirming the date. I'll proceed with reserving a table for four at Genova Delicatessen on the 15th at 7 pm. Please hold on for a moment while I complete the booking.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Genova Delicatessen', city: 'Oakland', date: 'YYYY-MM-15', time: '19:00', party_size: 4})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '510-652-7401', 'price_range': 'moderate', 'restaurant_name': 'Genova Delicatessen', 'serves_alcohol': True, 'street_address': '5095 Telegraph Avenue suite a', 'date': 'YYYY-MM-15', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Genova Delicatessen for four people on the 15th at 7 pm has been successfully made. The restaurant is located at 5095 Telegraph Avenue suite a in Oakland, and you can reach them at 510-652-7401 if you have any questions. Enjoy your dining experience with live music and drinks! If there's anything else I can help you with, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

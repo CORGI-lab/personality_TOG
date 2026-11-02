@@ -1,0 +1,98 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Fremont. Can you help me find one?
+System: Sure! Could you please tell me what type of cuisine you prefer? For example, do you like Italian, Mexican, or something else?
+User: I prefer something simple, maybe American cuisine.
+System: Great choice! Let me find some American cuisine restaurants in Fremont for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems we couldn't find any American cuisine restaurants in Fremont at the moment. Would you like to try a different cuisine or perhaps a nearby city?
+User: Is there a nearby city where I can still find an American cuisine restaurant?
+System: Let's try searching for American cuisine restaurants in San Jose, which is not too far from Fremont. Please hold on for a moment while I look for options. 
+
+APICall (method='FindRestaurants', parameters= {city: San Jose, cuisine: American})
+Search Results
+[{'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-971-8523', 'price_range': 'moderate', 'restaurant_name': '71 Saint Peter', 'serves_alcohol': True, 'street_address': '71 North San Pedro Street'}, {'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-261-5787', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '2400 Forest Avenue'}, {'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-292-4300', 'price_range': 'moderate', 'restaurant_name': "Billy Berk's", 'serves_alcohol': True, 'street_address': '99 South 1st Street'}]
+End Search Results
+System: I found a few American cuisine restaurants in San Jose for you. One option is 71 Saint Peter, located at 71 North San Pedro Street. Would you like more details about this restaurant, or would you prefer to hear about another option?
+User: Can you tell me if 71 Saint Peter serves alcohol?
+System: Yes, 71 Saint Peter does serve alcohol. Would you like more information about this restaurant or details about another option?
+User: Can you tell me if they have live music?
+System: Unfortunately, 71 Saint Peter does not have live music. Would you like to know more about this restaurant or hear about another option?
+User: Do you have any other options with live music?
+System: Let me check the available options with live music in San Jose for American cuisine. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: San Jose, cuisine: American, has_live_music: True})
+Search Results
+[{'city': 'San Jose', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '408-279-4888', 'price_range': 'moderate', 'restaurant_name': 'Hukilau', 'serves_alcohol': True, 'street_address': '230 Jackson Street'}, {'city': 'San Jose', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '408-247-1706', 'price_range': 'moderate', 'restaurant_name': "Rosie Mccann's Irish Pub & Restaurant", 'serves_alcohol': True, 'street_address': '355 Santana Row #1060'}, {'city': 'San Jose', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '408-866-4176', 'price_range': 'moderate', 'restaurant_name': 'The Blue Door Restaurant & Bar', 'serves_alcohol': True, 'street_address': '1502 Saratoga Avenue'}]
+End Search Results
+System: I found some American cuisine restaurants in San Jose that offer live music. One option is Hukilau, located at 230 Jackson Street. Would you like more details about this restaurant, or would you prefer to hear about another option?
+User: Do they serve alcohol at Hukilau?
+System: Yes, Hukilau does serve alcohol. Would you like more information about this restaurant or details about another option?
+User: I would like to make a reservation at Hukilau.
+System: Certainly! For which date and time would you like to make the reservation at Hukilau? Additionally, how many people will be in your party?
+User: Tomorrow evening at 7:00 pm for 2 people, please.
+System: Just to confirm, you'd like to make a reservation at Hukilau in San Jose for tomorrow evening at 7:00 pm for 2 people, correct?
+User: Yes, that's correct.
+System: Great! I'll proceed with the reservation. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters= {city: San Jose, date: 2023-10-21, party_size: 2, restaurant_name: Hukilau, time: 19:00})
+Search Results
+[{'city': 'San Jose', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '408-279-4888', 'price_range': 'moderate', 'restaurant_name': 'Hukilau', 'serves_alcohol': True, 'street_address': '230 Jackson Street', 'date': '2023-10-21', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Hukilau in San Jose is confirmed for tomorrow evening at 7:00 pm for 2 people. If you need any further assistance or details, feel free to ask. Enjoy your evening!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a place to eat in Fremont. Can you help me find one?
+System: Do you have a specific type of cuisine in mind, or are you open to exploring different options?
+User: I'm not really into trying new things, so something simple like American cuisine would be fine.
+System: Great choice! I'll look for American cuisine options in Fremont for you. Please give me a moment. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems there are no specific results for American cuisine in Fremont at the moment. Would you like me to expand the search to nearby areas, or perhaps consider a different cuisine that's still simple and familiar? Let me know how you'd like to proceed!
+User: Can you expand the search to nearby areas but still keep it to American cuisine?
+System: Let's look for American cuisine in nearby areas. Could you please specify which nearby city you'd prefer to search in? Some options could include San Jose, Palo Alto, or any other city you have in mind.
+User: San Jose would be fine.
+System: Great! Let me find some American cuisine options in San Jose for you. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: San Jose, cuisine: American})
+Search Results
+[{'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-971-8523', 'price_range': 'moderate', 'restaurant_name': '71 Saint Peter', 'serves_alcohol': True, 'street_address': '71 North San Pedro Street'}, {'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-261-5787', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '2400 Forest Avenue'}, {'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-292-4300', 'price_range': 'moderate', 'restaurant_name': "Billy Berk's", 'serves_alcohol': True, 'street_address': '99 South 1st Street'}]
+End Search Results
+System: There are a few American cuisine options in San Jose that might interest you. One of them is 71 Saint Peter, located at 71 North San Pedro Street. Another choice is Bazille, situated at 2400 Forest Avenue. Finally, there's Billy Berk's at 99 South 1st Street. All these places have a moderate price range and serve alcohol. Do any of these options sound good to you, or would you like more information about a specific restaurant?
+User: I'm okay with 71 Saint Peter. Can you make a reservation for me?
+System: Sure! To proceed with your reservation at 71 Saint Peter, could you please provide me with the date, time, and the number of people for the reservation?
+User: I'll need a reservation for two people on Saturday at 6:00 PM.
+System: Thank you for providing the details. Just to confirm, you'd like to book a table for 2 people at 71 Saint Peter in San Jose on Saturday at 6:00 PM. Is that correct?
+User: Yes, that's correct. Please go ahead with the reservation.
+System: Great! I'll go ahead and make the reservation for you. Please give me a moment. APICall (method='ReserveRestaurant', parameters={restaurant_name: '71 Saint Peter', city: 'San Jose', time: '18:00', date: '2023-10-07', party_size: 2})
+Search Results
+[{'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-971-8523', 'price_range': 'moderate', 'restaurant_name': '71 Saint Peter', 'serves_alcohol': True, 'street_address': '71 North San Pedro Street', 'date': '2023-10-07', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Your reservation at 71 Saint Peter in San Jose for 2 people on Saturday at 6:00 PM has been successfully made. If you have any more questions or need further assistance, feel free to ask. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

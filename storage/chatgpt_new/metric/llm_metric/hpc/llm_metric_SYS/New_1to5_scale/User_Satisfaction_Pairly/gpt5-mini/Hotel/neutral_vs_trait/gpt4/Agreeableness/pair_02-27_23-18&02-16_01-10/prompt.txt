@@ -1,0 +1,78 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm planning a trip to San Francisco and would love some help finding a nice hotel. Could you assist me with that, please?
+System: Do you have any specific preferences for the hotel in San Francisco, such as star rating, smoking allowance, or number of rooms?
+User: I'm not too picky, but I do prefer a non-smoking hotel. A good star rating would be nice, and I'll need just one room. Thank you for helping with this!
+System: APICall(method='SearchHotel', parameters={ location: San Francisco, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found several non-smoking hotels in San Francisco for you. Here are a few options:
+
+1. **Amsterdam Hostel San Francisco**: A 1-star hotel located at 749 Taylor Street, with a price of $24 per night.
+2. **Argonaut Hotel**: A 4-star hotel located at 495 Jefferson Street, with a price of $408 per night.
+3. **Beck's Motor Lodge**: A 2-star hotel located at 2222 Market Street, with a price of $60 per night.
+
+Would you like more details on any of these options, or is there anything specific you would like to know?
+User: The Argonaut Hotel sounds lovely with its 4-star rating. Could you please provide more details about it?
+System: The Argonaut Hotel is a 4-star establishment located at 495 Jefferson Street in San Francisco. It is a non-smoking hotel, and the price per night is $408. If you need any additional information or if you wish to make a reservation, please let me know!
+User: It sounds like a wonderful place to stay! I'd like to go ahead and make a reservation at the Argonaut Hotel. I plan to check in on the 5th of next month and will be staying for five nights. Thank you so much for your assistance!
+System: Please confirm that you'd like to book 1 room at the Argonaut Hotel in San Francisco, checking in on the 5th of next month for a stay of 5 nights.
+User: Yes, I confirm the reservation. Thank you for your help!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: '2023-11-05', location: 'San Francisco', number_of_rooms: 1, place_name: 'Argonaut Hotel', stay_length: 5 })
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Argonaut Hotel in San Francisco has been successfully confirmed. If you need any further assistance or have additional requests, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hi there! I’d like some help finding a hotel in Seattle, please.
+System: Of course! Could you let me know if you have any specific preferences, such as a star rating or whether smoking is allowed? Or are you open to options?
+User: I'm open to options, but I would prefer a non-smoking hotel. Could you also look for something that has a good star rating? Thank you!
+System: Thank you for sharing your preferences! I'll search for a non-smoking hotel in Seattle with a good star rating. Please give me a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, smoking_allowed: False, star_rating: dontcare })
+Search Results
+
+End Search Results
+System: APICall(method='SearchHotel', parameters={ location: Seattle, smoking_allowed: False, star_rating: 4 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 252, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}]
+End Search Results
+System: I found a couple of great options for you in Seattle. The Crowne Plaza Seattle Downtown is a 4-star, non-smoking hotel located at 1113 6th Avenue. Would you like more information about this hotel, or would you like to know about another option?
+User: The Crowne Plaza Seattle Downtown sounds wonderful! Could you tell me a bit more about it, like the price per night and if there are any other amenities you think I might like? Thank you so much for your help!
+System: The Crowne Plaza Seattle Downtown has a lovely 4-star rating, and the price per night is $120. Unfortunately, the current information doesn't specify additional amenities, but it seems like a comfortable choice given its rating and non-smoking policy. Would you like to proceed with a reservation, or is there anything else you'd like to know?
+User: That sounds perfect! Can you please make a reservation for me? I'll be staying for five nights starting from the 10th of next month. Thank you for your assistance!
+System: To ensure your reservation is set up correctly, please confirm that you'd like to book one room at the Crowne Plaza Seattle Downtown from the 10th of next month for five nights. Is that correct?
+User: Yes, that's correct. Please go ahead and make the reservation. Thank you so much for your help!
+System: Great! I'll proceed with the reservation for one room at the Crowne Plaza Seattle Downtown from the 10th of next month for five nights. Please give me a moment to confirm your booking. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: Crowne Plaza Seattle Downtown, stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': '1', 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 112, 'smoking_allowed': False, 'star_rating': '4', 'street_address': '1113 6th Avenue', 'check_in_date': '2023-11-10', 'stay_length': '5'}]
+End Search Results
+System: Your reservation at the Crowne Plaza Seattle Downtown has been successfully confirmed. You will have one room reserved from the 10th of next month for five nights. The price per night is $112. If there’s anything else you need or if you have any more questions, feel free to ask. Thank you for allowing me to assist you!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,132 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hello! I'm hoping to book a hotel. Could you please help me find something? I'm thinking of somewhere in Vancouver, if that's alright. I've heard it's a lovely city.
+
+System: Okay, I can help with that. How many rooms do you need?
+
+User: Just one room, please. I'm traveling alone and don't want to take up too much space if other folks need it.
+
+System: Okay, to confirm, you're looking for a hotel in Vancouver with one room. Do you have any preferences on the star rating of the hotel?
+
+User: Oh, no preferences at all! Whatever is available is fine by me. I trust you to find something suitable.
+
+System: Okay, I will search for a hotel in Vancouver with one room. Since you don't have a preference for the star rating, I will search for any available hotel.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, number_of_rooms: 1, star_rating: dontcare })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: We have a few options for you. There's the 5-star Shangri-La Hotel, the 5-star Wedgewood Hotel & Spa Vancouver, and the 4-star Auberge Vancouver Hotel. Which one would you prefer?
+
+User: Oh, they all sound so lovely! Perhaps the Auberge Vancouver Hotel, since it's a 4-star? I wouldn’t want to take up space in the fancier hotels if others need them.
+
+System: Okay, the Auberge Vancouver Hotel it is. Before I proceed, do you have any preferences regarding smoking?
+
+User: Oh, no, definitely non-smoking, please. I wouldn't want to bother anyone with the smell.
+
+System: Okay, I will make sure to book a non-smoking room for you at the Auberge Vancouver Hotel. Just to confirm, you need one room in Vancouver at the Auberge Vancouver Hotel, and you prefer a non-smoking room. Is that correct?
+
+User: Yes, that's absolutely correct. And thank you so much for being so helpful! Could you also tell me what the price per night is? I want to make sure it fits my budget and that I am not spending too much.
+
+System: Okay, the price per night at the Auberge Vancouver Hotel is $296. Would you like to proceed with booking a non-smoking room for one night? Also, for what date would you like to book the room, and how many nights will you be staying?
+
+User: That sounds perfectly reasonable. I'd like to book it for the 14th of this month for two nights, please. I truly appreciate your assistance in finding a comfortable place for me to stay!
+
+System: Okay, so you want to book a non-smoking room at the Auberge Vancouver Hotel for one room, starting on the 14th of this month for two nights, and the price per night is $296. Is that all correct?
+
+User: Yes, that's all correct! Thank you for being so patient with me. If it's not too much trouble, could you please go ahead and make the reservation? I trust everything is in order.
+
+System: Okay, I will go ahead and make the reservation for you.
+
+APICall(method='ReserveHotel', parameters={check_in_date: 2024-03-14, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 2, smoking_allowed: False})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-669-7070', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 72, 'smoking_allowed': 'False', 'star_rating': 'dontcare', 'street_address': '1100 Granville Street', 'check_in_date': '2024-03-14', 'stay_length': '2'}]
+End Search Results
+System: Excellent. I have a non-smoking room reserved for you at the Auberge Vancouver Hotel, starting on March 14th for two nights. The price per night is $72. Your booking has been successfully confirmed. Can I help you with anything else?
+
+User: Oh, that's wonderful! Could you please let me know the address of the hotel? I want to make sure I can find it easily and don't get lost.
+
+System: Okay, the address for the Auberge Vancouver Hotel is 1100 Granville Street. Is there anything else I can assist you with?
+
+User: That's perfect, thank you! And if it's not too much to ask, could you also tell me the phone number of the hotel, just in case I need to contact them for anything?
+
+System: Okay, the phone number for the Auberge Vancouver Hotel is +1 604-669-7070. Is there anything else I can assist you with?
+
+User: You've been incredibly helpful! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Francisco, please.
+
+System: Okay, I can help with that.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found three hotels in San Francisco: Amsterdam Hostel San Francisco (1 star), Beck'S Motor Lodge (2 stars), and Argonaut Hotel (4 stars). Which of these sounds most appealing to you?
+
+User: Oh, that's wonderful! Thank you for finding those. Could you perhaps tell me a little more about the Argonaut Hotel? The 4-star rating sounds promising, and I'm always interested in hearing more about the options.
+
+System: Okay, certainly! The Argonaut Hotel in San Francisco has 3 rooms available, the price per night is $408, smoking is not allowed, and the phone number is +1 415-563-0800. The address is 495 Jefferson Street. Does this sound like a good fit for what you're looking for?
+
+User: That sounds lovely! $408 is a bit more than I was hoping to spend, but it sounds like a really nice place. Before I make a decision, could you tell me a little more about Beck's Motor Lodge? Perhaps knowing more about the other option will help me decide. I appreciate your help!
+
+System: Okay, I can help with that. Beck's Motor Lodge has 1 room available, the price per night is $60, smoking is not allowed, and the phone number is +1 415-621-8212. The address is 2222 Market Street. Would you like to know anything else about Beck's Motor Lodge?
+
+User: Oh, thank you so much for that information! $60 is certainly a much more appealing price. Is it in a safe and quiet area? I just want to make sure it's a comfortable place to stay.
+
+System: I understand your concern for safety and comfort. While I don't have specific information about the neighborhood's safety and quietness, I can share that Beck's Motor Lodge is located at 2222 Market Street. Perhaps you could research the area online to see if it meets your expectations? Would you like me to proceed with a reservation, or is there anything else I can assist you with?
+
+User: That's a good idea! I'll do a little research on the area. In the meantime, would you mind checking if Beck's Motor Lodge has free Wi-Fi? It would be helpful to know if they offer that.
+
+System: I am sorry, I do not have information about whether Beck's Motor Lodge has free Wi-Fi. I can only provide information about the available fields: location, number_of_rooms, phone number, place_name, price_per_night, smoking_allowed, star_rating, and street_address.
+
+User: Okay, no problem at all! I'll look into the Wi-Fi situation myself. In the meantime, and if it's not too much trouble, could you please check if smoking is allowed at Beck's Motor Lodge? Just to be absolutely sure.
+
+System: Smoking is not allowed at Beck's Motor Lodge. Would you like to proceed with booking a room there, or is there anything else I can help you with?
+
+User: Thank you for double-checking! That's very helpful. Yes, I think I'm ready to book a room at Beck's Motor Lodge. I'd like to reserve it, please.
+
+System: Okay, great! I can help you with that. To make the reservation, I'll need a bit more information. What date would you like to check in, and how many nights will you be staying?
+
+User: Oh, wonderful! I'd like to check in tomorrow, and I'll be staying for three nights, please. I really appreciate you helping me with this!
+
+System: Okay, I can help you with that. To confirm, you'd like to book 1 room at Beck's Motor Lodge in San Francisco, checking in tomorrow for a 3-night stay. Could you please provide the exact date you'd like to check in?
+
+User: Oh, of course! I'd like to check in on May 9th. Thank you so much for all your help and patience!
+
+System: Okay, great! Just to confirm, you'd like to book 1 room at Beck's Motor Lodge in San Francisco, checking in on May 9th for a 3-night stay.
+
+APICall(method='ReserveHotel', parameters={place_name: "Beck'S Motor Lodge", location: San Francisco, check_in_date: 2024-05-09, stay_length: 3, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-05-09'}]
+End Search Results
+System: Excellent! I've confirmed your reservation for 1 room at Beck's Motor Lodge in San Francisco, checking in on May 9th for a 3-night stay. The address is 2222 Market Street, and their phone number is +1 415-621-8212. Is there anything else I can assist you with today?
+
+User: That's perfect! Thank you so much for confirming that for me. No, I think that's all I need for now. I really appreciate your help!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

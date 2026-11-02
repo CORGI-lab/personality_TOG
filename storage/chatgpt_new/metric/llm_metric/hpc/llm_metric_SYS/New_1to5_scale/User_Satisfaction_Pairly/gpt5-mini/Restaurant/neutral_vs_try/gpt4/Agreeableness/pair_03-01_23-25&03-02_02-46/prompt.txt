@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hello there! I would like to find a restaurant in San Francisco. Could you help me with that, please?
+System: Certainly! Do you have a preference for a specific type of cuisine, or are you open to suggestions?
+User: I'm open to suggestions, but I do enjoy Italian food if that helps!
+System: Great! Let's look for some Italian restaurants in San Francisco. Please hold on for a moment while I find some options for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I've found a few Italian restaurants in San Francisco that you might enjoy. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. It offers a moderate price range and serves alcohol. Would you like more details on this one, or should I provide information about another option?
+User: That sounds lovely! Could you please let me know if 54 Mint Ristorante Italiano has live music?
+System: The 54 Mint Ristorante Italiano does not have live music. Would you like to know more about its other features or hear about another restaurant option?
+User: That's alright, I'm still interested in 54 Mint Ristorante Italiano. Could you please help me make a reservation there?
+System: Of course! For making a reservation at 54 Mint Ristorante Italiano, could you please let me know the date, time, and the number of people for the booking?
+User: I would like to make the reservation for this Saturday at 7:00 pm for a party of four, please.
+System: To confirm, you'd like to reserve a table for four at 54 Mint Ristorante Italiano in San Francisco this Saturday at 7:00 pm. Let me proceed with the reservation. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: '54 Mint Ristorante Italiano', city: 'San Francisco', time: '19:00', date: '2023-MM-DD', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2023-MM-DD', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at 54 Mint Ristorante Italiano in San Francisco for four people this Saturday at 7:00 pm has been successfully made. If you need any further assistance or details, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to find a nice restaurant for dinner in San Francisco. Could you help me with that?
+System: Sure! Could you please let me know what type of cuisine you're interested in? This will help me find the perfect restaurant for you in San Francisco.
+User: I'm open to any cuisine, really. I just want to make sure it's a place where everyone can have a good time. Maybe something with a relaxed atmosphere?
+System: Do you have any preference for the price range or other features, such as whether the restaurant serves alcohol or has live music? This will help narrow down the options for a place with a relaxed atmosphere.
+User: I'm not too concerned about the price, but it would be nice if they serve alcohol. Live music would be a lovely bonus, too!
+System: Let me find some options for you. I'll look for restaurants in San Francisco that serve alcohol and possibly have live music. Please hold on for a moment while I search. 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, serves_alcohol: True, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-986-0069', 'price_range': 'expensive', 'restaurant_name': "John's Grill", 'serves_alcohol': True, 'street_address': '63 Ellis Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-956-2013', 'price_range': 'moderate', 'restaurant_name': 'Hard Rock Cafe', 'serves_alcohol': True, 'street_address': '39 Pier #256'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-384-9365', 'price_range': 'moderate', 'restaurant_name': "Mr. Tipple's Recording Studio", 'serves_alcohol': True, 'street_address': '39 Fell Street'}]
+End Search Results
+System: I found a few great options for you in San Francisco. How does "John's Grill" sound? It serves American cuisine, offers live music, and serves alcohol. It's located at 63 Ellis Street. Would you like more information on this one or explore other options?
+User: John's Grill sounds wonderful! Could you please make a reservation for me there? I'm planning to dine with three friends, so it will be a party of four. We'd like to have dinner around 7:00 pm, if possible. Thank you so much for your help!
+System: Could you please confirm the date for your reservation at John's Grill in San Francisco for a party of four at 7:00 pm? Once I have the date, I'll proceed with making the reservation for you.
+User: The reservation is for this coming Saturday, please. Thank you!
+System: Thank you for confirming. I will make the reservation for a party of four at John's Grill in San Francisco this coming Saturday at 7:00 pm. Please hold on for a moment while I finalize the booking. 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: "John's Grill", city: San Francisco, time: 19:00, cuisine: American, date: [insert upcoming Saturday's date in YYYY-MM-DD format], party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-986-0069', 'price_range': 'expensive', 'restaurant_name': "John's Grill", 'serves_alcohol': True, 'street_address': '63 Ellis Street', 'date': "[insert upcoming Saturday's date in YYYY-MM-DD format]", 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation for a party of four at John's Grill in San Francisco this coming Saturday at 7:00 pm has been successfully made. If you need any further assistance or have any questions, feel free to ask. Enjoy your dinner!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

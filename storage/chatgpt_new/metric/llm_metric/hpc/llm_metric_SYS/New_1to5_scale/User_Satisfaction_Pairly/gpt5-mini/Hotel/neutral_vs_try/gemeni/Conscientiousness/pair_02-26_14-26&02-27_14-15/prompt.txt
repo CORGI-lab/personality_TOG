@@ -1,0 +1,86 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel in London. I want to ensure it meets my standards for a comfortable and productive stay.
+
+System: Okay, I can help you with that. What star rating are you looking for?
+
+User: I'm looking for a hotel with a 4 or 5-star rating. I need reliable amenities to ensure I can work efficiently from the hotel if needed.
+
+System: Okay, I will search for 4 or 5-star hotels in London. Do you have any preferences on smoking allowance or the number of rooms you need?
+
+User: I will need one room, and it absolutely must be a non-smoking room. I also need to know if they have a business center and high-speed internet access.
+
+System: I understand. I will search for a 4 or 5-star hotel in London with one non-smoking room. I will also check for the availability of a business center and high-speed internet access.
+
+APICall(method='SearchHotel', parameters={location: London, number_of_rooms: 1, smoking_allowed: False, star_rating: [4, 5]})
+
+<Failed Dialog>
+
+Dialogue B:
+  User: I'd like to find a hotel in London, please. I want to be sure it's a reputable place.
+
+System: Okay, I will search for a hotel in London for you. Do you have a star rating preference?
+
+User: I'd prefer a hotel with at least a 4-star rating. I also want to confirm they have a non-smoking policy.
+
+System: Okay, I will search for 4-star (or higher) hotels in London with a non-smoking policy.
+
+APICall(method='SearchHotel', parameters={location: London, star_rating: 4, smoking_allowed: False})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 800 330 8523', 'place_name': 'Amba Hotel Marble Arch', 'price_per_night': 444, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Bryanston Street'}]
+End Search Results
+System: We found a few 4-star hotels in London that do not allow smoking. There's Ace Hotel London at 100 Shoreditch High Street (phone number +44 20 7613 9800), Amba Hotel Charing Cross on Strand (phone number +44 871 376 9012), and Amba Hotel Marble Arch on Bryanston Street (phone number +44 800 330 8523). Would you like to know the price per night for any of these, or perhaps some additional information?
+
+User: Could you provide the price per night for the Ace Hotel London? I also want to know the number of rooms they have available.
+
+System: Okay, the price per night at Ace Hotel London is $176, and they have 2 rooms available. Is there anything else I can help you with regarding the Ace Hotel, or would you like information on the other hotels?
+
+User: Before I decide, could you confirm the exact street address for the Ace Hotel London again? I want to map it out and ensure its location is suitable for my plans.
+
+System: Okay, the street address for the Ace Hotel London is 100 Shoreditch High Street. Is there anything else I can help you with?
+
+User: Thank you. Now that I have the address, and the price per night and number of rooms, I'd like to go ahead and reserve a room there. I'm planning to check in on the 15th of next month and stay for 5 nights.
+
+System: What date will that be next month? Also, how many rooms would you like to reserve?
+
+User: I'd like to reserve one room, please. And the check-in date will be November 15th.
+
+System: Okay, just to confirm, you'd like to reserve one room at Ace Hotel London, with check-in on November 15th for a 5-night stay. Is that correct?
+
+User: Yes, that is correct. Please proceed with the reservation.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Ace Hotel London, location: London, check_in_date: 2024-11-15, stay_length: 5, number_of_rooms: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street', 'check_in_date': '2024-11-15'}]
+End Search Results
+System: Excellent! I've successfully reserved one room for you at the Ace Hotel London, checking in on November 15th for 5 nights. The phone number is +44 20 7613 9800 if you need to contact them directly. Is there anything else I can assist you with today?
+
+User: Just to be absolutely certain, could you please double-check that the check-in date is indeed November 15th and the stay is for exactly 5 nights? I want to avoid any potential misunderstandings.
+
+System: Okay, I've double-checked, and your reservation at Ace Hotel London is confirmed for one room, check-in date is November 15th, 2024 and the stay is for 5 nights. Is there anything else I can assist you with to give you peace of mind?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

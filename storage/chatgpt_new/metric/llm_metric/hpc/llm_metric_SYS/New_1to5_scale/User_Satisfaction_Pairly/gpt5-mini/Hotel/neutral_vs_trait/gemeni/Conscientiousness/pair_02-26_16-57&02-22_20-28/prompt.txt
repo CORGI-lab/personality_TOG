@@ -1,0 +1,152 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel in San Francisco. I want to start my search with hotels that have a high star rating. Can you help me with that?
+
+System: Okay, I can help with that. Since you prefer hotels with high star ratings, I'll start by looking for 5-star hotels in San Francisco. Would you like me to search specifically for 5-star hotels, or are you open to considering 4-star hotels as well if the 5-star options are limited?
+
+
+User: Let's start with the 5-star hotels first. I prefer to begin with the highest quality options and then consider alternatives only if necessary.
+
+System: Okay, searching for 5-star hotels in San Francisco.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 5})
+
+Search Results
+
+End Search Results
+System: Okay, I've searched for 5-star hotels in San Francisco. Let me see what we have.
+
+User: Okay, could you please provide me with a list of 5-star hotels, including details such as their price per night, street address, and whether smoking is allowed? I want to ensure I have all the necessary information to make an informed decision.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 5})
+```
+Search Results
+
+End Search Results
+System: Okay, I've searched for 5-star hotels in San Francisco, but unfortunately, there are no 5-star hotels available in our database. Would you like me to broaden the search to include 4-star hotels, or perhaps consider other options like lower star ratings or hotels that allow smoking?
+
+User: Let's broaden the search to include 4-star hotels. Please provide the same level of detail as I requested for the 5-star options: price per night, street address, and smoking policy. I'd also like to know the number of rooms available at each hotel.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 4})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street'}]
+End Search Results
+System: Okay, I found three 4-star hotels in San Francisco that match your criteria.
+
+*   **Argonaut Hotel:** Located at 495 Jefferson Street, it offers 3 rooms with a price per night of $408. Smoking is not allowed. You can contact them at +1 415-563-0800.
+*   **Hotel Spero:** Situated at 405 Taylor Street, this hotel has 1 room available at $80 per night. Smoking is not permitted. Their phone number is +1 415-885-2500.
+*   **Hotel Via:** Located at 138 King Street, this hotel has 2 rooms available and allows smoking. The price per night is $208. You can reach them at +1 415-200-4977.
+
+Do any of these options align with your preferences, or would you like me to refine the search further?
+
+User: Hotel Spero appears to be the most economical option, but I'm concerned about the limited number of rooms available. Before making a decision, could you please confirm the availability of rooms at Hotel Spero for my intended dates? I plan to check in on October 26th and stay for 5 nights.
+
+System:  I understand your concern about the limited number of rooms at Hotel Spero and your need to confirm availability for your specific dates. To check the availability and potentially reserve a room for you, I need a bit more information. In addition to the check-in date (October 26th) and the length of stay (5 nights), I also need the current year for date formatting purposes. Could you please provide the current year?
+
+User: The current year is 2024. Please check the availability of rooms at Hotel Spero for check-in on October 26, 2024, for a stay of 5 nights. I want to ensure there are no issues with my reservation before proceeding.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={place_name: Hotel Spero, check_in_date: 2024-10-26, stay_length: 5, location: San Francisco})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': '4', 'street_address': '405 Taylor Street', 'check_in_date': '2024-10-26', 'stay_length': '5'}]
+End Search Results
+System: Okay, I've checked the availability at Hotel Spero for you.
+
+User: Good news! There is one room available for your dates (October 26, 2024, for 5 nights). Would you like me to proceed with the reservation?
+
+System: Yes, please proceed with the reservation. I appreciate your thoroughness in confirming the availability.
+
+User: Okay, before finalizing, could you please confirm the total price for the 5-night stay, including any applicable taxes or fees? I want to have a clear understanding of the overall cost before committing to the reservation.
+
+System:  System: I appreciate your diligence in wanting to confirm the total price. The price per night at Hotel Spero is $80. For a 5-night stay, the total cost before taxes and fees would be $400. Please note that this does not include any potential taxes or additional fees that the hotel may apply. Would you like me to proceed with the reservation based on this information?
+
+User: Yes, please proceed with the reservation. I understand that the $400 is before taxes and fees.
+
+System: Okay, completing the reservation for 1 room at Hotel Spero, located at 405 Taylor Street, San Francisco, checking in on October 26, 2024, for a 5-night stay. Please confirm that all the details are correct.
+
+User: Yes, all the details are correct. Please proceed with the reservation.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={place_name: Hotel Spero, check_in_date: 2024-10-26, stay_length: 5, location: San Francisco, number_of_rooms: 1})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': '1', 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': '4', 'street_address': '405 Taylor Street', 'check_in_date': '2024-10-26', 'stay_length': '5'}]
+End Search Results
+System: Excellent! Your reservation at Hotel Spero is now confirmed. You are booked for 1 room, checking in on October 26, 2024, and staying for 5 nights. Is there anything else I can assist you with regarding this reservation, or any other travel arrangements you may need?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to book a hotel in Chicago. I want to make sure I find a place that's reliable and meets my expectations. Can you help me with that?
+
+System: Okay, I can help you with that. First, do you have any preferences on the star rating of the hotel?
+
+User: I'd prefer a hotel with at least a 4-star rating. I'm also particular about cleanliness and quiet, so any information you have about those aspects would be helpful.
+
+System: Okay, I understand. I will search for hotels with at least a 4-star rating in Chicago. Unfortunately, I do not have information about cleanliness and quietness. Would you like me to proceed with the search based on the star rating and location?
+
+User: Yes, please proceed with the search based on the 4-star rating and location. It's important to me that the hotel is well-maintained and reputable, so if you have any insights into the general quality or guest reviews, even if not specifically "cleanliness" or "quietness," that would be appreciated.
+
+System: APICall(method='SearchHotel', parameters={ location: Chicago, star_rating: 4 })
+
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street'}, {'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 888-506-3471', 'place_name': 'Ambassador Chicago', 'price_per_night': 144, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1301 North State Parkway'}, {'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-787-6000', 'place_name': 'Cambria Hotel Chicago Magnificent Mile', 'price_per_night': 304, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '166 East Superior Street'}]
+End Search Results
+System: Okay, I found three 4-star hotels in Chicago: Ace Hotel Chicago, Ambassador Chicago, and Cambria Hotel Chicago Magnificent Mile. Do any of these sound interesting to you?
+
+User: Yes, please. Can you provide more detailed information about the Ace Hotel Chicago first? I'd like to know the price per night, the street address, and whether smoking is allowed. I also want to know the number of rooms the hotel has.
+
+System: Okay, for the Ace Hotel Chicago, the price per night is $132. The street address is 311 North Morgan Street. Smoking is not allowed. And the hotel has 1 room available. Does this information help you?
+
+User: Yes, that's helpful. The no-smoking policy is definitely a plus. The price is acceptable. Before deciding, could you also check the same details (price per night, street address, smoking policy, and number of rooms) for the Ambassador Chicago? I like to be thorough in my comparisons.
+
+System: Okay, for the Ambassador Chicago: the price per night is $144, the street address is 1301 North State Parkway, smoking is not allowed, and there is 1 room available. Does that help with your comparison?
+
+User: Yes, it does. Thank you. Considering the information provided, I'm leaning towards the Ace Hotel Chicago due to the slightly lower price. To be absolutely sure, could you confirm the check-in date and the length of stay I can book for? I'm planning to visit from the 15th of next month for a duration of 5 days.
+
+System: Okay, you're planning to check in on the 15th of next month for a 5-day stay at the Ace Hotel Chicago. Could you please specify the year, to confirm the check-in date?
+
+User: 2024. To be absolutely sure, can you also confirm if the total price per night includes all taxes and fees? I like to avoid unexpected charges.
+
+System: I do not have access to information about whether the price includes all taxes and fees. However, I can confirm a booking for you at the Ace Hotel Chicago, checking in on 2024-07-15 for a 5-day stay. Would you like me to proceed with this booking?
+
+User: Yes, please proceed with the booking. I assume the price will include taxes and fees, but it's good to have the room secured.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-15, location: Chicago, number_of_rooms: 1, place_name: Ace Hotel Chicago, stay_length: 5 })
+
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Okay, I have reserved 1 room at the Ace Hotel Chicago for 5 nights, starting on 2024-07-15. The phone number for the hotel is +1 312-764-1919. Is there anything else I can help you with?
+
+User: Great! Could you please send me the street address of the hotel again for my records?
+
+System: Okay, the street address for the Ace Hotel Chicago is 311 North Morgan Street. Is there anything else I can assist you with?
+
+User: No, that's all I need. Thanks a lot!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

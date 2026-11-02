@@ -1,0 +1,117 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a restaurant in San Francisco. I don't care what kind of food they have, as long as it's not overpriced garbage.
+
+System: Okay, I can help with that. Do you have any preferences for the price range, or should I look for something in the moderate range?
+
+User: Moderate range? Please. Find something cheap. I'm not made of money.
+
+System: Okay, I can help with that. Since you prefer cheap eats and have no specific cuisine in mind, how about I search for cheap American restaurants in San Francisco?
+SYSTEM: APICall (method='FindRestaurants', parameters= {city: San Francisco, price_range: cheap, cuisine: American})
+
+Search Results
+
+End Search Results
+System: Okay, I can help with that. I didn't find any American restaurants that fit your criteria. I can search for another type of cuisine if you like, such as Mexican, Italian, or something else?
+
+User: Fine, try Italian. But if it's some tourist trap, I'm blaming you.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, price_range: cheap, cuisine: Italian})
+
+Search Results
+
+End Search Results
+System: I am sorry, I didn't find any Italian restaurants that fit your criteria. I can search for another type of cuisine if you like. How about Mexican?
+
+User: Mexican? Ugh, fine. But it better not be that watered-down, bland stuff they serve to the tourists. Find me something authentic.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, price_range: cheap, cuisine: Mexican})
+
+Search Results
+
+End Search Results
+System: I am sorry, I didn't find any Mexican restaurants that fit your criteria. I can search for another type of cuisine if you like. How about Chinese?
+
+User: Chinese? Absolutely not. Is that the best you can do? Fine, search for Indian. But I swear, if it's some watered-down garbage, I'm holding you responsible.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, price_range: cheap, cuisine: Indian})
+
+Search Results
+
+End Search Results
+System: I am sorry, I didn't find any Indian restaurants that fit your criteria. I can search for another type of cuisine if you like. How about Thai?
+
+User: Thai? Whatever. Just find something that isn't going to poison me.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, price_range: cheap, cuisine: Thai})
+
+Search Results
+
+End Search Results
+System: I am sorry, I didn't find any Thai restaurants that fit your criteria. I can search for another type of cuisine if you like. How about Japanese?
+
+User: Japanese? I suppose. But if it's all sushi and raw fish, forget it. I want something substantial, not some trendy diet food.
+
+System: ```tool_code
+APICall (method='FindRestaurants', parameters= {city: San Francisco, price_range: cheap, cuisine: Japanese})
+```
+Search Results
+
+End Search Results
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. And it better be good.
+
+System: Okay, I can help with that. Do you have any cuisine preferences?
+
+User: What's the point of asking if you can't guarantee a decent meal? Just find me something that isn't garbage. Price doesn't matter, I'll expense it anyway.
+
+System: Given your openness to any cuisine and that price isn't an issue, how about I look for a highly-regarded French restaurant in San Francisco?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: French, price_range: dontcare})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-202-0100', 'price_range': 'expensive', 'restaurant_name': 'Bistro Aix', 'serves_alcohol': False, 'street_address': '3340 Steiner Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-931-7272', 'price_range': 'expensive', 'restaurant_name': 'Bistro Central Parc', 'serves_alcohol': False, 'street_address': '560 Central Avenue'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-981-5565', 'price_range': 'expensive', 'restaurant_name': 'Cafe Jacqueline', 'serves_alcohol': False, 'street_address': '1454 Grant Avenue'}]
+End Search Results
+System: Alright, I see three French restaurants in San Francisco that might meet your standards: Bistro Aix, Bistro Central Parc, and Cafe Jacqueline. All are in the expensive price range. Do any of those names stand out to you?
+
+User: Cafe Jacqueline? Fine. Make a reservation for tomorrow night. 8 PM. Four people. And it better be a good table.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Cafe Jacqueline, city: San Francisco, date: 2019-03-02, time: 20:00, party_size: 4})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-981-5565', 'price_range': 'expensive', 'restaurant_name': 'Cafe Jacqueline', 'serves_alcohol': False, 'street_address': '1454 Grant Avenue', 'date': '2019-03-02', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Okay, I've booked a table for four at Cafe Jacqueline for tomorrow, March 2nd, at 8 PM. Just to be clear, that's at 1454 Grant Avenue, San Francisco. Do you need anything else?
+
+User: Don't patronize me. I know where Grant Avenue is. Just confirm the damn reservation is actually made.
+
+System: Reservation at Cafe Jacqueline for tomorrow, March 2nd, at 8 PM for 4 people is confirmed. Is there anything else?
+
+User: Fine, what is the confirmation number, and don't try to give me a bogus one. I want to be sure you actually did your job.
+
+System: I do not have access to confirmation numbers. However, the restaurant's phone number is 415-981-5565. You can call them to confirm the reservation. Is there anything else I can help you with?
+
+User: I don't need your help anymore. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

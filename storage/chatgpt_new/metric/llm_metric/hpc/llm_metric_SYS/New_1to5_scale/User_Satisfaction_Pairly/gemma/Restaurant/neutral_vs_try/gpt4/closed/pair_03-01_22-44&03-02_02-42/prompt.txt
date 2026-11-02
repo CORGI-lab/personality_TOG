@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in Fremont.
+System: What type of cuisine are you interested in for the restaurant in Fremont?
+User: American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems there were no results found for American cuisine in Fremont. Would you like to try a different type of cuisine or a nearby city?
+User: No, just find something similar in Fremont.
+System: Is there a different type of cuisine you might be open to trying? Here are some options: Italian, Mexican, Chinese, or Indian. Let me know if any of these interest you, and I can search for restaurants in Fremont with that cuisine.
+User: I guess Italian could be okay.
+System: Great choice! Let me search for Italian restaurants in Fremont for you. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant in Fremont named Massimo's. It is located at 5200 Mowry Avenue Ste M. Would you like more information about it, such as the phone number or whether it serves alcohol?
+User: Is there any live music at Massimo's?
+System: Massimo's does not feature live music. If you need any more information, feel free to ask!
+User: Does Massimo's serve alcohol?
+System: Massimo's does not serve alcohol. If you need more details or assistance with anything else, feel free to let me know!
+User: Can you make a reservation for me at Massimo's?
+System: For making a reservation at Massimo's, could you please provide me with the date, time, and party size for your booking?
+User: The reservation is for today, at 7:00 pm, for two people.
+System: Just to confirm, you would like to book a table for 2 at Massimo's in Fremont today at 7:00 pm, correct? Once you confirm, I'll proceed with the reservation.
+User: Yes, that is correct. Please proceed with the reservation.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: "Massimo's", city: Fremont, date: 2023-10-06, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M', 'date': '2023-10-06', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Massimo's for two people today at 7:00 pm has been successfully made. If you need further assistance or more information, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in Walnut Creek.
+System: Do you have a specific cuisine in mind, or are you open to exploring different options?
+User: I prefer something familiar, like American cuisine.
+System: APICall (method='FindRestaurants', parameters= {city: Walnut Creek, cuisine: American})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-927-1149', 'price_range': 'moderate', 'restaurant_name': "A'trio", 'serves_alcohol': False, 'street_address': '2355 North Main Street'}, {'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-932-2828', 'price_range': 'moderate', 'restaurant_name': 'Benvenuti Ristorante', 'serves_alcohol': True, 'street_address': '1627 North Broadway'}, {'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-945-6960', 'price_range': 'moderate', 'restaurant_name': 'Broderick Roadhouse', 'serves_alcohol': False, 'street_address': '1548 Bonanza Street'}]
+End Search Results
+System: I found a few American restaurants in Walnut Creek that you might be interested in. One option is A'trio, which is located at 2355 North Main Street. If you're looking for a place that serves alcohol, Benvenuti Ristorante at 1627 North Broadway is a good choice. Let me know if you need more information or if you'd like to make a reservation at one of these places!
+User: I would like to make a reservation at A'trio. Can you book a table for two tomorrow at 6:00 pm?
+System: Sure, to confirm the reservation at A'trio for tomorrow at 6:00 pm, could you please provide the date in the format YYYY-MM-DD?
+User: 2023-10-05
+System: Thank you for confirming the date. I will proceed with making the reservation for two at A'trio on 2023-10-05 at 6:00 pm. Please hold on while I make the arrangements. APICall (method='ReserveRestaurant', parameters= {restaurant_name: "A'trio", city: Walnut Creek, time: 18:00, date: 2023-10-05, party_size: 2})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-927-1149', 'price_range': 'moderate', 'restaurant_name': "A'trio", 'serves_alcohol': False, 'street_address': '2355 North Main Street', 'date': '2023-10-05', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Your reservation at A'trio has been successfully made for two people on 2023-10-05 at 6:00 pm. If there's anything else you need, such as the address or contact information, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Seattle. Can you help me find one?
+System: Could you please let me know if you have any specific preferences, such as the star rating of the hotel or whether smoking is allowed?
+User: I would prefer a hotel with a high star rating, and I don't mind if smoking is allowed or not.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 5 })
+Search Results
+
+End Search Results
+System: I'm sorry, it seems there were no results found for a 5-star hotel in Seattle. Would you like me to search for hotels with a different star rating or adjust other preferences to find available options?
+User: Please search for 4-star hotels instead.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-448-8600', 'place_name': 'Hotel Andra', 'price_per_night': 372, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2000 4th Avenue'}]
+End Search Results
+System: I found a 4-star hotel named Crowne Plaza Seattle Downtown. Would you like more details about this hotel or explore another option?
+User: Could you please provide more details about the Crowne Plaza Seattle Downtown?
+System: The Crowne Plaza Seattle Downtown is a 4-star hotel located at 1113 6th Avenue in Seattle. The price per night is $120, and the hotel does not allow smoking. If you need further assistance or wish to proceed with a reservation, please let me know.
+User: That sounds suitable. Could you go ahead and make a reservation for me?
+System: How many rooms would you like to book at the Crowne Plaza Seattle Downtown, and what date would you like to check in? Additionally, please let me know how long you plan to stay.
+User: I need one room, please. I'll be checking in on the 5th and staying for five days.
+System: Please confirm that you want to book 1 room at the Crowne Plaza Seattle Downtown from the 5th for a stay of 5 days.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Seattle, number_of_rooms: 1, place_name: Crowne Plaza Seattle Downtown, stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Crowne Plaza Seattle Downtown for 1 room from November 5th for 5 days has been successfully confirmed. If there's anything else you need, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in Vancouver. Can you assist me with that?
+System: Do you have a preferred star rating or any specific requirements for the hotel in Vancouver?
+User: No specific star rating. Just need a quiet place, please.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few options for hotels in Vancouver. The Shangri-La Hotel offers a luxurious experience with a 5-star rating and is located at 1128 West Georgia Street. The price per night is $300, and smoking is not allowed. Would you like more information on this hotel or hear about other options?
+User: Could you tell me about other options, please?
+System: The Wedgewood Hotel & Spa Vancouver is another 5-star option, located at 845 Hornby Street. It offers a luxurious stay with a price of $510 per night, and smoking is not allowed. Alternatively, the Auberge Vancouver Hotel, rated 4 stars, is available at 837 West Hastings Street. It costs $296 per night and permits smoking. Which option would you like to explore further?
+User: I'd like to know more about the Auberge Vancouver Hotel, please.
+System: The Auberge Vancouver Hotel is a 4-star establishment located at 837 West Hastings Street. It offers rooms at $296 per night and allows smoking. Would you like to proceed with a reservation at this hotel or need more information?
+User: I would like to make a reservation at the Auberge Vancouver Hotel. Can you book it for me from the 10th for a week?
+System: Sure, let's proceed with your reservation at the Auberge Vancouver Hotel. Could you please confirm the number of rooms you would like to reserve?
+User: Just one room, please.
+System: Please confirm that you would like to book 1 room for 7 days starting from the 10th at the Auberge Vancouver Hotel.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 7 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Auberge Vancouver Hotel has been successfully confirmed. You'll be staying in 1 room for 7 days starting from November 10th. If you need any further assistance or details, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

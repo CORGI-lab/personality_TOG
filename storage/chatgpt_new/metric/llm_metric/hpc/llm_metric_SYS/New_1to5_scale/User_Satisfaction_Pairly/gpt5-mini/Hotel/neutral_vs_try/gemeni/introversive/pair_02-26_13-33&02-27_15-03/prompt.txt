@@ -1,0 +1,114 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating of the hotel?
+
+User: Not really, but I'd prefer if smoking wasn't allowed.
+
+System: Okay, I understand. I will search for hotels in Vancouver that do not allow smoking.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}]
+End Search Results
+System: Great! I found three hotels in Vancouver that don't allow smoking. There's the 5-star Shangri-La Hotel and the Wedgewood Hotel & Spa Vancouver, and also the 4-star Coast Coal Harbour Vancouver Hotel By Apa. Would you like to know more about any of them?
+
+User: Perhaps the Coast Coal Harbour Vancouver Hotel By Apa.
+
+System: Okay! Coast Coal Harbour Vancouver Hotel By Apa is a 4-star hotel. The price per night is $108. Their phone number is +1 604-697-0202 and the address is 1180 West Hastings Street. Would you like to know anything else about it?
+
+User: No, that seems fine. Can you book it for me?
+
+System: Okay, I can help with that! To book the Coast Coal Harbour Vancouver Hotel By Apa, I'll need a little more information. Could you please tell me the date you'd like to check in and how many nights you'll be staying? Also, how many rooms will you need?
+
+User: Just one room, please. Check-in should be for tomorrow, and I'll be staying for two nights.
+
+System: Okay, just to confirm, you'd like me to book one room at the Coast Coal Harbour Vancouver Hotel By Apa in Vancouver, with check-in tomorrow for a two-night stay? Could you please provide the full date for check-in, including the year, to ensure the booking is accurate?
+
+User: Yes, that's correct. The full date is 2024-03-16.
+
+System: Okay, great! Just one moment while I confirm the details.
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Coast Coal Harbour Vancouver Hotel By Apa', location: Vancouver, check_in_date: '2024-03-16', stay_length: 2, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2024-03-16'}]
+End Search Results
+System: Excellent! I've booked one room for you at the Coast Coal Harbour Vancouver Hotel By Apa in Vancouver, checking in on 2024-03-16 for two nights. You can reach them at +1 604-697-0202. Is there anything else I can assist you with today?
+
+User: No, I think that will be all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a hotel. Somewhere quiet, maybe in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really. Just... not too noisy.
+
+System: Since you don't have a preference for the star rating, I can search for hotels in San Francisco. How many rooms do you need?
+
+User: Just one, please.
+
+System: Okay, I will search for a hotel in San Francisco with one room.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, number_of_rooms: 1, star_rating: dontcare, smoking_allowed: dontcare })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I found three hotels in San Francisco that might fit your needs: Amsterdam Hostel San Francisco (1 star), Argonaut Hotel (4 stars) and Beck'S Motor Lodge (2 stars). All of them do not allow smoking. Would you like to know more about any of these hotels?
+
+User: Perhaps the Beck's Motor Lodge. Tell me about it.
+
+System: Okay, Beck'S Motor Lodge is a 2-star hotel located at 2222 Market Street in San Francisco. It has a price per night of $60 and their phone number is +1 415-621-8212. Smoking is not allowed. Does this sound like a good option for you?
+
+User: Sounds acceptable. Can you book it for me?
+
+System: How many days you are planning to stay and from which date you want to book the room?
+
+User: Just two nights, starting tomorrow.
+
+System: Okay, I can book Beck's Motor Lodge for you. Could you please provide the full date for tomorrow's check-in? I need the year, month, and day to make the reservation.
+
+User: 2024-07-08.
+
+System: Alright, I will book 1 room at Beck's Motor Lodge in San Francisco for 2 nights starting from 2024-07-08. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-08, location: San Francisco, number_of_rooms: 1, place_name: "Beck'S Motor Lodge", stay_length: 2 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-07-08'}]
+End Search Results
+System: Okay, I have booked 1 room for 2 nights starting from 2024-07-08 at Beck'S Motor Lodge. The hotel is located in San Francisco. Is that correct?
+
+User: Yes, that is all correct.
+
+System: Great! Your reservation at Beck'S Motor Lodge has been confirmed. The price per night is $60, and the hotel is located at 2222 Market Street, San Francisco. Their phone number is +1 415-621-8212. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

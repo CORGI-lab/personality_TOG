@@ -1,0 +1,103 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a place to eat in San Francisco.
+
+System: What type of cuisine would you prefer?
+
+User: Maybe... Italian?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Okay, I see three Italian restaurants in San Francisco: 54 Mint Ristorante Italiano, A16, and Allegro Romano. Do any of those sound good, or would you like more options?
+
+User: Perhaps A16. Could you tell me the price range?
+
+System: The price range for A16 is moderate. Does that work for you?
+
+User: Yes, that's acceptable. I'd like to reserve a table there.
+
+System: What day and time would you like to reserve a table for, and how many people will be in your party?
+
+User: Uhm... tomorrow at 7 pm, for just one person.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: A16, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 1})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2019-03-02', 'party_size': '1', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2019-03-02', 'party_size': '1', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2019-03-02', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Alright, I have a reservation for you at A16 in San Francisco for tomorrow, March 2nd, at 7 PM for one person. Is that correct?
+
+User: Yes, that is correct. Please confirm.
+
+System: Great! Your reservation at A16 for tomorrow, March 2nd, at 7 PM for one person has been confirmed.
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Berkeley. Maybe Italian?
+
+System: Okay. I can help with that.
+
+APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: Italian})
+
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found three Italian restaurants in Berkeley: Cugini Restaurant, Donato & Co., and Filippo's Berkeley Elmwood. Would you like to know more about any of them?
+
+User: Maybe just find one that's not too crowded.
+
+System: I understand. Since I don't have real-time crowding information, perhaps you would prefer Filippo's Berkeley Elmwood? It's located at 2930 College Avenue and they serve alcohol. Would you like to know anything else about it?
+
+User: No, that's probably fine. Could you reserve a table there?
+
+System: What time would you like to reserve a table for?
+
+User: Around 7 pm?
+
+System: And how many people should I reserve it for?
+
+User: Just one, please. And for tomorrow.
+
+System: Okay, I can reserve a table for one at Filippo's Berkeley Elmwood tomorrow at 7 pm. Is that correct?
+
+User: Yes, that is correct.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Filippo's Berkeley Elmwood, city: Berkeley, date: 2024-05-03, party_size: 1, time: 7:00 })
+```
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': '2024-05-03', 'party_size': '1', 'time': '7:00'}]
+End Search Results
+System: Okay, I have reserved a table for you at Filippo's Berkeley Elmwood for tomorrow, May 3rd, at 7:00 PM for one person. Is there anything else I can help you with?
+
+User: No, that's all. Thanks a lot!
+
+System:  System: You're welcome. Have a pleasant evening.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

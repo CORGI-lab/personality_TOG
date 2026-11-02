@@ -1,0 +1,113 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in San Francisco.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating of the hotel, or if smoking is allowed?
+
+User: Star rating... maybe around 3. Smoking doesn't matter.
+
+System: Okay, searching for hotels in San Francisco with a 3-star rating.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 3, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: Alright, I found three 3-star hotels in San Francisco: Bei Hotel San Francisco, Beresford Arms Hotel, and Chancellor Hotel On Union Square. Bei Hotel allows smoking and has 3 rooms, while the other two do not allow smoking and have 2 and 3 rooms respectively. Which one sounds best to you?
+
+User: Just... the Beresford Arms Hotel.
+
+System: Okay, the Beresford Arms Hotel it is. Before we proceed, could you please specify the dates you'd like to check in and how long you plan to stay?
+
+User: October 20th, for two nights.
+
+System: Okay, October 20th for two nights at the Beresford Arms Hotel. And how many rooms will you need?
+
+User: Just one.
+
+System: Perfect. To finalize the booking, could you please confirm the year for your check-in date?
+
+User: 2024.
+
+System: Okay, so that's one room at the Beresford Arms Hotel in San Francisco, checking in on October 20, 2024, for a stay of two nights. Is that all correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Beresford Arms Hotel, check_in_date: 2024-10-20, stay_length: 2, location: San Francisco, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street', 'check_in_date': '2024-10-20'}]
+End Search Results
+System: Great! I've reserved one room for you at the Beresford Arms Hotel in San Francisco, checking in on October 20, 2024, for two nights. The price per night is $132. Your booking is now confirmed!
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really. Just something quiet.
+
+System: Okay, I will search for a hotel in Seattle. Since you don't have a preference for the star rating, I will look for any available options.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: dontcare })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: Okay, I found three 2-star hotels in Seattle: Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown. Would you like to know more about any of these?
+
+User: Maybe just the Ace Hotel.
+
+System: Okay, regarding the Ace Hotel Seattle, they have 2 rooms available, the price per night is $136, smoking is not allowed, and their phone number is +1 206-448-4721. Their address is 2423 1st Avenue. Does this sound like a hotel you'd be interested in?
+
+User: No, not really. What about something with a higher star rating?
+
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: dontcare })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I am sorry, but there are no hotels with higher star ratings in the search result. Would you like me to search with different criteria like smoking allowance?
+
+User: No thanks. Just book me a room at the Days Inn.
+
+System: Okay, I can help you with that. For the Days Inn By Wyndham Seattle North Of Downtown, I will need to know the check-in date and the length of your stay.
+
+User: October 20th for two nights.
+
+System: Okay, I will need to confirm some details with you before I proceed with the booking. To confirm, you wish to book a room at the Days Inn By Wyndham Seattle North Of Downtown in Seattle, checking in on October 20th for two nights. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-10-20, location: Seattle, place_name: Days Inn By Wyndham Seattle North Of Downtown, stay_length: 2 })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North', 'check_in_date': '2024-10-20'}]
+End Search Results
+System: Okay, I have confirmed your reservation. The price per night is $84. Your booking at Days Inn By Wyndham Seattle North Of Downtown has been made for two nights, starting on October 20th. The hotel's address is 9100 Aurora Avenue North and their phone number is +1 800-615-3107. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

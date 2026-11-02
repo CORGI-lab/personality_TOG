@@ -1,0 +1,117 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really, just something… quiet.
+
+System: Okay, I understand. I will search for hotels in Seattle. Since you prefer something quiet and don't have a preference for the star rating, I will start with a moderate rating.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3 })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found three hotels matching your request. Best Western Plus Pioneer Square Hotel Downtown, Courtyard By Marriott Seattle Downtown/Lake Union, and Embassy Suites By Hilton Seattle Downtown Pioneer Square. They are all 3-star hotels. Would you like more information on any of these?
+
+User: Perhaps the Best Western Plus Pioneer Square Hotel Downtown.
+
+System: Okay. The Best Western Plus Pioneer Square Hotel Downtown has 1 room available, the phone number is +1 206-340-1234, the price per night is $63, smoking is not allowed, and the street address is 77 Yesler Way. Would you like to know anything else about it?
+
+User: No, that seems… fine. Could I reserve a room there?
+
+System: Okay. To reserve a room, I need a little more information. What date would you like to check in, and how many days will you be staying? Also, can you confirm that the reservation is for Seattle?
+
+User: Yes, Seattle. Check-in… tomorrow. Stay length, two days.
+
+System: Okay, I can help with that. And to confirm, you'd like to reserve a room at the Best Western Plus Pioneer Square Hotel Downtown in Seattle, checking in tomorrow for a two-day stay? I will need the exact date for the check-in. Could you please provide the full date including the year (YYYY-MM-DD)?
+
+User: 2024-03-10.
+
+System: Okay, I have all the information needed.
+
+APICall(method='ReserveHotel', parameters={ place_name: Best Western Plus Pioneer Square Hotel Downtown, check_in_date: 2024-03-10, stay_length: 2, location: Seattle, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2024-03-10'}]
+End Search Results
+System: Okay. The Best Western Plus Pioneer Square Hotel Downtown, confirms your check-in date as 2024-03-10 for two days. The price per night is $63. Is that correct?
+
+User: Yes, that's correct. Please proceed.
+
+System: Okay, I've noted the confirmation.
+
+APICall(method='ReserveHotel', parameters={ place_name: Best Western Plus Pioneer Square Hotel Downtown, check_in_date: 2024-03-10, stay_length: 2, location: Seattle, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2024-03-10'}]
+End Search Results
+System: Okay. Your reservation at the Best Western Plus Pioneer Square Hotel Downtown in Seattle, checking in on 2024-03-10 for two nights, is confirmed. Is there anything else I can assist you with at the moment?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating or smoking allowance?
+
+User: No preference on smoking. Maybe a three-star hotel?
+
+System: Okay, let me search for a three-star hotel in Vancouver with no preference on smoking.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 3, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: Okay, I found three 3-star hotels in Vancouver. They are Atrium Inn Vancouver, Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., and Best Western Plus Sands. All of them do not allow smoking.
+
+User: Okay. Could you tell me the price per night for each?
+
+System: Okay, the prices per night are $228 for Atrium Inn Vancouver, $72 for Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., and $222 for Best Western Plus Sands.
+
+User: The Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. seems okay. Can you book it for me?
+
+System: How many rooms do you need and what dates would you like to book? Also, for how many nights will you be staying?
+
+User: Just one room. Check-in on the 27th, for two nights.
+
+System: Okay, let me reserve one room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, checking in on the 27th for two nights. Could you please specify the year for your check-in date?
+
+User: This year.
+
+System: Okay, so you want to book one room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, checking in on 2024-10-27 for two nights. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., location: Vancouver, check_in_date: 2024-10-27, stay_length: 2, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Okay, I have reserved one room for you at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, checking in on 2024-10-27 for two nights. The phone number is +1 604-669-7070 and the street address is 1100 Granville Street. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

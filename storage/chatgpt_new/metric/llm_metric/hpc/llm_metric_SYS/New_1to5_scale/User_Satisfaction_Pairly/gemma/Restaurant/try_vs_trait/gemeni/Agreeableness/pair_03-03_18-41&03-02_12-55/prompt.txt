@@ -1,0 +1,156 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a nice restaurant in San Rafael, if you don't mind helping me.
+
+System: Okay, I can help with that. Do you have any preferences for the type of cuisine you'd like to eat?
+
+User: Oh, anything is fine with me, whatever you think is good! Maybe something not too expensive, if that's alright?
+
+System: Given your openness, how about we explore restaurants with Mexican cuisine? Does that sound appealing, and is San Rafael still the city you're interested in?
+
+User: Mexican sounds lovely! And yes, San Rafael is still the perfect location. I really appreciate you taking the time to find something for me.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Rafael, cuisine: Mexican, price_range: inexpensive})
+
+Search Results
+[{'city': 'San Rafael', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-456-4070', 'price_range': 'inexpensive', 'restaurant_name': 'Los Palillos Restaurant', 'serves_alcohol': False, 'street_address': '3060 Kerner Boulevard'}]
+End Search Results
+System: Okay, I found one Mexican restaurant in San Rafael that fits your criteria. It's called Los Palillos Restaurant, located at 3060 Kerner Boulevard. The price range is inexpensive. Would you like to know their phone number?
+
+User: Oh, that sounds wonderful! Could you perhaps tell me if they serve alcohol there? I'm just curious, it's certainly not a deal-breaker if they don't!
+
+System: Okay, I checked, and Los Palillos Restaurant does not serve alcohol.
+
+User: Oh, that's perfectly alright! In that case, would you mind checking if there are any other Mexican restaurants in San Rafael that do serve alcohol? It would be a treat, but if not, Los Palillos still sounds lovely.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Rafael, cuisine: Mexican, serves_alcohol: True})
+
+Search Results
+[{'city': 'San Rafael', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-521-5691', 'price_range': 'moderate', 'restaurant_name': 'Green Chile Kitchen', 'serves_alcohol': True, 'street_address': '1335 4th Street'}]
+End Search Results
+System: Alright, I found another option for you. Green Chile Kitchen is a Mexican restaurant in San Rafael located at 1335 4th Street, and they do serve alcohol. The price range is moderate. Does this sound like a better fit for what you're looking for?
+
+User: Oh, that sounds promising! Could you tell me if they have outdoor seating? It would be nice to enjoy the weather if possible, but inside is fine too!
+
+System: I do not have the information about whether Green Chile Kitchen has outdoor seating. Is there anything else I can help you with regarding Green Chile Kitchen, or would you like to know more about Los Palillos Restaurant?
+
+User: Oh, no worries! Could you perhaps check if Green Chile Kitchen happens to have a phone number? I could always give them a quick call about the outdoor seating.
+
+System: ```tool_code
+APICall(method='FindRestaurants', parameters={'city': 'San Rafael', 'cuisine': 'Mexican', 'restaurant_name': 'Green Chile Kitchen'})
+```
+Search Results
+[{'city': 'San Rafael', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-521-5691', 'price_range': 'moderate', 'restaurant_name': 'Green Chile Kitchen', 'serves_alcohol': True, 'street_address': '1335 4th Street'}]
+End Search Results
+System: Yes, Green Chile Kitchen's phone number is 415-521-5691.
+
+User: Perfect, that’s very helpful! I think Green Chile Kitchen sounds like it could be just the spot. Could you possibly make a reservation for me there?
+
+System: Okay, I can help you with a reservation at Green Chile Kitchen. What day and time would you like to reserve a table for? Also, how many people will be in your party?
+
+User: Oh, thank you so much! I would like to reserve a table for tomorrow evening, if that's possible. Maybe around 7 PM? And it would just be for two people.
+
+System: Okay, let me make sure I have all the details right: You'd like to reserve a table at Green Chile Kitchen in San Rafael for tomorrow, around 7 PM, for a party of two. Is that correct?
+
+User: Yes, that is absolutely correct! Thank you so much for your help!
+
+System:  System: ```tool_code
+APICall(method='ReserveRestaurant', parameters={'city': 'San Rafael', 'date': '2024-07-02', 'party_size': 2, 'cuisine': 'Mexican', 'restaurant_name': 'Green Chile Kitchen', 'time': '19:00'})
+```
+Search Results
+[{'city': 'San Rafael', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-521-5691', 'price_range': 'moderate', 'restaurant_name': 'Green Chile Kitchen', 'serves_alcohol': True, 'street_address': '1335 4th Street', 'date': '2024-07-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System:  Alright, your reservation at Green Chile Kitchen for tomorrow, July 2nd, at 7 PM for two people is confirmed. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a nice restaurant in San Francisco, please. I'm open to suggestions.
+
+System: Given your agreeable nature and willingness to try new things, how about we look for a restaurant that serves Thai cuisine in San Francisco? Thai cuisine is known for its balanced flavors and communal dining, which I think you might appreciate.
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Thai})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-379-4505', 'price_range': 'moderate', 'restaurant_name': 'Baan Thai House & Wine Bar', 'serves_alcohol': False, 'street_address': '534 Irving Street'}, {'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-552-8999', 'price_range': 'moderate', 'restaurant_name': 'Basil', 'serves_alcohol': False, 'street_address': '1175 Folsom Street'}, {'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-999-0345', 'price_range': 'moderate', 'restaurant_name': 'Chaiya Thai Restaurant', 'serves_alcohol': False, 'street_address': '272 Claremont Boulevard'}]
+End Search Results
+System: Okay, I found three Thai restaurants in San Francisco. They're all moderately priced and don't have live music. Would you like to know more about Baan Thai House & Wine Bar, Basil, or Chaiya Thai Restaurant?
+
+User: Oh, Thai sounds lovely! Could you tell me a bit more about Baan Thai House & Wine Bar? I'm hoping for a place with a good atmosphere.
+
+System: Baan Thai House & Wine Bar is located at 534 Irving Street in San Francisco. They have a phone number of 415-379-4505. It's a moderately priced restaurant and does not have live music and does not serve alcohol. Does that sound like a place you'd be interested in?
+
+User: Oh, that sounds quite nice, though I was hoping for a place that serves alcohol. Perhaps you could suggest another option that does, if that's not too much trouble?
+
+System: Given your preference for a place that serves alcohol, how about Basil? It's also a Thai restaurant in San Francisco with a moderate price range, and it's located at 1175 Folsom Street. The phone number is 415-552-8999. It also does not have live music. Would you like to know more about it?
+
+User: That sounds good, and I appreciate you considering my preference for alcohol. Could you tell me if Basil is generally a busy place? I'm hoping for somewhere we can relax and chat without too much noise.
+
+System: I do not have any information about how busy Basil usually is, but I can tell you again that they are located at 1175 Folsom Street. Also, they can be contacted at 415-552-8999. It is a moderately priced restaurant and does not have live music and does not serve alcohol. Would you like me to help make a reservation?
+
+User: Oh, actually, I think I'd prefer a place that serves alcohol. Maybe we could look for a different restaurant altogether? I'm really easygoing, so any cuisine is fine as long as it has a good atmosphere and isn't too expensive.
+
+System: Since you're easygoing and value a good atmosphere, how about a moderately priced Italian restaurant that serves alcohol? Given your agreeable nature, I think you'd appreciate the communal aspect of sharing some delicious pasta or pizza.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, price_range: moderate, serves_alcohol: True})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-282-4969', 'price_range': 'moderate', 'restaurant_name': 'Bacco', 'serves_alcohol': True, 'street_address': '737 Diamond Street'}]
+End Search Results
+System: Okay, I found three moderately priced Italian restaurants in San Francisco that serve alcohol: 54 Mint Ristorante Italiano, A16, and Bacco. They all do not have live music. Would you like to explore any of these options further?
+
+User: Italian sounds wonderful! Could you tell me more about 54 Mint Ristorante Italiano? It sounds intriguing.
+
+System: 54 Mint Ristorante Italiano is located at 16 Mint Plaza in San Francisco. They can be contacted at 415-543-5100. It's a moderately priced restaurant that serves alcohol and does not have live music. Would you like to know more about it?
+
+User: That sounds lovely! I appreciate you finding a place that serves alcohol. Could you possibly let me know if they have a good selection of vegetarian options? One of my friends is vegetarian, and it would be great to find a place that caters to them.
+
+System: I do not have information about the vegetarian options, but 54 Mint Ristorante Italiano is located at 16 Mint Plaza in San Francisco. They can be contacted at 415-543-5100. It's a moderately priced restaurant that serves alcohol and does not have live music. Would you like me to help make a reservation?
+
+User: You've been so helpful in finding this place! I think it would be wonderful to go there. Could you please make a reservation for me? I'd like to book a table for 4 people for tomorrow evening.
+
+System: And what time would you like the reservation to be?
+
+User: Oh, any time that's convenient for them would be great. Perhaps around 7:30 PM? I'm flexible, so whatever works best for the restaurant.
+
+System: Okay, I can try to make a reservation for 4 people at 54 Mint Ristorante Italiano for tomorrow, March 2nd, around 7:30 PM. Does that sound right?
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 54 Mint Ristorante Italiano, city: San Francisco, date: 2019-03-02, party_size: 4, time: 19:30})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2019-03-02', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Great! I've made a reservation for you and your friends at 54 Mint Ristorante Italiano for tomorrow, March 2nd, at 7:30 PM. I trust you will have a wonderful time!
+
+User: That's so kind of you! I really appreciate you making the reservation for us. Could you please confirm the date and time just to be sure?
+
+System: Okay, to confirm, your reservation at 54 Mint Ristorante Italiano in San Francisco is for tomorrow, March 2nd, at 7:30 PM for a party of 4. Is that correct?
+
+User: Yes, that's perfect! Thank you so much for your help.
+
+System: You're very welcome! I'm glad I could assist you. If you need anything else, don't hesitate to ask. Have a delightful evening at 54 Mint Ristorante Italiano!
+
+User: Oh, you're so considerate to confirm everything! Yes, that's absolutely perfect. Thank you again for all your help. Have a wonderful day!
+
+System: You're most welcome! I'm happy I could help. Enjoy your dinner at 54 Mint Ristorante Italiano!
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

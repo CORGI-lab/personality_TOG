@@ -1,0 +1,126 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in San Diego. Somewhere comfortable and reliable would be great.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: A 3 or 4-star hotel would be perfectly suitable.
+
+System: Okay, I will search for 3 or 4-star hotels in San Diego.
+
+APICall(method='SearchHotel', parameters={location: San Diego, star_rating: dontcare})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found three 3-star hotels in San Diego: Bahia Resort Hotel, Best Western Plus Bayside Inn, and Best Western Plus Hacienda Hotel Old Town. Would you like to know more about any of these?
+
+User: The Bahia Resort Hotel sounds promising. Could you tell me more about it?
+
+System: Okay, the Bahia Resort Hotel is located at 998 West Mission Bay Drive, and their phone number is +1 858-539-8666. The price per night is $225, and smoking is not allowed. They have rooms available. Does that sound good?
+
+User: That sounds quite reasonable. Is there anything else available in that price range with similar ratings before I make a decision?
+
+System: Okay, let me check for other options in San Diego.
+
+APICall(method='SearchHotel', parameters={location: San Diego, star_rating: dontcare, price_per_night: 225})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}]
+End Search Results
+System: Okay, I found only one hotel that matches your criteria: Bahia Resort Hotel. It is a 3-star hotel with a price of $225 per night. Would you like me to provide information on another price range or star rating?
+
+User: No, let's stick with the Bahia Resort Hotel. It seems like a solid choice. I'd like to book a room there.
+
+System: Okay, I can help you with that. To confirm, you would like to book a room at the Bahia Resort Hotel in San Diego. What date would you like to check in, and how many nights will you be staying?
+
+User: I'd like to check in on the 15th of next month, and I'll be staying for 4 nights.
+
+System: Okay, let me just confirm the details. You want to book a room at the Bahia Resort Hotel in San Diego, checking in on November 15th for a 4-night stay. How many rooms will you need?
+
+User: Just one room will be fine.
+
+System: Okay, just one moment while I confirm the details for your reservation.
+
+APICall(method='ReserveHotel', parameters={place_name: Bahia Resort Hotel, location: San Diego, check_in_date: 2024-11-15, stay_length: 4, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-11-15'}]
+End Search Results
+System: Great, your reservation at the Bahia Resort Hotel in San Diego, checking in on November 15th for 4 nights, has been confirmed. Is there anything else I can assist you with today?
+
+User: No, that will be all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in Chicago, please.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: I'm open to suggestions. Perhaps a 3 or 4-star hotel would be suitable.
+
+System: Given your preference for a comfortable stay, I can look for 3 or 4-star hotels in Chicago. Would you like me to proceed with searching for hotels with those ratings?
+
+User: Yes, please proceed. That sounds perfectly reasonable.
+
+System: APICall(method='SearchHotel', parameters={location: Chicago, star_rating: dontcare})
+
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street'}, {'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street'}, {'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-894-0800', 'place_name': 'Acme Hotel Company Chicago', 'price_per_night': 222, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '15 East Ohio Street'}]
+End Search Results
+System: Alright, I found a few hotels in Chicago. There's the AC Hotel by Marriott Chicago Downtown, a 3-star hotel, Ace Hotel Chicago, a 4-star hotel and Acme Hotel Company Chicago, another 3-star hotel. Would you like to know more about any of these?
+
+User: The Ace Hotel sounds interesting. Can you tell me more about it?
+
+System: Certainly. Ace Hotel Chicago is a 4-star hotel located at 311 North Morgan Street. The phone number is +1 312-764-1919 and the price per night is $132. They do not allow smoking and have 1 room available. Does this sound suitable for your needs?
+
+User: That sounds quite alright. Could you check the availability for a stay starting on the 15th for 3 nights?
+
+System: Okay, I can check the availability for you. To confirm, you're interested in Ace Hotel Chicago, starting on the 15th for a 3-night stay. Is that correct? Also, could you specify the year and the number of rooms you'd like to reserve?
+
+User: Yes, that's correct. The year is 2024, and I'll need one room, please.
+
+System: Okay, I have all the information I need. I will now search for availability at Ace Hotel Chicago, checking in on 2024-07-15 for a 3-night stay, for one room.
+
+APICall(method='ReserveHotel', parameters={place_name: Ace Hotel Chicago, check_in_date: 2024-07-15, stay_length: 3, location: Chicago, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Excellent. I've checked the availability at Ace Hotel Chicago for you. The details are as follows: check-in date is 2024-07-15, for a 3-night stay. The hotel is located in Chicago, with one room available. The price per night is $132. If everything is correct, I'll finalize the reservation for you. Does this sound right?
+
+User: Yes, everything sounds correct. Please finalize the reservation.
+
+System: Okay, one moment while I confirm all the details. You're booking one room at Ace Hotel Chicago, located at 311 North Morgan Street, Chicago, with check-in on 2024-07-15 for a 3-night stay. The price is $132 per night. Is that all correct?
+
+User: Yes, that is perfectly correct. Please proceed with the reservation.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Ace Hotel Chicago, check_in_date: 2024-07-15, stay_length: 3, location: Chicago, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Alright, your reservation at Ace Hotel Chicago is confirmed. You have one room booked, checking in on July 15, 2024, for three nights. The rate is $132 per night. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

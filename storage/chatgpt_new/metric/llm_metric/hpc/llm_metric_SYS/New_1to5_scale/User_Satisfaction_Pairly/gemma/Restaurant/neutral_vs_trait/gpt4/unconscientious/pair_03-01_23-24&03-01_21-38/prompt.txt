@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm hungry and I need to find some place to eat. Maybe somewhere in San Francisco?
+System: Could you please let me know the type of cuisine you're interested in, such as Italian, Mexican, or something else?
+User: I dunno, maybe something like Italian or Asian? Whatever's good, I guess.
+System: Alright, let's start with Italian cuisine. Please hold on while I find some options for you in San Francisco. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco for you. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They serve alcohol and have a moderate price range. Would you like more information about this restaurant or perhaps details on another option?
+User: Is there one with live music or something? That could be fun.
+System: Unfortunately, none of the Italian restaurants I found in San Francisco offer live music. Would you like to explore another option, such as A16, located at 2355 Chestnut Street, which also serves alcohol and has a moderate price range?
+User: Uh, okay, that sounds alright. Can you book a table for me at A16? Maybe around 8 pm or something. I think it’ll be just for me, so 1 person.
+System: Could you please confirm the date you'd like to book a table for one person at A16 at 8 pm?
+User: I guess today works. Yeah, let's go with that.
+System: Great! Let me confirm: you'd like to book a table for one person at A16 in San Francisco at 8 pm today. Is that correct?
+User: Yeah, sure, that sounds fine.
+System: Perfect! I'll go ahead and make the reservation for you. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'A16', city: 'San Francisco', time: '20:00', party_size: 1, date: '2023-10-05'})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-05', 'party_size': '1', 'time': '20:00'}]
+End Search Results
+System: Your reservation at A16 in San Francisco for one person at 8 pm today has been successfully made. The restaurant is located at 2355 Chestnut Street. If you need to reach them, you can call at 415-771-2216. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Uh, so I guess I'm kind of hungry. Maybe I should find a place to eat in Oakland? Not really sure what I'm in the mood for though.
+System: Let's explore a few options then. How about we start with a random cuisine? Given your adventurous spirit, let's try Vietnamese. I'll find some Vietnamese restaurants in Oakland for you. One moment please. 
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: Vietnamese})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '510-893-8136', 'price_range': 'inexpensive', 'restaurant_name': 'Binh Minh Quan', 'serves_alcohol': False, 'street_address': '338 12th Street'}, {'city': 'Oakland', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '510-601-8818', 'price_range': 'moderate', 'restaurant_name': 'Holy Basil Pho', 'serves_alcohol': True, 'street_address': '5362 College Avenue'}, {'city': 'Oakland', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '510-763-8495', 'price_range': 'moderate', 'restaurant_name': 'Le Cheval', 'serves_alcohol': False, 'street_address': '1007 Clay Street'}]
+End Search Results
+System: I found a few Vietnamese options for you in Oakland. How about trying Binh Minh Quan? It's an inexpensive spot located at 338 12th Street. If that's not appealing, there's also Holy Basil Pho, which offers a moderate price range and serves alcohol, situated at 5362 College Avenue. Do either of these sound good to you?
+User: I don't know, maybe tell me more about the Holy Basil Pho place. Do they have live music or something fun going on?
+System: Holy Basil Pho doesn't feature live music, but it's a cozy spot with a moderate price range where you can enjoy some good Vietnamese food and drinks. If you're up for it, you can find them at 5362 College Avenue. Would you like any more information or perhaps make a reservation there?
+User: Uh, yeah, I guess that sounds okay. Can you just go ahead and make a reservation for me at Holy Basil Pho? Maybe for tonight? Not sure what time though—how about just 7:00 pm? And, um, let's say for like 2 people?
+System: Sure, I'll make a reservation for you at Holy Basil Pho in Oakland for tonight at 7:00 pm for 2 people. Let me confirm the details and make the reservation. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Holy Basil Pho", city: "Oakland", time: "19:00", party_size: 2})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '510-601-8818', 'price_range': 'moderate', 'restaurant_name': 'Holy Basil Pho', 'serves_alcohol': True, 'street_address': '5362 College Avenue', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Holy Basil Pho in Oakland is confirmed for tonight at 7:00 pm for 2 people. If you need anything else or want to change your plans, feel free to let me know. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

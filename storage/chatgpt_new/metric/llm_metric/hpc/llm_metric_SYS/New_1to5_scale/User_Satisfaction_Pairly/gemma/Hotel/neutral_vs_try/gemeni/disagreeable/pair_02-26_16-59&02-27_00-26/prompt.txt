@@ -1,0 +1,125 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in Las Vegas. Don't try to give me some dump.
+
+System: Okay, I will help you find a hotel in Las Vegas. Do you have any preferences for star rating?
+
+User: 5 stars only. And it better be worth it.
+
+System: Okay, I understand. I will only search for 5-star hotels in Las Vegas.
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 5})
+
+Search Results
+
+End Search Results
+System: No hotels found that match your requirements. Would you like me to search for hotels with different star ratings?
+
+User: Fine, try 4 stars. But I expect a decent price for the downgrade.
+
+System: APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 4})
+
+Search Results
+
+End Search Results
+System: No hotels found that match your requirements. Would you like me to search for hotels with different star ratings or smoking allowance?
+
+User: Try 3 stars. But I want to know the price per night first. I'm not paying top dollar for a dump.
+
+System: APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 3})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: Okay, I found three 3-star hotels in Las Vegas. Best Western Plus Las Vegas West is $117 per night, Hampton Inn Las Vegas/Summerlin is $279 per night, and Oasis At Gold Spike is $63 per night. Are any of these of interest to you?
+
+User: Oasis At Gold Spike... $63? What's the catch? That sounds like a scam.
+
+System: I understand your concern. The Oasis At Gold Spike is a 3-star hotel with a price of $63 per night. Would you like me to provide you with the address and phone number so you can check it out?
+
+User: Address and phone number, yes. And don't try to hide anything, I want the full address.
+
+System: Okay, the address for Oasis At Gold Spike is 217 Las Vegas Boulevard North, and the phone number is +1 702-768-9823.
+
+User: Fine, book it for me. Check-in tomorrow for one night. And make sure there are no hidden fees.
+
+System: Okay, I will book Oasis At Gold Spike for you. Just to confirm, you want to book it for tomorrow, for one night. How many rooms will you need?
+
+User: One. And make sure it's a non-smoking room. I don't want to breathe in someone else's filth.
+
+System: Okay, I will book one non-smoking room at Oasis At Gold Spike for you, checking in tomorrow for one night. Please confirm the exact date you would like to check in.
+
+User: Tomorrow is August 28th. Now, make sure that room is booked and confirmed. I don't want any surprises when I arrive.
+
+System: Okay, I will book one non-smoking room at Oasis At Gold Spike for you, checking in on August 28th for one night.
+
+APICall(method='ReserveHotel', parameters={place_name: Oasis At Gold Spike, location: Las Vegas, check_in_date: 2024-08-28, stay_length: 1, number_of_rooms: 1, smoking_allowed: False})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North', 'check_in_date': '2024-08-28'}]
+End Search Results
+System: Excellent! I have booked one non-smoking room at Oasis At Gold Spike for you, checking in on August 28th for one night. The price will be $63. Is that correct?
+
+User: Fine. Just get it done.
+
+System: Okay, the reservation has been made. Your confirmation details are as follows: One non-smoking room at Oasis At Gold Spike, checking in on August 28th for one night. The total price will be $63. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in New York. And it better be good.
+
+System: Okay, I can help with that! Do you have a star rating preference?
+
+User: Five stars. And smoking better be allowed. I don't care what the rules say.
+
+System: APICall(method='SearchHotel', parameters={location: New York, star_rating: 5, smoking_allowed: True})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: Alright, I found three 5-star hotels in New York that allow smoking: 1 Hotel Central Park, Baccarat Hotel, and 1 Hotel Brooklyn Bridge. 1 Hotel Central Park is $330 per night, Baccarat Hotel is $525 per night, and 1 Hotel Brooklyn Bridge is $465 per night. Do any of those sound like they meet your standards?
+
+User: $330? Seriously? They're ripping people off. What's the address for the cheapest one, 1 Hotel Central Park? I want to scope it out myself before I commit to anything.
+
+System: Okay, the address for 1 Hotel Central Park is 1414 6th Avenue, New York. Will you need anything else?
+
+User: Fine. And what's the cancellation policy? They probably have some sneaky fine print to screw people over.
+
+System: I am sorry, I do not have information about the cancellation policy. However, I can provide the phone number so you can check with them. The phone number is +1 212-703-2001.
+
+User: Yeah, give me the phone number anyway. I don't trust your information about the cancellation policy. I'll call them myself and see if they try to lie to me.
+
+System: Okay, here's the phone number for 1 Hotel Central Park: +1 212-703-2001. Do you need any more information about the hotel before you call, such as the number of rooms available?
+
+User: Number of rooms available? What's the point if they're going to overcharge me anyway? Just give me the number of rooms.
+
+System: Okay, 1 Hotel Central Park has 2 rooms available. Do you want me to hold one for you while you call and verify their cancellation policy?
+
+User: Hold one? What do you think I am, stupid? If I want a room, I'll book it myself after I've squeezed every last detail out of them on the phone. Don't try to be helpful.
+
+System: Alright, alright, no need to get your feathers ruffled. Just trying to be efficient. Since you're calling them yourself anyway and I've given you all the details, I'll leave you to it. Anything else you need from me, or are you all set to interrogate them yourself?
+
+User: I'm all set, thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

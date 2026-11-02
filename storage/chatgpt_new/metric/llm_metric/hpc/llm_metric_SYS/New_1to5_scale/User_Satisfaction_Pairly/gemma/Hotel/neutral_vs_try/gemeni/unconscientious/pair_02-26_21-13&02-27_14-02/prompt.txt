@@ -1,0 +1,153 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, wanna find a hotel in... uh... Vegas, maybe? I don't know.
+
+System: Okay, I can help with that! To start, I need to know which city you're looking for a hotel in. Is it Las Vegas?
+
+User: Yeah, Las Vegas sounds good. Just... find something. Whatever.
+
+System: Okay, I will search for hotels in Las Vegas. Do you have any preferences on star rating or smoking allowance?
+
+User: Star rating? Uh... doesn't really matter, does it? Smoking... yeah, gotta be smoking allowed. Or not. I dunno, is it a big deal? Just... find something cheap.
+
+System: Okay, I will search for a hotel in Las Vegas that allows smoking, with no preference on the star rating.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: dontcare, star_rating: dontcare })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: Okay, I found three hotels in Las Vegas. Budget Suites Of America is a 1-star hotel that allows smoking and costs $44 per night. Hampton Inn Las Vegas/Summerlin is a 3-star hotel that also allows smoking and costs $279 per night. Best Western Plus Las Vegas West is a 3-star hotel that does not allow smoking and costs $117 per night. Which one would you prefer?
+
+User: Ugh, decisions... Budget Suites, I guess? $44 sounds... doable. But, like, is it a total dump? Tell me more about Budget Suites.
+
+System: Okay, Budget Suites Of America is a 1-star hotel in Las Vegas. It allows smoking and the price is $44 per night. They have 2 rooms available. The phone number is +1 702-638-1800 and the address is 2219 North Rancho Drive. Does that sound good?
+
+User: Sounds... okay, I guess. But, like, 2 rooms available? Is that all? What if I, uh, decide to bring friends? Maybe check if there are more rooms at Hampton Inn? Just in case?
+
+System: Okay, I can check the availability of rooms at Hampton Inn Las Vegas/Summerlin for you. They allow smoking, have a 3-star rating, and the price is $279 per night. How many rooms would you like to book?
+
+User: Ugh, so much effort... Just tell me how many rooms they got, like, total. Then I'll decide if it's worth the hassle.
+
+System: Okay, let me check how many rooms Hampton Inn Las Vegas/Summerlin has in total.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, place_name: Hampton Inn Las Vegas/Summerlin })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: Okay, I found that Hampton Inn Las Vegas/Summerlin has 3 rooms available. It is a 3-star hotel that allows smoking and costs $279 per night. Would you like to book a room there?
+
+User: Three rooms, huh? Still can't decide. Okay, let's just stick with the cheap one. Budget Suites. Book it. For... I don't know... 4 nights? Starting... tomorrow? Sure, tomorrow.
+
+System: Okay, I will book Budget Suites Of America for 4 nights starting tomorrow. To confirm, the hotel is in Las Vegas and it allows smoking. Could you please provide the exact date you'd like to check in?
+
+User: Uh... tomorrow, like I said. Is that so hard? Just... the date after today. Whatever that is.
+
+System: Could you please confirm the exact date for your check-in? Also, how many rooms would you like to reserve?
+
+User: Ugh, fine. One room. And, uh... check-in date... just figure it out. Tomorrow's date. Whatever that is. You got this, right?
+
+System: I can proceed with the reservation, but I need the exact check-in date to book the room. Could you please provide the year, month, and day for your check-in date?
+
+User: Okay, okay... uh... just make it... October 28th. That work? Just book it already.
+
+System: Okay, so you want to book 1 room at Budget Suites Of America in Las Vegas, checking in on October 28th for 4 nights. Is that correct?
+
+User: Yeah, sounds about right. Just... do it.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-10-28, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 4 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2024-10-28'}]
+End Search Results
+System: Okay, I have reserved 1 room at Budget Suites Of America in Las Vegas, checking in on October 28th for 4 nights. The price is $44 per night. Is there anything else I can help you with?
+
+User: Uh... no, I think that's it. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I need to find a hotel, maybe in... uh... New York? Yeah, New York sounds good.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Star rating? Hmm, not really. Whatever's cheapest, I guess. As long as it's, like, not *completely* falling apart. Oh, and uh, gotta make sure they allow smoking. That's kinda important. Wait, no, maybe not *that* important. Just see what you find, surprise me!
+
+System: Given your preferences, I'll search for hotels in New York. I'll look for something affordable, and I'll check if smoking is allowed, though it's not a strict requirement.
+
+APICall(method='SearchHotel', parameters={location: New York, smoking_allowed: dontcare, star_rating: dontcare})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: Alright, I've found a few options for you in New York.
+
+There's the "11 Howard," a 3-star hotel where smoking is allowed, with rooms going for $270 a night.
+
+Then there's the "Adria Hotel & Conference Center," also 3 stars and allows smoking, at $234 per night.
+
+Lastly, "Aloft Harlem" is another 3-star option, but smoking isn't allowed there, and it's priced at $243 per night.
+
+Which of these sounds most appealing to you?
+
+User: Uh, the Adria Hotel & Conference Center sounds... fine? I guess? But, like, what's the catch? $234 seems kinda low for New York. Is it, like, super far away from everything? I don't know, maybe just tell me about another one?
+
+System: Okay, no problem. Let's explore another option. The "11 Howard" is a 3-star hotel that allows smoking and is priced at $270 per night. Does that sound better, or would you like more details about either of these hotels before making a decision?
+
+User: Okay, "11 Howard"... $270, huh? Is that, like, per night? Or... oh god, I hope it's not per *person*. Ugh, whatever. Does it, like, have a pool or something? Or a bar? I'm starving... maybe a restaurant? I don't even know what I want anymore. Just... tell me more about that one.
+
+System: Okay, I understand. Let's focus on "11 Howard." Yes, the price is $270 per night.
+
+Regarding your questions about amenities, I can tell you that "11 Howard" has 3 rooms available and their phone number is +1 212-235-1111. Unfortunately, I don't have information about whether it has a pool, bar, or restaurant. Would you like me to look for hotels that specifically have those amenities? Or perhaps you'd like to know about its location? The street address is 11 Howard Street.
+
+User: Location, huh? Is it, like, in a decent spot? Near... something? Maybe Times Square? Or, wait, Central Park? Ugh, I can't decide. Just tell me if it's, like, in a *bad* area. I don't wanna end up somewhere sketchy.
+
+System: Okay, I understand your concern about the location. "11 Howard" is located at 11 Howard Street in New York. While I don't have specific details about its proximity to Times Square or Central Park, I can assure you that Howard Street is generally considered a safe and well-regarded area. Would you like me to search for hotels specifically near Times Square or Central Park instead? Or would you like to proceed with "11 Howard"?
+
+User: Safe and well-regarded, huh? Alright, alright. Maybe I'm overthinking this. I mean, it's New York, right? It's all... stuff. Okay, "11 Howard" it is. Just... book it. For, like, one night? Yeah, one night. And, uh... today, I guess? Wait, what day IS it? Oh god, never mind. Just book it for tonight. Please?
+
+System: Okay, I can help you book a room at "11 Howard" for one night, starting tonight. To finalize the booking, I'll need a couple more details. Could you please confirm the date you'd like to check in and also let me know how many rooms you'll need?
+
+User: Uh... right, the date. Tonight, so... whatever today is. And just one room. I think. Yeah, one room. Unless... are they small rooms? Ugh, never mind, just one. Definitely one. Book it, please? I'm already tired.
+
+System: To confirm, you'd like to book one room at "11 Howard" in New York for one night, starting tonight. Could you please confirm the exact date for the check-in? Also, what is the length of your stay?
+
+User: Ugh, the date... just put in today's date, whatever it is. And the stay is one night, like I said. Just get it done, please? My head hurts.
+
+System: Okay, I understand. To proceed with the booking, I need the exact date for tonight. Once I have that, I can book one room at "11 Howard" in New York for one night. Could you please provide the date?
+
+User: Date? Uh... whatever today is. Just pick a date! I don't care. Just make it happen!
+
+System: I understand you're feeling overwhelmed. Let's get this done. Since you're not sure about the exact date, I'll just use today's date, which is 2024-07-26. So, I'll book one room at "11 Howard" in New York for one night, starting tonight, July 26, 2024. Is that correct?
+
+User: Yeah, sounds about right. July 26th, one night, one room at "11 Howard". Just... do it already, please?
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-26, location: New York, number_of_rooms: 1, place_name: 11 Howard, stay_length: 1})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street', 'check_in_date': '2024-07-26'}]
+End Search Results
+System: Excellent! I have booked one room at "11 Howard" in New York for one night, starting tonight, July 26, 2024. The phone number is +1 212-235-1111, the price per night is $270, and the street address is 11 Howard Street. Is there anything else I can help you with?
+
+User: Uh... no, I think that's it. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

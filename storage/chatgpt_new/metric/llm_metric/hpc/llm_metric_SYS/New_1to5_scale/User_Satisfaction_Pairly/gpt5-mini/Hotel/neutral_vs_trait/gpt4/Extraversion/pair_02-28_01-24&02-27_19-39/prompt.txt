@@ -1,0 +1,112 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm planning a trip and I’m super excited to explore somewhere lively and fun. Can you help me find a hotel in Los Angeles? I can’t wait to see what options are available!
+System: Sure thing! Los Angeles is a fantastic city with lots to offer. Do you have any specific preferences for the hotel, such as star rating, smoking allowance, or number of rooms? Let me know, and I'll find some exciting options for you!
+User: I’d love a hotel with at least a 4-star rating. I’m not too worried about smoking policies, and I’ll need two rooms since I’m bringing some friends along for the adventure! What do you have for me?
+System: Great! Let's find a fabulous 4-star hotel in Los Angeles for you and your friends. I'll check the available options right away. 
+
+APICall(method='SearchHotel', parameters={ location: Los Angeles, star_rating: 4, number_of_rooms: 2 })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 310-553-6561', 'place_name': 'Beverly Hills Marriott', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1150 South Beverly Drive'}, {'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 310-642-7500', 'place_name': 'Crowne Plaza Los Angeles Airport', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '5985 West Century Boulevard'}, {'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 213-624-0000', 'place_name': 'Hilton Checkers Los Angeles', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '535 South Grand Avenue'}]
+End Search Results
+System: I've found some fantastic 4-star hotels in Los Angeles for you and your friends! Here are a couple of exciting options: 
+
+1. **Beverly Hills Marriott** - Located at 1150 South Beverly Drive, with a price of $176 per night. 
+2. **Crowne Plaza Los Angeles Airport** - Situated at 5985 West Century Boulevard, costing $192 per night.
+3. **Hilton Checkers Los Angeles** - Found at 535 South Grand Avenue, priced at $208 per night, and they do allow smoking.
+
+Would you like more details about any of these, or is there one that catches your eye for your adventure?
+User: The Hilton Checkers Los Angeles sounds perfect! I love that it allows smoking, which is a plus for some of my friends. Plus, the location sounds amazing! Can you book two rooms for me? We'll be checking in on the 15th and staying for five days. Can't wait to start this adventure!
+System: Absolutely, the Hilton Checkers Los Angeles sounds like a wonderful choice for your adventure! Let me confirm: you want to book two rooms, checking in on the 15th and staying for five days. Is that all correct before I proceed with the reservation?
+User: Yes, that's correct! Let's get those rooms booked. I'm so thrilled and can't wait to experience Los Angeles!
+System: Fantastic! Let's make those reservations for your exciting trip to Los Angeles. Just a moment while I book two rooms at Hilton Checkers Los Angeles for you and your friends, starting on the 15th for a five-day stay. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 'YYYY-MM-15', location: 'Los Angeles', number_of_rooms: 2, place_name: 'Hilton Checkers Los Angeles', stay_length: 5 })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 213-624-0000', 'place_name': 'Hilton Checkers Los Angeles', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '535 South Grand Avenue', 'check_in_date': 'YYYY-MM-15'}]
+End Search Results
+System: Your reservation at the Hilton Checkers Los Angeles has been successfully confirmed! You have two rooms booked from the 15th for a five-day stay. The hotel is located at 535 South Grand Avenue, and if you need to contact them, their phone number is +1 213-624-0000. Enjoy your thrilling adventure in Los Angeles! Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Let's dive into the excitement of booking a hotel in Las Vegas! Can you help me find a place that's lively and full of energy?
+System: Do you have a specific location in Las Vegas in mind, or are you open to any area within the city?
+User: I'm open to any area within the city, as long as it's close to the action and has a vibrant atmosphere! What's out there that's buzzing with life?
+System: What star rating are you interested in for the hotel? This will help narrow down the options for a vibrant and lively place in Las Vegas.
+User: Let's go big with a 5-star or 4-star hotel! I want a place that's luxurious and lively, where there's always something happening. What have you got for me?
+System: Great choice! I will look for 5-star or 4-star hotels in Las Vegas for you. Let's see what's available. APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 5})
+Search Results
+
+End Search Results
+System: It seems there were no results for a 5-star hotel in Las Vegas. Let me try searching for 4-star hotels to see what's available. APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 4})
+Search Results
+
+End Search Results
+System: It appears there were no results for 4-star hotels in Las Vegas either. Would you like to try a different star rating or adjust any other preferences, such as smoking allowance, to find available hotels?
+User: How about we try a 3-star hotel? As long as it's buzzing with energy and not too far from the action, I'm game! Or if there's a spot with fantastic amenities or a unique vibe, I'm all ears. Let's see what options we have!
+System: Let's search for a 3-star hotel in Las Vegas. I'll check what's available for you. APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 3})
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: I found a few 3-star hotels in Las Vegas for you. Here are some options:
+
+1. **Best Western Plus Las Vegas West**
+   - Price per night: $117
+   - Smoking allowed: No
+   - Address: 8669 West Sahara Avenue
+   - Phone: +1 702-256-3766
+
+2. **Hampton Inn Las Vegas/Summerlin**
+   - Price per night: $279
+   - Smoking allowed: Yes
+   - Address: 7100 Cascade Valley Court
+   - Phone: +1 702-360-5700
+
+3. **Oasis At Gold Spike**
+   - Price per night: $63
+   - Smoking allowed: No
+   - Address: 217 Las Vegas Boulevard North
+   - Phone: +1 702-768-9823
+
+Would you like more details on any of these options, or is there a particular one you're interested in?
+User: Oh, the Oasis At Gold Spike sounds intriguing with its prime location on Las Vegas Boulevard! Could you tell me more about this one, especially if it has any cool amenities or unique features? I'm all about a memorable experience!
+System: The available information for Oasis At Gold Spike is as follows:
+
+- **Price per night:** $63
+- **Smoking allowed:** No
+- **Address:** 217 Las Vegas Boulevard North
+- **Phone:** +1 702-768-9823
+- **Star rating:** 3
+
+Unfortunately, the search results do not include specific details about amenities or unique features. Would you like to proceed with booking a room at Oasis At Gold Spike, or is there anything else you'd like to know or explore?
+User: Let's go for it! Please reserve a room for me at the Oasis At Gold Spike. I'll check in on the 15th and stay for five days. Las Vegas, here I come!
+System: Please confirm that you want to book 1 room for 5 days at Oasis At Gold Spike, starting from 2023-11-15 in Las Vegas.
+User: Yes, that's perfect! Please go ahead and confirm the reservation. Can't wait to dive into the Las Vegas excitement!
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Las Vegas, number_of_rooms: 1, place_name: Oasis At Gold Spike, stay_length: 5})
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at Oasis At Gold Spike has been successfully confirmed. Enjoy your stay in Las Vegas, and if you need further assistance, feel free to reach out!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

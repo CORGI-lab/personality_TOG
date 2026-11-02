@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to find a restaurant in Palo Alto. Could you recommend a place with Italian cuisine?
+System: Can you please specify if you have any preference for the price range or any specific features like live music or alcohol service?
+User: I'm open to any price range, but I would prefer a place that serves alcohol.
+System: APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Italian, serves_alcohol: True})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}]
+End Search Results
+System: I recommend trying Vina Enoteca, which is an Italian restaurant located at 700 Welch Road in Palo Alto. It serves alcohol and is in the expensive price range. Would you like the contact number or additional information about this place?
+User: That sounds like a great option. I'd like to make a reservation there, please. Could you book a table for two at 7:00 pm this Friday?
+System: Can you please confirm that you want to book a table for 2 at Vina Enoteca in Palo Alto at 7:00 pm this Friday?
+User: Yes, please go ahead and confirm the reservation.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: Vina Enoteca, city: Palo Alto, time: 19:00, date: 2023-10-06, party_size: 2})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road', 'date': '2023-10-06', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Vina Enoteca in Palo Alto for 2 people at 7:00 pm on Friday, October 6th has been successfully confirmed. If you need to contact the restaurant, you can reach them at 650-646-3477. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Napa. Could you help me find one?
+System: What type of cuisine are you interested in for the restaurant in Napa?
+User: I'm interested in Italian cuisine. Can you find something like that?
+System: Sure, let me find an Italian restaurant in Napa for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Napa, cuisine: Italian})
+Search Results
+[{'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-224-3300', 'price_range': 'expensive', 'restaurant_name': 'Bistro Don Giovanni', 'serves_alcohol': False, 'street_address': '4110 Howard Lane'}, {'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-252-1022', 'price_range': 'expensive', 'restaurant_name': 'Oenotri', 'serves_alcohol': False, 'street_address': '1425 1st Street'}, {'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-254-8006', 'price_range': 'moderate', 'restaurant_name': 'Allegria', 'serves_alcohol': False, 'street_address': '1026 1st Street'}]
+End Search Results
+System: I found a few Italian restaurants in Napa. One option is Bistro Don Giovanni, located at 4110 Howard Lane. Would you like more information about this restaurant or perhaps another option?
+User: Could you tell me if Bistro Don Giovanni serves alcohol, and if they have live music?
+System: Bistro Don Giovanni does not serve alcohol and does not have live music. Would you like information on another restaurant or any other assistance?
+User: Yes, I’d like to know about another Italian restaurant in Napa that serves alcohol, please.
+System: Unfortunately, none of the Italian restaurants I found in Napa serve alcohol. Would you like information on any other features, or perhaps explore a different cuisine that might offer what you're looking for?
+User: Let's explore a different cuisine then. How about French restaurants in Napa?
+System: Let me check for French restaurants in Napa for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Napa, cuisine: French})
+Search Results
+[{'city': 'Napa', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '707-257-5157', 'price_range': 'very expensive', 'restaurant_name': 'La Toque', 'serves_alcohol': True, 'street_address': '1314 McKinstry Street'}]
+End Search Results
+System: I found a French restaurant in Napa called La Toque. It is located at 1314 McKinstry Street and they do serve alcohol. Would you like more information about this restaurant or assistance with anything else?
+User: I would like to make a reservation at La Toque. Could you book a table for two people at 7:00 pm tomorrow?
+System: Can you please confirm that you want to reserve a table for two at La Toque in Napa for tomorrow at 7:00 pm?
+User: Yes, please go ahead and make the reservation.
+System: Thank you for confirming. I will proceed to make the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: La Toque, city: Napa, time: 19:00, date: YYYY-MM-DD, party_size: 2})
+Search Results
+[{'city': 'Napa', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '707-257-5157', 'price_range': 'very expensive', 'restaurant_name': 'La Toque', 'serves_alcohol': True, 'street_address': '1314 McKinstry Street', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at La Toque in Napa for two people at 7:00 pm tomorrow has been successfully made. If there's anything else you need or any further assistance, please let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

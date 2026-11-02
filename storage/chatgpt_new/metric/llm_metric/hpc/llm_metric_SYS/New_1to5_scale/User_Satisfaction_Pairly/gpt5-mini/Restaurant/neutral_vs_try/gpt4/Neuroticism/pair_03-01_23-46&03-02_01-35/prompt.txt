@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. Can you help me find one that serves Italian cuisine?
+System: Sure, I'd be happy to help with that. Let me check for Italian restaurants in San Francisco. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Here are a few Italian restaurants in San Francisco that you might like. The first option is "54 Mint Ristorante Italiano," located at 16 Mint Plaza, and their phone number is 415-543-5100. They serve alcohol and are in the moderate price range. Another option is "A16," found at 2355 Chestnut Street, with the phone number 415-771-2216, also serving alcohol and priced moderately. Lastly, you might consider "Allegro Romano" at 1701 Jones Street, phone number 415-928-4002, which does not serve alcohol but is also in the moderate price range. Would you like more information or assistance with something else?
+User: Is there any chance you could check if any of these places have live music? It would be nice to have that kind of atmosphere to distract me.
+System: Unfortunately, none of the Italian restaurants I found in San Francisco—54 Mint Ristorante Italiano, A16, or Allegro Romano—offer live music. If you're interested, I can help you find other options or additional features that might enhance your dining experience.
+User: Could you find an Italian restaurant in San Francisco that has a quiet and calming atmosphere instead? Maybe something that feels a bit more relaxing?
+System: While the specific ambiance of a restaurant isn't detailed in the search results, I can suggest places based on other attributes, like those that don't have live music, which might contribute to a quieter environment. Among the options I listed earlier, "Allegro Romano" might be a suitable choice as it doesn't have live music and doesn't serve alcohol, which could contribute to a more serene setting. Would you like to proceed with this option, or do you need further assistance in finding another restaurant?
+User: I guess Allegro Romano could work. Can you make a reservation for two people at around 7:00 pm tomorrow?
+System: Could you please confirm the date for the reservation at "Allegro Romano" for two people at 7:00 pm?
+User: Yes, please make the reservation for tomorrow.
+System: Great! I'll proceed with making a reservation for two people at Allegro Romano in San Francisco at 7:00 pm tomorrow. Please hold on for a moment while I confirm the reservation details.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Allegro Romano', city: 'San Francisco', time: '19:00', date: '2023-10-27', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street', 'date': '2023-10-27', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at Allegro Romano in San Francisco at 7:00 pm on October 27th has been successfully confirmed. The restaurant is located at 1701 Jones Street, and their phone number is 415-928-4002. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I’m looking for a restaurant in San Francisco that serves Italian food. Can you help me find one?
+System: Sure! Do you have any preferences regarding the price range or whether the restaurant has live music or serves alcohol?
+User: I guess I'd prefer a moderate price range, but I'm not entirely sure. Does it have to be live music? Oh, and I really hope they serve alcohol. That would be nice.
+System: Let me check for restaurants in San Francisco that serve Italian food and have a moderate price range while serving alcohol. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: moderate, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-282-4969', 'price_range': 'moderate', 'restaurant_name': 'Bacco', 'serves_alcohol': True, 'street_address': '737 Diamond Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that match your preferences. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza, which serves alcohol but does not have live music. Would you like more information about this restaurant, or would you like to hear about another option?
+User: Can you tell me if there are any other options that might have live music? I just want to make sure I'm not missing out on anything better.
+System: Currently, the options I found do not feature live music. However, another option you might consider is A16, located at 2355 Chestnut Street. It also offers a moderate price range and serves alcohol. Would you like more information about A16, or is there anything else you'd like to know?
+User: Is there any chance that A16 has a cozy atmosphere? I just want to make sure it's a comfortable place before I make a decision.
+System: Unfortunately, the search results do not provide specific information about the atmosphere of A16. However, I can confirm that it's an Italian restaurant in San Francisco with a moderate price range and serves alcohol. Would you like to know anything else about A16 or any other restaurant options?
+User: I guess I'm just worried it might not be the right fit. Is there any other Italian place that might have a bit more ambiance or charm? I just want to make sure I pick the right spot.
+System: I understand your concern. Based on the search results, Bacco, located at 737 Diamond Street, is another Italian restaurant option in San Francisco with a moderate price range and serves alcohol. While I don't have specific details about its ambiance, it might be worth considering. Would you like more information about Bacco, or is there anything else I can assist you with?
+User: I'm feeling really anxious about making the wrong choice. Can you tell me more about Bacco, like if it has any unique features or anything that stands out?
+System: Bacco is an Italian restaurant located at 737 Diamond Street in San Francisco. It offers a moderate price range and serves alcohol. While the search results do not provide specific unique features, Bacco could be a great choice given its location and offerings. Would you like to know anything else about Bacco, or is there anything specific you're looking for in a restaurant that I can help with?
+User: I still feel uneasy about not knowing enough. Is there any way to find out if Bacco has good reviews or maybe something that highlights its charm? I really want to make sure it's the right pick.
+System: I'm sorry, but I don’t have access to reviews or detailed descriptions of a restaurant's ambiance. However, Bacco is known for its moderate price range and the fact that it serves alcohol. You might want to consider visiting their website or checking online review platforms for more insight into the atmosphere and customer experiences. If there's anything else you'd like to know or if you'd like to explore other options, please let me know.
+User: I hate feeling like I'm making a blind decision. Can you just go ahead and make a reservation for me at Bacco? I hope I'm not making a mistake.
+System: Sure, I can help with the reservation at Bacco. Could you please provide me with the date, time, and the number of people for the reservation?
+User: It's so nerve-wracking to commit to this, but let's try for tomorrow at 7:00 PM for two people. I really hope this turns out well.
+System: Thank you for providing the details. Just to confirm, you'd like to make a reservation for two people at Bacco in San Francisco for tomorrow at 7:00 PM, correct?
+User: Yes, that's correct. Please go ahead and make the reservation. I really hope it goes smoothly.
+System: Great, I will proceed with making the reservation for you. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Bacco', city: 'San Francisco', time: '19:00', date: '2023-10-25', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-282-4969', 'price_range': 'moderate', 'restaurant_name': 'Bacco', 'serves_alcohol': True, 'street_address': '737 Diamond Street', 'date': '2023-10-25', 'party_size': '2', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-955-1919', 'price_range': 'moderate', 'restaurant_name': 'Barbacco', 'serves_alcohol': False, 'street_address': '220 California Street', 'date': '2023-10-25', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Bacco in San Francisco for two people on October 25th at 7:00 PM has been successfully made. If you need their contact information, you can reach Bacco at 415-282-4969. The restaurant is located at 737 Diamond Street. If there's anything else I can assist you with, feel free to let me know. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

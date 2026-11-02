@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Palo Alto. Could you help me with that?
+System: Certainly! Do you have a specific type of cuisine in mind, or would you like me to suggest one for you?
+User: I'm interested in Italian cuisine. Could you provide some options within that category?
+System: APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: Here are some Italian restaurant options in Palo Alto: 
+
+1. **Italico Restaurant**: Located at 341 California Avenue, this restaurant offers an expensive dining experience. However, they do not serve alcohol.
+
+2. **Osteria Toscana**: Situated at 247 Hamilton Avenue, this restaurant also falls in the expensive price range and does not serve alcohol.
+
+3. **Vina Enoteca**: Located at 700 Welch Road, this restaurant offers an expensive dining experience and does serve alcohol.
+
+Please let me know if you would like more details on any of these options or have any other preferences!
+User: Could you please provide more information about Vina Enoteca, specifically if they have live music and what their price range is? Additionally, I would like to make a reservation there, so please include details on their availability for a party of four this coming Saturday at 7:00 PM.
+System: Vina Enoteca is an expensive Italian restaurant located at 700 Welch Road in Palo Alto. They do not feature live music but they do serve alcohol. To proceed with the reservation for a party of four this coming Saturday at 7:00 PM, let me confirm the date. Could you please provide the exact date for the upcoming Saturday?
+User: The exact date for this coming Saturday is October 21st. Please proceed with the reservation for a party of four at 7:00 PM.
+System: Thank you for confirming the date. I will now proceed with the reservation at Vina Enoteca for a party of four on October 21st at 7:00 PM. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Vina Enoteca, city: Palo Alto, date: 2023-10-21, time: 19:00, party_size: 4})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road', 'date': '2023-10-21', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Vina Enoteca for a party of four on October 21st at 7:00 PM has been successfully made. The restaurant is located at 700 Welch Road in Palo Alto. If you need any further assistance or details, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find and reserve a restaurant in Palo Alto. Can you help me with that?
+System: Certainly! To help you find and reserve a restaurant in Palo Alto, could you please let me know which type of cuisine you prefer and for how many people the reservation will be?
+User: I'm interested in Italian cuisine, and the reservation will be for four people.
+System: Could you please let me know the date and time for the reservation at the Italian restaurant in Palo Alto?
+User: I would like to make the reservation for this Saturday at 7:00 pm.
+System: To confirm your reservation request, you would like to reserve a table for four people at an Italian restaurant in Palo Alto this Saturday at 7:00 pm. Please hold on while I check the availability for you. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Italian", city: "Palo Alto", cuisine: "Italian", date: "YYYY-MM-DD", time: "19:00", party_size: 4})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street', 'date': 'YYYY-MM-DD', 'party_size': '4', 'time': '19:00'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-324-8033', 'price_range': 'moderate', 'restaurant_name': 'La Strada Ristorante Italiano', 'serves_alcohol': False, 'street_address': '335 University Avenue', 'date': 'YYYY-MM-DD', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: The reservation is confirmed at Buca Di Beppo Italian Restaurant, located at 643 Emerson Street, Palo Alto. This restaurant serves alcohol and does not have live music. If you need any further assistance or details, feel free to ask!
+User: Thank you for the reservation details. Could you please confirm the reservation for four people this Saturday at 7:00 pm at Buca Di Beppo Italian Restaurant?
+System: Your reservation for four people this Saturday at 7:00 pm at Buca Di Beppo Italian Restaurant in Palo Alto is confirmed. If you have any more questions or need further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

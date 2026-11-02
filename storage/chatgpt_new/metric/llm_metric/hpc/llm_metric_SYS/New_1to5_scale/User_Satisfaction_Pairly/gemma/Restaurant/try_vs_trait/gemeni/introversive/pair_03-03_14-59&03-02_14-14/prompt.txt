@@ -1,0 +1,106 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco.
+
+System: Okay, I can help with that. Do you have a particular type of cuisine in mind?
+
+User: Not really. Maybe something not too crowded?
+
+System: Given you prefer a less crowded place and are open to suggestions, perhaps you'd be interested in a restaurant that offers a more relaxed dining experience. How about trying Vietnamese cuisine?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Vietnamese})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street'}]
+End Search Results
+System: I found three Vietnamese restaurants in San Francisco: Anh Hong, Aux Delices, and Co Nam. Anh Hong and Co Nam serve alcohol, while Aux Delices does not. All three are moderately priced. Would any of these interest you?
+
+User: Maybe Aux Delices. Can you book it for me?
+
+System: Do you have a preferred date and time, and how many people will be in your party?
+
+User: Uh, yes. Can you book it for tomorrow... for just one person... at 7 pm?
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Aux Delices, city: San Francisco, date: 2019-03-02, party_size: 1, time: 19:00})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street', 'date': '2019-03-02', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Okay, your reservation at Aux Delices for tomorrow, March 2nd, at 7 pm for one person has been made.
+
+User: Okay, thank you. That's all.
+
+System: You're welcome! I'm glad I could help. If you need anything else, feel free to ask. Enjoy your dinner at Aux Delices!
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: Do you have a preferred cuisine in mind?
+
+User: Maybe something simple, like American.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: I found three American restaurants in San Francisco. They are all in the expensive price range. Would you like to hear about them?
+
+User: Okay, sure. Tell me about one.
+
+System: 1760 is located at 1760 Polk Street. The phone number is 415-359-1212. It is in the expensive price range and does not serve alcohol. Does that sound like a place you'd be interested in?
+
+User: No, not really. Maybe something less... loud. Do you have anything without alcohol?
+
+System: Okay, I can look for another option. Let me check for American restaurants in San Francisco that don't serve alcohol.
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, serves_alcohol: False})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}]
+End Search Results
+System: I found three American restaurants in San Francisco that don't serve alcohol. 1760 and 3rd Cousin are in the expensive price range, while Academy Bar And Kitchen is in the moderate price range. Would you prefer to hear about the moderately priced option?
+
+User: Yes, please.
+
+System: Academy Bar And Kitchen is located at 1800 Fillmore Street, and their phone number is 415-775-1800. It's in the moderate price range and does not have live music. Would you like to know more, or is this sufficient?
+
+User: That sounds okay. Could you book a table for me? Just for one person.
+
+System: Certainly. What time would you like to reserve a table for one at Academy Bar And Kitchen?
+User: Maybe 7pm?
+
+System: Okay, let me check. So, you want to reserve a table for one person at Academy Bar And Kitchen in San Francisco at 7:00 PM. Is that correct?
+
+User: Yes, that's right.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Academy Bar And Kitchen, city: San Francisco, date: 2019-03-01, party_size: 1, time: 19:00})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street', 'date': '2019-03-01', 'party_size': '1', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2019-03-01', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: I have confirmed your reservation for one person at Academy Bar And Kitchen in San Francisco for 7:00 PM. Is there anything else I can assist you with?
+
+User: No, that will be all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

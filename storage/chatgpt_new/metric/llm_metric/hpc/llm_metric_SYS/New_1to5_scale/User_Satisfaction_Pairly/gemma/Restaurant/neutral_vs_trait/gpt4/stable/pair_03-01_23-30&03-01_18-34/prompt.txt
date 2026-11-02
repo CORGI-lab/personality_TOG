@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a nice restaurant in San Francisco with a cozy atmosphere. Could you suggest something?
+System: Do you have a specific type of cuisine in mind, or are you open to any cuisine options?
+User: I'm open to any cuisine options, as long as the atmosphere is cozy and inviting.
+System: Could you specify if you have any preference for the price range or if you'd like the restaurant to have live music or serve alcohol? These details could help me narrow down the options for you.
+User: I'm looking for something moderately priced, and it would be nice if they serve alcohol. Live music isn't necessary.
+System: Great. Let me find a moderately priced restaurant in San Francisco that serves alcohol for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: American, price_range: moderate, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-627-4303', 'price_range': 'moderate', 'restaurant_name': 'All Spice', 'serves_alcohol': True, 'street_address': '648 Bush Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-977-5155', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '865 Market Street'}]
+End Search Results
+System: I found a few options for you in San Francisco. One of them is Alba Ray's, located at 2293 Mission Street. It serves American cuisine, is moderately priced, and offers alcohol. Would you like more information about this restaurant or details about another option?
+User: Alba Ray's sounds interesting. Can you make a reservation for two people at 7:00 pm tomorrow?
+System: Certainly! Let me confirm the details for the reservation. You would like to make a reservation for two people at Alba Ray's in San Francisco at 7:00 pm tomorrow. Could you please confirm this information before I proceed with the booking?
+User: Yes, that information is correct. Please go ahead and make the reservation.
+System: Thank you for confirming. I will now proceed to make the reservation for you at Alba Ray's. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Alba Ray's", city: 'San Francisco', time: '19:00', date: '2023-10-20', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at Alba Ray's in San Francisco at 7:00 pm on October 20th has been successfully made. The restaurant is located at 2293 Mission Street. If you need any further assistance, feel free to ask. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in San Francisco. I'm looking for a place with Italian cuisine.
+System: APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco. One option is 54 Mint Ristorante Italiano located at 16 Mint Plaza. They offer a moderate price range and serve alcohol. Would you like more information about this restaurant or perhaps another one from the list?
+User: Can you tell me if 54 Mint Ristorante Italiano has live music?
+System: Unfortunately, 54 Mint Ristorante Italiano does not have live music. Would you like to know more about another restaurant from the list, or is there anything else you need?
+User: Could you suggest another Italian restaurant in San Francisco? I’d appreciate any details on live music as well.
+System: Another Italian restaurant I found in San Francisco is A16, located at 2355 Chestnut Street. They offer a moderate price range and serve alcohol, but they do not have live music. Would you like more information about A16, or is there something else you'd like to explore?
+User: I think A16 sounds promising. Can you make a reservation for two people at A16 for tomorrow evening at 7:00 pm?
+System: Can you please confirm that you'd like to book a table for two people at A16 in San Francisco for tomorrow evening at 7:00 pm?
+User: Yes, please go ahead and make the reservation.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: A16, city: San Francisco, date: [YYYY-MM-DD], time: 19:00, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '[YYYY-MM-DD]', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 in San Francisco for two people tomorrow evening at 7:00 pm has been successfully made. If you need any further assistance or information about the restaurant, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

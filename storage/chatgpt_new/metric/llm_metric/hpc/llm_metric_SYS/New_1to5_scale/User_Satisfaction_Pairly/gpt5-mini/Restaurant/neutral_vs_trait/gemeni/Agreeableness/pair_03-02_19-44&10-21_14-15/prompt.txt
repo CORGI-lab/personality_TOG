@@ -1,0 +1,123 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm feeling peckish and would love to find a nice restaurant in San Francisco. I'm open to suggestions, but somewhere not too noisy would be great if possible.
+
+System: Given your openness, I'd be happy to suggest a restaurant. I'm thinking maybe a nice, quiet Italian place would be a good fit. How does that sound?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Alright, based on the search results, I see three Italian restaurants in San Francisco that might be a good fit for you. They all seem to be moderately priced and don't have live music, which should keep the noise level down.
+
+*   54 Mint Ristorante Italiano is located at 16 Mint Plaza and their phone number is 415-543-5100. They serve alcohol.
+*   A16 is located at 2355 Chestnut Street and their phone number is 415-771-2216. They also serve alcohol.
+*   Allegro Romano is located at 1701 Jones Street and their phone number is 415-928-4002. However, they do not serve alcohol.
+
+Would any of these sound appealing to you? Or perhaps you'd like me to provide more information about one of them?
+
+User: Oh, those all sound lovely! Italian is perfect. Hmm, since I'm trying to be good, maybe the Allegro Romano would be best, even though it doesn't serve alcohol. Could you possibly check if they have any vegetarian options available?
+
+System: I can certainly check if Allegro Romano has vegetarian options for you. However, this information is not available in the restaurant details provided. Would you like me to try and find this information for you, or would you prefer to consider another restaurant where I might have more details about their vegetarian options?
+
+User: Oh, that's alright, thank you for trying! Since you don't have the vegetarian information readily available, perhaps we could stick with one of the other Italian restaurants then? I'm sure they have some vegetarian options, and it's not a big deal if they serve alcohol. Which one would you recommend, considering I'm looking for a moderately priced, not-too-noisy place?
+
+System: Both 54 Mint Ristorante Italiano and A16 seem like excellent choices, as they both have moderate price ranges and don't have live music. Since you're open to suggestions, perhaps 54 Mint Ristorante Italiano might be a good start? It's located at 16 Mint Plaza, and their phone number is 415-543-5100. Does that sound good, or would you like to know more about A16 before deciding?
+
+User: 54 Mint Ristorante Italiano sounds wonderful! Could you possibly make a reservation for me there? I'm planning to visit tomorrow evening with three other friends. We were hoping to dine around 7:30 PM, if possible.
+
+System: I'd be happy to make a reservation for you at 54 Mint Ristorante Italiano for tomorrow evening at 7:30 PM for a party of four. Could you please confirm the date (YYYY-MM-DD) you would like to make this reservation for?
+
+User: Oh, absolutely! The date is 2024-07-14. Thank you so much for helping me with this!
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 54 Mint Ristorante Italiano, city: San Francisco, date: 2024-07-14, time: 19:30, party_size: 4, cuisine: Italian})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2024-07-14', 'party_size': '4', 'time': '19:30'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2024-07-14', 'party_size': '4', 'time': '19:30'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2024-07-14', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Wonderful! I have successfully made a reservation for you and your three friends at 54 Mint Ristorante Italiano for tomorrow, July 14th, 2024, at 7:30 PM. I hope you and your friends have a delightful dining experience! Is there anything else I can help you with today?
+
+User: That's perfect! I really appreciate you taking the time to book that for us. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm hoping to find a nice restaurant in San Francisco. I'm open to suggestions!
+
+System: Okay, I can help with that! Are you open to any particular type of cuisine?
+
+User: Oh, I'm glad to hear that! I'm happy to try anything, really. I'm just looking for a pleasant place to have a meal, so whatever you think is good is fine with me.
+
+System: Since you're open to anything, how about American cuisine?
+
+User: That sounds perfectly lovely! Are there any American restaurants you'd recommend in particular?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: I found three American restaurants in San Francisco: 1760, 25 Lusk, and 3rd Cousin. 1760 and 3rd Cousin do not serve alcohol, while 25 Lusk does. All three are in the expensive price range. Do any of those sound good?
+
+User: Oh, that's very kind of you to offer those suggestions! I don't suppose there are any that are a bit more moderately priced? I'm not too fussy about the alcohol, so that's not a problem at all.
+
+System: Okay, let me search for American restaurants in San Francisco with a moderate price range.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: Okay, I found three moderately priced American restaurants in San Francisco: Academy Bar And Kitchen, Alba Ray's, and Aliment. Alba Ray's serves alcohol, while Academy Bar And Kitchen and Aliment do not. Do any of those sound good?
+
+User: Oh, they all sound interesting! Could you maybe tell me a little more about Academy Bar And Kitchen? What's it like?
+
+System: Okay, let me check the details for Academy Bar And Kitchen. It is located at 1800 Fillmore Street, San Francisco and the phone number is 415-775-1800. It does not serve alcohol and does not have live music. Is there anything else you would like to know?
+
+User: That sounds like a nice place. I think it would be wonderful to make a reservation there, if that's alright with you.
+
+System: Certainly! I can help you with that. For what date and time would you like to make the reservation, and how many people will be in your party?
+
+User: Oh, thank you so much! I'd like to make the reservation for today, if that's possible. And would 2 people be alright? As for the time, perhaps around 7:00 pm? I truly appreciate your help.
+
+System: Okay, let me confirm the details. You would like to make a reservation for 2 people at Academy Bar And Kitchen in San Francisco for today at 7:00 pm. Is that correct?
+
+User: Yes, that's perfectly correct! Thank you for being so helpful.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Academy Bar And Kitchen, city: San Francisco, date: 2024-01-03, party_size: 2, time: 19:00})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street', 'date': '2024-01-03', 'party_size': '2', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2024-01-03', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: There seem to be two restaurants matching your criteria: Academy Bar And Kitchen and B. Did you have a preference?
+
+User: Oh, I am so sorry. I meant Academy Bar And Kitchen.
+
+System: Okay, let me confirm the details. You would like to make a reservation for 2 people at Academy Bar And Kitchen in San Francisco for today at 7:00 pm. Is that correct?
+
+User: Yes, that is correct. Thank you so much for your patience!
+
+System: OK. I have made a reservation for 2 at Academy Bar And Kitchen for today at 7:00 pm. The phone number is 415-775-1800, and the address is 1800 Fillmore Street, San Francisco.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

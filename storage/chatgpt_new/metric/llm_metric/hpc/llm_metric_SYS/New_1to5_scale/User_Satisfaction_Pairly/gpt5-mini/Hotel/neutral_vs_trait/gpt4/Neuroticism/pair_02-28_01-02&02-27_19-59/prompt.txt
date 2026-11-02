@@ -1,0 +1,98 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel in New York. Can you help me find one?
+System: Certainly, I can help with that. Could you please let me know your preferred check-in date and how long you'll be staying? Also, do you have any specific requirements regarding the star rating or smoking allowance for the hotel?
+User: I'm feeling a bit anxious about the trip, and I want to make sure everything is perfect. Can you find a 4-star hotel that allows smoking? I'll be checking in on the 15th and staying for seven days.
+System: Thank you for sharing those details. Just to confirm, you'll be checking in on the 15th and staying for seven days in a 4-star hotel in New York that allows smoking. Let me proceed with searching for a suitable hotel for you. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4, smoking_allowed: True })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street'}]
+End Search Results
+System: I've found a few 4-star hotels in New York that allow smoking. Here are your options:
+
+1. **1 Hotel Brooklyn Bridge**: Located at 60 Furman Street, Brooklyn, with a price of $216 per night. Contact number: +1 833-625-6111.
+2. **6 Columbus Hotel**: Located at 308 West 58th Street, with a price of $396 per night. Contact number: +1 212-204-3000.
+3. **Aka Wall Street**: Located at 84 William Street, with a price of $200 per night. Contact number: +1 212-252-9090.
+
+Please let me know which hotel you prefer, so I can proceed with the reservation.
+User: I'm not sure which one to choose. What if I pick the wrong one and it's not what I expected? I guess the 6 Columbus Hotel sounds nice, but then again, it's quite pricey compared to the others. Could you tell me more about these hotels, like their amenities or anything that might help me decide? I just want to make sure I'm making the right choice.
+System: I'm here to help you make the best decision. Unfortunately, the current information I have doesn't include specific amenities or detailed features for each hotel. However, I can reassure you that all of these options are 4-star hotels that allow smoking, which aligns with your requirements. If you're concerned about prices, the **Aka Wall Street** offers a more budget-friendly option at $200 per night. If proximity to certain areas or other specific features are important to you, feel free to let me know so we can focus on what matters most for your stay. Please let me know how you'd like to proceed with your booking.
+User: I'm still feeling uneasy about making a decision without knowing more details. What if I end up regretting it? I know the Aka Wall Street is more budget-friendly, but what if it turns out to be disappointing? Is there any way to find out more about its location or what it's like inside? I just want to make sure I don't regret this choice.
+System: I completely understand your concerns, and I'm here to assist you in making a choice you feel comfortable with. While I currently don't have additional details about the interior or amenities of Aka Wall Street, the location at 84 William Street is quite central in New York, which might be beneficial for exploring the city. If you're worried about the experience, you might consider the fact that it's a 4-star hotel, which generally indicates a certain level of quality and service. If there's anything else specific that might help ease your decision, please let me know, or if you'd like to proceed with a reservation at any of the options we've discussed, I'm ready to assist with that.
+User: I appreciate your patience. I'm just really torn about this decision. I think knowing it's in a central location helps a bit. Alright, let's go ahead with the reservation for Aka Wall Street. But please make sure everything is confirmed correctly; I just don't want anything to go wrong.
+System: To ensure everything is set up perfectly, let's confirm the details for your reservation. You'll be checking in on the 15th and staying for seven days at the **Aka Wall Street**, located at 84 William Street in New York. The hotel is a 4-star establishment that allows smoking, and the rate is $200 per night. Please confirm these details so I can proceed with the reservation for you.
+User: Yes, please go ahead and make the reservation. I'm really hoping everything goes smoothly.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: '2023-11-15', location: 'New York', number_of_rooms: 1, place_name: 'Aka Wall Street', stay_length: 7 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the **Aka Wall Street** has been successfully confirmed. You'll be checking in on the 15th and staying for seven days. The hotel is located at 84 William Street, New York, with a rate of $200 per night. If there's anything else you need or if you have any further questions, feel free to let me know. I'm here to ensure your experience is as smooth as possible.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in New York, please. Can you help me with that? I'm a bit anxious about finding the right place.
+System: Could you please let me know if you have any specific preferences regarding the star rating or smoking allowance for the hotel in New York? This will help me narrow down the options for you.
+User: I'm really worried about the cleanliness and quality, so maybe a 4 or 5-star hotel would be best. And I really can't deal with smoke, so it has to be non-smoking. Can you find something like that for me?
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5, smoking_allowed: False })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-226-6400', 'place_name': 'Crosby Street Hotel', 'price_per_night': 140, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '79 Crosby Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-804-8880', 'place_name': 'Mondrian Park Avenue', 'price_per_night': 555, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '444 Park Avenue South'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street'}]
+End Search Results
+System: I found a few 5-star hotels in New York that are non-smoking. Here are the options:
+
+1. **Crosby Street Hotel** - Price per night: $140, Address: 79 Crosby Street
+2. **Mondrian Park Avenue** - Price per night: $555, Address: 444 Park Avenue South
+3. **Park Hyatt New York** - Price per night: $450, Address: 153 West 57th Street
+
+Would you like more information on any of these hotels or need help with something else?
+User: The prices seem pretty high, and it's making me a bit uneasy. Can you provide more details about the Crosby Street Hotel? Maybe it'll help me decide if it's worth the cost.
+System: The Crosby Street Hotel is a 5-star hotel located at 79 Crosby Street in New York. It is a non-smoking establishment, ensuring a smoke-free environment. The price per night is $140. If you need any more information or assistance with making a reservation, feel free to let me know!
+User: $140 per night is still a bit steep. I’m worried it might not be worth it, but I also don’t want to end up in a less comfortable place. Could you tell me about any amenities or services they offer? Maybe that will help me feel more confident about the choice.
+System: I'm sorry, but the information about amenities or services for the Crosby Street Hotel is not available in the current data. If you're looking for more budget-friendly options or have other preferences, please let me know, and I can help you explore different choices.
+User: I'm feeling really stuck because I can't figure out if I'm making the right choice. Maybe it would be better to look at some other affordable 4-star hotels that are non-smoking? I just need to find a balance between comfort and cost without feeling like I'm compromising too much on either. Can you help with that?
+System: Certainly, let's look for some 4-star hotels in New York that are non-smoking and might offer a more affordable option. Please give me a moment to search for these options for you. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 646-744-3100', 'place_name': 'Aka Central Park', 'price_per_night': 232, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '42 West 58th Street'}]
+End Search Results
+System: I found a few 4-star hotels in New York that are non-smoking, which might be more budget-friendly:
+
+1. **Ac Hotel New York Times Square** - Price per night: $176, Address: 260 West 40th Street
+2. **Ace Hotel** - Price per night: $296, Address: 20 West 29th Street
+3. **Aka Central Park** - Price per night: $232, Address: 42 West 58th Street
+
+Would you like more information on any of these hotels, or is there anything else I can assist you with?
+User: The prices are still making me quite nervous, especially since I don’t know much about these places. Could you tell me more about the Ac Hotel New York Times Square? Maybe understanding more about what they offer will help me feel a bit more at ease with the decision.
+System: I'm sorry, but the current data does not include detailed information about the amenities or services offered by the Ac Hotel New York Times Square. However, it is a 4-star, non-smoking hotel located at 260 West 40th Street, New York, with a price of $176 per night. If you have any other questions or need further assistance, feel free to let me know!
+User: Honestly, this is all so nerve-wracking. I feel like I'm just going in circles. Maybe I should just settle for Crosby Street Hotel since it's a 5-star and non-smoking. Could you go ahead and make a reservation for me there? I'll need it from the 10th of next month for five days. Please make sure everything is in order.
+System: Please confirm that you would like to book one room at the Crosby Street Hotel in New York, starting from the 10th of next month, for a duration of five days. Once confirmed, I'll proceed with the reservation.
+User: Yes, please go ahead and make the reservation for one room at the Crosby Street Hotel. I hope everything will be okay with the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: New York, number_of_rooms: 1, place_name: Crosby Street Hotel, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': '1', 'phone_number': '+1 212-806-7000', 'place_name': 'Crosby Street Hotel', 'price_per_night': 144, 'smoking_allowed': False, 'star_rating': '4', 'street_address': '11 East 31st Street', 'check_in_date': '2023-11-10', 'stay_length': '5'}]
+End Search Results
+System: Your reservation at the Crosby Street Hotel in New York has been successfully made for one room, starting from the 10th of next month for five days. If you need any further assistance or have any additional questions, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

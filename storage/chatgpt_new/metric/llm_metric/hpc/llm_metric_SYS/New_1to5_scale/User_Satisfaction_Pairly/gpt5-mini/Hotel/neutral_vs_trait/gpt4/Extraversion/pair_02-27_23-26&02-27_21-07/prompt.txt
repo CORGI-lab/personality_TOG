@@ -1,0 +1,88 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm planning an exciting trip to San Francisco and I need to find a fantastic hotel to stay in. Could you help me out with that? I'd love something lively and fun, maybe with a nice view and some cool amenities. What do you have?
+System: Do you have any specific star rating or smoking preference for the hotel in San Francisco? Let me know so I can find the best options for you.
+User: I’m all about those 4 or 5-star experiences! As for smoking, I’m fine with non-smoking. What do you have that’s vibrant and lively?
+System: APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 5, smoking_allowed: False })
+Search Results
+
+End Search Results
+System: The search did not return any results for a 5-star, non-smoking hotel in San Francisco. Would you like me to try searching for 4-star hotels instead, or adjust any other preferences?
+User: Let's definitely check out those 4-star options! I'm ready to explore all the exciting possibilities San Francisco has to offer. What have you got for me?
+System: APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-348-1111', 'place_name': 'Hotel Zelos San Francisco', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '12 4th Street'}]
+End Search Results
+System: I found some lively 4-star, non-smoking hotels in San Francisco for you:
+
+1. **Argonaut Hotel**: Located at 495 Jefferson Street, with rooms priced at $408 per night. 
+
+2. **Hotel Spero**: Located at 405 Taylor Street, with rooms priced at $80 per night.
+
+3. **Hotel Zelos San Francisco**: Located at 12 4th Street, with rooms priced at $96 per night.
+
+Would you like more information about any of these hotels or are you interested in making a reservation?
+User: Hotel Zelos San Francisco sounds intriguing! Could you tell me more about the amenities and any special features it offers? I'm all about those unique experiences!
+System: The search results did not provide specific information about amenities or special features for Hotel Zelos San Francisco. However, I can confirm that it's a 4-star, non-smoking hotel located at 12 4th Street. The price per night is $96. If you're interested, I can assist with making a reservation or provide more details on other available options. Let me know how you'd like to proceed!
+User: Hotel Zelos San Francisco sounds like a great choice! Let's go ahead and reserve a room there. I'm planning to check in on the 10th and stay for five days. I'm so excited to explore the city! Can you help me with that reservation?
+System: Please confirm that you'd like to reserve one room at Hotel Zelos San Francisco for five days, starting from the 10th. Once confirmed, I will proceed with the reservation.
+User: Absolutely, I'm thrilled to confirm! Let's reserve one room at Hotel Zelos San Francisco for my exciting five-day adventure starting on the 10th. Thanks for making this happen!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: San Francisco, number_of_rooms: 1, place_name: Hotel Zelos San Francisco, stay_length: 5 })
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-348-1111', 'place_name': 'Hotel Zelos San Francisco', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '12 4th Street', 'check_in_date': '2023-11-10'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at Hotel Zelos San Francisco has been successfully confirmed. You will be staying for five days starting from the 10th. The address of the hotel is 12 4th Street, and if you need to contact them, their phone number is +1 415-348-1111. Enjoy your exciting adventure in San Francisco! Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm looking to book a fabulous hotel in New York City. Can you help me find something amazing? Maybe with a great star rating and a lively atmosphere?
+System: Let's find you an amazing place to stay in New York City! Could you let me know your check-in date and how long you plan to stay? Also, how many rooms will you need for your exciting trip?
+User: I'll be arriving on the 10th and planning to stay for a week. I'll need just one room for now. Let's find a place that's buzzing with energy!
+System: Great! Just to confirm, your check-in date is the 10th, and you're staying for a week with one room in New York City. Since you're looking for a lively atmosphere, I'll randomly pick a hotel with a vibrant setting and a great star rating. Let's see what fantastic options we have for you! 
+
+APICall(method='ReserveHotel', parameters={place_name: 'dontcare', check_in_date: 2023-11-10, stay_length: 7, location: 'New York City', number_of_rooms: 1})
+Search Results
+[{'location': 'New York City', 'number_of_rooms': '1', 'phone_number': '+1 212-513-0003', 'place_name': 'dontcare', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': '', 'street_address': '49-53 Ann Street', 'check_in_date': '2023-11-10', 'stay_length': '7'}]
+End Search Results
+System: It looks like we're unable to find a hotel with a specified star rating in New York City for your stay from the 10th for a week. Would you like to adjust your preferences, perhaps try a different star rating or check if smoking is allowed, to find more options? Let me know how you'd like to proceed!
+User: Hmm, let's try broadening the search a bit. How about we look for hotels with at least a 3-star rating? And yes, checking if smoking is allowed would be helpful too. I'm all about having options!
+System: Sure thing! Let's expand the search to include hotels with at least a 3-star rating and check if smoking is allowed. I'll find you some exciting options in New York City. Hang tight for a moment! 
+
+APICall(method='SearchHotel', parameters={location: 'New York City', star_rating: 3, smoking_allowed: 'dontcare'})
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: I've found some fantastic options for you in New York City! We have the 3-star hotel 11 Howard, located on Howard Street, with smoking allowed and a lively atmosphere for $270 per night. There's also the Adria Hotel & Conference Center on Northern Boulevard, also allowing smoking for $234 per night. Finally, the Aloft Harlem on Frederick Douglass Boulevard, which doesn’t allow smoking, is available for $243 per night. Which one of these vibrant options would you like to explore further?
+User: Oh, these sound exciting! Let's go with 11 Howard on Howard Street. It seems like a perfect match with its lively vibe and smoking allowed. Can you reserve it for me, please?
+System: Sure, let's get you set up for an exciting stay at 11 Howard on Howard Street! Just to confirm before I proceed, you'll be checking in on November 10th, staying for a week, with one room. Once you confirm, I'll make the reservation for you right away!
+User: Yes, that's correct! Please go ahead and make the reservation for me. I'm super excited about this stay!
+System: Fantastic! Let me make the reservation for you at 11 Howard on Howard Street. Here we go! 
+
+APICall(method='ReserveHotel', parameters={place_name: '11 Howard', check_in_date: '2023-11-10', stay_length: 7, location: 'New York City', number_of_rooms: 1})
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at 11 Howard on Howard Street has been successfully made! You're all set for a fantastic and lively stay from November 10th for a week. If there's anything else you need or any questions you have, feel free to let me know. Enjoy your exciting trip!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

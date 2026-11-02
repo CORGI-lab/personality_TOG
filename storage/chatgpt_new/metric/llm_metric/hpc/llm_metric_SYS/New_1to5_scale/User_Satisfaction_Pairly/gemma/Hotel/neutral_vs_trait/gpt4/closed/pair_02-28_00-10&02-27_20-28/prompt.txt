@@ -1,0 +1,104 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm interested in finding a hotel in Vancouver.
+System: Do you have any preferences for the star rating, or should I search for any available options?
+User: A 3-star hotel would be fine.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a few 3-star hotels in Vancouver for you. Here are the options:
+
+1. Atrium Inn Vancouver, located at 2889 East Hastings Street. The price per night is $228, and they do not allow smoking. 
+
+2. Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., located at 1100 Granville Street. The price per night is $72, and they do not allow smoking.
+
+3. Best Western Plus Sands, located at 1755 Davie Street. The price per night is $222, and they do not allow smoking.
+
+Please let me know if any of these options meet your requirements or if you need more information.
+User: I'm interested in the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. Can you reserve a room for me?
+System: How many rooms would you like to reserve, and what would be your check-in date and length of stay at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver?
+User: I would like to reserve one room, checking in on the 5th and staying for five nights.
+System: Please confirm that you would like to book 1 room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. from the 5th for 5 nights in Vancouver.
+User: Yes, that is correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. has been successfully confirmed. Is there anything else you would like to know or do?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to book a hotel in Vancouver. Can you help me find one?
+System: Do you have any specific preferences regarding the star rating or any other requirements for the hotel in Vancouver?
+User: I prefer a hotel with a decent star rating, maybe around 3 stars.
+System: Let's find a suitable hotel for you in Vancouver with a 3-star rating. I'll check the availability for you. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a few options for you in Vancouver with a 3-star rating. One option is the Atrium Inn Vancouver, located at 2889 East Hastings Street, with a price of $228 per night. Would you like more details on this or any other options?
+User: Is smoking allowed in the Atrium Inn Vancouver?
+System: Smoking is not allowed at the Atrium Inn Vancouver. Would you like to know more details about this hotel or explore another option?
+User: Can you find another hotel option where smoking is allowed?
+System: I couldn't find any 3-star hotels in Vancouver where smoking is allowed. Would you like me to search for hotels with a different star rating, or perhaps explore other preferences to find available options?
+User: Are there any 2-star hotels in Vancouver where smoking is allowed?
+System: Let me check for 2-star hotels in Vancouver where smoking is allowed. I'll find the available options for you. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 2, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: I'm sorry, but it seems there are no 2-star hotels in Vancouver where smoking is allowed. Would you like to try a different star rating or change your smoking preference to find available options?
+User: Can you try searching for 1-star hotels in Vancouver where smoking is allowed?
+System: Let me check for 1-star hotels in Vancouver where smoking is allowed. I'll find the available options for you. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 1, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: I'm sorry, but there are no 1-star hotels in Vancouver where smoking is allowed. Would you like to adjust your search criteria, such as considering non-smoking options or trying a different star rating, to find available hotels?
+User: Are there any hotels in Vancouver that allow smoking, regardless of the star rating?
+System: Let's find hotels in Vancouver that allow smoking, regardless of the star rating. I'll check the availability for you. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: True })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-563-4693', 'place_name': 'Exchange Hotel Vancouver', 'price_per_night': 304, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '475 Howe Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-9888', 'place_name': 'Gec Granville Suites Hotel', 'price_per_night': 63, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '718 Drake Street'}]
+End Search Results
+System: I found a few hotels in Vancouver where smoking is allowed. The Auberge Vancouver Hotel is a 4-star hotel located at 837 West Hastings Street, with a price of $296 per night. Would you like more details about this option, or would you prefer to hear about another hotel?
+User: Can you tell me more about the Auberge Vancouver Hotel?
+System: The Auberge Vancouver Hotel is a 4-star hotel located at 837 West Hastings Street in Vancouver. It allows smoking and offers rooms at a price of $296 per night. Would you like to proceed with a reservation at this hotel, or do you need more information about other options?
+User: I think I'll go with the Auberge Vancouver Hotel. Can you reserve a room for me?
+System: How many rooms would you like to reserve at the Auberge Vancouver Hotel, and what will be your check-in date and length of stay?
+User: I would like to reserve one room, starting from the 10th of next month, for a week.
+System: Please confirm that you want to reserve 1 room at the Auberge Vancouver Hotel, starting from the 10th of next month for a week.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 7 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Auberge Vancouver Hotel has been successfully confirmed. You have booked 1 room starting from November 10th, 2023, for a week. If you need any further assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,86 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Cupertino.
+System: What type of cuisine are you interested in, such as Italian, American, or another type?
+User: American cuisine sounds fine.
+System: APICall (method='FindRestaurants', parameters={city: Cupertino, cuisine: American})
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130'}, {'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-359-4690', 'price_range': 'moderate', 'restaurant_name': 'Lazy Dog Restaurant & Bar', 'serves_alcohol': True, 'street_address': '19359 Stevens Creek Boulevard'}]
+End Search Results
+System: One option in Cupertino is Eureka! located at 19369 Stevens Creek Boulevard Suite 130. Would you like more information about this restaurant, or perhaps details on another option?
+User: Can you tell me if Eureka! serves alcohol and the price range?
+System: Eureka! does serve alcohol, and the price range is moderate. Would you like to know more about this restaurant or explore another option?
+User: I would like to make a reservation at Eureka!.
+System: For what date and time would you like to make the reservation at Eureka!? Could you also let me know the size of your party?
+User: Tomorrow at 7:00 pm for two people.
+System: Please confirm the following details for your reservation: You would like to book a table for two people at Eureka! in Cupertino for tomorrow at 7:00 pm. Is that correct?
+User: Yes, that's correct.
+System: Great! I'll proceed with making your reservation at Eureka!. APICall (method='ReserveRestaurant', parameters={restaurant_name: Eureka!, city: Cupertino, time: 19:00, date: YYYY-MM-DD, party_size: 2})
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Eureka! in Cupertino for tomorrow at 7:00 pm has been successfully made for two people. If you need any further assistance or have any other requests, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a restaurant in Fremont. Can you help with that?
+System: Certainly. Do you have a preference for a specific type of cuisine, or would you like me to suggest one?
+User: Just something simple, maybe American.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems there might be an issue with retrieving the search results. Let me attempt that again for you. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: I'm sorry, but it appears that there are no available American cuisine restaurants in Fremont at the moment. Would you like me to search for another type of cuisine or perhaps adjust the price range for the search?
+User: Can you look for Italian restaurants instead?
+System: Certainly, let me check for Italian restaurants in Fremont for you. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant in Fremont for you. It's called Massimo's, located at 5200 Mowry Avenue Ste M. The restaurant is in the expensive price range and does not serve alcohol. Would you like more information or assistance with anything else?
+User: Is there another Italian restaurant that's less expensive?
+System: Let me check for another Italian restaurant in Fremont with a less expensive price range for you. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian, price_range: moderate})
+Search Results
+
+End Search Results
+System: Unfortunately, I couldn't find any moderately priced Italian restaurants in Fremont. Would you like me to search for inexpensive ones or perhaps explore a different cuisine?
+User: Let's try looking for moderately priced Italian restaurants in a nearby city, like Union City.
+System: Certainly, I will check for moderately priced Italian restaurants in Union City for you. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: Union City, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'Union City', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-431-5132', 'price_range': 'moderate', 'restaurant_name': 'Tomatina', 'serves_alcohol': True, 'street_address': '32155 Union Landing Boulevard'}]
+End Search Results
+System: I found a moderately priced Italian restaurant in Union City for you. It's called Tomatina, and it's located at 32155 Union Landing Boulevard. The restaurant serves alcohol and does not have live music. Would you like more information or assistance with anything else?
+User: Can you make a reservation for me at Tomatina in Union City?
+System: For the reservation at Tomatina, could you please provide me with the date, time, and the number of people for the reservation?
+User: I'd like to make a reservation for two people at 6:00 pm tomorrow.
+System: Thank you for providing the details. Please confirm that you want to book a table for 2 people at 6:00 pm at Tomatina in Union City for tomorrow.
+User: Yes, please go ahead and make the reservation.
+System: Great, I'll proceed with making the reservation for you. APICall (method='ReserveRestaurant', parameters={restaurant_name: Tomatina, city: Union City, time: 18:00, date: YYYY-MM-DD, party_size: 2})
+Search Results
+[{'city': 'Union City', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-431-5132', 'price_range': 'moderate', 'restaurant_name': 'Tomatina', 'serves_alcohol': True, 'street_address': '32155 Union Landing Boulevard', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

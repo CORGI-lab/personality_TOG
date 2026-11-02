@@ -1,0 +1,104 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+Could you help me find a hotel in Seattle?
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Seattle })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: 
+
+I found three hotels in Seattle for you: Ace Hotel Seattle at $136 per night (2 stars, 2423 1st Avenue), Belltown Inn at $186 (2 stars, 2301 3rd Avenue), and Days Inn By Wyndham Seattle North Of Downtown at $84 (2 stars, 9100 Aurora Avenue North). All are non-smoking. Would you like to proceed with any of these?
+User: 
+
+Yes, please reserve the Days Inn for two rooms starting on the 15th for five nights.
+System: 
+
+Certainly! Could you please confirm the check-in date in YYYY-MM-DD format? For example, 2024-05-15 for May 15th, 2024.
+User: 
+
+2024-05-15
+System: 
+
+Your reservation details: 2 rooms at Days Inn By Wyndham Seattle North Of Downtown in Seattle, check-in on 2024-05-15 for 5 nights. Please confirm to proceed.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={place_name: 'Days Inn By Wyndham Seattle North Of Downtown', check_in_date: '2024-05-15', stay_length: 5, location: 'Seattle', number_of_rooms: 2})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North', 'check_in_date': '2024-05-15'}]
+End Search Results
+System: 
+
+Your reservation for Days Inn By Wyndham Seattle North Of Downtown has been successfully confirmed. Is there anything else I can assist you with?
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I'd like to search for a hotel in Vancouver. Can you help me find one?
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: 
+
+I found three hotels in Vancouver: Shangri-La Hotel (5 stars, $300), Wedgewood Hotel & Spa (5 stars, $510), and Auberge Vancouver Hotel (4 stars, $296, smoking allowed). Would you like to proceed with any of these or specify additional preferences?
+User: 
+
+Shangri-La Hotel sounds good. Could you please provide the street address and confirm if smoking is allowed there?
+System: 
+
+Shangri-La Hotel is located at 1128 West Georgia Street and does not allow smoking. To proceed with the booking, could you please provide your check-in date and the number of nights you'd like to stay?
+User: 
+
+June 15th for three nights.
+System: 
+
+Please confirm to book 1 room for 3 nights at Shangri-La Hotel in Vancouver starting June 15th.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ location: 'Vancouver', place_name: 'Shangri-La Hotel', check_in_date: '2024-06-15', stay_length: 3, number_of_rooms: 1 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2024-06-15'}]
+End Search Results
+System: 
+
+Your booking at Shangri-La Hotel in Vancouver for 3 nights starting June 15th has been successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

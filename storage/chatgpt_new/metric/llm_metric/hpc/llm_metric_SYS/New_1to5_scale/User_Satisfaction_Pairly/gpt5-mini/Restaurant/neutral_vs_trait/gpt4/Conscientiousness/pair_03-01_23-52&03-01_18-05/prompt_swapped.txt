@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Walnut Creek that serves Italian cuisine. Could you help me with that?
+System: Sure, I can help with that. Let me find a restaurant in Walnut Creek that serves Italian cuisine for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Walnut Creek, cuisine: Italian})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-943-1094', 'price_range': 'moderate', 'restaurant_name': 'Caffe Delle Stelle Restaurant', 'serves_alcohol': True, 'street_address': '1532 North Main Street'}, {'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-932-1474', 'price_range': 'expensive', 'restaurant_name': 'Massimo Ristorante', 'serves_alcohol': True, 'street_address': '1604 Locust Street'}, {'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-943-6608', 'price_range': 'moderate', 'restaurant_name': 'Montecatini Ristorante', 'serves_alcohol': True, 'street_address': '1528 Civic Drive'}]
+End Search Results
+System: I have found a few Italian restaurants in Walnut Creek for you. Would you prefer a moderate or expensive price range? Here are your options: 
+
+1. Caffe Delle Stelle Restaurant, located at 1532 North Main Street, with a moderate price range.
+2. Massimo Ristorante, located at 1604 Locust Street, with an expensive price range.
+3. Montecatini Ristorante, located at 1528 Civic Drive, also with a moderate price range.
+
+All these restaurants serve alcohol but do not have live music. Please let me know which one you'd like more information about or if you'd like to proceed with a reservation.
+User: I would like more information about Montecatini Ristorante, please.
+System: Montecatini Ristorante is located at 1528 Civic Drive in Walnut Creek. It offers a moderate price range and serves alcohol. If you need further assistance or wish to make a reservation, please let me know.
+User: Could you please make a reservation for me at Montecatini Ristorante? I would like it for this Saturday at 7:00 PM for a party of four.
+System: To ensure the reservation is made accurately, could you please confirm the date for this Saturday? Once confirmed, I'll proceed with the reservation at Montecatini Ristorante for 7:00 PM for a party of four.
+User: Yes, I can confirm that the reservation is for this coming Saturday. Please proceed with booking a table for four at 7:00 PM at Montecatini Ristorante.
+System: Thank you for confirming. I will proceed with the reservation for a table for four at Montecatini Ristorante in Walnut Creek, this coming Saturday at 7:00 PM. 
+
+APICall (method='ReserveRestaurant', parameters={city: Walnut Creek, date: [YYYY-MM-DD], party_size: 4, cuisine: Italian, restaurant_name: Montecatini Ristorante, time: 19:00})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-943-6608', 'price_range': 'moderate', 'restaurant_name': 'Montecatini Ristorante', 'serves_alcohol': True, 'street_address': '1528 Civic Drive', 'date': '[YYYY-MM-DD]', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Montecatini Ristorante in Walnut Creek for this coming Saturday at 7:00 PM has been successfully made for a party of four. If you have any further questions or need additional assistance, feel free to let me know. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in San Francisco. I'm looking for a place with Italian cuisine. Could you help me with that?
+System: Sure! Let me find some Italian restaurants in San Francisco for you. Please hold on for a moment while I search for options. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They serve alcohol but do not have live music. Would you like more details on any other restaurant, or is there anything else you need?
+User: Could you tell me about the price range of 54 Mint Ristorante Italiano?
+System: The price range for 54 Mint Ristorante Italiano is moderate. Is there anything else you would like to know about this restaurant?
+User: Is there parking available at 54 Mint Ristorante Italiano?
+System: I'm sorry, but the information about parking availability at 54 Mint Ristorante Italiano is not available in the current data. Would you like me to check something else or provide information about another restaurant?
+User: Could you provide details about another Italian restaurant in San Francisco, preferably with live music?
+System: Certainly! While none of the Italian restaurants in San Francisco from my search results have live music, another option is A16, located at 2355 Chestnut Street. They serve alcohol but do not have live music. Would you like to know more details about A16 or any other restaurant feature?
+User: Could you tell me the price range for A16, please?
+System: The price range for A16 is moderate. Is there anything else you would like to know about this restaurant?
+User: Could you make a reservation for A16 for four people on Friday, October 20th, at 7:00 PM?
+System: To make a reservation at A16, I need to confirm a few details. Please confirm if the reservation is for four people on Friday, October 20th, at 7:00 PM at A16 in San Francisco.
+User: Yes, that is correct. Please proceed with the reservation.
+System: Thank you for confirming the details. I will proceed with making the reservation for four people on Friday, October 20th, at 7:00 PM at A16 in San Francisco. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'A16', city: 'San Francisco', date: '2023-10-20', time: '19:00', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-20', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 has been successfully made for four people on Friday, October 20th, at 7:00 PM. The restaurant is located at 2355 Chestnut Street in San Francisco. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

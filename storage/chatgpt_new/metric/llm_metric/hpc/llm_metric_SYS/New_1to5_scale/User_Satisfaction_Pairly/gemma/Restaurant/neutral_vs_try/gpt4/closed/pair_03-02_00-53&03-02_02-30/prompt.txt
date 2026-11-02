@@ -1,0 +1,94 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Fremont.
+System: What type of cuisine are you interested in, such as Italian, Mexican, or something else?
+User: American cuisine.
+System: Thank you for providing the information. I will search for American cuisine restaurants in Fremont for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems like there are no available results for American cuisine restaurants in Fremont at the moment. Would you like to try a different cuisine or perhaps explore restaurants in a nearby city?
+User: No, I would prefer to stay with American cuisine. Can you try looking in a nearby city like Union City?
+System: Sure, I will search for American cuisine restaurants in Union City for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Union City, cuisine: American})
+Search Results
+[{'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-429-6860', 'price_range': 'moderate', 'restaurant_name': "Chaplin's Sports Bistro", 'serves_alcohol': True, 'street_address': '29200 Kohoutek Way'}, {'city': 'Union City', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-489-6080', 'price_range': 'inexpensive', 'restaurant_name': "Mcdonald's", 'serves_alcohol': False, 'street_address': '27 Union Square'}, {'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-489-2797', 'price_range': 'moderate', 'restaurant_name': 'Tgi Fridays', 'serves_alcohol': True, 'street_address': '31900 Dyer Street'}]
+End Search Results
+System: In Union City, I found a few American cuisine restaurants that you might like. Chaplin's Sports Bistro is a moderate-priced venue, located at 29200 Kohoutek Way, and they serve alcohol. If you're interested in a place with live music, McDonald's offers an inexpensive option at 27 Union Square, though they do not serve alcohol. Lastly, TGI Fridays on 31900 Dyer Street is another moderate-priced restaurant that does serve alcohol but doesn't have live music. Would you like more details on any of these options?
+User: Tell me more about Chaplin's Sports Bistro.
+System: Chaplin's Sports Bistro is located at 29200 Kohoutek Way in Union City. It's a moderately priced American cuisine restaurant that serves alcohol but does not feature live music. If you need their contact, you can reach them at 510-429-6860. Would you like to make a reservation or need any other information?
+User: I'd like to make a reservation there.
+System: For what date and time would you like to make the reservation at Chaplin's Sports Bistro, and for how many people?
+User: For tomorrow, around 6:00 PM, and for 2 people.
+System: Please confirm that you'd like to book a table for 2 people at Chaplin's Sports Bistro in Union City for tomorrow at 6:00 PM.
+User: Yes, that’s correct. Please go ahead and make the reservation.
+System: Great! I will proceed with making the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Chaplin's Sports Bistro", city: "Union City", time: "18:00", date: "2023-10-26", party_size: 2})
+Search Results
+[{'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-429-6860', 'price_range': 'moderate', 'restaurant_name': "Chaplin's Sports Bistro", 'serves_alcohol': True, 'street_address': '29200 Kohoutek Way', 'date': '2023-10-26', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Your reservation at Chaplin's Sports Bistro in Union City for 2 people tomorrow at 6:00 PM has been successfully made. If you have any further questions or need additional assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Fremont. Can you help me find one?
+System: Sure! Is there a specific type of cuisine you're interested in, or are you open to suggestions?
+User: I prefer American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It looks like there were no results for American cuisine in Fremont. Would you like to try a different cuisine or adjust your preferences, such as the price range or features like live music or serving alcohol?
+User: I don't want to change my cuisine preference. Can you find American restaurants in a nearby city instead?
+System: Let's try searching for American cuisine in a nearby city. Could you please let me know which city you'd like to consider next?
+User: Let's try Pleasanton.
+System: APICall (method='FindRestaurants', parameters={city: Pleasanton, cuisine: American})
+Search Results
+[{'city': 'Pleasanton', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-600-0600', 'price_range': 'expensive', 'restaurant_name': 'Baci Bistro And Bar', 'serves_alcohol': False, 'street_address': '500 Main Street'}, {'city': 'Pleasanton', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-800-3090', 'price_range': 'expensive', 'restaurant_name': 'Sabio On Main', 'serves_alcohol': True, 'street_address': '501 Main Street'}, {'city': 'Pleasanton', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-469-6266', 'price_range': 'moderate', 'restaurant_name': "Eddie Papa's American Hangout", 'serves_alcohol': False, 'street_address': '4889 Hopyard Road'}]
+End Search Results
+System: I found a few American restaurants in Pleasanton for you. Here are some options:
+
+1. **Baci Bistro And Bar**: Located at 500 Main Street, it has an expensive price range and does not serve alcohol. Their phone number is 925-600-0600.
+
+2. **Sabio On Main**: Situated at 501 Main Street, this restaurant also has an expensive price range and serves alcohol. You can contact them at 925-800-3090.
+
+3. **Eddie Papa's American Hangout**: Found at 4889 Hopyard Road, it offers a moderate price range and does not serve alcohol. Their phone number is 925-469-6266.
+
+Would you like more information about any of these restaurants or assistance with anything else?
+User: I would like to make a reservation at Eddie Papa's American Hangout. Can you book a table for two people at 7:00 pm tomorrow?
+System: Sure! Let's confirm the details for your reservation at Eddie Papa's American Hangout in Pleasanton. You'd like to book a table for two people at 7:00 pm tomorrow. Could you please confirm the date for the reservation?
+User: The date for the reservation is tomorrow.
+System: Thank you for confirming. I'll proceed with the reservation for two people at Eddie Papa's American Hangout in Pleasanton at 7:00 pm tomorrow. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Eddie Papa's American Hangout", city: Pleasanton, time: "19:00", date: "tomorrow's date", party_size: 2})
+Search Results
+[{'city': 'Pleasanton', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-469-6266', 'price_range': 'moderate', 'restaurant_name': "Eddie Papa's American Hangout", 'serves_alcohol': False, 'street_address': '4889 Hopyard Road', 'date': "tomorrow's date", 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Eddie Papa's American Hangout in Pleasanton for two people at 7:00 pm tomorrow has been successfully made. If you need the address, it's located at 4889 Hopyard Road. Please let me know if there's anything else I can assist you with!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,140 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I need to find a hotel somewhere... uh... let's say... Paris? Yeah, Paris sounds good.
+
+System: Okay, I can help with that. Are you looking for hotels in Paris?
+
+User: Yeah, sure, whatever. Just find me something... I don't know... decent, I guess?
+
+System: Do you have any preferences for star rating, or smoking allowance?
+
+User: Star rating? Eh, doesn't really matter. Smoking... hmm, probably not. Just find something cheap, I guess.
+
+System: Okay, I will search for a hotel in Paris that does not allow smoking.
+
+APICall(method='SearchHotel', parameters={ location: Paris, smoking_allowed: False })
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}]
+End Search Results
+System: I found a 4-star hotel named Ac Hotel By Marriott Paris Porte Maillot. Would you like to know more?
+
+User: Four stars, huh? Sounds kinda fancy. What's the price like? And does it really matter which hotel I pick anyway?
+
+System: The price per night at Ac Hotel By Marriott Paris Porte Maillot is $192. Would you like me to search for something cheaper?
+
+User: Ugh, yeah, cheaper would be good. I probably can't even afford that. Maybe something with, like, one star? Or none? Do those even exist?
+
+System: I can search for hotels with a lower star rating. How about a 3-star hotel? I found one named Aparthotel Adagio Access Paris La Villette. It's priced at $120 per night.
+
+User: $120? Still sounds kinda pricey. Is there anything... I dunno... cheaper? Like, *way* cheaper? Maybe I should just sleep on a park bench. Nah, too cold. Just find me the absolute cheapest thing you can find. I don't care if it's a dump.
+
+System: Okay, I will search for the cheapest hotel in Paris that does not allow smoking.
+
+APICall(method='SearchHotel', parameters={ location: Paris, smoking_allowed: False, star_rating: dontcare })
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}]
+End Search Results
+System: I am still seeing hotels with prices above what you're looking for. The cheapest option I found is Amastan Paris, a 4-star hotel, priced at $96 per night. Would you like to know more about it?
+
+User: $96? Still too much effort to think about. Okay, fine, what's the address, I guess? And, uh, how many days should I book it for? I haven't really thought that far ahead.
+
+System: The address of Amastan Paris is 34 Rue Jean Mermoz, 75008. How many days will you be staying? Also, what date would you like to check in?
+
+User: Check-in date? Uh... today, I guess? And... how long? A few days? I don't know, make it... four? Yeah, four sounds like a number.
+
+System: Okay, so you want to book a room at Amastan Paris, located at 34 Rue Jean Mermoz, 75008, for four days starting today. Is that correct?
+
+User: Yeah, sure, whatever. Just book it. I trust you won't screw it up.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-05-02, location: Paris, number_of_rooms: 1, place_name: Amastan Paris, stay_length: 4 })
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008', 'check_in_date': '2024-05-02'}]
+End Search Results
+System: Okay, I have booked 1 room at Amastan Paris for 4 days starting today. The address is 34 Rue Jean Mermoz, 75008. The phone number is +33 1 49 52 99 70. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I need to find a hotel somewhere... uh, let's say Las Vegas. I guess.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating of the hotel?
+
+User: Star rating? Uh, does it really matter? I guess not too fancy, maybe 3 stars? Or whatever is easiest to find.
+
+System: Okay, no problem. I'll look for hotels in Las Vegas, focusing on 3-star options, but I'm open to others if those are scarce.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: Alright, I found a few options for you. There's the Best Western Plus Las Vegas West at $117 a night, the Hampton Inn Las Vegas/Summerlin at $279 a night, and the Oasis At Gold Spike for $63 a night. All are 3-star hotels. Do any of those sound interesting to you?
+
+User: Hmm, Oasis At Gold Spike... that sounds kinda cool. What's the deal with that one? Like, what's it even like?
+
+System: Okay, the Oasis At Gold Spike is located at 217 Las Vegas Boulevard North. It's a 3-star hotel where smoking is not allowed. The price is $63 per night, and they have 1 room available. Does that sound like it might work for you?
+
+User: Smoking not allowed? Ugh, never mind. Find something where I CAN smoke. I can't be bothered going outside all the time.
+
+System: Okay, let me find a hotel in Las Vegas that allows smoking. How about I search for hotels that specifically allow smoking?
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: True })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court'}]
+End Search Results
+System: Alright, I found a few hotels in Las Vegas that allow smoking. There's the Budget Suites Of America, a 1-star hotel at $44 per night. Then there's the Hampton Inn Las Vegas/Summerlin, which is 3 stars and costs $279 per night. Lastly, there's the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, a 2-star option for $72 a night. Any of those catch your eye?
+
+User: Eh, the La Quinta Inn... $72 isn't too bad. Tell me more about that one. I can't be bothered to look it up myself.
+
+System: Okay, the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech is located at 7101 Cascade Valley Court. It's a 2-star hotel, and smoking is allowed. They have 1 room available. Would you like to know anything else, or does this seem like a good option for you?
+
+User: Sounds alright. What's the check-in date and how long can I crash there? I haven't really thought about it. Uh, make it for like, tomorrow? And I dunno, a week maybe?
+
+System: Okay, so you're looking to check in tomorrow, and you want to stay for a week at the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech. Can you please provide the exact check-in date (YYYY-MM-DD) so I can finalize the booking details for you?
+
+User: Ugh, fine. Let's say 2024-03-16. Just get it over with, I guess.
+
+System: Okay, so you want to book a room at the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, checking in on 2024-03-16 for a week. Just to confirm, you need one room, right?
+
+User: Yeah, one room is fine. Whatever. Just book the thing.
+
+System: Okay, I will book one room at the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, checking in on 2024-03-16 for a stay of 7 days. Is that all correct?
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-16, location: Las Vegas, number_of_rooms: 1, place_name: La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, stay_length: 7 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court', 'check_in_date': '2024-03-16'}]
+End Search Results
+System: Alright, I've booked one room at the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, checking in on 2024-03-16 for 7 days. Just to confirm, the total price for the stay will be $504. Is that correct?
+
+User: Yeah, yeah, sounds about right. Just do it.
+
+System: Okay, the booking is confirmed. One room at the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, checking in on 2024-03-16 for 7 days, at a total cost of $504. Is there anything else I can help you with today?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

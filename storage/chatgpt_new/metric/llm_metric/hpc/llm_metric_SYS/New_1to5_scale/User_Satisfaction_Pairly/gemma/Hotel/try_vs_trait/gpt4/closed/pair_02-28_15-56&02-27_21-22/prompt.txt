@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Toronto.
+System: Do you have any preferences regarding the star rating or smoking allowance for the hotel in Toronto, or should I search with any available options?
+User: I prefer a non-smoking hotel. Star rating isn't too important, just something reasonable.
+System: Thank you for sharing your preferences. I'll search for non-smoking hotels in Toronto with a reasonable star rating for you. Please hold on for a moment. APICall(method='SearchHotel', parameters={ location: Toronto, smoking_allowed: False })
+Search Results
+[{'location': 'Toronto', 'number_of_rooms': 1, 'phone_number': '+1 416-963-6300', 'place_name': 'The Hazelton Hotel', 'price_per_night': 125, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '118 Yorkville Avenue'}, {'location': 'Toronto', 'number_of_rooms': 1, 'phone_number': '+1 416-585-2500', 'place_name': 'The Ritz-Carlton, Toronto', 'price_per_night': 175, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '181 Wellington Street West'}, {'location': 'Toronto', 'number_of_rooms': 2, 'phone_number': '+1 416-663-9500', 'place_name': 'Best Western Plus Toronto North York Hotel & Suites', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '50 Norfinch Drive'}]
+End Search Results
+System: I found a few non-smoking hotels in Toronto for you. There's The Hazelton Hotel, which is a 5-star hotel located at 118 Yorkville Avenue, with a price of $125 per night. Another option is The Ritz-Carlton, Toronto, also a 5-star hotel, located at 181 Wellington Street West, priced at $175 per night. Lastly, there's the Best Western Plus Toronto North York Hotel & Suites, which is a 3-star hotel at 50 Norfinch Drive, available for $228 per night. Would you like more details about any of these options or assistance with a reservation?
+User: I'd like to reserve The Hazelton Hotel, please.
+System: To proceed with the reservation at The Hazelton Hotel, could you please provide the check-in date and the length of your stay? Additionally, how many rooms would you like to reserve?
+User: Check-in date will be the 15th, and I'll be staying for 5 days. I need just one room, please.
+System: Please confirm your reservation for 1 room at The Hazelton Hotel in Toronto, with a check-in date of 2023-11-15 and a stay length of 5 days.
+User: Yes, that is confirmed.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Toronto, number_of_rooms: 1, place_name: The Hazelton Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Toronto', 'number_of_rooms': 1, 'phone_number': '+1 416-963-6300', 'place_name': 'The Hazelton Hotel', 'price_per_night': 125, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '118 Yorkville Avenue', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at The Hazelton Hotel in Toronto has been successfully confirmed. If you need any more assistance or have further questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a hotel in Vancouver. Could you help me with that?
+System: Could you please let me know if you have any specific star rating in mind for the hotel in Vancouver, or if you have any preferences regarding smoking policies?
+User: I'm looking for a hotel with a 3-star rating or higher, and I'd prefer a non-smoking room.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a few options for you in Vancouver. There's the Atrium Inn Vancouver, a 3-star hotel, with non-smoking rooms available at $228 per night. Would you like more information on this hotel, or should I provide details on another option?
+User: Could you let me know if there's another hotel option available?
+System: Certainly. Another option is the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. This is also a 3-star hotel with non-smoking rooms, priced at $72 per night. Would you like more information about this hotel, or is there anything specific you would like to know?
+User: How many rooms does the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr have available?
+System: The Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr has 1 room available. Would you like to proceed with a reservation, or do you need more information about this hotel?
+User: I need more information about this hotel, please.
+System: The Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr is located at 1100 Granville Street in Vancouver. It's a 3-star hotel offering non-smoking rooms, and the price per night is $72. If you have any more questions or if you'd like to reserve this room, please let me know!
+User: Could you tell me if there are any other hotel options available?
+System: Certainly. Another option is the Best Western Plus Sands, which is also a 3-star hotel offering non-smoking rooms. It's priced at $222 per night and is located at 1755 Davie Street in Vancouver. Would you like more information about this hotel, or would you like to proceed with a reservation?
+User: I think I'd like more information about the Best Western Plus Sands, please.
+System: The Best Western Plus Sands, located at 1755 Davie Street in Vancouver, is a 3-star hotel offering non-smoking rooms. The price per night is $222. If there's anything else you'd like to know or if you're ready to make a reservation, please let me know!
+User: Can you tell me how many rooms are available at the Best Western Plus Sands?
+System: The Best Western Plus Sands has 2 rooms available. Would you like to proceed with a reservation or do you need any more details about this hotel?
+User: I would like to proceed with the reservation for the Best Western Plus Sands. Can you reserve one room for me?
+System: Sure, I will reserve one room for you at the Best Western Plus Sands in Vancouver. Could you please provide your check-in date and the number of nights you plan to stay?
+User: I'll be checking in on the 15th and staying for four nights.
+System: Please confirm that you would like to reserve 1 room at the Best Western Plus Sands in Vancouver, checking in on 2023-10-15 and staying for 4 nights.
+User: Yes, I confirm.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Sands, stay_length: 4 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your reservation for 1 room at the Best Western Plus Sands in Vancouver, checking in on 2023-10-15 and staying for 4 nights, has been successfully confirmed. If you need any further assistance or details, please let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

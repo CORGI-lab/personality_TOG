@@ -1,0 +1,113 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: No smoking, please.
+
+System: Okay, I understand. I will search for hotels in San Francisco that do not allow smoking. APICall(method='SearchHotel', parameters={location: San Francisco, smoking_allowed: False})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found three hotels in San Francisco that do not allow smoking: Amsterdam Hostel San Francisco, Argonaut Hotel, and Beck'S Motor Lodge. Amsterdam Hostel San Francisco is a 1-star hotel, Argonaut Hotel is a 4-star hotel, and Beck'S Motor Lodge is a 2-star hotel. Would you like to know more about any of these options?
+
+User: Perhaps the Argonaut Hotel. What's the price?
+
+System: The Argonaut Hotel is $408 per night. It is located at 495 Jefferson Street and has a 4-star rating. Does this sound like a good option for you?
+
+User: That sounds acceptable. Can you reserve it for me? I'll be arriving on the 10th and staying for two nights.
+
+System: Okay, I can help you with that. To confirm, you would like to reserve a room at the Argonaut Hotel in San Francisco, arriving on the 10th for a two-night stay. How many rooms will you need?
+
+User: Just one room, please.
+
+System: Okay, just to make sure I have all the details correct: You want to reserve 1 room at the Argonaut Hotel in San Francisco, arriving on the 10th for a two-night stay. Could you please specify the full date, including the year, for your arrival?
+
+User: The 10th of next month, 2024.
+
+System: Okay, I have all the information I need. I will now make the reservation for you.
+
+APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-10, location: San Francisco, number_of_rooms: 1, place_name: Argonaut Hotel, stay_length: 2})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2024-07-10'}]
+End Search Results
+System: Okay, great! I've reserved one room for you at the Argonaut Hotel in San Francisco, arriving on July 10, 2024, for a two-night stay.
+
+Would you like any further assistance?
+
+User: No, thank you. That's all I need.
+
+Dialogue B:
+  User: I wish to find a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: No smoking.
+
+System: Okay, I will search for hotels in San Francisco with no smoking allowed.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, smoking_allowed: False })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found three hotels in San Francisco that do not allow smoking: Amsterdam Hostel San Francisco (1 star), Argonaut Hotel (4 stars), and Beck'S Motor Lodge (2 stars).
+
+User: Okay. Tell me about the 4-star one.
+
+System: The 4-star hotel is named Argonaut Hotel. It has 3 rooms available, and the price per night is $408. The phone number is +1 415-563-0800 and the address is 495 Jefferson Street. Would you like to know anything else about Argonaut Hotel?
+
+User: No, that sounds fine. Can I reserve it?
+
+System: How many rooms would you like to reserve, and for what dates? Also, how many nights will you be staying?
+
+User: One room, starting tomorrow, for two nights.
+
+System: Okay, I need the exact date for the check-in. Could you please provide the year-month-day?
+
+User: 2023-12-08.
+
+System: Okay, let me confirm. You would like to reserve 1 room at the Argonaut Hotel in San Francisco, starting on 2023-12-08 for 2 nights. Is that correct?
+
+User: Yes, that's right.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-12-08, location: San Francisco, number_of_rooms: 1, place_name: Argonaut Hotel, stay_length: 2 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2023-12-08'}]
+End Search Results
+System: OK. I can help you with that.
+```tool_code
+APICall(method='ReserveHotel', parameters={'check_in_date': '2023-12-08', 'location': 'San Francisco', 'number_of_rooms': 1, 'place_name': 'Argonaut Hotel', 'stay_length': 2})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2023-12-08'}]
+End Search Results
+System: OK. I have reserved 1 room for you at the Argonaut Hotel in San Francisco, checking in on 2023-12-08 for 2 nights. The phone number is +1 415-563-0800 and the address is 495 Jefferson Street. Is there anything else I can help you with?
+
+User: No, thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

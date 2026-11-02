@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to book a hotel in Vancouver. Could you help me find a suitable one, please? I'm looking for something with at least 4 stars and non-smoking rooms.
+System: To ensure I find a hotel that meets your criteria, could you please confirm if you have any specific dates in mind for your stay? This will help me search for availability accurately.
+User: I plan to check in on the 10th of next month and stay for 5 nights.
+System: Thank you for providing the dates for your stay. I'll proceed with searching for hotels in Vancouver that have at least 4 stars and offer non-smoking rooms. Please allow me a moment to find the best options for you.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street'}]
+End Search Results
+System: I've found several options for 4-star, non-smoking hotels in Vancouver. Here are a couple of choices:
+
+1. **Coast Coal Harbour Vancouver Hotel By Apa**: Located at 1180 West Hastings Street, with a price of $108 per night. 
+
+2. **Delta Hotels By Marriott Vancouver Downtown Suites**: Located at 550 West Hastings Street, with a price of $324 per night. 
+
+Would you like to proceed with a reservation for any of these hotels, or do you need more information about them?
+User: Could you provide more information about the amenities and services offered at each hotel? I want to make sure they have everything I need for a comfortable stay.
+System: Unfortunately, the information about specific amenities and services offered at each hotel isn't available in the search results. However, based on the available details, both hotels meet your criteria of being 4-star and non-smoking. If you have any specific requirements, I recommend checking directly with the hotels once the reservation is made. Would you like to proceed with booking one of these options, or do you have any other preferences?
+User: I would like to proceed with booking a room at the Coast Coal Harbour Vancouver Hotel By Apa. Please make a reservation for one room from the 10th of next month for 5 nights. Thank you.
+System: Please confirm the details for your reservation: You would like to book one room at the Coast Coal Harbour Vancouver Hotel By Apa from the 10th of next month for a stay of 5 nights. Once confirmed, I will proceed with the reservation.
+User: Yes, I confirm. Please go ahead and make the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Coast Coal Harbour Vancouver Hotel By Apa has been successfully confirmed. You'll be staying in a non-smoking room starting from the 10th of next month for 5 nights. If there's anything else you need help with, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in Vancouver. Could you help me with that?
+System: Certainly! Do you have any preferences for the star rating, smoking allowance, or number of rooms? Or should I proceed with a general search for hotels in Vancouver?
+User: I would prefer a 4-star or higher hotel, and it should be non-smoking. Could you also find a hotel with at least two rooms available?
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street'}]
+End Search Results
+System: I found a 4-star hotel in Vancouver called Delta Hotels By Marriott Vancouver Downtown Suites. It has three rooms available and is non-smoking. Would you like more information about this hotel, or should I proceed with booking?
+User: Could you please provide the price per night and the address for Delta Hotels By Marriott Vancouver Downtown Suites?
+System: The price per night for Delta Hotels By Marriott Vancouver Downtown Suites is $324, and the address is 550 West Hastings Street. Would you like to proceed with booking this hotel, or do you need any further assistance?
+User: I would like to proceed with booking this hotel. Could you reserve two rooms for me? I plan to check in on the 15th of this month and stay for five nights.
+System: To confirm, you're requesting a reservation for two rooms at Delta Hotels By Marriott Vancouver Downtown Suites in Vancouver, checking in on the 15th of this month for a stay of five nights. Please let me know if everything is correct before I proceed with the reservation.
+User: Yes, that's correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Vancouver, number_of_rooms: 2, place_name: Delta Hotels By Marriott Vancouver Downtown Suites, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your reservation for two rooms at Delta Hotels By Marriott Vancouver Downtown Suites in Vancouver has been successfully confirmed. If you need any more help, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,128 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Seattle. Can you help me with that?
+System: Do you have a particular star rating in mind for the hotel in Seattle, or are you open to suggestions?
+User: I'm looking for something simple, maybe around 3 stars.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found a few options for 3-star hotels in Seattle. Would you like more information on the Best Western Plus Pioneer Square Hotel Downtown, Courtyard By Marriott Seattle Downtown/Lake Union, or Embassy Suites By Hilton Seattle Downtown Pioneer Square?
+User: Can you tell me if any of these hotels allow smoking?
+System: The Embassy Suites By Hilton Seattle Downtown Pioneer Square allows smoking. The other two hotels, Best Western Plus Pioneer Square Hotel Downtown and Courtyard By Marriott Seattle Downtown/Lake Union, do not allow smoking. Would you like more information on any of these hotels?
+User: I would like to know more about the Embassy Suites By Hilton Seattle Downtown Pioneer Square, please.
+System: The Embassy Suites By Hilton Seattle Downtown Pioneer Square is a 3-star hotel located at 255 South King Street in Seattle. The price per night for a stay is $342. This hotel permits smoking. If you need more details or wish to make a reservation, please let me know.
+User: The price seems a bit high for me. Do you have any other options that allow smoking and might be more affordable?
+System: Let me search for other hotels in Seattle that allow smoking and might be more affordable. Please hold on a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, smoking_allowed: True })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-365-8100', 'place_name': 'Extended Stay America - Seattle - Northgate', 'price_per_night': 124, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '13300 Stone Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-522-6991', 'place_name': 'Hampton Inn & Suites By Hilton Seattle/Northgate', 'price_per_night': 144, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '9550 1st Avenue Northeast'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found a couple of more affordable options in Seattle that allow smoking. There's the Extended Stay America - Seattle - Northgate, which is a 2-star hotel with a price of $124 per night, located at 13300 Stone Avenue North. Another option is the Hampton Inn & Suites By Hilton Seattle/Northgate, also a 2-star hotel with a price of $144 per night, located at 9550 1st Avenue Northeast. Would you like more information on any of these hotels, or would you prefer to proceed with a reservation?
+User: I would like more information about the Extended Stay America - Seattle - Northgate, please.
+System: The Extended Stay America - Seattle - Northgate is a 2-star hotel located at 13300 Stone Avenue North in Seattle. The price per night is $124, and the hotel allows smoking. If you need more details or wish to make a reservation, please let me know.
+User: I think the Extended Stay America - Seattle - Northgate sounds suitable. Can you reserve a room for me?
+System: How many rooms would you like to reserve at the Extended Stay America - Seattle - Northgate, and what will be your check-in date and length of stay?
+User: I would like to reserve one room, please. The check-in date will be the 15th, and I plan to stay for five days.
+System: Please confirm that you would like to reserve 1 room at the Extended Stay America - Seattle - Northgate, with a check-in date of the 15th and a stay length of 5 days.
+User: Yes, I confirm the reservation details. Please go ahead and book the room for me.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Seattle, number_of_rooms: 1, place_name: Extended Stay America - Seattle - Northgate, stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-365-8100', 'place_name': 'Extended Stay America - Seattle - Northgate', 'price_per_night': 124, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '13300 Stone Avenue North', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking has been successfully confirmed for 1 room at the Extended Stay America - Seattle - Northgate. The check-in date is set for November 15, 2023, with a stay length of 5 days. If you need any further assistance or information, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Vancouver. Can you help me find one?
+System: Do you have any specific star rating preference for the hotel in Vancouver, or are you open to any star rating?
+User: I'm looking for something simple, maybe 3 stars or above.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I've found a few 3-star hotels in Vancouver for you. Here are some options:
+
+1. **Atrium Inn Vancouver**
+   - Price per night: $228
+   - Address: 2889 East Hastings Street
+   - Smoking allowed: No
+
+2. **Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.**
+   - Price per night: $72
+   - Address: 1100 Granville Street
+   - Smoking allowed: No
+
+3. **Best Western Plus Sands**
+   - Price per night: $222
+   - Address: 1755 Davie Street
+   - Smoking allowed: No
+
+Please let me know if you'd like more information on any of these options or if there's anything else I can assist you with.
+User: Can you tell me more about the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., like the star rating and how many rooms it has available?
+System: The **Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.** is a 3-star hotel. It currently has 1 room available. If you need further details or assistance, please let me know!
+User: Does the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. allow smoking?
+System: The Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. does not allow smoking. If you have any other questions or need assistance with a reservation, feel free to ask!
+User: Is there another hotel with smoking allowed that you can recommend?
+System: The options I previously provided do not allow smoking. Let me search for hotels in Vancouver that permit smoking. Please hold on for a moment.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: True })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-563-4693', 'place_name': 'Exchange Hotel Vancouver', 'price_per_night': 304, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '475 Howe Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-9888', 'place_name': 'Gec Granville Suites Hotel', 'price_per_night': 63, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '718 Drake Street'}]
+End Search Results
+System: Here are some hotels in Vancouver that allow smoking:
+
+1. **Auberge Vancouver Hotel**
+   - Star rating: 4
+   - Price per night: $296
+   - Address: 837 West Hastings Street
+
+2. **Exchange Hotel Vancouver**
+   - Star rating: 4
+   - Price per night: $304
+   - Address: 475 Howe Street
+
+3. **Gec Granville Suites Hotel**
+   - Star rating: 3
+   - Price per night: $63
+   - Address: 718 Drake Street
+
+Please let me know if you'd like more information on any of these options or if there's anything else I can assist you with!
+User: Can you tell me more about the Gec Granville Suites Hotel, like how many rooms are available and if it's a quiet place?
+System: The **Gec Granville Suites Hotel** currently has 1 room available. Unfortunately, I don't have information about whether it is a quiet place. If you need further assistance or have other queries, feel free to ask!
+User: Does Gec Granville Suites Hotel have any amenities like free breakfast or parking?
+System: I'm sorry, but I don't have information on the amenities such as free breakfast or parking for the Gec Granville Suites Hotel. If you need further details on the hotels or have any other questions, feel free to ask!
+User: Could you go ahead and reserve a room for me at the Gec Granville Suites Hotel?
+System: To proceed with the reservation at the **Gec Granville Suites Hotel**, could you please provide the check-in date and the length of your stay? Additionally, confirm if you would like to reserve the only available room or if you have any special requests.
+User: I would like to check in on the 10th of this month and stay for five days. Please reserve the available room for me.
+System: Please confirm that you would like to book 1 room at the **Gec Granville Suites Hotel** in Vancouver, checking in on the 2023-10-10 and staying for 5 days. Once confirmed, I will proceed with the reservation.
+User: Yes, please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-10, location: Vancouver, number_of_rooms: 1, place_name: Gec Granville Suites Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-9888', 'place_name': 'Gec Granville Suites Hotel', 'price_per_night': 63, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '718 Drake Street', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking at the **Gec Granville Suites Hotel** has been successfully confirmed. You will be checking in on 2023-10-10 and staying for 5 days. If there's anything else you need, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

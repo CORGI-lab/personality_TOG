@@ -1,0 +1,140 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need a hotel in Portland.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Portland })
+Search Results
+[{'location': 'Portland', 'number_of_rooms': 1, 'phone_number': '+1 503-200-5678', 'place_name': 'Aloft Portland Airport At Cascade Station', 'price_per_night': 93, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '9920 Northeast Cascades Parkway'}, {'location': 'Portland', 'number_of_rooms': 3, 'phone_number': '+1 503-251-9991', 'place_name': 'Best Western Plus Portland Airport Hotel & Suites', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '11938 Northeast Airport Way'}, {'location': 'Portland', 'number_of_rooms': 2, 'phone_number': '+1 971-351-0230', 'place_name': 'Canopy By Hilton Portland Pearl District', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '425 Northwest 9th Avenue'}]
+End Search Results
+System: 
+
+I found a 3-star hotel named Aloft Portland Airport At Cascade Station for $93 per night. Would you like to see more options?
+User: 
+
+No. Please check if smoking is allowed.
+System: 
+
+Smoking is not allowed at Aloft Portland Airport At Cascade Station.
+User: 
+
+What is the address?
+System: 
+
+The address is 9920 Northeast Cascades Parkway.
+User: 
+
+Reserve it.
+System: 
+
+Sure! To reserve the Aloft Portland Airport At Cascade Station, I'll need the check-in date and the number of days you plan to stay. Could you please provide those details?
+User: 
+
+May 5th for three days.
+System: 
+
+Please confirm to book 1 room for 3 days starting 2023-05-05 at Aloft Portland Airport At Cascade Station in Portland.
+User: 
+
+Yes.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: '2023-05-05', location: 'Portland', number_of_rooms: 1, place_name: 'Aloft Portland Airport At Cascade Station', stay_length: 3 })
+Search Results
+[{'location': 'Portland', 'number_of_rooms': 1, 'phone_number': '+1 503-200-5678', 'place_name': 'Aloft Portland Airport At Cascade Station', 'price_per_night': 93, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '9920 Northeast Cascades Parkway', 'check_in_date': '2023-05-05'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I need a hotel in Vancouver.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: 
+
+Found a 5 star hotel named Shangri-La Hotel in Vancouver.
+User: 
+
+Please check whether smoking is allowed.
+System: 
+
+Shangri-La Hotel does not allow smoking.
+User: 
+
+What's the price per night and the address?
+System: 
+
+The price per night is $300 and the address is 1128 West Georgia Street.
+User: 
+
+Please reserve it.
+System: 
+
+What is your check-in date and how many nights will you stay?
+User: 
+
+15th for three nights.
+System: 
+
+Please provide your check-in date in YYYY-MM-DD format.
+User: 
+
+2024-03-15
+System: 
+
+How many rooms would you like to book?
+User: 
+
+One room.
+System: 
+
+Please confirm to book 1 room at Shangri-La Hotel in Vancouver from 2024-03-15 for 3 nights.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: "Shangri-La Hotel", check_in_date: "2024-03-15", stay_length: 3, location: "Vancouver", number_of_rooms: 1 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2024-03-15'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

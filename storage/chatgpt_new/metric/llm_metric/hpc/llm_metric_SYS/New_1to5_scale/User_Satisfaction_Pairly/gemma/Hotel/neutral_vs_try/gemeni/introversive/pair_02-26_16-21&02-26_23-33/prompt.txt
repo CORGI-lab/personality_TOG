@@ -1,0 +1,105 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to book a hotel in London.
+
+System: Okay, how many rooms do you need and what date would you like to check in? Also, how long will you be staying?
+
+User: Just one room, please. Check-in on the 10th, for three nights.
+
+System: Okay, I need the year and month of your check-in date. Could you please provide that?
+
+User: This December.
+
+System: Okay, to confirm, you need one room in London, checking in on December 10th for three nights. Could you please specify the year for your check-in date?
+
+User: 2024, please.
+
+System: You are missing the required parameters in the API call, please generate the API call again. If user is open to any cuisine, select a random cuisine from list based on user's trait.
+SYSTEM: My apologies, I should have performed a search first.
+
+APICall(method='SearchHotel', parameters={location: London})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: Okay, I have a few hotels in London. 45 Park Lane is a 5-star hotel, Abc Hyde Park Hotel is a 3-star hotel, and Abercorn House is a 1-star hotel. Do you have a preference?
+
+User: Perhaps the Abc Hyde Park Hotel. What's the price?
+
+System: The price per night at Abc Hyde Park Hotel is $102. Would you like to proceed with booking a room there for December 10, 2024, for three nights?
+
+User: Yes, please.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-12-10, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 3})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': '1', 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': '', 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-12-10', 'stay_length': '3'}]
+End Search Results
+System: Okay, your booking at Abc Hyde Park Hotel for one room, checking in on December 10, 2024, for three nights is confirmed. The phone number is +44 20 7706 4660 and the address is 121 Sussex Gardens. Is there anything else I can assist you with?
+
+User: No, that will be all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating or smoking allowance?
+
+User: No preference for smoking. Maybe a three-star hotel?
+
+System: Okay, I can search for a three-star hotel in San Francisco with no preference for smoking.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 3, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: We have three 3-star hotels in San Francisco: Bei Hotel San Francisco, Beresford Arms Hotel, and Chancellor Hotel On Union Square. Would you like to know more about any of them?
+
+User: Tell me about Bei Hotel San Francisco.
+
+System: Okay, Bei Hotel San Francisco has 3 rooms, allows smoking, and the price per night is $351. The phone number is +1 415-626-6103 and the address is 50 8th Street. Is there anything else you'd like to know about it?
+
+User: No, that's okay. Can you check the price for Beresford Arms Hotel?
+
+System: Okay, the price per night for Beresford Arms Hotel is $132. Would you like any other details about this hotel?
+
+User: No, that's all. I'll take Beresford Arms Hotel. Can you book it for me?
+
+System: Okay, I can help you with that. To book the Beresford Arms Hotel, I need to know the check-in date and the length of your stay. Could you please provide that information?
+
+User: I need it for two nights, starting tomorrow.
+
+System: Okay, to confirm, you'd like to book 2 rooms at the Beresford Arms Hotel for two nights starting tomorrow, is that correct? I also need the exact date for tomorrow's check-in. Could you please provide the full date?
+
+User: Yes, that is correct. Tomorrow is November 9, 2023.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Beresford Arms Hotel, location: San Francisco, check_in_date: 2023-11-09, stay_length: 2, number_of_rooms: 2})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street', 'check_in_date': '2023-11-09'}]
+End Search Results
+System: Excellent! Your reservation at the Beresford Arms Hotel for two nights, starting tomorrow, November 9, 2023, has been confirmed. Is there anything else I can assist you with today?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

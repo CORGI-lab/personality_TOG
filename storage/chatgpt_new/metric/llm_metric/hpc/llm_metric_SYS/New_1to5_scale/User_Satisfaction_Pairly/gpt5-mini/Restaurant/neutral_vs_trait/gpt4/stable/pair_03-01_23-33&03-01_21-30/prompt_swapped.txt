@@ -1,0 +1,100 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to find a restaurant in San Mateo. Can you help me with that?
+System: Sure, I'd be happy to help. Do you have any preference for a specific type of cuisine, or would you like me to suggest one for you?
+User: I'm open to suggestions. What do you recommend?
+System: Let's explore an Asian cuisine option in San Mateo. I'll look for some good choices for you. Please hold on. 
+
+APICall (method='FindRestaurants', parameters={city: San Mateo, cuisine: Asian})
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '925-408-4891', 'price_range': 'moderate', 'restaurant_name': 'Izakaya Ginji', 'serves_alcohol': True, 'street_address': '301 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '650-345-9168', 'price_range': 'moderate', 'restaurant_name': 'Little Sichuan Restaurant', 'serves_alcohol': False, 'street_address': '168 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '650-558-8969', 'price_range': 'moderate', 'restaurant_name': 'Old Town Sushi', 'serves_alcohol': False, 'street_address': '112 South B Street'}]
+End Search Results
+System: I found a few Asian cuisine options in San Mateo for you. How about trying Izakaya Ginji? It's a moderate-priced restaurant located at 301 East 4th Avenue and they do serve alcohol. Would you like more information on another option or perhaps make a reservation at Izakaya Ginji?
+User: Could you tell me if they have live music at Izakaya Ginji?
+System: Izakaya Ginji does not have live music. Would you like information about another restaurant, or are you interested in making a reservation at Izakaya Ginji?
+User: Let's try another option that might have live music.
+System: Let's consider another option. How about Little Sichuan Restaurant or Old Town Sushi? Both are also moderately priced Asian cuisine restaurants in San Mateo. However, neither of them has live music. Would you like more information on either of these, or would you like to explore different criteria?
+User: Let's explore different criteria. Do you have any recommendations for Italian cuisine in San Mateo?
+System: Let me look into Italian cuisine options in San Mateo for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Mateo, cuisine: Italian})
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-342-3100', 'price_range': 'moderate', 'restaurant_name': 'Capellini Restaurant', 'serves_alcohol': True, 'street_address': '310 Baldwin Avenue'}, {'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-579-6021', 'price_range': 'moderate', 'restaurant_name': 'Osteria Coppa - Permanently Closed', 'serves_alcohol': True, 'street_address': '139 South B Street'}, {'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-375-0818', 'price_range': 'expensive', 'restaurant_name': 'Pausa Bar & Cookery', 'serves_alcohol': True, 'street_address': '223 East 4th Avenue'}]
+End Search Results
+System: I found some Italian cuisine options in San Mateo for you. Capellini Restaurant is a moderately priced option located at 310 Baldwin Avenue, and they do serve alcohol. Unfortunately, they do not have live music. Would you like more information on Capellini Restaurant, or perhaps explore another option?
+User: Do you have any Italian restaurant options in San Mateo that offer live music?
+System: Currently, none of the Italian restaurants I found in San Mateo offer live music. Would you like to explore a different cuisine or perhaps consider other criteria such as price range or availability of alcohol?
+User: Let's stick with Italian cuisine, but can you find one with a more lively atmosphere, maybe a place that's popular for gatherings?
+System: I'll look for Italian restaurants in San Mateo that are known for a lively atmosphere. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Mateo, cuisine: Italian, price_range: 'expensive'})
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-375-0818', 'price_range': 'expensive', 'restaurant_name': 'Pausa Bar & Cookery', 'serves_alcohol': True, 'street_address': '223 East 4th Avenue'}]
+End Search Results
+System: I found an Italian restaurant that might offer a lively atmosphere for gatherings. Pausa Bar & Cookery is an expensive option located at 223 East 4th Avenue, and they do serve alcohol. Although they do not have live music, it could still be a great spot for a vibrant dining experience. Would you like more information or assistance with anything else?
+User: I like the sound of Pausa Bar & Cookery. Could you make a reservation for two people tomorrow at 7:00 pm?
+System: Could you please confirm if you would like to make the reservation at Pausa Bar & Cookery for two people tomorrow at 7:00 pm in San Mateo?
+User: Yes, I would like to confirm the reservation for two people at Pausa Bar & Cookery tomorrow at 7:00 pm in San Mateo.
+System: Great! I'll proceed with making the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={city: San Mateo, date: YYYY-MM-DD, party_size: 2, cuisine: Italian, restaurant_name: Pausa Bar & Cookery, time: 19:00})
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-375-0818', 'price_range': 'expensive', 'restaurant_name': 'Pausa Bar & Cookery', 'serves_alcohol': True, 'street_address': '223 East 4th Avenue', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Pausa Bar & Cookery for two people tomorrow at 7:00 pm in San Mateo has been successfully made. The restaurant is located at 223 East 4th Avenue, and they do serve alcohol. If you have any more questions or need further assistance, feel free to let me know. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to find a nice restaurant in Santa Clara. Could you help me with that?
+System: Sure! To help you find a nice restaurant in Santa Clara, could you please let me know what type of cuisine you are interested in?
+User: I'm interested in Italian cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Santa Clara, cuisine: Italian})
+Search Results
+[{'city': 'Santa Clara', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-984-0414', 'price_range': 'moderate', 'restaurant_name': "Fiorillo's Restaurant And Banquet Facilities", 'serves_alcohol': True, 'street_address': '638 El Camino Real'}, {'city': 'Santa Clara', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-241-9414', 'price_range': 'moderate', 'restaurant_name': 'Mio Vicino', 'serves_alcohol': False, 'street_address': '1290 Benton Street'}, {'city': 'Santa Clara', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-330-9212', 'price_range': 'moderate', 'restaurant_name': 'Piatti', 'serves_alcohol': False, 'street_address': '3905 Rivermark Plaza'}]
+End Search Results
+System: I found a few Italian restaurants in Santa Clara for you. One option is Fiorillo's Restaurant And Banquet Facilities, located at 638 El Camino Real. They do serve alcohol. Would you like more information about this restaurant, or would you like to hear about another option?
+User: Could you tell me if Fiorillo's has live music and provide the price range?
+System: Fiorillo's Restaurant And Banquet Facilities does not have live music, and the price range is moderate. Would you like to know more details about this restaurant or explore other options?
+User: Could you tell me about another Italian restaurant option in Santa Clara?
+System: Another option for Italian cuisine in Santa Clara is Mio Vicino, located at 1290 Benton Street. They do not serve alcohol and also do not have live music. Would you like more information about this restaurant or explore additional options?
+User: Could you provide the price range for Mio Vicino, please?
+System: The price range for Mio Vicino is moderate. Would you like to know more details about this restaurant or explore other Italian restaurant options in Santa Clara?
+User: Could you tell me about more Italian restaurant options in Santa Clara?
+System: Certainly! Another Italian restaurant option in Santa Clara is Piatti, located at 3905 Rivermark Plaza. They do not serve alcohol and do not have live music. Would you like more information about Piatti or explore additional options?
+User: Could you please provide the price range for Piatti?
+System: The price range for Piatti is moderate. Would you like to know more details about this restaurant or explore other Italian restaurant options in Santa Clara?
+User: I'd like to know more details about Piatti, please.
+System: Piatti is an Italian restaurant located at 3905 Rivermark Plaza in Santa Clara. Their contact number is 408-330-9212. They do not serve alcohol and do not have live music. If you have any more questions or need assistance with anything else, feel free to let me know!
+User: I'd like to make a reservation at Piatti, please. Could you book a table for two this Friday at 7:00 pm?
+System: Could you please confirm the date for the reservation? Also, is Santa Clara the correct city for the reservation? Once confirmed, I can proceed with making the reservation for two at Piatti this Friday at 7:00 pm.
+User: Yes, the reservation is for this Friday in Santa Clara. Please proceed.
+System: Thank you for confirming. I will now proceed with making the reservation for two at Piatti in Santa Clara this Friday at 7:00 pm. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Piatti', city: 'Santa Clara', date: '2023-10-20', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Santa Clara', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-330-9212', 'price_range': 'moderate', 'restaurant_name': 'Piatti', 'serves_alcohol': False, 'street_address': '3905 Rivermark Plaza', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: The reservation at Piatti in Santa Clara for two people this Friday at 7:00 pm has been successfully made. If you have any more questions or require further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

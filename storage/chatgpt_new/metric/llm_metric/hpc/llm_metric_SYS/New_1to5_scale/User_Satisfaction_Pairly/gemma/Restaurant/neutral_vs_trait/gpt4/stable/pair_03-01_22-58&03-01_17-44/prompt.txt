@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. Can you help me find one?
+System: What type of cuisine are you interested in? For example, American, Italian, or something else?
+User: I'm in the mood for Italian food. Can you find something for me?
+System: Great choice! I will look for Italian restaurants in San Francisco for you. Please give me a moment. APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They serve alcohol but do not have live music. Would you like more information about this restaurant, or would you like to hear about another option?
+User: Can you tell me about another option, please?
+System: Another option is A16, which is located at 2355 Chestnut Street in San Francisco. This restaurant also serves alcohol and does not have live music. Would you like more information about this restaurant or hear about a different one?
+User: Can you tell me if there are any other Italian restaurants with live music?
+System: Currently, the Italian restaurants I've found in San Francisco do not offer live music. Would you like to explore a different cuisine that potentially offers live music, or would you like more details about any of the Italian restaurants I've already mentioned?
+User: Let's go with A16. Could you please make a reservation for two people at around 7:00 pm?
+System: Could you please confirm the date for the reservation at A16, located at 2355 Chestnut Street in San Francisco?
+User: The reservation should be for tomorrow, please.
+System: Thank you for confirming. I'll proceed with the reservation at A16 for two people at 7:00 pm for tomorrow. Let me handle that for you. APICall (method='ReserveRestaurant', parameters= {restaurant_name: A16, city: San Francisco, time: 19:00, date: YYYY-MM-DD, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 has been successfully made for two people at 7:00 pm for tomorrow. If you need any more assistance or information, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in San Mateo. Could you help me with that?
+System: Sure, I can help with that. Do you have a specific type of cuisine in mind, or are you open to any suggestions?
+User: I'm open to suggestions. I'm curious to see what options are available.
+System: Let's explore a Vietnamese cuisine option for you. I'll find some restaurants in San Mateo that serve Vietnamese food. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Mateo, cuisine: Vietnamese})
+Search Results
+
+End Search Results
+System: It seems there are no Vietnamese restaurants available in San Mateo at the moment. Would you like to try another cuisine, or perhaps specify a price range or any other preference to help refine the search?
+User: How about something Italian? I'm fond of pasta and pizza.
+System: Let's look for Italian restaurants in San Mateo for you. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: San Mateo, cuisine: Italian})
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-342-3100', 'price_range': 'moderate', 'restaurant_name': 'Capellini Restaurant', 'serves_alcohol': True, 'street_address': '310 Baldwin Avenue'}, {'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-579-6021', 'price_range': 'moderate', 'restaurant_name': 'Osteria Coppa - Permanently Closed', 'serves_alcohol': True, 'street_address': '139 South B Street'}, {'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-375-0818', 'price_range': 'expensive', 'restaurant_name': 'Pausa Bar & Cookery', 'serves_alcohol': True, 'street_address': '223 East 4th Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in San Mateo that you might be interested in. Capellini Restaurant is a moderate-priced option located at 310 Baldwin Avenue, and they do serve alcohol. Would you like more information, or do you have any other preferences?
+User: That sounds delightful. Could you make a reservation for me at Capellini Restaurant? I'd like a table for two this Saturday at 7:00 pm.
+System: Can you please confirm the date for this Saturday, so I can proceed with the reservation at Capellini Restaurant for you?
+User: The date for this Saturday is the 14th. Please go ahead and make the reservation.
+System: Thank you for confirming the date. I'll proceed with making a reservation for a table for two at Capellini Restaurant in San Mateo on Saturday, the 14th, at 7:00 pm. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Capellini Restaurant', city: 'San Mateo', time: '19:00', date: '2023-10-14', party_size: 2})
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-342-3100', 'price_range': 'moderate', 'restaurant_name': 'Capellini Restaurant', 'serves_alcohol': True, 'street_address': '310 Baldwin Avenue', 'date': '2023-10-14', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Capellini Restaurant in San Mateo has been successfully made for two people on Saturday, the 14th of October, at 7:00 pm. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

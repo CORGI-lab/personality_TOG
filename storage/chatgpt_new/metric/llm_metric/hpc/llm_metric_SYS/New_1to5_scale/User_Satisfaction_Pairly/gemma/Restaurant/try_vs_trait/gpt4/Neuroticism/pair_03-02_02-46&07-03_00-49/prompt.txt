@@ -1,0 +1,96 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. Can you help me find one that's cozy and maybe not too expensive? I just want a place where I can feel a bit more at ease and not worry so much.
+System: Sure, I can help with that. Do you have a preference for any particular type of cuisine, or should I suggest something for you?
+User: Honestly, I'm not sure. Maybe something comforting like Italian or maybe a nice cozy café vibe? I just want to find a place where I can relax a bit, you know?
+System: Great, I understand you're looking for a cozy and relaxing spot. Let's start by exploring some Italian options in San Francisco that are not too expensive. I'll find some options for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Here are a few cozy Italian restaurant options in San Francisco that might be just what you're looking for:
+
+1. **54 Mint Ristorante Italiano** - Located at 16 Mint Plaza, this spot offers a moderate price range and serves alcohol. You can reach them at 415-543-5100.
+
+2. **A16** - Situated at 2355 Chestnut Street, this restaurant also falls within a moderate price range and serves alcohol. Contact them at 415-771-2216.
+
+3. **Allegro Romano** - Found at 1701 Jones Street, this place offers a moderate price range and does not serve alcohol. Their phone number is 415-928-4002.
+
+Let me know if any of these sound appealing, or if you’d like more information!
+User: The A16 sounds nice. Can you check if they have any availability for tonight? Maybe around 7 pm? I'm hoping they have a spot and I won't have to stress about finding somewhere last minute.
+System: Sure, I can check that for you. Could you please confirm the number of people for the reservation at A16 around 7 pm tonight?
+User: It will be for two people. I really hope they have availability.
+System: Great, I will check the availability for a table for two at A16 around 7 pm tonight. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'A16', city: 'San Francisco', time: '19:00', date: '2023-10-15', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-15', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Good news! A table for two is available at A16 for 7 pm tonight. Enjoy your evening at this cozy spot! If you need the address again, it's 2355 Chestnut Street, and you can reach them at 415-771-2216. Let me know if there's anything else I can assist you with!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm feeling really anxious today, and I just need to find a restaurant in Fremont. Can you help me with that, please? I hope it's not too much to ask. I'm really craving something Italian.
+System: I understand how you feel, and I'm here to help make this process as smooth as possible for you. Let's find a nice Italian restaurant in Fremont. Could you please let me know if you have a preference for the price range? If not, that's perfectly fine; we can look for a variety of options.
+User: Oh gosh, I didn't even think about the price range. I guess something moderately priced would be best. I don't want to end up spending too much and regretting it later. 
+System: Thank you for letting me know. I'll search for a moderately priced Italian restaurant in Fremont for you. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian, price_range: moderate})
+Search Results
+
+End Search Results
+System: I'm sorry, it seems there are no moderately priced Italian restaurants available in Fremont at the moment. How about I look for a similar option, perhaps an Italian restaurant in a nearby city or a different price range? Please let me know what you'd prefer, and I'll do my best to assist you.
+User: Oh no, this is starting to stress me out. I was really hoping for something moderately priced in Fremont, but if that's not possible, maybe you could try looking for a moderately priced Italian restaurant in a nearby city? I just don't want to end up somewhere too expensive. Please help me find something that won't make me feel anxious about the cost.
+System: Let's explore your options and ease that stress a bit. I'll look for a moderately priced Italian restaurant in a nearby city for you. Please give me a moment while I search for the best available option. 
+
+APICall (method='FindRestaurants', parameters={city: Nearby City, cuisine: Italian, price_range: moderate})
+Search Results
+
+End Search Results
+System: It seems there are no moderately priced Italian restaurants available in nearby cities either. I understand this might be disappointing, but how about we try a different cuisine in Fremont that might still satisfy your craving? We could explore options like Mediterranean or Greek which often have similar flavors. Please let me know if you'd like me to proceed with this, and I'll do my best to find a great spot for you.
+User: I can't believe there aren't any moderately priced Italian restaurants nearby. This is really unsettling. But, okay, let's try Mediterranean or Greek in Fremont. I just really hope it's worth it and doesn't end up being too pricey.
+System: I completely understand your concern, and I'm here to make this as easy as possible for you. Let me search for a moderately priced Mediterranean or Greek restaurant in Fremont. I'll do my best to find a place that meets your expectations. Please hold on for a moment while I look it up. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Mediterranean, price_range: moderate})
+Search Results
+
+End Search Results
+System: It appears that there are no moderately priced Mediterranean restaurants in Fremont at the moment. Let's try looking for a Greek restaurant instead. Please hold on while I search for that option. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Greek, price_range: moderate})
+Search Results
+
+End Search Results
+System: I'm really sorry to hear that we couldn't find any moderately priced Greek restaurants in Fremont either. I understand this might be frustrating. As an alternative, would you like me to search for a moderately priced restaurant with a different cuisine in Fremont, or perhaps expand the search to include other nearby cities? Please let me know how you'd like to proceed, and I'll do my best to assist you.
+User: This is really overwhelming. I was hoping for something specific, and nothing seems to be working out. Maybe expanding the search to nearby cities is the best option. I just hope we find something soon before this becomes too much to handle. Please try looking for a moderately priced restaurant with any cuisine in a nearby city. I just want to find a place to eat without feeling more anxious.
+System: APICall (method='FindRestaurants', parameters={city: Nearby City, cuisine: Mediterranean, price_range: moderate})
+Search Results
+
+End Search Results
+System: APICall (method='FindRestaurants', parameters={city: Nearby City, cuisine: Vietnamese, price_range: moderate})
+Search Results
+
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I'm looking for a place to eat in San Francisco. Can you help me find something?
+System: Sure! I'd be happy to help you find a place to eat in San Francisco. Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: I don't know, maybe something Italian? Or maybe Chinese? Whatever you think.
+System: Great! Let's start with Italian cuisine in San Francisco. I'll look up some options for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco for you. How about trying 54 Mint Ristorante Italiano located at 16 Mint Plaza? It's a moderate-priced restaurant that serves alcohol. If you want more options, there's also A16 on Chestnut Street and Allegro Romano on Jones Street. Would you like more information on any of these, or is there something specific you're looking for?
+User: I guess 54 Mint sounds okay. Can you just book a table for me? I’m not sure about the time, maybe around dinner?
+System: What time would you like to make the reservation for dinner at 54 Mint Ristorante Italiano? Typically, dinner reservations can be made between 6:00 PM and 9:00 PM, but let me know your preferred time, and we'll get it booked for you. Additionally, could you confirm the number of people for the reservation?
+User: Uh, let's do it for around 7:00 PM, I guess. And it's just going to be me.
+System: Great! To confirm, you would like to reserve a table for 1 at 54 Mint Ristorante Italiano in San Francisco at 7:00 PM. I'll proceed with the reservation. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: '54 Mint Ristorante Italiano', city: 'San Francisco', time: '19:00', party_size: 1})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Your reservation at 54 Mint Ristorante Italiano in San Francisco has been successfully made for 7:00 PM. Enjoy your dinner! If you need anything else, feel free to ask.
+User: Cool, thanks. I think that's all I need.
+
+Dialogue B:
+  User: I'm looking for a place to eat in San Francisco. Maybe something like Italian or whatever. I don't know, just surprise me!
+System: Let's go with Italian cuisine in San Francisco. Does that sound good? I'll find some options for you. Just one moment while I look them up. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Here are a few Italian restaurant options in San Francisco for you: 
+
+1. **54 Mint Ristorante Italiano** at 16 Mint Plaza, which has a moderate price range and serves alcohol. You can reach them at 415-543-5100.
+
+2. **A16** located at 2355 Chestnut Street, also offering a moderate price range and serving alcohol. Their contact number is 415-771-2216.
+
+3. **Allegro Romano** at 1701 Jones Street, with a moderate price range but does not serve alcohol. You can call them at 415-928-4002.
+
+Let me know if any of these catch your interest or if you need more information!
+User: Uh, I guess I’ll go with the first one, 54 Mint Ristorante Italiano. Can you book a table for me there? Probably for tonight? I mean, if it's not too late or something.
+System: What time would you like to make the reservation for at 54 Mint Ristorante Italiano? And how many people will be in your party?
+User: I think around 7 PM should work, and it'll just be for two people.
+System: Great! Let me confirm that you want to book a table for two people at 7 PM tonight at 54 Mint Ristorante Italiano in San Francisco. I'll proceed with making the reservation now. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 54 Mint Ristorante Italiano, city: San Francisco, time: 19:00, date: 2023-10-05, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2023-10-05', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at 54 Mint Ristorante Italiano in San Francisco is confirmed for 7 PM tonight. If you need to reach them, their phone number is 415-543-5100. Enjoy your meal and have a great evening!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

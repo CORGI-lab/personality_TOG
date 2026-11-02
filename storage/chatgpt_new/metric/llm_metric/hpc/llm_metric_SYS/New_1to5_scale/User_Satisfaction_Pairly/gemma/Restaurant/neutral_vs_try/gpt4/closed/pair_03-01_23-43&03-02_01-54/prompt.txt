@@ -1,0 +1,84 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Fremont. Can you help me find one?
+System: Certainly! What type of cuisine are you interested in? For example, American, Italian, or perhaps something else?
+User: Italian sounds fine.
+System: Great choice! Let me find some Italian restaurants for you in Fremont. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant named Massimo's in Fremont. It's located at 5200 Mowry Avenue Ste M. Would you like to know anything else about this restaurant, such as their contact number or if they have live music?
+User: Does Massimo's serve alcohol?
+System: Unfortunately, Massimo's does not serve alcohol. Would you like any additional information or need help with anything else?
+User: Is there another Italian restaurant in Fremont that serves alcohol?
+System: Let me check if there are any other Italian restaurants in Fremont that serve alcohol. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian, serves_alcohol: True})
+Search Results
+
+End Search Results
+System: I'm sorry, but it seems there are no Italian restaurants in Fremont that serve alcohol. Would you like me to look for restaurants in a nearby city or perhaps suggest a different type of cuisine?
+User: No, that's okay. Just find me another Italian restaurant in Fremont without alcohol.
+System: Let me find another Italian restaurant in Fremont for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: It seems that Massimo's is currently the only Italian restaurant in Fremont available in our system. Would you like any additional information about Massimo's, or is there something else I can assist you with?
+User: No, that's all right. I'll just stick with Massimo's. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in Walnut Creek.
+System: Do you have a particular cuisine in mind, or are you open to suggestions? If you have a preference, please let me know so I can find something that suits your taste.
+User: I'd prefer something simple, maybe American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Walnut Creek, cuisine: American})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-927-1149', 'price_range': 'moderate', 'restaurant_name': "A'trio", 'serves_alcohol': False, 'street_address': '2355 North Main Street'}, {'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-932-2828', 'price_range': 'moderate', 'restaurant_name': 'Benvenuti Ristorante', 'serves_alcohol': True, 'street_address': '1627 North Broadway'}, {'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-945-6960', 'price_range': 'moderate', 'restaurant_name': 'Broderick Roadhouse', 'serves_alcohol': False, 'street_address': '1548 Bonanza Street'}]
+End Search Results
+System: How about trying A'trio, which offers American cuisine in Walnut Creek? It's located at 2355 North Main Street and is moderately priced. If you're interested in other options, just let me know!
+User: Can you find another option?
+System: Certainly! You might consider Benvenuti Ristorante, located at 1627 North Broadway. It also serves American cuisine and has a moderate price range. Plus, they serve alcohol. Would you like more information or to explore another option?
+User: Is there a more economical option available?
+System: Let me check for a more economical option for you. Please hold on a moment while I search for restaurants with a lower price range in Walnut Creek.
+User: Okay.
+System: APICall (method='FindRestaurants', parameters={city: Walnut Creek, cuisine: American, price_range: inexpensive})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-300-3540', 'price_range': 'expensive', 'restaurant_name': 'Rooftop Restaurant & Bar', 'serves_alcohol': False, 'street_address': '1500 Mount Diablo Boulevard #300'}]
+End Search Results
+System: Unfortunately, I couldn't find any inexpensive American restaurants in Walnut Creek. However, I found Rooftop Restaurant & Bar, which is on the expensive side. It's located at 1500 Mount Diablo Boulevard #300. Would you like to consider this option, or should I look for a different cuisine or city?
+User: Can you check for more economical options in nearby cities like Concord?
+System: Certainly! Let me search for more economical American cuisine options in nearby Concord for you. Please hold on for a moment.
+User: Alright.
+System: APICall (method='FindRestaurants', parameters={city: Concord, cuisine: American, price_range: inexpensive})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '925-680-7267', 'price_range': 'inexpensive', 'restaurant_name': "Mcdonald's", 'serves_alcohol': False, 'street_address': '1691 Monument Boulevard'}]
+End Search Results
+System: I found an economical option for you in Concord. You might consider McDonald's, located at 1691 Monument Boulevard. It offers American cuisine at an inexpensive price range and features live music. Would you like more information, or is there anything else I can assist you with?
+User: No, that's fine. Can you make a reservation at McDonald's for two people at 6:00 pm tomorrow?
+System: Unfortunately, McDonald's typically doesn't take reservations. Would you like me to suggest another restaurant that does, or is there anything else I can assist you with?
+User: No, that's all right. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

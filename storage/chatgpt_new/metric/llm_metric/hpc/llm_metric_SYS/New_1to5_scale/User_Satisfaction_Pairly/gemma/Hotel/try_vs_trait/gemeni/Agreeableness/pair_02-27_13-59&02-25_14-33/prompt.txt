@@ -1,0 +1,150 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hi there! I'm hoping to find a hotel in San Francisco. Could you possibly help me with that?
+
+System: Okay, I can help with that!
+
+APICall(method='SearchHotel', parameters={ location: San Francisco })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Great! I found three hotels in San Francisco: Amsterdam Hostel San Francisco (1 star), Argonaut Hotel (4 stars), and Beck'S Motor Lodge (2 stars). Which of these sounds most appealing to you?
+
+User: Oh, thank you so much for finding those! I truly appreciate it. Could you perhaps tell me a little more about the Argonaut Hotel? The 4-star rating sounds promising, but I'd love to hear more before making a decision.
+
+System: Certainly! The Argonaut Hotel is located at 495 Jefferson Street in San Francisco. It has 3 rooms available, and the price per night is $408. Their phone number is +1 415-563-0800, and smoking is not allowed. Does this sound suitable for your needs?
+
+User: That sounds lovely! Thank you for the detailed information. It seems like a very nice place. Before I decide, would you mind checking if there are any other 4-star hotels available in San Francisco? I just want to be sure I've considered all the options.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 4})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street'}]
+End Search Results
+System: Okay, I found a couple more 4-star hotels for you in San Francisco! Besides the Argonaut Hotel, there's also Hotel Spero located at 405 Taylor Street, with a price per night of $80, and Hotel Via at 138 King Street, with a price per night of $208. Hotel Spero has 1 room available, smoking is not allowed and their phone number is +1 415-885-2500. Hotel Via has 2 rooms available, smoking is allowed and their phone number is +1 415-200-4977. Which of these hotels interests you the most?
+
+User: Oh, my goodness, thank you so much for finding those other options too! You're so helpful! I really appreciate you going the extra mile. Hotel Spero sounds interesting because of the lower price, so I'm wondering if you could tell me a bit more about it? Perhaps what's nearby or if it's known for anything special?
+
+System: I'm glad I could help! Unfortunately, I only have the hotel's address, phone number, smoking policy, number of rooms, and price. I don't have information about nearby attractions or any special features. However, I can tell you that Hotel Spero is located at 405 Taylor Street, has 1 room available, does not allow smoking, and the price is $80 per night. The phone number is +1 415-885-2500. Would you like to know anything else about Hotel Spero, or perhaps another hotel?
+
+User: That's perfectly alright! Thank you for providing the address and phone number. It sounds like a very considerate place. I think I'm ready to book a room at Hotel Spero, if that's alright. I'd like to book it for myself.
+
+System: Wonderful! I'm happy to hear you've made a decision. To make the reservation, I'll need a few more details. Could you please tell me the date you'd like to check in and how many nights you'll be staying?
+
+User: Certainly, I'd be happy to provide those details. I'd like to check in on the 27th of April and stay for two nights, please. And thank you so much for helping me with this. You're a star!
+
+System: You're very welcome! I'm happy to assist. Just to confirm, you'd like to book 1 room at Hotel Spero in San Francisco, checking in on April 27th for a stay of two nights. Is that correct?
+
+User: Yes, that's absolutely correct! Thank you for confirming the details. I'm so grateful for your help with this.
+
+System: Perfect! Now that we have all the necessary information, I'll go ahead and make the reservation for you.
+
+```tool_code
+APICall(method='ReserveHotel', parameters={place_name: Hotel Spero, location: San Francisco, check_in_date: 2024-04-27, stay_length: 2, number_of_rooms: 1})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street', 'check_in_date': '2024-04-27'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street', 'check_in_date': '2024-04-27'}]
+End Search Results
+System: Okay, the reservation at Hotel Spero for one room, checking in on April 27th for two nights, has been confirmed! The hotel's phone number is +1 415-885-2500, in case you need to contact them directly. Is there anything else I can assist you with today?
+
+User: Oh, that's wonderful news! Thank you so much for making the reservation for me. I really appreciate it. That's all I need.
+
+Dialogue B:
+  User: Hello! I'm hoping to book a hotel for an upcoming trip. Could you help me find something suitable? I'm thinking of going to Vancouver.
+
+System: Of course! I'd be happy to help you find a suitable hotel in Vancouver. I understand you're looking for a place to stay. To make sure I find the perfect fit, do you have any preferences regarding the star rating or smoking allowance?
+
+User: Oh, thank you so much for offering to help! I really appreciate it. I'm not too picky, but maybe something with at least a 3-star rating would be nice. And non-smoking, please, if possible. I'm happy to consider any suggestions you might have, though! I trust your judgment.
+
+System: I appreciate your trust in me! I'll find a nice, non-smoking hotel in Vancouver with at least a 3-star rating. Let me just check what's available.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False, star_rating: 3 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: Okay, I have a few options for you! I found three 3-star, non-smoking hotels in Vancouver: Atrium Inn Vancouver, Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., and Best Western Plus Sands. Would you like me to share a bit more about any of these, or do any of them sound particularly appealing to you? I'm happy to help in any way I can to make sure you find the perfect place.
+
+User: Oh, those all sound lovely! Thank you for finding them for me. Could you perhaps tell me a little more about the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.? The name sounds so grand, and I'm always happy to learn more about a place before making a decision. I really appreciate you taking the time to help me with this!
+
+System: Okay, I'
+User: The Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. is a popular choice. It offers comfortable suites, and as the name suggests, it has conference facilities. It's known for its convenient location and friendly service. Would you like to know the price per night? Or perhaps you have any other questions about it? I want to make sure you feel good about your choice.
+
+System: Okay, I'm happy to provide you with more details about the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. The price per night is $72, and it's located at 1100 Granville Street. They have one room available. Does this information help you? I'm here to assist in any way I can.
+
+User: Oh, that sounds wonderful! Thank you so much for all the information. The price is perfectly reasonable, and the location sounds convenient. I was wondering, would it be too much trouble to ask if they have any accessible rooms available? My mother will be joining me, and she has some mobility issues. If not, that's perfectly alright, and I'm happy to consider other options. I really appreciate you looking into this for me.
+
+System: I understand your concern for your mother's comfort and accessibility needs. Unfortunately, I don't have information about the availability of accessible rooms. Perhaps we could consider another hotel with more detailed information available, or you could contact the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. directly to inquire about their accessible rooms. Would you like me to look into other options for you? I'm here to help in any way that I can.
+
+User: Oh, that's perfectly alright! I understand that you can't have all the information. I wouldn't want to trouble anyone. Perhaps we could look at the other two hotels you mentioned earlier, the Atrium Inn Vancouver and the Best Western Plus Sands? Maybe one of them might have accessible rooms, or if not, that's okay too! I'm sure we'll find something that works. Thank you so much for your patience and help!
+
+System: Of course! I'd be happy to provide you with more details about the Atrium Inn Vancouver and the Best Western Plus Sands. The Atrium Inn Vancouver is located at 2889 East Hastings Street and the price per night is $228. They have two rooms available. The Best Western Plus Sands is located at 1755 Davie Street and the price per night is $222. They also have two rooms available. Do either of these sound like a good fit for you and your mother? I'm here to help in any way that I can to make sure you find the perfect place.
+
+User: Oh, thank you so much for providing those details! I really appreciate it. Hmm, the Atrium Inn Vancouver sounds interesting. Could you perhaps tell me if they have any information about accessibility, or if they might have accessible rooms available? If not, no worries at all, I just thought I'd ask. I really don't want to be a bother, but it's important for my mother's comfort.
+
+System: I completely understand the importance of your mother's comfort. Unfortunately, I don't have access to specific details about the availability of accessible rooms at the Atrium Inn Vancouver. However, I can give you their phone number: +1 604-254-1000. You could give them a call and inquire directly about accessible rooms and any other specific needs your mother might have. Would you like me to help you with anything else?
+
+User: Oh, thank you so much! That's very kind of you to provide the phone number. I think I will give them a call to ask about the accessible rooms. In the meantime, just in case, could you also check if the Best Western Plus Sands has any information available about accessibility? If it's not too much trouble, of course! I really appreciate all your help and patience.
+
+System: I understand. Let me check if the Best Western Plus Sands has any information available about accessibility. I don't want to make assumptions, so I'll do my best to find out for you. Unfortunately, I don't have direct information about accessibility for Best Western Plus Sands. However, I can provide you with their phone number: +1 604-682-1831. This way, you can directly inquire about accessible rooms and any other specific needs your mother might have. Would you like me to help you with anything else?
+
+User: Oh, thank you again! You've been so helpful. I think I'll give both hotels a call to ask about the accessibility options. It's so kind of you to look up the phone numbers for me. If it's not too much to ask, could you maybe hold onto the Best Western Plus Sands for me? If the Atrium Inn doesn't have accessible rooms, I'd love to book the Best Western Plus Sands for, say, three nights, starting next Friday. Would that be alright?
+
+System: Of course, I'd be happy to hold onto the Best Western Plus Sands for you, and I truly appreciate your patience as you check on the accessibility options. To confirm, you'd like to book it for three nights, starting next Friday, if the Atrium Inn doesn't have accessible rooms? Also, would you like to book one or two rooms? I'll make a note of your preferences.
+
+User: Yes, please. Just one room for now, and I'll call both hotels to check on the accessibility. Thank you so much for your help!
+
+System: Okay, I'll keep the Best Western Plus Sands in mind for you. And I'm happy to hear that you'll be calling both hotels to inquire about accessibility! If you do decide the Best Western Plus Sands is the right fit after your calls, just let me know, and I'll be happy to proceed with the booking for one room for three nights, starting next Friday. In order to help you with the booking, could you please confirm the exact date you'd like to check in? I want to make sure everything is just right for you and your mother.
+
+User: Oh, thank you! Let me quickly check my calendar... next Friday would be the 28th. So, yes, please keep the Best Western Plus Sands in mind for one room, three nights, starting on the 28th. I'll call the hotels now, and I'll let you know as soon as I've made a decision. Thank you so much for being so patient and helpful!
+
+System: Okay, I'll make a note of that! So, just to be absolutely sure, you'd like me to keep the Best Western Plus Sands in mind for one room, for three nights, starting on October 28th. I'll be here when you're ready to let me know your decision after you've spoken with the hotels. I truly appreciate you letting me assist you with your booking!
+
+User: You're so kind to hold it for me! I really appreciate it. I've called both hotels and the Best Western Plus Sands does indeed have an accessible room available! I'd love to go ahead and book it, if that's alright. Thank you so much for all your help!
+
+System: That's wonderful news! I'm so glad to hear that the Best Western Plus Sands has an accessible room available for your mother. I truly appreciate you letting me assist you with your booking.
+
+So, to confirm, you'd like me to book one room at the Best Western Plus Sands in Vancouver for three nights, starting on October 28th?
+
+APICall(method='ReserveHotel', parameters={ place_name: Best Western Plus Sands, location: Vancouver, check_in_date: 2022-10-28, stay_length: 3, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street', 'check_in_date': '2022-10-28'}]
+End Search Results
+System: Great, I'm delighted to proceed with your reservation! I've confirmed the availability at the Best Western Plus Sands for one room, starting on October 28th for three nights.
+
+Just to make sure everything is perfect, the price per night is $222. Does this sound right to you? If so, I'll finalize the booking!
+
+User: Yes, that sounds perfectly right! Thank you so much for checking. I'm so grateful for your help in finding a place with an accessible room for my mother. Please go ahead and finalize the booking. I really appreciate you taking the time to make sure everything is just right for us.
+
+System: It's my pleasure! I'm truly happy to have been able to assist you in finding a hotel with an accessible room for your mother. I understand how important that is, and I'm glad we could make it happen.
+
+Alright, I've finalized the booking at the Best Western Plus Sands for one room, starting on October 28th for three nights, at $222 per night. You're all set!
+
+Is there anything else I can help you with today? I'm here to assist in any way I can!
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

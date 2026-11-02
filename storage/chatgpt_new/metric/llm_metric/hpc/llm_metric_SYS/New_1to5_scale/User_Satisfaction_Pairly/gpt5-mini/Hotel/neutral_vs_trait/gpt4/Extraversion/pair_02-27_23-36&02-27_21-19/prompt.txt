@@ -1,0 +1,66 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm super excited to visit San Diego! Could you help me find a fantastic hotel there? I'm looking for something with a bit of luxury and maybe a great view. Can't wait to see what you've got!
+System: Could you please let me know if you have any specific check-in dates in mind? Additionally, how many rooms and nights are you planning to stay? This information will help me find the perfect luxurious hotel for you in San Diego!
+User: I'm planning to check in on the 10th of next month and stay for five nights. I'll need two rooms since I'm bringing along some friends. Let's make this trip unforgettable!
+System: Great! Let me find the perfect luxurious hotel for you and your friends in San Diego. I'll look for something with a bit of luxury and a great view. Just a moment while I search for you. 
+
+APICall(method='SearchHotel', parameters={ location: San Diego, star_rating: 5 })
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 3, 'phone_number': '+1 858-314-2000', 'place_name': 'Hotel Fairmont Grand Del Mar', 'price_per_night': 540, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '5300 Grand Del Mar Court'}, {'location': 'San Diego', 'number_of_rooms': 2, 'phone_number': '+1 619-738-7000', 'place_name': 'Pendry San Diego', 'price_per_night': 240, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '550 J Street'}]
+End Search Results
+System: I've found some fantastic options for your luxurious stay in San Diego! The Hotel Fairmont Grand Del Mar offers a splendid 5-star experience at $540 per night, located at 5300 Grand Del Mar Court. Alternatively, the Pendry San Diego also provides a 5-star luxury experience at $240 per night, with the added bonus of allowing smoking, located at 550 J Street. Which one would you like to know more about or reserve for your unforgettable trip?
+User: The Pendry San Diego sounds perfect, especially since it allows smoking, which is a nice bonus. Let's go ahead and reserve two rooms there for my stay. Can't wait to enjoy the trip with my friends!
+System: Let's confirm your reservation for two rooms at the Pendry San Diego for five nights, starting from the 10th of next month. Just a moment while I set that up for you. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: San Diego, number_of_rooms: 2, place_name: 'Pendry San Diego', stay_length: 5 })
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 2, 'phone_number': '+1 619-738-7000', 'place_name': 'Pendry San Diego', 'price_per_night': 240, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '550 J Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation for two rooms at the Pendry San Diego has been successfully confirmed for five nights starting from November 10th. The hotel is located at 550 J Street, and you can reach them at +1 619-738-7000. I hope you and your friends have an unforgettable and luxurious stay! Is there anything else I can assist you with for your trip?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm super excited to book a hotel in Sydney. Could you help me find a fantastic place to stay? I'm looking for something vibrant and lively, maybe with a good star rating!
+System: Do you have a specific star rating in mind for your hotel, or are you open to any star rating? Also, could you let me know the dates you're planning to check in and how long you intend to stay? This information will help me find the best options for you.
+User: I'm aiming for at least a 4-star hotel—something with a bit of flair! I'm planning to check in on the 15th and stay for a week. Can't wait to see what options are out there!
+System: Thank you for providing the details. I will now proceed to find suitable options for you. Let's check for 4-star hotels in Sydney. 
+
+APICall(method='SearchHotel', parameters={ location: Sydney, star_rating: 4 })
+Search Results
+[{'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9249 7000', 'place_name': 'Adina Apartment Hotel Sydney Darling Harbour', 'price_per_night': 360, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '55 Shelley Street'}, {'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9274 0000', 'place_name': 'Adina Apartment Hotel Sydney Town Hall', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '511 Kent Street'}, {'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 1300 633 462', 'place_name': 'Adina Serviced Apartments Sydney Martin Place (Formerly Medina)', 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1 Hosking Place'}]
+End Search Results
+System: I found a few 4-star hotels in Sydney for you. The Adina Apartment Hotel Sydney Darling Harbour is available, located at 55 Shelley Street, with a price of $360 per night. It allows smoking. There's also the Adina Apartment Hotel Sydney Town Hall at 511 Kent Street, priced at $324 per night, and smoking is not allowed there. Lastly, the Adina Serviced Apartments Sydney Martin Place, located at 1 Hosking Place, costs $264 per night, and also does not allow smoking. Would you like to proceed with booking one of these options, or do you need more information?
+User: Oh, those sound lovely! I'm really intrigued by the Adina Apartment Hotel Sydney Darling Harbour. A lively spot with smoking allowed, perfect for my vibe! Could you go ahead and reserve a room there for my stay? Super excited!
+System: To proceed with your reservation at the Adina Apartment Hotel Sydney Darling Harbour, could you please let me know how many rooms you would like to reserve for your stay starting from the 15th for a week?
+User: I'll need just one room, please. I'm so thrilled about this!
+System: Please confirm if you'd like to reserve 1 room at the Adina Apartment Hotel Sydney Darling Harbour in Sydney, starting from the 15th for a week.
+User: Yes, please confirm the reservation! I'm really looking forward to this adventure!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Sydney, number_of_rooms: 1, place_name: Adina Apartment Hotel Sydney Darling Harbour, stay_length: 7 })
+Search Results
+[{'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9249 7000', 'place_name': 'Adina Apartment Hotel Sydney Darling Harbour', 'price_per_night': 360, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '55 Shelley Street', 'check_in_date': '2023-11-15'}, {'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9381 2000', 'place_name': 'Adina Apartment Hotel Sydney Airport', 'price_per_night': 420, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '17 Bourke Road, Mascot New South Wales 2020, Australia', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Adina Apartment Hotel Sydney Darling Harbour has been successfully confirmed. You'll be staying in 1 room from November 15th for a week. The hotel is located at 55 Shelley Street, and it allows smoking. If you need any more assistance or information, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

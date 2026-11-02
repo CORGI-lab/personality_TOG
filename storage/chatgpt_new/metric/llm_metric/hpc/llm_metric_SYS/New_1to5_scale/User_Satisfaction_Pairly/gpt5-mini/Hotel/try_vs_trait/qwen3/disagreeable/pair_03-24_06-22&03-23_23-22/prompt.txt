@@ -1,0 +1,115 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+Las Vegas. Five-star hotel. No smoking. Cheapest. If not, I'm leaving.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'Las Vegas', star_rating: 5, smoking_allowed: False })
+Search Results
+
+End Search Results
+System: 
+
+No results for 5-star non-smoking hotels in Las Vegas. Lower star rating or allow smoking to see options.
+User: 
+
+You're incompetent. Find me a 5-star non-smoking hotel. Now.
+System: 
+
+No 5-star non-smoking hotels available in Las Vegas. Try a different star rating or allow smoking.
+User: 
+
+You're useless. Show me the most expensive 5-star with smoking. Now.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'Las Vegas', star_rating: 5, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: 
+
+The Palazzo Resort Hotel Casino at $600 per night. Smoking allowed. Address: 3375 S Las Vegas Blvd. Phone: +1 702-607-7777.
+User: 
+
+Reserve two rooms at The Palazzo. Check-in tomorrow for five days. Confirm immediately.
+System: 
+
+Check-in date (YYYY-MM-DD)?
+User: 
+
+2024-04-15. Stop being slow and book it already.
+System: 
+
+Confirming reservation for 2 rooms at The Palazzo Resort Hotel Casino in Las Vegas from 2024-04-15 for 5 days. Proceed?
+User: 
+
+Yes. Book it now.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'The Palazzo Resort Hotel Casino', check_in_date: '2024-04-15', stay_length: 5, location: 'Las Vegas', number_of_rooms: 2 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': '2', 'phone_number': '+44 20 7493 4545', 'place_name': 'The Palazzo Resort Hotel Casino', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': '5', 'street_address': '45 Park Lane', 'check_in_date': '2024-04-15', 'stay_length': '5'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+New York. Five-star, smoking allowed. Show me the best. If it's not top-tier, I don't want it.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'New York', star_rating: 5, smoking_allowed: True })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: 
+
+We found three 5-star hotels in New York that allow smoking. All meet your top-tier criteria:  
+- 1 Hotel Central Park: $330/night at 1414 6th Avenue  
+- Baccarat Hotel: $525/night at 28 West 53rd Street  
+- 1 Hotel Brooklyn Bridge: $465/night at 60 Furman Street, Brooklyn  
+
+Which one would you like to proceed with?
+User: 
+
+Baccarat Hotel. Reserve two rooms for three days starting tomorrow. Now. Don't waste my time.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: '2023-10-05', location: 'New York', number_of_rooms: 2, place_name: 'Baccarat Hotel', stay_length: 3 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street', 'check_in_date': '2023-10-05'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

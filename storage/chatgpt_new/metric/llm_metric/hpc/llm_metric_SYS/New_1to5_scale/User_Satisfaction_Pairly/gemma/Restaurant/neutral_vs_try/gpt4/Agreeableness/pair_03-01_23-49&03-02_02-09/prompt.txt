@@ -1,0 +1,98 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Palo Alto, please.
+System: What type of cuisine are you interested in, such as Italian, Indian, or something else?
+User: I’m open to any type of cuisine, but I’d love to know if there are any options that have vegetarian-friendly dishes.
+System: Are you looking for a specific price range for the restaurant, or is any range acceptable? Additionally, would you like to know if the restaurant serves alcohol or has live music?
+User: I'm okay with any price range, but it would be nice to know if the restaurant serves alcohol. Also, live music could be a lovely touch.
+System: Thank you for the details. I'll search for restaurants in Palo Alto that offer vegetarian-friendly dishes and check if they serve alcohol and have live music. Please hold on for a moment while I gather this information. 
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Vegetarian, serves_alcohol: dontcare, has_live_music: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no results for vegetarian-friendly restaurants in Palo Alto with the specified parameters. Would you like me to expand the search to include restaurants with different cuisines that might offer vegetarian options?
+User: Yes, please. That would be wonderful. Thank you so much for your help!
+System: Let's refine the search by selecting a random cuisine type that typically offers vegetarian options. How about we look into Indian cuisine? I'll check for restaurants in Palo Alto that serve alcohol and may have live music. Please hold on for a moment while I gather this information.
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Indian, serves_alcohol: True, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems there are no results for Indian cuisine restaurants in Palo Alto that serve alcohol and have live music. Would you like me to search for Indian cuisine restaurants without these specific features, or should I try a different cuisine type altogether?
+User: Let's try a different cuisine type. Maybe something Italian or Mexican?
+System: Let's search for Italian cuisine restaurants in Palo Alto. I'll check if they serve alcohol and may have live music. Please hold on for a moment while I gather this information.
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Italian, serves_alcohol: True, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems there are no results for Italian cuisine restaurants in Palo Alto that serve alcohol and have live music. Would you like me to search for Mexican cuisine instead or broaden the search criteria for Italian cuisine restaurants?
+User: Let's give Mexican cuisine a try and see what options are available. Thank you for your patience!
+System: Let's search for Mexican cuisine restaurants in Palo Alto. I'll check if they serve alcohol and may have live music. Please hold on for a moment while I gather this information.
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Mexican, serves_alcohol: True, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems there are no results for Mexican cuisine restaurants in Palo Alto that serve alcohol and have live music. Would you like me to search for Mexican cuisine restaurants without these specific features, or should I try another cuisine type altogether?
+User: Sure, let's go ahead and look for Mexican cuisine restaurants without the alcohol and live music requirements. Thank you for assisting me with this!
+System: Let's search for Mexican cuisine restaurants in Palo Alto without focusing on whether they serve alcohol or have live music. Please hold on for a moment while I gather this information.
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Mexican, serves_alcohol: dontcare, has_live_music: dontcare})
+Search Results
+
+End Search Results
+System: Unfortunately, there are no results for Mexican cuisine restaurants in Palo Alto with the current search parameters. Would you like me to try another cuisine type or expand the search to a nearby city?
+User: Let's try expanding the search to a nearby city. Maybe somewhere like Mountain View? Thank you for your continued support!
+System: Let's search for Mexican cuisine restaurants in Mountain View. I'll check if they serve alcohol and may have live music. Please hold on for a moment while I gather this information.
+
+APICall (method='FindRestaurants', parameters={city: Mountain View, cuisine: Mexican, serves_alcohol: dontcare, has_live_music: dontcare})
+Search Results
+
+End Search Results
+
+Dialogue B:
+  User: Hi there! I'm looking for a restaurant in San Francisco. Could you help me find one?
+System: Sure! Do you have a particular type of cuisine in mind, or are you open to suggestions?
+User: I’m quite open to suggestions, but I do enjoy Italian food. Do you have any recommendations?
+System: Great choice! Let me find some Italian restaurants for you in San Francisco. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco for you. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They serve alcohol and have a moderate price range. Would you like more information about this restaurant or explore another option like A16 or Allegro Romano?
+User: Could you tell me a bit more about A16, please?
+System: Certainly! A16 is an Italian restaurant located at 2355 Chestnut Street in San Francisco. They have a moderate price range and serve alcohol. Unfortunately, they don't feature live music. If you need more details or want to make a reservation, just let me know!
+User: A16 sounds lovely. Could you please make a reservation for two people for tomorrow evening at 7:00 pm?
+System: To confirm your reservation at A16 in San Francisco, could you please specify the exact date for tomorrow? Also, I'll assume the party size is two unless you have any changes. Once I've confirmed these details, I'll proceed with making the reservation for you.
+User: The reservation is for tomorrow, and yes, it's for two people at 7:00 pm. Thank you so much for your help!
+System: Thank you for confirming the details. I will proceed with making the reservation at A16 in San Francisco for two people tomorrow at 7:00 pm. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: A16, city: San Francisco, date: [insert tomorrow's date in YYYY-MM-DD], time: 19:00, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': "[insert tomorrow's date in YYYY-MM-DD]", 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 in San Francisco for two people tomorrow at 7:00 pm has been successfully made. If you need the restaurant's phone number, it's 415-771-2216. Enjoy your meal and feel free to reach out if you need any further assistance!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

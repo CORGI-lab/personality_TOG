@@ -1,0 +1,128 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need a hotel in Las Vegas. Just find me something.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: 
+
+I found a 3-star hotel in Las Vegas: Best Western Plus Las Vegas West. It's priced at $117 per night, non-smoking, and located at 8669 West Sahara Avenue. Would you like to proceed with this option or see more hotels?
+User: 
+
+Yes, book it.
+System: 
+
+To book the Best Western Plus Las Vegas West, I'll need the check-in date and how many nights you plan to stay. Could you please provide those details?
+User: 
+
+Today, three days.
+System: 
+
+To book the Best Western Plus Las Vegas West, I need the exact check-in date in YYYY-MM-DD format. Could you please provide that?
+User: 
+
+2024-05-15
+System: 
+
+To finalize your reservation for Best Western Plus Las Vegas West, how many rooms would you like to book? The default is 1 room.
+User: 
+
+two rooms
+System: 
+
+To confirm your reservation for Best Western Plus Las Vegas West, how many nights will you be staying? You mentioned three days earlier—should we set the stay length to 3 nights?
+User: 
+
+Three days.
+System: 
+
+Please confirm booking 2 rooms at Best Western Plus Las Vegas West in Las Vegas from 2024-05-15 for 3 nights.
+User: 
+
+Yes, that's confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ "place_name": "Best Western Plus Las Vegas West", "check_in_date": "2024-05-15", "stay_length": 3, "location": "Las Vegas", "number_of_rooms": 2 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue', 'check_in_date': '2024-05-15'}]
+End Search Results
+System: 
+
+Your reservation for 1 room at Best Western Plus Las Vegas West in Las Vegas from 2024-05-15 has been confirmed. The price per night is $117, and the room is non-smoking. The address is 8669 West Sahara Avenue. Is there anything else I can assist you with?
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I want a hotel in Las Vegas. Can you help?
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 1 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-380-6902', 'place_name': 'Hostel Cat', 'price_per_night': 24, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '1236 South Las Vegas Boulevard'}]
+End Search Results
+System: 
+
+I found Budget Suites Of America in Las Vegas for $44 per night. It's a 1-star hotel with smoking allowed. Would you like to book this one?
+User: 
+
+Yes, book it.
+System: 
+
+Sure! Could you please share the check-in date and how many nights you'll be staying?
+User: 
+
+Today, three nights. I don't know, just book it.
+System: 
+
+To proceed with the reservation, I need the check-in date in YYYY-MM-DD format. Could you please provide that?
+User: 
+
+2024-05-15
+System: 
+
+Confirming your reservation for Budget Suites Of America in Las Vegas. Check-in on 2024-05-15 for 3 nights, 1 room. Is that correct?
+User: 
+
+Yeah, sure.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: Budget Suites Of America, check_in_date: 2024-05-15, stay_length: 3, location: Las Vegas, number_of_rooms: 1 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2024-05-15'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

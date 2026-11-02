@@ -1,0 +1,110 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+San Francisco. Find me a high-end Italian restaurant with live music and alcohol. If it's not the best, I'm not interested. I don't have time for your incompetence.
+System: 
+
+Confirming: Italian, San Francisco, very expensive, live music, alcohol. Proceed?
+User: 
+
+Proceed? I don't care about your confirmation. Find the best one immediately. If it's not perfect, I'm not interested.
+System: 
+
+APICall (method='FindRestaurants', parameters= {cuisine: Italian, city: San Francisco, price_range: very expensive, has_live_music: True, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: 
+
+Fior D'italia at 2237 Mason Street (415-986-1886) and Zingari Ristorante + Jazz Bar at 501 Post Street (415-885-8850) have live music and alcohol. Pick one.
+User: 
+
+These are terrible. Find me a better restaurant immediately. I don't have time for your incompetence again.
+System: 
+
+No 'very expensive' Italian restaurants with live music and alcohol exist in San Francisco. Current options are the highest available. Choose one immediately.
+User: 
+
+You're useless. Find me a better restaurant immediately. I don't have time for this nonsense.
+System: 
+
+No higher-end Italian restaurants with live music and alcohol exist in San Francisco. These are the only two options. Choose one now.
+User: 
+
+Book Zingari for 6 at 8 PM. Best table available. If it's not perfect, I'll make sure you regret it. Now.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 'Zingari Ristorante + Jazz Bar', city: 'San Francisco', time: '20:00', party_size: 6})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'party_size': '6', 'time': '20:00'}]
+End Search Results
+System: 
+
+Reservation confirmed for Zingari Ristorante + Jazz Bar at 501 Post Street, San Francisco. Party of 6 at 8 PM. Phone: 415-885-8850.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+San Francisco. Reserve a table for four tonight at 8 PM. Must serve alcohol, no live music. If it's not perfect, I'll find another place myself.
+System: 
+
+What cuisine would you like to explore for your reservation in San Francisco? Options include Italian, Mexican, Japanese, or others—just let me know!
+User: 
+
+French. Don't waste my time.
+System: 
+
+APICall (method='FindRestaurants', parameters= {cuisine: French, city: San Francisco, serves_alcohol: True, has_live_music: False})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-543-0573', 'price_range': 'expensive', 'restaurant_name': 'Fringale Restaurant', 'serves_alcohol': True, 'street_address': '570 4th Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-391-2233', 'price_range': 'expensive', 'restaurant_name': 'Le Central', 'serves_alcohol': True, 'street_address': '453 Bush Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-795-1422', 'price_range': 'expensive', 'restaurant_name': 'Les Clos', 'serves_alcohol': True, 'street_address': '234 Townsend Street'}]
+End Search Results
+System: 
+
+I found three French restaurants in San Francisco that meet your criteria: Fringale Restaurant at 570 4th Street, Le Central at 453 Bush Street, and Les Clos at 234 Townsend Street. Which one would you like to reserve for four people at 8 PM tonight?
+User: 
+
+Fringale. Reserve it. Don't bother with the others.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 'Fringale Restaurant', city: 'San Francisco', time: '20:00', date: '2023-10-05', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-543-0573', 'price_range': 'expensive', 'restaurant_name': 'Fringale Restaurant', 'serves_alcohol': True, 'street_address': '570 4th Street', 'date': '2023-10-05', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: 
+
+Your reservation at Fringale Restaurant for 4 people tonight at 8 PM is confirmed. The address is 570 4th Street, San Francisco.
+User: 
+
+Confirm they serve alcohol and no live music. If not, I'm canceling this reservation right now.
+System: 
+
+Fringale Restaurant serves alcohol and does not have live music. Your reservation is confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

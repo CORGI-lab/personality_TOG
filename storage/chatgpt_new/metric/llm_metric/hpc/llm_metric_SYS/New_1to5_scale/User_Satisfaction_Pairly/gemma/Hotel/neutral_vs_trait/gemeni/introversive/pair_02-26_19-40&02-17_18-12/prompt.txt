@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really, but maybe nothing too fancy.
+
+System: Okay, I will search for hotels in San Francisco. What about smoking allowance, do you have any preference?
+
+User: No, I don't.
+
+System: Okay, searching for hotels in San Francisco with no specific preferences for star rating or smoking allowance.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: dontcare, smoking_allowed: dontcare })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found three hotels in San Francisco: Amsterdam Hostel San Francisco (1 star), Argonaut Hotel (4 stars), and Beck'S Motor Lodge (2 stars).
+
+User: Okay. Can you tell me more about Beck's Motor Lodge?
+
+System: Okay, Beck'S Motor Lodge is a 2-star hotel located at 2222 Market Street. The phone number is +1 415-621-8212 and the price per night is $60. They do not allow smoking and have 1 room available. Does that sound good?
+
+User: That sounds... acceptable. Can you reserve it for me?
+
+System: How many days will you be staying and what date would you like to check in?
+
+User: Just one night, starting tomorrow.
+
+System: Okay, and how many rooms will you need for your stay?
+
+User: Just one.
+
+System: Okay, so you want to reserve one room at Beck'S Motor Lodge in San Francisco for one night, starting tomorrow. Could you please provide the year of check-in date?
+
+User: 2024, please.
+
+System: Please confirm that you want to book 1 room at Beck'S Motor Lodge for one night, checking in on 2024-07-28?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-28, location: San Francisco, number_of_rooms: 1, place_name: "Beck'S Motor Lodge", stay_length: 1 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-07-28'}]
+End Search Results
+System: Okay, your reservation at Beck'S Motor Lodge has been confirmed for one night, checking in on 2024-07-28. The hotel is located in San Francisco. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to book a hotel in London.
+
+System: Okay. Do you have any preferences regarding star rating or any other requirements?
+
+User: Just a quiet place. A low star rating is fine.
+
+System: Okay. I will search for a hotel in London with a low star rating.
+
+APICall(method='SearchHotel', parameters={location: London, star_rating: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7581 0103', 'place_name': 'Astor Hyde Park Hostel', 'price_per_night': 40, 'smoking_allowed': False, 'star_rating': 1, 'street_address': "191 Queen's Gate"}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7834 3077', 'place_name': 'Astor Victoria Hostel', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 1, 'street_address': 'Victoria Hotel, 71 Belgrave Road'}]
+End Search Results
+System: I found a few options. Abercorn House, Astor Hyde Park Hostel, and Astor Victoria Hostel all have a 1-star rating. Abercorn House is priced at $23 per night. Would you like to know more about any of these?
+
+User: Tell me more about Abercorn House.
+
+System: Okay. Abercorn House is located at 28-30 Bute Gardens, and their phone number is +44 20 8563 8692. It offers rooms for $23 per night and does not allow smoking. Does this sound suitable?
+
+User: Is it usually busy?
+
+System: I don't have information about how busy it usually is. However, I can tell you that Abercorn House has a 1-star rating, is located at 28-30 Bute Gardens, and costs $23 per night. Would you like to proceed with a booking?
+
+User: If it's quiet, I'll take it. Can you book a room for me?
+
+System: To book a room, I will need the check-in date and the length of your stay. Could you please provide those details?
+
+User: I'd like to book a room starting tomorrow for 3 nights.
+
+System: Okay. Just to confirm, you'd like to book a room at Abercorn House in London, starting tomorrow for 3 nights. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Abercorn House, location: London, check_in_date: 2024-07-02, stay_length: 3, number_of_rooms: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': '1', 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': '1', 'street_address': '28-30 Bute Gardens', 'check_in_date': '2024-07-02', 'stay_length': '3'}]
+End Search Results
+System: Okay. Your booking at Abercorn House in London has been confirmed for 3 nights, starting tomorrow. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

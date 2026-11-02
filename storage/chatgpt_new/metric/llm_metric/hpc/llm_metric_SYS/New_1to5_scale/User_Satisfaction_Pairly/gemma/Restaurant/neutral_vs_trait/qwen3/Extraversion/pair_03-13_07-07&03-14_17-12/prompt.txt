@@ -1,0 +1,114 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+Hi there! I'm looking for a restaurant in San Francisco with live music and a cheerful atmosphere—something that feels lively and social. What do you recommend?
+System: 
+
+Is there a specific cuisine type you enjoy, such as Mexican, Italian, or something else?
+User: 
+
+Italian cuisine! I love how lively and social those places are—perfect for meeting new people. What do you have in San Francisco?
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: 
+
+I found two Italian restaurants in San Francisco with live music: Fior D'italia at 2237 Mason Street and Zingari Ristorante + Jazz Bar at 501 Post Street. Would you like more details about either?
+User: 
+
+Ooh, both sound fantastic! Could you share more details about the music and atmosphere at each place? I want to find the most lively spot where I can meet new friends and have a blast!
+System: 
+
+I don't have specific details about the music type or atmosphere for these restaurants, but both have live music. Here's what's available:  
+- **Fior D'italia**: 2237 Mason Street, 415-986-1886, expensive, serves alcohol  
+- **Zingari Ristorante + Jazz Bar**: 501 Post Street, 415-885-8850, expensive, serves alcohol  
+
+Would you like to book a table at either, or need additional information?
+User: 
+
+Zingari Ristorante + Jazz Bar sounds amazing! Let's book it for tonight at 8 PM for four people—I'm so excited to meet new friends and dance the night away!
+System: 
+
+To proceed with your reservation at Zingari Ristorante + Jazz Bar, could you please confirm the date in YYYY-MM-DD format for tonight's booking?
+User: 
+
+2023-10-05! I'm so excited—this is going to be the best night ever! Let's do this!
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: "Zingari Ristorante + Jazz Bar", city: "San Francisco", time: "20:00", cuisine: "Italian", date: "2023-10-05", party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-05', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: 
+
+Your reservation at Zingari Ristorante + Jazz Bar for 4 people on October 5th at 8:00 PM is confirmed! The restaurant features live music and serves alcohol. It's located at 501 Post Street, San Francisco, and you can reach them at 415-885-8850. Enjoy your night!
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+Hi! I'm looking for a restaurant in San Francisco with live music and a fun atmosphere—I'd love to reserve a table for tonight. Can you help me find something great?
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Thai, has_live_music: True})
+Search Results
+
+End Search Results
+System: 
+
+Hey! I couldn't find any Thai restaurants with live music in San Francisco, but let's try Mexican—they often have awesome live music and a fun atmosphere. I'll check those out for you!
+User: 
+
+Yes! Mexican sounds awesome—I love the live music and fun atmosphere. What restaurants do you have for tonight?
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mexican, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue'}]
+End Search Results
+System: 
+
+Los Yaquis is a perfect fit for tonight—live music and a vibrant atmosphere! It's located at 324 South Van Ness Avenue. How many people will be in your party, and what time would you like to dine? 😊
+User: 
+
+Six people at 7:30 PM—sounds perfect! Let's book it!
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Los Yaquis, city: San Francisco, time: 19:30, party_size: 6})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue', 'party_size': '6', 'time': '19:30'}]
+End Search Results
+System: 
+
+Awesome! Your reservation at Los Yaquis for 6 people at 7:30 PM tonight is all set! They've got live music and a vibrant atmosphere—perfect for a fun night out. The address is 324 South Van Ness Avenue. Can't wait for you to have a blast! 🎉
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

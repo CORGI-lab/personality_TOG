@@ -1,0 +1,122 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in London.
+
+System: Okay, I can help with that. I will search for hotels in London.
+
+APICall(method='SearchHotel', parameters={location: London})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: I found a few hotels in London. One is 45 Park Lane, a 5-star hotel. Would you like to know more about it?
+
+User: Is there something... less fancy?
+
+System: Okay. There's also Abercorn House, a 1-star hotel. Would you like to know more about Abercorn House?
+
+User: What's the price per night at Abercorn House?
+
+System: The price is $23 per night. Would you like to know the address or phone number?
+
+User: Just the price is fine for now.
+
+System: Okay. Do you want me to check if smoking is allowed there?
+
+User: Is it allowed?
+
+System: Smoking is not allowed at Abercorn House. Would you like to know anything else about this hotel?
+
+User: No, that's probably alright. Can you book it for me?
+
+System: Okay. To book the room, I need to know the check-in date and how many days you'll be staying.
+
+User: I
+System: I need to book the room starting tomorrow and stay for 2 days.
+
+User: Okay. Please confirm, I'm booking 1 room at Abercorn House in London for 2 days starting tomorrow. Is that correct?
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-08, location: London, number_of_rooms: 1, place_name: Abercorn House, stay_length: 2})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens', 'check_in_date': '2024-07-08'}]
+End Search Results
+System: Okay, I have confirmed your booking at Abercorn House for 2 days starting tomorrow.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in London.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating or smoking allowance?
+
+User: No, not really. Just... a hotel.
+
+System: Okay, searching for any hotel in London.
+APICall(method='SearchHotel', parameters={location: London, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: Alright, I found a few options for you in London. There's a 5-star hotel called 45 Park Lane, a 3-star hotel called Abc Hyde Park Hotel, and a 1-star hotel called Abercorn House. Would you like to know more about any of these?
+
+User: Um... maybe the 3-star one?
+
+System: Okay, the 3-star hotel is called Abc Hyde Park Hotel. It has 1 room available, and the price is $102 per night. Smoking is not allowed. The address is 121 Sussex Gardens, and the phone number is +44 20 7706 4660. Does that sound like something you're interested in?
+
+User: Is that... safe?
+
+System: Given your concern, I can reassure you that Abc Hyde Park Hotel is a reputable establishment. However, if you'd prefer, I can also check if 45 Park Lane, the 5-star hotel, has any rooms available. It's a bit pricier at $330 per night, but it might offer more peace of mind. What do you think?
+
+User: Maybe... the 5-star one. Just to be sure.
+
+System: Okay, I understand. Let's look at 45 Park Lane. It's a 5-star hotel with 2 rooms available, and the price is $330 per night. Smoking is not allowed. The address is 45 Park Lane, and the phone number is +44 20 7493 4545. Would you like to proceed with booking at 45 Park Lane? If so, I'll need to know the check-in date and how many nights you'll be staying.
+
+User: Okay... how many rooms do they have available?
+
+System: 45 Park Lane has 2 rooms available. Were you hoping to reserve one of them? If so, I'll need the check-in date and the length of your stay to proceed.
+
+User: Just one room. For two nights, starting tomorrow.
+
+System: Alright, just to confirm, you'd like to book one room at 45 Park Lane in London for two nights, starting tomorrow? If that's correct, I'll need the exact date for check-in to make the reservation.
+
+User: Yes, that's right. The date... tomorrow is the 7th.
+
+System: Okay, so you want to book one room at 45 Park Lane in London for two nights starting tomorrow, July 7th. Is that correct?
+APICall(method='ReserveHotel', parameters={place_name: 45 Park Lane, location: London, check_in_date: 2023-07-07, stay_length: 2, number_of_rooms: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2023-07-07'}]
+End Search Results
+System: Okay, I've confirmed your request. Reserving one room at the 45 Park Lane in London, for two nights, starting tomorrow, July 7th.
+
+```tool_code
+APICall(method='ReserveHotel', parameters={'place_name': '45 Park Lane', 'location': 'London', 'check_in_date': '2023-07-07', 'stay_length': 2, 'number_of_rooms': 1})
+```
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2023-07-07'}]
+End Search Results
+System: Excellent! Your booking is now confirmed. Just to recap, you have one room reserved at 45 Park Lane in London for two nights, starting tomorrow, July 7th. Is there anything else I can assist you with today?
+
+User: No, I think that's all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

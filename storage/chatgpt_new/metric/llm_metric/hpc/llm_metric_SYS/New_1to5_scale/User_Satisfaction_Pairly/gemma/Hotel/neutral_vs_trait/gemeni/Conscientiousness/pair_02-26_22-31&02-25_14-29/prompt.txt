@@ -1,0 +1,168 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in San Francisco, please. I'm looking for something reliable and well-reviewed.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: I'd prefer a hotel with at least a 4-star rating to ensure a certain level of quality and service.
+
+System: Okay, searching for hotels in San Francisco with a star rating of 4 or higher.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 4 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street'}]
+End Search Results
+System: Okay, I found three 4-star hotels in San Francisco: Argonaut Hotel, Hotel Spero, and Hotel Via. Argonaut Hotel is located at 495 Jefferson Street, Hotel Spero is at 405 Taylor Street, and Hotel Via is at 138 King Street. Would you like to know the price per night for each?
+
+User: Yes, please provide the price per night for each of those hotels. I'd also like to know if they offer free Wi-Fi and what their cancellation policies are, as those are important considerations for me.
+
+System: The prices per night are $408 for Argonaut Hotel, $80 for Hotel Spero, and $208 for Hotel Via. Unfortunately, I do not have information regarding free Wi-Fi and cancellation policies.
+
+User: Okay, given the price ranges, I'm leaning towards Hotel Via at $208. Could you please check if smoking is allowed at Hotel Via? I also want to confirm the exact check-in date and length of stay before proceeding.
+
+System: Okay, I can confirm that smoking is allowed at Hotel Via. Could you please provide the check-in date and the length of your stay?
+
+User: I'm planning to check in on November 10th and stay for 3 nights. Before I confirm, could you also tell me the number of rooms available at Hotel Via? I want to be sure they can accommodate me.
+
+System: Okay, one moment while I check the number of rooms available at Hotel Via.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, place_name: Hotel Via })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '386 Geary Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street'}]
+End Search Results
+System: Okay, I see that Hotel Via has 2 rooms available. So, to confirm, you'd like to book a room at Hotel Via in San Francisco, checking in on November 10th for a 3-night stay. Is that correct?
+
+User: Yes, that is correct. Please proceed with the reservation for one room at Hotel Via, checking in on November 10th for 3 nights.
+
+System: Okay, I am proceeding with the reservation for one room at Hotel Via, checking in on November 10th for 3 nights.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-11-10, location: San Francisco, number_of_rooms: 1, place_name: Hotel Via, stay_length: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '386 Geary Street', 'check_in_date': '2024-11-10'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street', 'check_in_date': '2024-11-10'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street', 'check_in_date': '2024-11-10'}]
+End Search Results
+System: There seems to be an issue with the search results. The reservation API call returned results for Hotel G as well, even though the reservation was intended for Hotel Via.
+
+To ensure accuracy, let's confirm the details and make the reservation again.
+
+Could you please confirm that you would like to reserve a room at Hotel Via, located at 138 King Street, San Francisco, with check-in on November 10th, 2024, for a 3-night stay? The price per night is $208.
+User: Yes, please proceed with the reservation for one room at Hotel Via, located at 138 King Street, San Francisco, checking in on November 10th, 2024, for a 3-night stay. The price per night is $208. I want to make absolutely sure the reservation is for the correct hotel and dates.
+
+System: Okay, I understand. I will proceed with the reservation for one room at Hotel Via, located at 138 King Street, San Francisco, checking in on November 10th, 2024, for a 3-night stay. The price per night is $208.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-11-10, location: San Francisco, number_of_rooms: 1, place_name: Hotel Via, stay_length: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '386 Geary Street', 'check_in_date': '2024-11-10'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street', 'check_in_date': '2024-11-10'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street', 'check_in_date': '2024-11-10'}]
+End Search Results
+System: I apologize, but it seems there's an issue with the reservation system returning results for Hotel G even when the request is specifically for Hotel Via. Unfortunately, I am unable to guarantee the reservation will be made at Hotel Via with the current system behavior.
+
+Would you like to try a different hotel in San Francisco? Alternatively, I can try the reservation again, but I cannot assure you that the booking will be made for Hotel Via.
+
+User: Given the persistent issues, I think it's best to explore other options. Could you please search for another 4-star hotel in San Francisco with smoking allowed, and this time, let's check its availability for my specific dates (November 10th for 3 nights) *before* we proceed with the reservation? I want to ensure a smooth and accurate booking process.
+
+System: Okay, I understand. Let's find another 4-star hotel in San Francisco that allows smoking and check its availability for your dates (November 10th for 3 nights) before proceeding with the reservation.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 4, smoking_allowed: True })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-561-1100', 'place_name': "Hotel Zoe Fisherman'S Wharf", 'price_per_night': 148, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '425 North Point Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street'}]
+End Search Results
+System: Okay, I found three 4-star hotels in San Francisco that allow smoking: Hotel Via, Hotel Zoe Fisherman's Wharf, and Hotel G. Hotel Via is located at 138 King Street, Hotel Zoe Fisherman's Wharf is at 425 North Point Street, and Hotel G is at 386 Geary Street.
+
+To ensure a smooth booking process, I'll verify availability for your dates (November 10th for 3 nights) for each of these hotels.
+
+Would you like me to check the availability and confirm the price for each hotel?
+
+User: Yes, please check the availability and confirm the price for each hotel, starting with Hotel Zoe Fisherman's Wharf. I also want to know if they offer any amenities like parking or breakfast.
+
+System: Okay, I will check the availability and confirm the price for Hotel Zoe Fisherman's Wharf for your dates (November 10th for 3 nights).
+
+Unfortunately, I don't have information about amenities like parking or breakfast.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, place_name: "Hotel Zoe Fisherman'S Wharf", check_in_date: 2024-11-10, stay_length: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '386 Geary Street', 'check_in_date': '2024-11-10'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-561-1100', 'place_name': "Hotel Zoe Fisherman'S Wharf", 'price_per_night': 148, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '425 North Point Street', 'check_in_date': '2024-11-10'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 800-228-8408', 'place_name': "Pier 2620 Hotel Fisherman'S Wharf", 'price_per_night': 88, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2620 Jones Street', 'check_in_date': '2024-11-10'}]
+End Search Results
+
+Dialogue B:
+  User: I need assistance in booking a hotel in San Francisco. I'd like to start the search now.
+
+System: Certainly, I can assist you with that. To ensure I find the most suitable hotel for you in San Francisco, could you please specify if you have any preferences regarding the star rating?
+
+User: I would prefer a hotel with at least a 4-star rating. I also need to know if they have specific policies regarding smoking. I'd prefer a non-smoking hotel, if possible, to ensure a clean and healthy environment.
+
+System: Okay, I understand. I will prioritize hotels in San Francisco with a 4-star rating or higher and a non-smoking policy to ensure a clean and healthy environment for you.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 4, smoking_allowed: False })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-348-1111', 'place_name': 'Hotel Zelos San Francisco', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '12 4th Street'}]
+End Search Results
+System: Alright, I have found three 4-star hotels in San Francisco that do not allow smoking. They are the Argonaut Hotel, Hotel Spero, and Hotel Zelos San Francisco. Would you like me to provide you with more details about each to help you make a decision?
+
+User: Yes, please. Could you list them with their price per night, and also the number of rooms available in each? I want to ensure they can accommodate my needs.
+
+System: Certainly. Here's a detailed breakdown to help you evaluate each option:
+
+*   **Argonaut Hotel**: The price per night is $408, and it has 3 rooms available.
+*   **Hotel Spero**: The price per night is $80, and it has 1 room available.
+*   **Hotel Zelos San Francisco**: The price per night is $96, and it has 1 room available.
+
+Knowing these details, do any of these hotels stand out as particularly suitable for your needs?
+
+User: Considering the details, Argonaut Hotel seems the most promising due to the availability of multiple rooms. Before making a final decision, could you provide the street addresses for each hotel? I like to know exactly where they are located in the city.
+
+System: Okay, I understand your need for precise information. Here are the street addresses for each hotel, which should help you assess their locations more effectively:
+
+*   **Argonaut Hotel**: 495 Jefferson Street
+*   **Hotel Spero**: 405 Taylor Street
+*   **Hotel Zelos San Francisco**: 12 4th Street
+
+Given these locations, does the Argonaut Hotel still seem like the best fit, or would you like to reconsider based on the addresses?
+
+User: The Argonaut Hotel's location seems quite suitable. Given that it also has more rooms available, I think it aligns well with my needs. Can you confirm one last detail: what are the check-in and check-out times at the Argonaut Hotel? I want to make sure they fit my schedule.
+
+System: I understand you would like to confirm the check-in and check-out times at the Argonaut Hotel to ensure they fit your schedule. Unfortunately, that specific detail isn't available in my current database. Would you like me to proceed with checking availability and potentially making a reservation, or would you prefer to look into this detail separately before moving forward? I want to ensure everything aligns perfectly with your plans.
+
+User: Let's proceed with checking availability and making a reservation. I trust that a hotel of this caliber will have reasonable check-in and check-out times. I'd like to book one room for a stay of 3 nights, starting on November 15th.
+
+System: Okay, I can help you with that. Just to confirm, you would like to book one room at the Argonaut Hotel in San Francisco for 3 nights, starting on November 15th. Is that correct?
+
+User: Yes, that is correct. Please proceed with the reservation.
+
+System: Very well. I will now proceed to make a reservation for one room at the Argonaut Hotel in San Francisco for 3 nights, beginning on November 15th.
+
+APICall(method='ReserveHotel', parameters={ place_name: Argonaut Hotel, location: San Francisco, check_in_date: 2024-11-15, stay_length: 3, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2024-11-15'}]
+End Search Results
+System: Excellent. I have successfully processed your request. Your reservation at the Argonaut Hotel in San Francisco has been confirmed for one room, with a check-in date of November 15th, for a duration of 3 nights. Is there anything else I can assist you with at this moment?
+
+User: No, that's all I need. Thanks a lot!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

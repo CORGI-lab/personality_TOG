@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I need to find a place to eat in San Francisco. Could you help me out with that?
+System: Sure! Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: I'm not really sure, maybe something with a lot of variety? Like a place that serves different types of food or something.
+System: Let's explore options that offer a diverse menu. How about trying a Fusion cuisine restaurant in San Francisco? It typically includes a variety of dishes from different culinary traditions. Would you like me to look for that, or do you have any other preferences?
+User: Yeah, Fusion sounds cool. Let's go with that.
+System: Great choice! I'll find some Fusion cuisine restaurants in San Francisco for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Fusion})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street'}]
+End Search Results
+System: I found a Fusion cuisine restaurant called El Valenciano in San Francisco. It offers a moderate price range and features live music. You can find it at 1153 Valencia Street, and they do serve alcohol. Would you like any more details or assistance with anything else?
+User: That sounds interesting. Can you make a reservation for me there? Maybe for tonight around 8:00 pm for 4 people.
+System: To confirm, you would like to make a reservation at El Valenciano in San Francisco for 4 people tonight at 8:00 pm, correct? Please let me know if there's anything else or if this is good to proceed with.
+User: Yeah, that sounds good. Go ahead and make the reservation.
+System: Excellent! I'll proceed with making the reservation for 4 people at El Valenciano in San Francisco tonight at 8:00 pm. Please hold on for a moment while I confirm the booking.
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: El Valenciano, city: San Francisco, time: 20:00, date: 2023-10-11, party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street', 'date': '2023-10-11', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Your reservation has been successfully made for 4 people at El Valenciano in San Francisco tonight at 8:00 pm. Enjoy the live music and the diverse Fusion cuisine! If you have any other questions or need further assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I'm in San Francisco and I'm kinda hungry. Can you help me find a restaurant?
+System: Do you have a particular type of cuisine in mind, or are you open to trying something new? If you're open to options, I can suggest something random for you.
+User: I don't really care. Just find me something that's not too expensive.
+System: Let's try something adventurous with Ethiopian cuisine! I'll find a place for you in San Francisco. Give me a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Ethiopian, price_range: inexpensive})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': False, 'phone_number': '415-285-2728', 'price_range': 'inexpensive', 'restaurant_name': 'Cafe Ethiopia', 'serves_alcohol': False, 'street_address': 'San Francisco'}]
+End Search Results
+System: There's a place called Cafe Ethiopia in San Francisco that might be a great fit for you! It's known for being inexpensive. The restaurant is located in San Francisco, and if you need to contact them, their phone number is 415-285-2728. Let me know if you'd like more details or assistance!
+User: Is this Cafe Ethiopia spot good for grabbing a drink? Or is it just food?
+System: Cafe Ethiopia does not serve alcohol, so it would be primarily for enjoying food. If you're looking for a place with drinks, let me know, and I can find another option for you.
+User: Nah, it's cool. Just tell me more about the food there. Like, what's on the menu?
+System: I'm sorry, I don't have access to the specific menu details for Cafe Ethiopia. However, Ethiopian cuisine typically includes dishes like injera (a type of sourdough flatbread), stews, and a variety of flavorful meat and vegetarian options. If you’re interested in trying something specific, you might want to give them a call at 415-285-2728 for more details on their offerings. Let me know if there's anything else you'd like to know or if you want help with anything else!
+User: Alright, sounds interesting. Can you just book a table for me there? Let's say for tonight around 7 PM, and maybe for like 3 people?
+System: Sure, let's get that reservation set for you. Just to confirm, you'd like to book a table for 3 people tonight at 7 PM at Cafe Ethiopia in San Francisco. Is that correct?
+User: Uh, yeah, I think that's right. Let's go with that.
+System: Great! I'll make the reservation for you. APICall (method='ReserveRestaurant', parameters={restaurant_name: Cafe Ethiopia, city: San Francisco, time: 19:00, date: 2023-10-04, party_size: 3})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': False, 'phone_number': '415-285-2728', 'price_range': 'inexpensive', 'restaurant_name': 'Cafe Ethiopia', 'serves_alcohol': False, 'street_address': 'San Francisco', 'date': '2023-10-04', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Cafe Ethiopia for 3 people tonight at 7 PM has been successfully made. Enjoy your meal! If you need anything else, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

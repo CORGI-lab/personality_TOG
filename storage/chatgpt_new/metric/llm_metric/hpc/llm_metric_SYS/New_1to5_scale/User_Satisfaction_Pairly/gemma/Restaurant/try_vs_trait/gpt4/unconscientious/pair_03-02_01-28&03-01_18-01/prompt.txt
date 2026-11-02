@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in Berkeley. Any suggestions?
+System: Do you have a preference for any particular type of cuisine, or are you open to trying something new?
+User: I'm not really sure. Maybe something with a bit of variety? I guess I could try anything.
+System: How about trying some Vietnamese cuisine? It's known for its variety and unique flavors. Let me find a suitable option for you in Berkeley. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Vietnamese})
+Search Results
+
+End Search Results
+System: It seems there are no available Vietnamese restaurants in Berkeley at the moment. Would you like me to search for another type of cuisine or perhaps a nearby city?
+User: Yeah, let's go with a nearby city. Maybe check out what's available in Oakland?
+System: Certainly, let's explore dining options in Oakland. Do you have a preference for a specific type of cuisine, or are you open to trying something new?
+User: I guess I'm open to anything. Just find something that's not too expensive, I suppose.
+System: Let's explore some affordable dining options in Oakland. How about trying some Mexican cuisine? It's flavorful and often comes at a reasonable price. I'll look for options for you. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: Mexican, price_range: inexpensive})
+Search Results
+
+End Search Results
+System: It seems there are no inexpensive Mexican restaurants available in Oakland at the moment. Would you like me to search for another cuisine, perhaps something similar, or adjust the price range to find more options?
+User: Sure, let's try a different cuisine, maybe something like Italian?
+System: Let's look for Italian dining options in Oakland. Please hold on for a moment while I find some suitable places for you. 
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: Italian, price_range: inexpensive})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-768-8003', 'price_range': 'expensive', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '5356 College Avenue'}, {'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-547-5356', 'price_range': 'expensive', 'restaurant_name': 'Oliveto', 'serves_alcohol': False, 'street_address': '5655 College Avenue'}]
+End Search Results
+System: It looks like I've found a couple of Italian restaurants in Oakland, but they are in the 'expensive' price range. Would you like to know more about them or explore another option?
+User: Do you have any cheaper options, maybe in a different city?
+System: Let's explore some more affordable Italian dining options in a nearby city. How about trying restaurants in San Francisco? I'll search for you. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: inexpensive})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-292-3699', 'price_range': 'expensive', 'restaurant_name': 'Ala Romana', 'serves_alcohol': True, 'street_address': '1098 Jackson Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-416-6959', 'price_range': 'expensive', 'restaurant_name': 'Che Fico', 'serves_alcohol': False, 'street_address': '838 Divisadero Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-362-6012', 'price_range': 'expensive', 'restaurant_name': 'Chiaroscuro', 'serves_alcohol': True, 'street_address': '550 Washington Street'}]
+End Search Results
+System: It seems that even in San Francisco, the Italian restaurants available are in the 'expensive' price range. Would you like me to try searching for a different type of cuisine in San Francisco, or perhaps adjust the price range to find more options?
+User: Let's just try a different type of cuisine in San Francisco. I'm not too picky right now.
+System: Let's try exploring some Asian cuisine options in San Francisco. It's diverse and often offers flavorful dishes at a variety of price points. I'll search for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Asian, price_range: inexpensive})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '415-731-5515', 'price_range': 'inexpensive', 'restaurant_name': '8 Immortals Restaurant', 'serves_alcohol': False, 'street_address': '1433 Taraval'}, {'city': 'San Francisco', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '415-751-0505', 'price_range': 'inexpensive', 'restaurant_name': 'India Clay Oven', 'serves_alcohol': True, 'street_address': '2436 Clement Street'}, {'city': 'San Francisco', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '415-452-9618', 'price_range': 'inexpensive', 'restaurant_name': "Jo Jo's Cafe", 'serves_alcohol': False, 'street_address': '1537 Ocean Avenue'}]
+End Search Results
+System: I've found some great inexpensive Asian restaurants in San Francisco. One option is 8 Immortals Restaurant located at 1433 Taraval. Another is India Clay Oven at 2436 Clement Street, which also serves alcohol. Finally, there's Jo Jo's Cafe on 1537 Ocean Avenue. Would you like more information about any of these places, or do you have a preference among them?
+User: Hmm, I'm kinda leaning towards Jo Jo's Cafe. Can you make a reservation for me there? Maybe around 7 tonight?
+System: Great choice! Let's proceed with making a reservation at Jo Jo's Cafe in San Francisco. Can you please confirm the number of people for the reservation?
+User: Oh, I totally forgot about that. Let's just say two people.
+System: Thank you for confirming. I'll make a reservation for two people at Jo Jo's Cafe at 7 PM tonight. Please hold on for a moment while I process the reservation.
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, restaurant_name: "Jo Jo's Cafe", time: '19:00', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '415-452-9618', 'price_range': 'inexpensive', 'restaurant_name': "Jo Jo's Cafe", 'serves_alcohol': False, 'street_address': '1537 Ocean Avenue', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+
+Dialogue B:
+  User: I'm thinking of finding a place to eat in Berkeley. Any spots you recommend?
+System: Do you have a particular type of cuisine in mind, or are you open to exploring something new? If you're open, I can suggest something interesting for you.
+User: I don't really have a preference, just looking for something that's not too expensive. Maybe something with a chill vibe?
+System: Let's explore a cuisine that might match your vibe. How about trying some Caribbean food? It's flavorful and often has a relaxed atmosphere. I'll find some options for you in Berkeley. APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Caribbean, price_range: inexpensive})
+Search Results
+
+End Search Results
+System: It seems there are no results for inexpensive Caribbean restaurants in Berkeley. Would you like me to try finding a moderately priced option instead, or would you prefer a different cuisine?
+User: Yeah, sure, let's go with a moderately priced option then. Whatever you think is cool.
+System: Great! I'll look for some moderately priced Caribbean restaurants in Berkeley. Let's see what we find. APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Caribbean, price_range: moderate})
+Search Results
+
+End Search Results
+System: It looks like there aren't any moderately priced Caribbean restaurants in Berkeley either. How about we switch it up and try a different cuisine? Maybe something like Mexican or Italian? Let me know what you think, and I'll find some options for you.
+User: Yeah, Mexican sounds good. Let's see what you got for that.
+System: Awesome! I'll search for some Mexican restaurants in Berkeley for you. Let's see what we can find. APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Mexican, price_range: moderate})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue', 'date': '2019-03-13', 'party_size': 4, 'time': '11:30'}, {'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-549-1460', 'price_range': 'moderate', 'restaurant_name': "Celia's Mexican Restaurant", 'serves_alcohol': False, 'street_address': '1841 Euclid Avenue'}, {'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-548-2222', 'price_range': 'moderate', 'restaurant_name': 'El Patio', 'serves_alcohol': True, 'street_address': '2056 San Pablo Avenue'}]
+End Search Results
+System: Here are a few Mexican restaurants you might like in Berkeley. 
+
+1. **Comal**: Located at 2020 Shattuck Avenue, it offers a moderate price range and serves alcohol. You can reach them at 510-926-6300.
+
+2. **Celia's Mexican Restaurant**: Found at 1841 Euclid Avenue, this spot is also moderately priced but doesn't serve alcohol. Their phone number is 510-549-1460.
+
+3. **El Patio**: Situated at 2056 San Pablo Avenue, it offers a moderate price range and serves alcohol as well. You can contact them at 510-548-2222.
+
+Let me know if any of these catch your interest or if there's anything else you'd like to know!
+User: You know what, let's just go with Comal. Can you book a table for me there?
+System: For your reservation at Comal, I need to confirm a few details. Can you please let me know the date, time, and the number of people for the reservation?
+User: Uh, let's see... How about we make it for tomorrow, maybe around 7:30 pm? Oh, and it'll be for, like, four people.
+System: Perfect! Just to confirm, you'd like to make a reservation for four people at Comal in Berkeley, tomorrow at 7:30 pm. I'll proceed with the booking. APICall (method='ReserveRestaurant', parameters={restaurant_name: Comal, city: Berkeley, date: 2019-03-14, time: 19:30, party_size: 4})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue', 'date': '2019-03-14', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Your reservation at Comal in Berkeley for four people tomorrow at 7:30 pm has been successfully made. If you need any more information or assistance, feel free to ask. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to search for a hotel in Seattle, please. Can you assist me in finding a suitable one?
+System: Do you have any specific preferences for the star rating, or should I find a random selection for you in Seattle?
+User: I'm looking for a hotel with at least a 4-star rating, please. Also, I'd appreciate knowing if smoking is allowed in the hotel, as I prefer non-smoking environments.
+System: APICall(method='SearchHotel', parameters={location: Seattle, star_rating: 4, smoking_allowed: False})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-448-8600', 'place_name': 'Hotel Andra', 'price_per_night': 372, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2000 4th Avenue'}]
+End Search Results
+System: I found a few 4-star hotels in Seattle that are non-smoking. One option is the Crowne Plaza Seattle Downtown, priced at $120 per night, located at 1113 6th Avenue. Another choice is the Grand Hyatt Seattle, with a rate of $456 per night, situated at 721 Pine Street. Lastly, there's Hotel Andra, priced at $372 per night, located at 2000 4th Avenue. Do any of these options suit your preferences?
+User: Could you please provide more details about the amenities each hotel offers? I’d like to ensure they have facilities like a gym or business center, as these are important for my stay.
+System: I'm sorry, but the information about amenities such as a gym or business center is not available in the current search results. If these features are crucial for your stay, you might consider contacting the hotels directly for more detailed information. Would you like assistance with anything else regarding these hotels?
+User: In that case, could you please reserve a room for me at the Crowne Plaza Seattle Downtown? I would appreciate it if you could confirm the availability for a check-in date of April 15th, and I plan to stay for 5 nights.
+System: Let's confirm the details before proceeding with the reservation. You'd like to book one room at the Crowne Plaza Seattle Downtown, located at 1113 6th Avenue, for a 5-night stay starting from April 15th. Is that correct?
+User: Yes, that is correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={check_in_date: '2024-04-15', location: 'Seattle', number_of_rooms: 1, place_name: 'Crowne Plaza Seattle Downtown', stay_length: 5})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue', 'check_in_date': '2024-04-15'}]
+End Search Results
+System: Your reservation at the Crowne Plaza Seattle Downtown has been successfully confirmed. You'll be staying in a non-smoking room, starting from April 15th for 5 nights. If you need any further assistance or have additional requests, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in Vancouver. Can you help me with that?
+System: Certainly! Do you have any specific preferences for the star rating, or shall I look for a variety of options in Vancouver?
+User: I prefer a hotel with a star rating of at least 4 stars. Additionally, I'd like to know if smoking is allowed and the number of rooms available.
+System: Great! Let me look for hotels in Vancouver that meet your preferences of at least a 4-star rating and provide information on smoking allowances and the number of rooms available. I'll proceed with the search now.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4, smoking_allowed: dontcare, number_of_rooms: dontcare })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}]
+End Search Results
+System: I found a few options for you in Vancouver with a star rating of at least 4 stars. The Auberge Vancouver Hotel offers smoking rooms and has 2 rooms available at $296 per night. Would you like more information on this hotel or any other options?
+User: Could you provide more details about the other options available? I want to ensure that I make an informed decision before proceeding with a reservation.
+System: Certainly! Here are the details of the other options available in Vancouver:
+
+1. **Coast Coal Harbour Vancouver Hotel By Apa**: This hotel does not allow smoking and has 1 room available at $108 per night. The address is 1180 West Hastings Street.
+
+2. **Delta Hotels By Marriott Vancouver Downtown Suites**: This hotel also does not allow smoking and has 3 rooms available at $324 per night. The address is 550 West Hastings Street.
+
+Please let me know if you need more information on any of these options or if you wish to proceed with a reservation.
+User: Could you tell me more about the Delta Hotels By Marriott Vancouver Downtown Suites, such as its amenities and the star rating? I want to ensure it aligns with my expectations before making a decision.
+System: The Delta Hotels By Marriott Vancouver Downtown Suites is a 4-star hotel located at 550 West Hastings Street. Unfortunately, the search results do not provide specific information about the hotel's amenities. However, it does not allow smoking and has 3 rooms available at a rate of $324 per night. If you have any other specific questions or if you wish to proceed with a reservation, please let me know!
+User: Thank you for the information. Given the star rating and location, I would like to proceed with a reservation at Delta Hotels By Marriott Vancouver Downtown Suites. Please book 2 rooms for a stay starting from the 10th of next month for a duration of 7 days.
+System: To confirm, you would like to reserve 2 rooms at the Delta Hotels By Marriott Vancouver Downtown Suites, starting from the 10th of next month for a duration of 7 days, in Vancouver. Please confirm these details, and I'll proceed with the reservation.
+User: Yes, I confirm these details. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 2, place_name: Delta Hotels By Marriott Vancouver Downtown Suites, stay_length: 7})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Delta Hotels By Marriott Vancouver Downtown Suites has been successfully confirmed for 2 rooms, starting from November 10th for a duration of 7 days. The hotel is located at 550 West Hastings Street, Vancouver. If you need any further assistance or have any additional requests, please let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,114 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in San Francisco.
+
+System: Okay, I can help you with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really. Maybe something not too fancy.
+
+System: Okay, I will look for a hotel for you in San Francisco. How many rooms do you need?
+
+User: Just one, please.
+
+System: APICall(method='SearchHotel', parameters={ location: San Francisco, number_of_rooms: 1, star_rating: dontcare })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found three hotels in San Francisco that match your request. There is a 1-star hotel named Amsterdam Hostel San Francisco, a 4-star hotel named Argonaut Hotel, and a 2-star hotel named Beck'S Motor Lodge. Which of these options would you prefer?
+
+User: The 2-star one sounds...okay. Tell me more about Beck'S Motor Lodge.
+
+System: Okay. Beck'S Motor Lodge is located at 2222 Market Street, and the phone number is +1 415-621-8212. The price per night is $60, and smoking is not allowed. Does this sound good?
+
+User: Sounds acceptable. Can you book it for me?
+
+System: How many days will you be staying and what date would you like to check in?
+
+User: Just two nights, starting tomorrow.
+
+System: Okay, so you would like me to book 1 room at Beck'S Motor Lodge in San Francisco for 2 nights, starting tomorrow. Could you please confirm the full date for me? I need the year-month-day.
+
+User: 2024-03-16.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-16, location: San Francisco, number_of_rooms: 1, place_name: "Beck'S Motor Lodge", stay_length: 2 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-03-16'}]
+End Search Results
+System: Okay, I have booked 1 room at Beck'S Motor Lodge for 2 nights starting tomorrow, March 16, 2024. The price is $60 per night. Is that correct?
+
+User: Yes, that's all correct.
+
+System: Great! Your booking is confirmed. The phone number for Beck'S Motor Lodge is +1 415-621-8212 and the address is 2222 Market Street. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to book a hotel in Vancouver.
+
+System: Okay. Do you have any preferences regarding the star rating of the hotel?
+
+User: Not really. Just something quiet.
+
+System: Okay. And for what date would you like to book the room, and for how many nights? I'll need the check-in date and the length of your stay to proceed.
+
+User: Next month, from the 2nd, for three nights.
+
+System: Okay, I will need the complete date in "YYYY-MM-DD" format and also the name of the hotel you want to book.
+
+User: Just find me something quiet in Vancouver. Check-in 2024-07-02, three nights.
+
+System: Okay, I will search for a quiet hotel in Vancouver for you.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel, Vancouver', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: We found a few hotels in Vancouver. Shangri-La Hotel and Wedgewood Hotel & Spa are both 5-star hotels, and Auberge Vancouver Hotel is a 4-star hotel. Do any of these sound suitable for you?
+
+User: The Auberge... is it quiet?
+
+System: From the search results, the Auberge Vancouver Hotel is a 4-star hotel. Unfortunately, I don't have information about how quiet it is. Would you like me to check if they allow smoking?
+
+User: No, that's alright. Just book the Auberge for me.
+
+System: Before I proceed, I need to confirm a few details for the booking. I will need the number of rooms you'd like to reserve at the Auberge Vancouver Hotel.
+
+User: Just one room, please.
+
+System: Okay, just to confirm, you'd like me to book one room at the Auberge Vancouver Hotel, checking in on 2024-07-02 for a stay of three nights?
+
+User: Yes, that's right.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-02, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2024-07-02'}]
+End Search Results
+System: Okay, I have booked one room at the Auberge Vancouver Hotel for you, checking in on 2024-07-02 for a stay of three nights. Just to let you know, the hotel's phone number is +1 604-678-8899 and the street address is 837 West Hastings Street. Is there anything else I can help you with?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

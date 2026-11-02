@@ -1,0 +1,66 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in Fremont.
+System: Do you have a specific type of cuisine in mind, or would you like me to choose one for you?
+User: Something simple like American food is fine.
+System: APICall (method='FindRestaurants', parameters= {city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: I'm sorry, it seems there are no available American cuisine restaurants in Fremont at the moment. Would you like me to search for an alternative cuisine type, or is there another city you’d prefer to consider?
+User: Just look for a different cuisine in Fremont, please.
+System: Let's try searching for Italian cuisine in Fremont. I'll check for available options. APICall (method='FindRestaurants', parameters= {city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant in Fremont called Massimo's. It's located at 5200 Mowry Avenue Ste M, and it has a price range that is considered expensive. The restaurant does not have live music and does not serve alcohol. Would you like any more information or assistance with something else?
+User: No, that's fine. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a restaurant in Concord.
+System: What type of cuisine are you interested in, such as Italian, Mexican, or something else?
+User: Italian.
+System: APICall (method='FindRestaurants', parameters={city: Concord, cuisine: Italian})
+Search Results
+[{'city': 'Concord', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-687-5520', 'price_range': 'moderate', 'restaurant_name': 'Pasta Primavera Cafe', 'serves_alcohol': False, 'street_address': '4425-F Treat Boulevard'}, {'city': 'Concord', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-680-6888', 'price_range': 'moderate', 'restaurant_name': "Skipolini's Pizza", 'serves_alcohol': False, 'street_address': '2001 Salvio Street'}, {'city': 'Concord', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-521-9010', 'price_range': 'moderate', 'restaurant_name': 'Toscana Ristorante', 'serves_alcohol': True, 'street_address': '2151 Salvio Street'}]
+End Search Results
+System: I found a few Italian restaurants in Concord. One option is Pasta Primavera Cafe located at 4425-F Treat Boulevard. Would you like more information about this restaurant, or would you like to hear about another option?
+User: Can you tell me about another option?
+System: Another option is Skipolini's Pizza, located at 2001 Salvio Street. Would you like more information about this restaurant, or would you like to hear about another option?
+User: Tell me more about Skipolini's Pizza.
+System: Skipolini's Pizza is an Italian restaurant located at 2001 Salvio Street in Concord. It has a moderate price range and does not serve alcohol. If you need, I can provide you with their contact number for further inquiries.
+User: Does Skipolini's Pizza have live music?
+System: Skipolini's Pizza does not have live music. Would you like to know about any other features or need information on another restaurant?
+User: No, that's okay. I would like to make a reservation at Skipolini's Pizza.
+System: For what date and time would you like to make the reservation at Skipolini's Pizza? Additionally, could you please specify the number of people for the reservation?
+User: I'd like to book a table for three people on Friday at 6:00 pm.
+System: To confirm, you would like to reserve a table for three people at Skipolini's Pizza in Concord on Friday at 6:00 pm. Is that correct?
+User: Yes, that's correct.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: "Skipolini's Pizza", city: Concord, date: [Insert appropriate date for the upcoming Friday], time: 18:00, party_size: 3})
+Search Results
+[{'city': 'Concord', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-680-6888', 'price_range': 'moderate', 'restaurant_name': "Skipolini's Pizza", 'serves_alcohol': False, 'street_address': '2001 Salvio Street', 'date': '[Insert appropriate date for the upcoming Friday]', 'party_size': '3', 'time': '18:00'}]
+End Search Results
+System: Your reservation at Skipolini's Pizza in Concord for three people on Friday at 6:00 pm has been successfully made. If you need further assistance or have any other questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

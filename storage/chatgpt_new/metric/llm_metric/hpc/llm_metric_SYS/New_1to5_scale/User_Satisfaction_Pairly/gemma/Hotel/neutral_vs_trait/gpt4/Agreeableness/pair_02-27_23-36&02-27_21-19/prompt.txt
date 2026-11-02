@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hi there! I'm planning a trip to Vancouver and would love some help finding a hotel. Could you assist me with that?
+System: Sure! I'd be happy to help you find a hotel in Vancouver. Do you have any specific preferences like star rating, smoking allowance, or number of rooms?
+User: Thank you so much for helping me with this! I would appreciate a hotel with a good star rating, and I prefer it to be non-smoking. As for rooms, just one would be fine. Do you have any recommendations that fit this?
+System: Let me check for available hotels in Vancouver with a good star rating and non-smoking rooms. I'll find options that meet your preferences. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: dontcare, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}]
+End Search Results
+System: I found a few great options for you in Vancouver. There's the Shangri-La Hotel, which is a 5-star, non-smoking hotel at 1128 West Georgia Street, priced at $300 per night. Another option is the Wedgewood Hotel & Spa Vancouver, also 5-star and non-smoking, located at 845 Hornby Street, with a price of $510 per night. Lastly, the Coast Coal Harbour Vancouver Hotel By Apa offers a 4-star experience, non-smoking rooms, and is located at 1180 West Hastings Street, priced at $108 per night. Do any of these meet your needs?
+User: The Shangri-La Hotel sounds lovely, and I truly appreciate its good star rating and non-smoking policy. Could you please reserve a room for me there?
+System: To proceed with the reservation at the Shangri-La Hotel in Vancouver, could you please provide me with your check-in date and the length of your stay?
+User: I'll be checking in on the 15th of this month, and I'd like to stay for five nights. Thank you for assisting with this reservation!
+System: Please confirm to reserve 1 room at the Shangri-La Hotel in Vancouver, checking in on 2023-10-15 for a stay of 5 nights.
+User: Yes, I confirm the reservation. Thank you so much for your help!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Vancouver, number_of_rooms: 1, place_name: Shangri-La Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Shangri-La Hotel in Vancouver has been successfully confirmed. You will be staying for 5 nights, starting from 2023-10-15. If you need anything else, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hello! I hope you're having a great day. Could you help me find a hotel in Vancouver, please? I'm looking for something comfortable and nice.
+System: Certainly! Vancouver is a wonderful city. Could you please let me know if you have any preferences regarding the star rating of the hotel? Additionally, would you like the option for smoking allowed in the hotel?
+User: Thank you so much! I'm not too particular about the star rating as long as it's a clean and welcoming place. I don't need a smoking room, so non-smoking is perfectly fine.
+System: Thank you for sharing your preferences. Let's find a nice and welcoming hotel for you in Vancouver. Please give me a moment while I search for available options. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}]
+End Search Results
+System: I found a few lovely options for you in Vancouver. The Shangri-La Hotel offers a luxurious 5-star experience with non-smoking rooms. Another fantastic 5-star choice is the Wedgewood Hotel & Spa Vancouver. If you're open to a 4-star option, the Coast Coal Harbour Vancouver Hotel By Apa is also available. Would you like more details on any of these hotels, or is there anything else I can assist you with?
+User: They all sound wonderful! Could you please share more details about the Coast Coal Harbour Vancouver Hotel By Apa? I'm interested in learning about their amenities and the price per night. Thank you!
+System: The Coast Coal Harbour Vancouver Hotel By Apa is a 4-star hotel located at 1180 West Hastings Street in Vancouver. The price per night is $108. Unfortunately, the specific amenities are not detailed in the information I have, but it's known for being a clean and welcoming place. If you decide this hotel suits your needs, I can assist you further with the reservation process. Please let me know how you'd like to proceed!
+User: That sounds great, thank you for the information! I think the Coast Coal Harbour Vancouver Hotel By Apa suits my needs perfectly. Could you please help me make a reservation? I would like to book a room starting from the 10th of next month for a stay of 5 days.
+System: To confirm the reservation for you, could you please let me know how many rooms you would like to book at the Coast Coal Harbour Vancouver Hotel By Apa?
+User: I would like to book just one room, please. Thank you so much for your help!
+System: Thank you for confirming. I'll proceed with the reservation for 1 room at the Coast Coal Harbour Vancouver Hotel By Apa, starting from the 10th of next month for a stay of 5 days. Please hold on for a moment while I finalize the booking for you.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Coast Coal Harbour Vancouver Hotel By Apa has been successfully confirmed. You'll be staying in a welcoming 4-star hotel located at 1180 West Hastings Street, Vancouver, starting from November 10th for a duration of 5 days. If there's anything else you need or any other way I can assist you, please feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,90 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hello! I would love to find a nice restaurant in San Francisco. Could you please help me with that?
+System: Of course! San Francisco has many great dining options. Do you have a particular type of cuisine in mind, or are you open to suggestions?
+User: I am open to suggestions, but I do enjoy Italian or Mexican cuisine.
+System: Let's explore some options for you. I'll start by checking for Italian cuisine in San Francisco. Please allow me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found some wonderful Italian restaurants in San Francisco for you. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. It has a moderate price range and serves alcohol. Another option is A16 at 2355 Chestnut Street, which also has a moderate price range and serves alcohol. Lastly, there's Allegro Romano at 1701 Jones Street, which is moderate in price but does not serve alcohol. Would you like more information on any of these, or would you like to explore Mexican cuisine options as well?
+User: Thank you for these options! They all sound lovely. Could you please tell me if any of these Italian restaurants have live music? If not, I would be interested in exploring some Mexican cuisine options as well.
+System: None of the Italian restaurants I found have live music. Let's explore some Mexican cuisine options for you in San Francisco. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-660-7701', 'price_range': 'expensive', 'restaurant_name': 'Cala', 'serves_alcohol': True, 'street_address': '149 Fell Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-431-1826', 'price_range': 'expensive', 'restaurant_name': 'Fenix', 'serves_alcohol': True, 'street_address': '1077 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-926-5630', 'price_range': 'expensive', 'restaurant_name': 'Hecho', 'serves_alcohol': True, 'street_address': '2200 Market Street'}]
+End Search Results
+System: I found some Mexican restaurants in San Francisco for you. Cala, located at 149 Fell Street, offers an expensive dining experience and serves alcohol. Another option is Fenix at 1077 Mission Street, which also falls in the expensive price range and serves alcohol. Lastly, there's Hecho on 2200 Market Street, which likewise is expensive and serves alcohol. Unfortunately, none of these options feature live music. Would you like more details on any of these, or is there something else I can assist you with?
+User: I appreciate the information! Although the Mexican options sound great, I'm really hoping to find a place with live music. Could you help me find a restaurant in San Francisco, either Italian or Mexican, that offers live music?
+System: Let's see if we can find an Italian or Mexican restaurant in San Francisco that offers live music. Please hold on for a moment while I check for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found some Italian restaurants in San Francisco that offer live music. One option is Fior D'italia, located at 2237 Mason Street. It provides an expensive dining experience and serves alcohol. Another option is Zingari Ristorante + Jazz Bar at 501 Post Street, which also has an expensive price range and serves alcohol. These places might provide the lively atmosphere you're looking for. Would you like more information on either of these, or is there anything else I can assist you with?
+User: Zingari Ristorante + Jazz Bar sounds perfect! Could you please make a reservation for two people this Saturday at 7:00 PM? Thank you so much for your help!
+System: Could you please confirm that you'd like to make a reservation for two people at Zingari Ristorante + Jazz Bar in San Francisco this Saturday at 7:00 PM? Once confirmed, I'll proceed with the reservation.
+User: Yes, please confirm the reservation for two people at Zingari Ristorante + Jazz Bar in San Francisco this Saturday at 7:00 PM. Thank you for your assistance!
+System: Thank you for confirming. I will now proceed to make the reservation for you.
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, restaurant_name: 'Zingari Ristorante + Jazz Bar', time: '19:00', date: '2023-10-21', party_size: 2})
+
+Once the reservation is confirmed, I'll let you know.
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-21', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at Zingari Ristorante + Jazz Bar in San Francisco on Saturday, October 21st, at 7:00 PM is confirmed. The restaurant is located at 501 Post Street, and I'm sure you'll enjoy the live music and the vibrant atmosphere. If there's anything else you need or any other way I can assist you, please feel free to let me know. Enjoy your evening!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Palo Alto where I can have a nice meal. Could you help me find one?
+System: Sure! Could you please let me know what type of cuisine you prefer? This will help me find a restaurant that suits your taste.
+User: I would love to try Italian cuisine. It would be wonderful if you could find a cozy place with a warm atmosphere.
+System: Let's find you a nice Italian restaurant in Palo Alto! Are there any specific preferences you have, such as whether the restaurant should serve alcohol or have live music?
+User: I think it would be nice if the restaurant serves alcohol, but live music isn't necessary. Thank you for helping me with this.
+System: Great! Let me find an Italian restaurant in Palo Alto that serves alcohol. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian, serves_alcohol: True})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}]
+End Search Results
+System: I found a couple of Italian restaurants in Palo Alto that serve alcohol. One option is Vina Enoteca, which is located at 700 Welch Road. It's a bit on the expensive side. Another option is Buca Di Beppo Italian Restaurant, located at 643 Emerson Street, with a moderate price range. Do either of these sound like a good choice for you?
+User: Both options sound lovely, but Buca Di Beppo seems like a great fit with its moderate pricing. Could we go ahead and make a reservation there? I'm planning for a party of 4, around 7:00 pm this Saturday. Thank you for your assistance!
+System: To proceed with the reservation at Buca Di Beppo Italian Restaurant for a party of 4 at 7:00 pm this Saturday, could you please confirm the date for me? Once confirmed, I'll make the reservation for you.
+User: The date would be this coming Saturday. Thank you for taking care of this!
+System: Thank you for confirming. Just to ensure we have the correct details, you would like to make a reservation at Buca Di Beppo Italian Restaurant in Palo Alto for a party of 4 at 7:00 pm on the upcoming Saturday. If everything looks good, I'll proceed with the reservation. Could you please confirm the exact date for this Saturday?
+User: Yes, the exact date is the upcoming Saturday, which is [insert date here]. Thank you so much for your help!
+System: I appreciate your patience. Based on the upcoming Saturday's date, let's proceed with the reservation. I'll confirm the booking for a party of 4 at Buca Di Beppo Italian Restaurant in Palo Alto at 7:00 pm on [insert date here]. Please hold on while I make the reservation. 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 'Buca Di Beppo Italian Restaurant', city: 'Palo Alto', date: '[insert date here]', time: '19:00', party_size: 4})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street', 'date': '[insert date here]', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Buca Di Beppo Italian Restaurant in Palo Alto for a party of 4 at 7:00 pm on the specified date has been successfully made. If you have any other questions or need further assistance, feel free to let me know. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm in the mood for an adventurous dining experience in San Francisco. Do you know of any unique restaurants with a creative atmosphere or perhaps a place with live music?
+System: That sounds exciting! To find the perfect spot for you, could you please specify if you have a particular type of cuisine in mind? Or would you like me to suggest something adventurous based on your preferences? Additionally, if there's a specific price range you're considering, let me know. This will help me narrow down the best options for you.
+User: I'm open to any cuisine, as long as it's something unique or has an artistic flair. A moderate price range would be ideal. Let me know if there's a place where I can soak in a creative vibe and maybe enjoy some live music too!
+System: Thank you for your patience! Let's try again with a random cuisine that might match your adventurous spirit. How about we look for a Vietnamese restaurant with live music in San Francisco? I'll perform a search based on this cuisine and your preference for a moderate price range. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese, price_range: moderate, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems there aren't any Vietnamese restaurants with live music available in a moderate price range at the moment in San Francisco. Would you like me to look for a different cuisine or perhaps suggest a Vietnamese restaurant without live music?
+User: Let's explore a different cuisine then! How about something with a fusion twist or perhaps a place known for its artistic presentations? I'm open to suggestions, as long as the atmosphere is vibrant and creative.
+System: Let's explore the exciting realm of Fusion cuisine in San Francisco, known for its artistic presentations and vibrant atmosphere. I'll look for a restaurant that matches your adventurous spirit in a moderate price range. Please hold on for a moment while I perform the search.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Fusion, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street'}]
+End Search Results
+System: I found a fantastic option for you! El Valenciano is a Fusion restaurant in San Francisco that offers a vibrant atmosphere with live music. It's located at 1153 Valencia Street, and they do serve alcohol. Would you like any more details, or perhaps make a reservation?
+User: Yes, El Valenciano sounds intriguing! Let's make a reservation for tomorrow evening, please. How about 7:30 PM for a party of four?
+System: Great choice! To confirm your reservation at El Valenciano for tomorrow evening, could you please specify the date for the reservation? Once I have that, I'll proceed with the booking for a party of four at 7:30 PM.
+User: The reservation should be for tomorrow, which is [insert date]. Please go ahead and confirm the booking for four people at 7:30 PM.
+System: Thank you for confirming the date. I'll proceed with the reservation at El Valenciano for four people at 7:30 PM tomorrow. Please hold on for a moment while I complete the booking.
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, date: [insert date], party_size: 4, cuisine: Fusion, restaurant_name: El Valenciano, time: 19:30})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street', 'date': '[insert date]', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Your reservation at El Valenciano for four people at 7:30 PM tomorrow has been successfully confirmed. If you need anything else or if there's any change in your plans, feel free to let me know. Enjoy your vibrant dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm feeling adventurous today and would love to explore a unique dining experience in San Francisco. Could you help me find a restaurant that offers an exciting atmosphere, perhaps with some live music or creative cuisine?
+System: Could you let me know if you have a preference for the type of cuisine, or are you open to a surprise culinary adventure? San Francisco offers a vibrant dining scene with plenty of creative and unique options!
+User: I'm open to a surprise culinary adventure! I love discovering new flavors and creative dishes. Let's see what San Francisco has to offer!
+System: Great! Let's dive into the vibrant culinary scene of San Francisco. I'll look for a restaurant offering a unique dining experience with some creative cuisine and maybe even live music to enhance the atmosphere. Give me a moment while I find something exciting for you! 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Ethiopian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': 5, 'time': '11:30'}]
+End Search Results
+System: I found a fantastic place for you! Sheba Piano Lounge in San Francisco offers a delightful Ethiopian cuisine experience, complete with live music to create an exciting atmosphere. It's located at 1419 Fillmore Street, and they do serve alcohol to complement your meal. Would you like more information or perhaps to make a reservation?
+User: Yes, I would love to make a reservation there! Could you please reserve a table for two at Sheba Piano Lounge for this Saturday evening, around 7:30 pm? Thank you!
+System: Certainly! Let's get that reservation set up for you. Can you please confirm the date for this Saturday so I can proceed with the booking at Sheba Piano Lounge for 7:30 pm?
+User: The date for this Saturday is October 7th. Please go ahead and make the reservation for two at 7:30 pm. I'm excited to experience the Ethiopian cuisine and live music!
+System: Wonderful! I'll proceed with making the reservation for you. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Sheba Piano Lounge', city: 'San Francisco', date: '2023-10-07', time: '19:30', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2023-10-07', 'party_size': '2', 'time': '19:30'}]
+End Search Results
+System: Your reservation at Sheba Piano Lounge in San Francisco is confirmed for October 7th at 7:30 pm for two people. Get ready to enjoy an exciting evening with Ethiopian cuisine and live music! If you need the phone number or any other information, feel free to ask. Enjoy your culinary adventure!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

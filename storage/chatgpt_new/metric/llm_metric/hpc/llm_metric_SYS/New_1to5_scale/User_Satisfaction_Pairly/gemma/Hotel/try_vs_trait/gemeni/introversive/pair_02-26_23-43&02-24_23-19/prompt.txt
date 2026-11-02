@@ -1,0 +1,119 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating of the hotel?
+
+User: Maybe a three-star hotel would be okay.
+
+System: APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 3})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found three 3-star hotels in Vancouver: Atrium Inn Vancouver, Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., and Best Western Plus Sands. Would you like to know more about any of these?
+
+User: Could you tell me more about the Atrium Inn Vancouver?
+
+System: Okay, sure! Atrium Inn Vancouver is located at 2889 East Hastings Street, has two rooms available, and the price per night is $228. Their phone number is +1 604-254-1000, and smoking is not allowed. Would you like to know about the other hotels as well?
+
+User: No, that sounds alright. Can you reserve it for me? I'll be checking in on the 27th for two nights.
+
+System: Could you please confirm the year you'd like to book for?
+
+User: 2024.
+
+System: Okay, I can help with that. To confirm, you would like to book 2 rooms at the Atrium Inn Vancouver, checking in on October 27, 2024, for two nights. Is that correct?
+
+User: Yes, that's right.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Atrium Inn Vancouver, check_in_date: 2024-10-27, stay_length: 2, location: Vancouver, number_of_rooms: 2})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Great! Your booking at Atrium Inn Vancouver for 2 rooms, checking in on October 27, 2024, for 2 nights has been confirmed. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences regarding the star rating, or are you open to any options?
+
+User: Any star rating is fine. Just somewhere quiet.
+
+System: Okay, I understand. I will search for hotels in Vancouver.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: dontcare })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few hotels in Vancouver. There's the Shangri-La Hotel and the Wedgewood Hotel & Spa Vancouver, both with 5 stars, and the Auberge Vancouver Hotel with 4 stars. Would you like to know more about any of these?
+
+User: Tell me about the Auberge Vancouver Hotel.
+
+System: The Auberge Vancouver Hotel has 4 stars, and it's located at 837 West Hastings Street. The price per night is $296. They do allow smoking and have 2 rooms. Does this sound suitable?
+
+User: Smoking is allowed? I'd rather not. Anything else available?
+
+System: Okay, I understand. Let me check for other options in Vancouver where smoking is not allowed.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}]
+End Search Results
+System: Okay, I have found three hotels in Vancouver that do not allow smoking. There's the Shangri-La Hotel and the Wedgewood Hotel & Spa Vancouver, both with 5 stars. Also, there is the Coast Coal Harbour Vancouver Hotel By Apa, which has 4 stars. Would you like more details on any of these options?
+
+User: Perhaps the Coast Coal Harbour Vancouver Hotel. Tell me more.
+
+System: Okay. The Coast Coal Harbour Vancouver Hotel By Apa has 4 stars, is located at 1180 West Hastings Street, and the price per night is $108. They don't allow smoking and have 1 room. Does this meet your needs?
+
+User: That sounds acceptable. Can you book it for me? I need it for tomorrow, for 3 nights.
+
+System: Okay, I can help with booking. I will need your check-in date and your full name to make a reservation.
+
+User: Just book it under my name. Check in tomorrow for 3 nights.
+
+System: Okay, I understand. To confirm, you would like to book 1 room at the Coast Coal Harbour Vancouver Hotel By Apa, checking in tomorrow for 3 nights. Could you please provide the exact date you'd like to check in?
+
+User: Yes, that's correct. Check in tomorrow, September 14th, for 3 nights.
+
+System: Okay, I understand. So, you would like to book 1 room at the Coast Coal Harbour Vancouver Hotel By Apa, checking in on September 14th, for 3 nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: Okay, I will proceed with the reservation.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-09-14, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 3 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2024-09-14'}]
+End Search Results
+System: Okay, your booking at the Coast Coal Harbour Vancouver Hotel By Apa, checking in on September 14th for 3 nights, is confirmed.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

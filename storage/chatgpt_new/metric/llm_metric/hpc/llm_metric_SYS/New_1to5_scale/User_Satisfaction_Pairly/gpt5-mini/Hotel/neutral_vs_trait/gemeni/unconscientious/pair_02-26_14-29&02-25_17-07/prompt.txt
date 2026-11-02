@@ -1,0 +1,155 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I need to find a hotel, I guess. Somewhere... not too picky, really.
+
+System: Okay, no sweat! Just tell me where you're thinking of crashing for the night. No biggie if you haven't decided yet!
+
+User: Ugh, somewhere... how about... Las Vegas? Seems easy enough, right?
+
+System: Alright, Las Vegas it is! Do you have any preference on the star rating for the hotel? Or should I just pick whatever?
+
+User: Eh, whatever's cheapest, I guess. Star rating? Doesn't really matter, does it? Just find something, anything.
+
+System: Okay, cool. Let's see what we can find in Las Vegas.
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: dontcare})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: Alright, no stress! Found a few places in Las Vegas. There's the Best Western Plus Las Vegas West, a 3-star place, then Budget Suites Of America, which is a 1-star, and Hampton Inn Las Vegas/Summerlin, another 3-star. Wanna just pick one at random, or should we think about it for, like, a second?
+
+User: Ugh, just pick one. Whichever. The... Budget Suites thing, I guess? Sounds... easy.
+
+System: Okay, Budget Suites Of America it is! Just to be super clear, that's in Las Vegas. How many nights are we talking, and when do you wanna check in? Just so I can, you know, actually book it.
+
+User: Uh...check-in date? Tomorrow, I guess? And... like, two nights? Or three? Whatever. Two, let's say two.
+
+System: Okay, cool, two nights starting tomorrow at Budget Suites Of America in Las Vegas. Just to make
+User: Sure, book it. Whatever.
+
+System: Alright, cool. Let's lock this in. So, that's two nights at Budget Suites Of America in Las Vegas, starting tomorrow. Just to double-check, you want one room, right?
+
+
+User: Yeah, one room. Whatever. Just get it done, I guess.
+
+System: Okay, cool. Last thing: tomorrow's date. What's the exact date? I don't want to mess it up and then you're stuck without a room.
+
+User: Ugh... date? I dunno, whatever tomorrow is. Just... look it up, I guess? Is this taking long?
+
+System: Okay, okay, no sweat. I'll figure out the date. So, you want to book one room at Budget Suites Of America in Las Vegas for two nights starting tomorrow, which is 2024-03-28. Is that all correct?
+
+Once you confirm, I'll just go ahead and book it.
+
+
+User: Yeah, whatever. Just do it.
+
+System: Alright, cool. Let's lock this in.
+
+APICall(method='ReserveHotel', parameters={check_in_date: 2024-03-28, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 2})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2024-03-28'}]
+End Search Results
+System: Okay, cool. So, your booking at Budget Suites Of America in Las Vegas for two nights starting tomorrow, March 28, 2024, is confirmed. Just so you know, it's at 2219 North Rancho Drive. Oh, and they allow smoking. You need anything else, or are we good to go?
+
+User: Smoking allowed? Nice. Uh... no, that's probably fine. Yeah, that's it.
+
+System: Okay, great! So, all set then? You just roll up to Budget Suites Of America at 2219 North Rancho Drive in Las Vegas, tell 'em you're checking in tomorrow, March 28, 2024, for two nights, and you're golden. Anything else I can help you with, or are you good to go crash?
+
+User: Ugh, yeah, whatever. That's fine, I guess.
+
+System: Alright, cool. Glad we got that sorted out. Just head over there and you're all set. Have a good one!
+
+User: Uh... I guess that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I need to find a hotel. Somewhere... easy.
+
+System: Okay, I can help with that. Do you have a location in mind?
+
+User: Ugh, yeah, I guess. Let's say... Las Vegas. Whatever.
+
+System: Okay, searching for hotels in Las Vegas, what about the star rating, do you have any preference?
+
+User: Star rating? Does it even matter? Uh, I guess something not totally gross. Maybe 3 stars? Or... I don't know, surprise me?
+
+System: Since you're open to suggestions, I can search for hotels in Las Vegas. I will randomly select a star rating for you. Is that okay?
+
+User: Yeah, whatever. Just find something. I don't really care.
+
+System: Okay, I will search for a hotel in Las Vegas with a randomly selected star rating.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: I found no 5-star hotels in Las Vegas. Would you like me to search for hotels with a different star rating?
+
+User: Ugh, fine. Try 4 stars. Maybe that'll be less... disappointing.
+
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4 })
+
+Search Results
+
+End Search Results
+System: I found no 4-star hotels in Las Vegas either. Should I try another star rating, like 3 stars or lower?
+
+User: Yeah, whatever. Try 3 stars. If that doesn't work, just pick the cheapest one. I'm not picky.
+
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: Okay, I found three 3-star hotels in Las Vegas: Best Western Plus Las Vegas West, Hampton Inn Las Vegas/Summerlin, and Oasis At Gold Spike. Best Western Plus Las Vegas West costs $117 per night, Hampton Inn Las Vegas/Summerlin costs $279 per night and Oasis At Gold Spike costs $63 per night. Which one would you like to know more about?
+
+User: Ugh, Oasis at Gold Spike, I guess. Cheapest is easiest. Tell me about it.
+
+System: Okay, Oasis At Gold Spike is a 3-star hotel in Las Vegas. It costs $63 per night and its phone number is +1 702-768-9823. The address is 217 Las Vegas Boulevard North. Also, smoking is not allowed and they have 1 room available. Is there anything else you'd like to know?
+
+User: Smoking not allowed? Seriously? Whatever, just book it. I'm too tired to look for something else.
+
+System: How many days will you be staying and what date would you like to check in?
+
+User: Uh, I don't know... like, three days? And... today? Whatever today is. Just put it in.
+
+System: Could you please confirm today's date so I can book your room?
+
+User: Ugh, fine. It's... November 16th. I think. Just book it already.
+
+System: Okay, so you want to book 1 room at the Oasis At Gold Spike in Las Vegas for 3 days starting November 16th. Is that correct?
+
+User: Yeah, yeah, sounds about right. Just do it.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-11-16, location: Las Vegas, number_of_rooms: 1, place_name: Oasis At Gold Spike, stay_length: 3 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North', 'check_in_date': '2024-11-16'}]
+End Search Results
+System: Okay, your reservation at Oasis At Gold Spike for 3 days starting today, November 16th, is confirmed. The address is 217 Las Vegas Boulevard North, and the phone number is +1 702-768-9823. The price is $63 per night. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

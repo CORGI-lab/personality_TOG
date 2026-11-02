@@ -1,0 +1,160 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: No, not really. Just something... quiet.
+
+System: Okay, I will look for a quiet hotel in Vancouver.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 5 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: Okay, I found two 5-star hotels in Vancouver that might suit you. One is the Shangri-La Hotel, and the other is the Wedgewood Hotel & Spa Vancouver. Would you like to know more about either of them?
+
+User: Shangri-La... tell me about that one.
+
+System: The Shangri-La Hotel has 2 rooms available, is located at 1128 West Georgia Street, and their phone number is +1 604-689-1120. The price per night is $300, and smoking is not allowed. Does this sound suitable?
+
+User: No smoking... that's good. Is there anything... less expensive?
+
+System: Okay, let me check for something less expensive in Vancouver.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: Okay, I found three 3-star hotels in Vancouver. The Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. is the least expensive at $72 per night. The Atrium Inn Vancouver is $228 per night, and the Best Western Plus Sands is $222 per night. All three do not allow smoking. Would you like more information on any of these?
+
+User: The Best Western Plus Chateau Granville... tell me about that one.
+
+System: Okay, the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. is located at 1100 Granville Street. They have 1 room available and the price per night is $72. Their phone number is +1 604-669-7070. Smoking is not allowed. Does this sound like it might work for you?
+
+User: Yes, that sounds... acceptable. Can you reserve it for me?
+
+System: Okay, I can help you with that. I will need a few more details to make the reservation. Could you please provide the check-in date and the length of your stay? Also, could you confirm the location is Vancouver and you want to reserve at Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.?
+
+User: Yes, that's all correct. Check-in date is the 20th, and I'll be staying for three nights.
+
+System: Thank you. To confirm, you would like to book 1 room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, starting on the 20th for a stay of three nights? If so, I will proceed with the reservation.
+
+User: Yes, please proceed.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-20, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., stay_length: 3 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2024-07-20'}]
+End Search Results
+System: Okay, I have reserved 1 room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver for 3 nights, starting on July 20th. Is there anything else I can assist you with?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel. Somewhere quiet, please. Maybe in San Francisco.
+
+System: Okay, I can help you with that. How many rooms do you need?
+
+User: Just one.
+
+System: Okay, and do you have any preferences for the star rating of the hotel?
+
+User: Not really. Anything is fine, as long as it's not too noisy.
+
+System: APICall(method='SearchHotel', parameters={ location: San Francisco, number_of_rooms: 1, star_rating: dontcare, smoking_allowed: dontcare })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found three hotels in San Francisco. Amsterdam Hostel San Francisco is a 1-star hotel, Argonaut Hotel is a 4-star hotel, and Beck'S Motor Lodge is a 2-star hotel. Do any of these sound good to you?
+
+User: Beck's Motor Lodge sounds... acceptable. Is it really quiet there?
+
+System: I do not have information about how quiet Beck's Motor Lodge is. However, it is a 2-star hotel with rooms for $60 per night. Would you like to know the address or phone number?
+
+User: The price is fine. Can you check if smoking is allowed?
+
+System: Okay, let me check if smoking is allowed at Beck's Motor Lodge.
+APICall(method='SearchHotel', parameters={location: San Francisco, place_name: Beck'S Motor Lodge})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Smoking is not allowed at Beck's Motor Lodge. Are you interested in booking a room there?
+
+User: Okay, then maybe not. Are there other options?
+
+System: I can search for hotels with smoking allowed, if you'd like. Or, I can search for hotels with a different star rating. What would you prefer?
+
+User: Perhaps a different hotel, but still in the lower price range?
+
+System: Okay, searching for a different hotel in San Francisco in the lower price range.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, number_of_rooms: 1, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I see the search results again. Besides Beck's Motor Lodge, there is Amsterdam Hostel San Francisco with a price of $24 per night. Would you like to know more about Amsterdam Hostel San Francisco?
+
+User: No, thank you. I'm not interested in a hostel. Anything else that's not a hostel?
+
+System: Okay, let me see what other options we have.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, number_of_rooms: 1, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Argonaut Hotel is the only other option, but it's $408 per night. Is that too expensive?
+
+User: Yes, that's too expensive. Maybe something further away from the city center?
+
+System: I am unable to search for hotels outside of San Francisco, but I can search for hotels with different star ratings or smoking preferences. Would you like me to do that?
+
+User: No, that's alright. I'll just stick with something in San Francisco. Can you tell me more about Beck's Motor Lodge?
+
+System: Sure. Beck's Motor Lodge is a 2-star hotel. The price per night is $60, and smoking is not allowed. The address is 2222 Market Street, and the phone number is +1 415-621-8212. Is there anything else you'd like to know?
+
+User: No, I think that's enough. Could you reserve a room for me there?
+
+System: Okay, I can help you with that. What date would you like to check in, and how many nights will you be staying?
+
+User: I'd like to check in on the 15th, for two nights.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Beck'S Motor Lodge, location: San Francisco, check_in_date: 2024-07-15, stay_length: 2, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Okay, I have reserved one room for you at Beck's Motor Lodge in San Francisco, checking in on July 15, 2024, for two nights. The price is $60 per night. Is that correct?
+
+User: Yes, that is correct.
+
+System: Okay, great. Your reservation is confirmed. Is there anything else I can help you with today?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

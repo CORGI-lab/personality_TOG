@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in San Mateo. I'm looking for a place with Italian cuisine. Could you help me with that?
+System: Sure, let me gather some information for you. I'll look for Italian restaurants in San Mateo. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Mateo, cuisine: Italian})
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-342-3100', 'price_range': 'moderate', 'restaurant_name': 'Capellini Restaurant', 'serves_alcohol': True, 'street_address': '310 Baldwin Avenue'}, {'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-579-6021', 'price_range': 'moderate', 'restaurant_name': 'Osteria Coppa - Permanently Closed', 'serves_alcohol': True, 'street_address': '139 South B Street'}, {'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-375-0818', 'price_range': 'expensive', 'restaurant_name': 'Pausa Bar & Cookery', 'serves_alcohol': True, 'street_address': '223 East 4th Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in San Mateo for you. A popular choice is Capellini Restaurant, located at 310 Baldwin Avenue. It’s moderately priced and serves alcohol, but does not feature live music. Would you like more information about this restaurant or explore another option?
+User: Could you provide information on another Italian restaurant option in San Mateo, particularly one that might have live music?
+System: Certainly! While none of the Italian restaurants in San Mateo from the search results offer live music, Pausa Bar & Cookery is another option. It's located at 223 East 4th Avenue, and it has an expensive price range. It also serves alcohol. Would you like more details about this restaurant or assistance with something else?
+User: Could you tell me the price range and any other interesting features of Capellini Restaurant? I want to ensure it aligns with my preferences before making a decision.
+System: Capellini Restaurant, located at 310 Baldwin Avenue in San Mateo, offers a moderate price range and serves alcohol. However, it does not feature live music. If you need any more information or assistance, feel free to let me know!
+User: Thank you for the information. I'd like to make a reservation at Capellini Restaurant. Could you please book a table for four people this Friday at 7:00 pm?
+System: To proceed with your reservation at Capellini Restaurant, can you please confirm the date you want the booking for? I understand you mentioned "this Friday," but I want to ensure the correct date. Once confirmed, I'll make the reservation for four people at 7:00 pm.
+User: This Friday refers to [insert specific date here]. Please go ahead and make the reservation for four people at 7:00 pm.
+System: Thank you for confirming the date. I will now proceed to make the reservation for four people at Capellini Restaurant on [insert specific date here] at 7:00 pm. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Capellini Restaurant', city: 'San Mateo', time: '19:00', date: '[insert specific date here]', party_size: 4})
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-342-3100', 'price_range': 'moderate', 'restaurant_name': 'Capellini Restaurant', 'serves_alcohol': True, 'street_address': '310 Baldwin Avenue', 'date': '[insert specific date here]', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Capellini Restaurant has been successfully made for four people on [insert specific date here] at 7:00 pm. If you need any further assistance or have additional questions, feel free to let me know. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in Palo Alto. Can you help me with that?
+System: Certainly! Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: I would prefer Italian cuisine. Could you also let me know about the price range and if they serve alcohol?
+System: Sure! Let me search for Italian restaurants in Palo Alto for you. I'll make sure to check for the price range and whether they serve alcohol. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Italian})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: Here are some Italian restaurant options in Palo Alto:
+
+1. **Italico Restaurant**: Located at 341 California Avenue, it is an expensive option but does not serve alcohol.
+
+2. **Osteria Toscana**: Situated at 247 Hamilton Avenue, also in the expensive range, and does not serve alcohol.
+
+3. **Vina Enoteca**: Found at 700 Welch Road, this restaurant is expensive and does serve alcohol.
+
+Would you like more details on any of these options, or is there something else I can assist you with?
+User: Can you provide more details about Vina Enoteca, specifically regarding its ambiance and any unique features it might have? If it seems like a good fit, I would like to make a reservation.
+System: Unfortunately, I don't have specific details about the ambiance or unique features of Vina Enoteca from the current search results. However, I can help you make a reservation there. Could you please provide the date, time, and party size for your reservation?
+User: I would like to make a reservation at Vina Enoteca for two people on Saturday at 7:00 PM.
+System: Thank you for the details. Just to confirm, you’d like to book a table for two at Vina Enoteca in Palo Alto on Saturday at 7:00 PM. Let me proceed with the reservation.
+User: Yes, that’s correct. Please go ahead and make the reservation.
+System: Great! I'm processing your reservation now. Please hold on a moment.
+
+APICall (method='ReserveRestaurant', parameters={city: Palo Alto, restaurant_name: Vina Enoteca, date: YYYY-MM-DD, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Vina Enoteca in Palo Alto for two people on Saturday at 7:00 PM has been successfully made. Should you need to reach them, their phone number is 650-646-3477. If there’s anything else I can help you with, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

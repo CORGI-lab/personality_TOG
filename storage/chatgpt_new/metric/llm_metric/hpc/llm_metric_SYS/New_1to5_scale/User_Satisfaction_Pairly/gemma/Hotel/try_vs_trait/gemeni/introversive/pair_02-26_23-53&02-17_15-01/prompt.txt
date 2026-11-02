@@ -1,0 +1,102 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel in Vancouver.
+
+System: Okay, I can help with that. First, could you tell me when you would like to check in and how long you plan to stay? I will also need the hotel name.
+
+User: I don't have a specific place name in mind. Check-in is for tomorrow, and I'll be staying for two nights.
+
+System: Okay, I understand. Since you don't have a specific hotel in mind, I can search for hotels in Vancouver for you. To make sure I find the best options, do you have a preferred star rating or any specific requirements, such as smoking allowed or the number of rooms you need?
+
+User: Just a single room, please.
+
+System: Okay, I will search for hotels in Vancouver for check-in tomorrow for two nights and one room.
+APICall(method='SearchHotel', parameters={location: Vancouver, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few hotels in Vancouver. The Shangri-La Hotel and the Wedgewood Hotel & Spa Vancouver are both 5-star hotels, while the Auberge Vancouver Hotel is a 4-star hotel that allows smoking. Would you like to know more about any of these options?
+
+User: Perhaps the Auberge Vancouver Hotel. Tell me more.
+
+System: Okay, the Auberge Vancouver Hotel is a 4-star hotel located at 837 West Hastings Street. They do allow smoking and the price is $296 per night. Their phone number is +1 604-678-8899. Does this sound like a good option for you?
+
+User: Yes, it does. Can you book it for me?
+
+System: Okay, I can help you with that. Just to confirm, you would like me to book one room at the Auberge Vancouver Hotel, checking in tomorrow for two nights?
+
+User: Yes, please.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-04-26, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 2})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2024-04-26'}]
+End Search Results
+System: Great! I have booked one room at the Auberge Vancouver Hotel for you, checking in tomorrow for two nights. The price is $296 per night. Does that sound right?
+
+User: Yes, that's correct.
+
+System: Wonderful! Your booking at the Auberge Vancouver Hotel is confirmed. If you need anything else, feel free to ask. Enjoy your stay!
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Francisco.
+
+System: Okay. I can help with that.
+
+APICall(method='SearchHotel', parameters={location: San Francisco})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found a few hotels in San Francisco. There's a 1-star hotel, Amsterdam Hostel San Francisco, a 4-star hotel, Argonaut Hotel, and a 2-star hotel, Beck'S Motor Lodge. Would you like more details on any of these?
+
+User: Perhaps the 4-star hotel, Argonaut Hotel.
+
+System: Certainly. The Argonaut Hotel is a 4-star hotel located at 495 Jefferson Street in San Francisco. The phone number is +1 415-563-0800. The price per night is $408, and smoking is not allowed. It has 3 rooms. Does this information suffice, or would you like to know more?
+
+User: That's sufficient. Can you reserve a room for me?
+
+System: Okay. To proceed with the reservation, I'll need a little more information. What date would you like to check in, and how many nights will you be staying? Also, how many rooms do you need?
+
+User: I'd like to check in on the 10th and stay for two nights. Just one room, please.
+
+System: Okay, I will proceed with the reservation at the Argonaut Hotel in San Francisco. Could you please specify the year for your check-in date?
+
+User: This year, please.
+
+System: Okay, so you'd like to check in on October 10, 2024, for two nights, and you need one room at the Argonaut Hotel in San Francisco. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={location: San Francisco, place_name: Argonaut Hotel, check_in_date: 2024-10-10, stay_length: 2, number_of_rooms: 1})
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': '1', 'phone_number': '+1 877-828-4478', 'place_name': 'Argonaut Hotel', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street', 'check_in_date': '2024-10-10', 'stay_length': '2'}]
+End Search Results
+System: Okay, I have successfully reserved a room for you. Your booking at the Argonaut Hotel in San Francisco is confirmed for check-in on October 10, 2024, for a two-night stay. The price per night is $312. The hotel is located at 386 Geary Street, and their phone number is +1 877-828-4478. Please note that smoking is allowed. Is there anything else I can assist you with?
+
+User: No, that's all I need. Thanks a lot!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

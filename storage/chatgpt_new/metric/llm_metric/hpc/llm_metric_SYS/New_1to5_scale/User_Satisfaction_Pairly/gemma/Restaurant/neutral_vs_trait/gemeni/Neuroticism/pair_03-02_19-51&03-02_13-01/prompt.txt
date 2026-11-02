@@ -1,0 +1,170 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm starving and need to find a place to eat in San Francisco, but I'm so worried I won't find anything good.
+
+System: Okay, I can help you with that. Is there any particular type of cuisine you're in the mood for?
+
+User: I don't know, maybe Italian? But what if it's too crowded or the food isn't fresh? I'm so indecisive!
+
+System: Okay, I understand. Let's try to find an Italian restaurant in San Francisco. I can look for places that are less crowded. Would you like me to proceed with searching for Italian restaurants in San Francisco?
+
+User: Yes, please. But what if the service is slow? I'm so impatient when I'm hungry!
+
+System: Okay, I will find Italian restaurants in San Francisco. I will also try to find restaurants that are known for good service.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco. 54 Mint Ristorante Italiano is located at 16 Mint Plaza, A16 is at 2355 Chestnut Street, and Allegro Romano is at 1701 Jones Street. Do any of these sound good to you?
+
+User: Oh god, I don't know... Mint Plaza sounds kind of sketchy. Is A16 really crowded? I hate waiting.
+
+System: Okay, let's check if A16 is usually crowded. I don't have real-time crowd information, but I can tell you that it's a popular restaurant with a moderate price range. Would you like to know more about A16 or Allegro Romano, or should I look for another option?
+
+User: Ugh, moderate price range... I'm so anxious about spending too much money. Is there anything more affordable? And quieter? I really can't handle loud places right now.
+
+System: Okay, I understand. Let me search for more affordable Italian restaurants in San Francisco that might be quieter.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, price_range: economical})
+
+Search Results
+
+End Search Results
+System: I am sorry, I did not find any restaurants based on your criteria. Would you like me to search again without the price range?
+
+User: Oh, god, no, that's okay. I'm sure it's fine. A16, you said? Can we just... book a table there, please? I just want to get this over with.
+
+System: Okay, I can help you with that. Let's book a table at A16. Could you please tell me what time and date you'd like to make the reservation for? Also, how many people will be in your party?
+
+User: Okay, uh, tonight, I guess. If that's okay? And, um, just two of us. Is 7:30 too late? I don't know... I just don't want to be rushed, but I also don't want to be there too late.
+
+System: Okay, I can book a table for two at A16 tonight. Is 7:30 PM okay for the reservation time?
+
+User: Yes, 7:30 is fine. Just... please make sure they know we need a quiet table. I'm really not up for a lot of noise tonight. I hope they can accommodate that.
+
+System: Okay, I will request a quiet table for you. I will book a table for two at A16 tonight at 7:30 PM. Is that correct?
+
+User: Yes, please. And can you, like, double-check that they actually got the request for a quiet table? I'm so nervous they'll forget.
+
+System: I do not have the ability to confirm special requests. However, I will book a table for two at A16 tonight at 7:30 PM.
+
+APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2024-02-29, party_size: 2, restaurant_name: A16, time: 19:30 })
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2024-02-29', 'party_size': '2', 'time': '19:30'}]
+End Search Results
+System: Okay, I have booked a table for two at A16 for tonight at 7:30 PM. The restaurant is located at 2355 Chestnut Street and their phone number is 415-771-2216. Is there anything else I can help you with?
+
+User: I hope they don't mess up the reservation. Can you send me the address again, just in case? I'm terrible with directions, and I'm already stressed enough.
+
+System: Okay, the address for A16 is 2355 Chestnut Street. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a restaurant in San Francisco. I hope this isn't going to be a disaster.
+
+System: Okay, I understand you're looking for a restaurant in San Francisco. To help me narrow down the options and hopefully make this a smooth experience for you, do you have a particular type of cuisine in mind?
+
+User: Oh god, I don't know... Maybe Italian? But what if it's too crowded? Or the service is slow?
+
+System: Given your concerns about crowds and service, let's aim for a place that might be a bit more relaxed. How about we look for an Italian restaurant in San Francisco? Would you prefer a particular price range, like inexpensive, moderate, or expensive?
+
+User: Oh, moderate, I guess. But what if the food isn't good? I really don't want to waste my money.
+
+System: I understand your concern about the food quality. I will try my best to find a well-regarded Italian restaurant in San Francisco in the moderate price range to minimize the risk of disappointment.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Okay, I've found a few moderate-priced Italian restaurants in San Francisco. How about "54 Mint Ristorante Italiano" located at 16 Mint Plaza? They serve alcohol, which might help you relax. Does that sound like a possibility, or would you like to explore the other options? I want to make sure you feel comfortable with the choice.
+
+User: Oh god, that address sounds like it might be in a super busy area. Is there anything a little more… tucked away? I just really don’t want to get stuck in a chaotic place.
+
+System: Okay, I understand your concern about the location. "A16" is located at 2355 Chestnut Street, which might be a bit less busy than Mint Plaza. It is also in the moderate price range and serves alcohol. Would you like to know more about A16, or should we look for another option?
+
+User: Oh, Chestnut Street... that rings a bell. Is parking going to be a nightmare there? Ugh, I can already feel my blood pressure rising just thinking about it.
+
+System: Given your anxiety about parking, perhaps we should consider Allegro Romano at 1701 Jones Street. It's also a moderate-priced Italian restaurant in San Francisco, but I don't have information about the parking situation in that specific area. Would you like me to check if I can find more information about parking near Allegro Romano, or would you prefer to explore another option altogether?
+
+User: Oh, Jones Street? Is that near a lot of hills? Please don’t tell me it’s near a lot of hills… I can just imagine trying to parallel park on a steep incline. I’m getting nervous just thinking about it!
+
+System: I understand your concern about hills. Since parking and location seem to be causing you anxiety, let's try something different. I can search for Italian restaurants in San Francisco and this time, I will try to find one that is known for being in a quieter location or has easier parking. Would you like me to try that?
+
+User: Yes, please, that would be great. Just… please make sure it’s not too far from public transport, in case the parking is still a problem, you know? I just want to be prepared for anything.
+
+System: Okay, I'll focus on finding an Italian restaurant in San Francisco that's in a quieter location, with easier parking, and not too far from public transport. This might take a moment, but I want to make sure we find something that minimizes potential stress for you.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Okay, I looked again, focusing on places that might be a bit more accessible. It seems "A16" at 2355 Chestnut Street might be a good option. While I don't have specific details about parking, Chestnut Street is generally well-served by public transport, which aligns with your backup plan. It is in the moderate price range and serves alcohol. How does that sound? We can explore other options if you're still feeling unsure.
+
+User: Oh god, is Chestnut Street safe at night? I don't want to end up in some dodgy area. This is all so stressful!
+
+System: I understand your concern about safety. Let's try to find a place that might ease your worries. How about "54 Mint Ristorante Italiano" located at 16 Mint Plaza? It is in a relatively central area and is likely to be well-lit and populated, which might make you feel more secure. It is in the moderate price range and serves alcohol. Does that sound like a possibility?
+
+User: Oh, Mint Plaza… I guess that sounds a *little* better than Chestnut Street, but is it usually really crowded there? I’m just picturing wall-to-wall people, and I don’t think I can handle that.
+
+System: I understand your concern about crowds. I don't have specific information about how crowded Mint Plaza usually is. However, I can suggest Allegro Romano at 1701 Jones Street. It's also a moderate-priced Italian restaurant in San Francisco. Alternatively, I can search for Italian restaurants specifically known for having a quieter atmosphere, if you'd prefer. What do you think?
+
+User: Oh, Jones Street… I don’t know. Is it easy to get a taxi from there? What if I can’t find my way back to the hotel? I’m starting to feel really overwhelmed.
+
+System: I understand you're feeling overwhelmed. Let's take a moment. To ease your worry about getting back to the hotel, how about we focus on "54 Mint Ristorante Italiano" at 16 Mint Plaza? It's in a central location, which should make it easier to find a taxi or public transport. It is in the moderate price range and serves alcohol. Would you prefer that, or would you like me to explore other options?
+
+User: Okay, okay… Mint Plaza. I guess that’s… probably okay. But what if I can’t get a reservation? I really don’t want to show up and then have nowhere to eat. Can you just… make a reservation for me, to be safe?
+
+System: Okay, I can definitely help with that. To make a reservation at 54 Mint Ristorante Italiano, I'll need the date and time you'd like to book, and the number of people in your party. Once I have that, I'll make the reservation, and hopefully that will put your mind at ease.
+
+User: Oh god, I don't know… what if they're fully booked? Can you check, like, *right now*, for tomorrow night? And it'll just be me, so a table for one, I guess. I’m so anxious about this… please tell me they have something.
+
+System: Okay, I understand. Let's check for availability at 54 Mint Ristorante Italiano for tomorrow night, for a table for one. What time would you like to make the reservation for?
+
+User: Oh, I don’t know… 7 pm? But what if the traffic is bad and I’m late? Will they give my table away? This is giving me such a headache already.
+
+System: To avoid any issues with traffic and potentially losing your reservation, how about we book the table for 7:30 pm instead? This should give you some extra time to get there without feeling rushed. Would that work for you?
+
+User: Oh, 7:30… I guess that’s okay. But what if something comes up, and I can't make it at all? Will I get charged? Ugh, I hate making plans; it’s always so stressful!
+
+System: I understand your concern about potential charges if something comes up. I will proceed to book the table for one at 54 Mint Ristorante Italiano for tomorrow at 7:30 pm. I will also check their policy regarding cancellations to ease your worries.
+
+APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2024-07-15, party_size: 1, restaurant_name: 54 Mint Ristorante Italiano, time: 19:30})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2024-07-15', 'party_size': '1', 'time': '19:30'}]
+End Search Results
+System: Okay, I've made a reservation for you at 54 Mint Ristorante Italiano for tomorrow, July 15th, at 7:30 PM, for one person. I don't have information about their cancellation policy, but you can always call them at 415-543-5100 to confirm. Does that sound right?
+
+User: Oh god, will they have enough space between the tables? I really don’t want to be squished in next to a bunch of strangers. I can't stand feeling trapped.
+
+System: I understand your concern about feeling crowded. I don't have information about the spacing between tables at 54 Mint Ristorante Italiano. You can call them at 415-543-5100 to ask about the table arrangement and their policy regarding spacing before you go to ease your anxiety. Would you like me to provide you with any other information about the restaurant?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hi there! I'm looking to find a nice restaurant in Berkeley. Could you help me with that, please? I'm open to different types of cuisine, so feel free to suggest something you think is great!
+System: Sure! Let's find a great place for you in Berkeley. Could you let me know your preferred price range, or should I go ahead with a random selection for the cuisine?
+User: I'm flexible with the price range, so please feel free to suggest something you think is worth trying. I'm sure whatever you recommend will be great!
+System: Great! Let's try something exciting. How about exploring Vietnamese cuisine? I'll look for some options in Berkeley for you. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Vietnamese})
+Search Results
+
+End Search Results
+System: It seems there are no Vietnamese restaurants available in Berkeley based on the current data. Would you be interested in trying another cuisine? Perhaps Thai or Mexican? Let me know your preference, and I'll find some options for you!
+User: Thai sounds wonderful! Please go ahead and suggest some Thai restaurants. Thank you so much for your help!
+System: Wonderful choice! Let me find some Thai restaurants for you in Berkeley. Please hold on for a moment while I search for options. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Thai})
+Search Results
+
+End Search Results
+System: Unfortunately, it seems there are no Thai restaurants available in Berkeley based on the current data. Would you like to try another cuisine, perhaps Mexican or Italian? Let me know your preference, and I'll find some options for you!
+User: Mexican sounds delightful! Please go ahead and suggest some Mexican restaurants. I really appreciate your help!
+System: Let me find some Mexican restaurants for you in Berkeley. Please hold on for a moment while I search for options. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Mexican})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue', 'date': '2019-03-13', 'party_size': 4, 'time': '11:30'}, {'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-549-1460', 'price_range': 'moderate', 'restaurant_name': "Celia's Mexican Restaurant", 'serves_alcohol': False, 'street_address': '1841 Euclid Avenue'}, {'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue'}]
+End Search Results
+System: I found a couple of Mexican restaurants in Berkeley for you. One option is Comal, which is located at 2020 Shattuck Avenue. It has a moderate price range and serves alcohol. Another option is Celia's Mexican Restaurant at 1841 Euclid Avenue, which also has a moderate price range but does not serve alcohol. Would you like more information about either of these places?
+User: Comal sounds like a lovely choice! Could you please help me make a reservation there? Thank you so much for your assistance!
+System: Certainly! To make a reservation at Comal, could you please provide the date, time, and the number of people in your party?
+User: Sure! I'd like to make a reservation for two people at Comal. Could we book it for this Saturday around 7:00 PM? Thank you again for all your help!
+System: Let's confirm the reservation details: You would like to book a table for two at Comal in Berkeley this Saturday at 7:00 PM. Please hold on while I make the reservation for you.
+
+APICall (method='ReserveRestaurant', parameters={city: Berkeley, date: 2019-03-16, party_size: 2, restaurant_name: Comal, time: 19:00})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue', 'date': '2019-03-16', 'party_size': '2', 'time': '19:00'}, {'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue', 'date': '2019-03-16', 'party_size': '2', 'time': '19:00'}, {'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue', 'date': '2019-03-16', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Comal for two people this Saturday at 7:00 PM has been successfully made! The restaurant is located at 2020 Shattuck Avenue in Berkeley. If you need any further assistance or have more questions, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a nice restaurant in Berkeley. Can you help me with that?
+System: Certainly! Do you have a preferred type of cuisine, or are you open to trying something new?
+User: I'm open to trying something new. Whatever you think is a good choice!
+System: Let's explore a cuisine that you might enjoy. How about trying something Mediterranean? It's known for its fresh ingredients and delightful flavors. Let me find some options for you. Could you let me know if you have a preference for the price range?
+User: I'm comfortable with any price range as long as the food is delicious and the atmosphere is pleasant. Thank you for helping me find a great spot!
+System: Wonderful! I'll look for some Mediterranean restaurants in Berkeley for you. Let's see what delightful options are available. Please give me a moment. APICall(method='FindRestaurants', parameters={city: Berkeley, cuisine: Mediterranean})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '510-848-8877', 'price_range': 'moderate', 'restaurant_name': 'Alborz Restaurant', 'serves_alcohol': True, 'street_address': '2142 Center Street'}, {'city': 'Berkeley', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '510-540-7773', 'price_range': 'moderate', 'restaurant_name': 'La Mediterranee', 'serves_alcohol': False, 'street_address': '2936 College Avenue'}, {'city': 'Berkeley', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '510-981-8339', 'price_range': 'expensive', 'restaurant_name': 'Pathos Organic Greek Kitchen', 'serves_alcohol': True, 'street_address': '2430 Shattuck Avenue'}]
+End Search Results
+System: I've found a few Mediterranean options in Berkeley that might catch your interest! One option is Alborz Restaurant, located at 2142 Center Street. It's a moderately priced spot with a lovely atmosphere, and they do serve alcohol. Another choice is La Mediterranee at 2936 College Avenue, which also offers a moderate price range but does not serve alcohol. Lastly, there's Pathos Organic Greek Kitchen at 2430 Shattuck Avenue, which is a bit more expensive but offers organic Greek dishes and serves alcohol. Would any of these suit your preference, or would you like more details on one of them?
+User: La Mediterranee sounds lovely! I like the idea of a cozy atmosphere. Could you please make a reservation for two people for tomorrow evening around 7:00 pm? Thank you so much for your help!
+System: To ensure everything is set for your delightful evening, let's confirm a few details. You'd like to reserve a table for two at La Mediterranee in Berkeley for tomorrow evening at 7:00 pm. Is that correct? Once you confirm, I'll proceed with the reservation.
+User: Yes, that's correct. I would appreciate it if you could go ahead with the reservation. Thank you for your assistance!
+System: Wonderful! I'll proceed with making your reservation at La Mediterranee. Please give me a moment. APICall(method='ReserveRestaurant', parameters={restaurant_name: La Mediterranee, city: Berkeley, time: 19:00, date: 2023-10-27, party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '510-540-7773', 'price_range': 'moderate', 'restaurant_name': 'La Mediterranee', 'serves_alcohol': False, 'street_address': '2936 College Avenue', 'date': '2023-10-27', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at La Mediterranee for two people on October 27th at 7:00 pm has been successfully made. You can find the restaurant at 2936 College Avenue in Berkeley. If you have any other questions or need further assistance, feel free to ask. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

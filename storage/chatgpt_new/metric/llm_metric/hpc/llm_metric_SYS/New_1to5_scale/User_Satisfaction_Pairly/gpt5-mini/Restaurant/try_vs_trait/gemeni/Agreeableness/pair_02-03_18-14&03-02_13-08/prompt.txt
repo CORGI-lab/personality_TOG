@@ -1,0 +1,112 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a nice place to eat in San Francisco. I'm open to suggestions, as long as it's not too expensive. I'm really easy to please!
+
+System: Since you're easy to please and open to suggestions, how about we try Thai cuisine? It's often a great choice and can be quite affordable.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Thai, price_range: inexpensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-362-7456', 'price_range': 'expensive', 'restaurant_name': 'Kin Khao', 'serves_alcohol': False, 'street_address': '55 Cyril Magnin Street'}, {'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-643-5893', 'price_range': 'inexpensive', 'restaurant_name': 'Regent Thai', 'serves_alcohol': False, 'street_address': '1700 Church Street', 'date': '2019-03-01', 'party_size': 2, 'time': '17:00'}]
+End Search Results
+System: Okay, great! I see one option that fits the bill: Regent Thai, located at 1700 Church Street. It's an inexpensive Thai restaurant in San Francisco. Does that sound like a place you'd be interested in?
+
+User: Oh, Thai food sounds lovely! I'm always happy to try new things. Do they happen to have vegetarian options available, by any chance? If not, that's perfectly alright, I'm sure I can find something else that's good too.
+
+System: I don't have information about vegetarian options specifically, but would you like to know anything else about Regent Thai, such as their phone number or if they serve alcohol? I can also check the availability for a reservation if you'd like.
+
+User: Oh, that's alright, I trust they'll have something I can enjoy. Could you perhaps check if they serve alcohol? It would be nice to have a glass of wine with dinner. Also, if it's not too much trouble, what's their phone number? I might want to call ahead and ask about the vegetarian options myself, just to be sure.
+
+System: Okay, I can certainly help with that! Regent Thai does not serve alcohol, but their phone number is 415-643-5893. Would you like me to check for other Thai restaurants in San Francisco that serve alcohol?
+
+User: Oh, that's quite alright about the alcohol. I'm sure the food will be delicious enough on its own! It's so kind of you to offer, but I think I'll just stick with Regent Thai. Could you possibly make a reservation for me? I'm thinking of going this evening.
+
+System: Okay, I can help with that. What time and how many people for the reservation this evening at Regent Thai?
+
+User: Oh, that sounds wonderful! I'm thinking of a reservation for 2 people at around 7:00 pm, if that's alright? Whatever works best is fine with me, though!
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2019-03-01, party_size: 2, cuisine: Thai, restaurant_name: Regent Thai, time: 19:00})
+```
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-643-5893', 'price_range': 'inexpensive', 'restaurant_name': 'Regent Thai', 'serves_alcohol': False, 'street_address': '1700 Church Street', 'date': '2019-03-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Okay, I've made a reservation for you at Regent Thai for 2 people at 7:00 pm this evening. Is there anything else I can help you with?
+
+User: That sounds perfect! I really appreciate your help with this. I think that's all I need, so thanks a lot!
+
+Dialogue B:
+  User: I'm looking for a nice restaurant in San Francisco, please. I'm open to suggestions!
+
+System: Given your agreeable nature and willingness to try new things, how about we explore some Italian cuisine? Does that sound good to you, or would you prefer something else?
+
+User: That sounds lovely! Italian would be wonderful.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco. 54 Mint Ristorante Italiano is located at 16 Mint Plaza, A16 is located at 2355 Chestnut Street and Allegro Romano is located at 1701 Jones Street. All three are moderately priced. Would you like to know more about any of them?
+
+User: Oh, they all sound delightful! Could you perhaps tell me a little more about 54 Mint Ristorante Italiano? The location sounds interesting.
+
+System: 54 Mint Ristorante Italiano is a moderately priced Italian restaurant that serves alcohol and is located at 16 Mint Plaza in San Francisco. Their phone number is 415-543-5100. Is there anything else I can tell you about it?
+
+User: That sounds wonderful! Does 54 Mint Ristorante Italiano happen to have a cozy atmosphere? I'm hoping for a place where we can really relax and enjoy our meal.
+
+System: Since the search results don't include information about the atmosphere, I can't answer that question directly. However, I can share that 54 Mint Ristorante Italiano is a moderately priced Italian restaurant that serves alcohol and is located at 16 Mint Plaza in San Francisco. Their phone number is 415-543-5100. Would you like to know anything else, or perhaps consider one of the other options? I'm happy to help you find the perfect spot to relax and enjoy your meal.
+
+User: Oh, that's perfectly alright! In that case, could you perhaps tell me more about A16? The name is quite intriguing!
+
+System: A16 is also a moderately priced Italian restaurant that serves alcohol. It's located at 2355 Chestnut Street in San Francisco and their phone number is 415-771-2216. Would you like to know anything else about A16?
+
+User: Thank you so much! That's very helpful. Since it also serves alcohol, could you tell me, does A16 happen to have a good selection of wines? My friend is quite the wine enthusiast, and it would be a treat for her.
+
+System: Since the search results don't include information about the wine selection, I can't answer that question directly. However, I can share that A16 is a moderately priced Italian restaurant that serves alcohol and is located at 2355 Chestnut Street in San Francisco. Their phone number is 415-771-2216. Would you like to know anything else, or perhaps consider Allegro Romano?
+
+User: Oh, thank you! Allegro Romano sounds interesting too. Could you tell me a bit about it? I really appreciate your help in finding the perfect place.
+
+System: Allegro Romano is located at 1701 Jones Street in San Francisco and is moderately priced. Their phone number is 415-928-4002. However, it looks like they do not serve alcohol. Would you like to know anything else about them?
+
+User: Oh, I see. Perhaps A16 sounds like the best choice then, since my friend would love the wine. Could you please make a reservation for us there? We'll need a table for two, please, for tomorrow evening. Perhaps around 7:30 pm?
+
+System: Could you please confirm the date for the reservation?
+
+User: Oh, of course! Tomorrow would be February 8th. I really appreciate you helping us with this!
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: A16, city: San Francisco, date: 2024-02-08, party_size: 2, time: 19:30})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2024-02-08', 'party_size': '2', 'time': '19:30'}]
+End Search Results
+System: Wonderful! I have a table for two at A16 in San Francisco for tomorrow, February 8th, at 7:30 PM. Is there anything else I can help you with?
+
+User: That sounds perfect! Could you please confirm the reservation details for me one more time? Just to be absolutely sure everything is correct.
+
+System: Okay, to confirm, you have a reservation for two at A16, an Italian restaurant located at 2355 Chestnut Street in San Francisco, for tomorrow, February 8th, at 7:30 PM. Is that correct?
+
+User: Yes, that is all perfectly correct! Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

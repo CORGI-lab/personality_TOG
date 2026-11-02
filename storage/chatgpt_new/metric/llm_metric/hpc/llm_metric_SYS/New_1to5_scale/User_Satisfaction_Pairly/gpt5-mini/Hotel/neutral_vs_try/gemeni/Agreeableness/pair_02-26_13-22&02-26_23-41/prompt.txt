@@ -1,0 +1,75 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hi! I'd like to find a hotel in San Francisco, please. I'm hoping you can help me find a nice one.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating of the hotel?
+
+User: Oh, that's a good question! I'm not too picky, but something with a decent rating would be nice. Maybe a 3-star or higher? I just want to make sure it's a comfortable and safe place to stay.
+
+System: Okay, I understand. I will search for hotels in San Francisco with a star rating of 3 or higher.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: dontcare})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Alright, I found a few options for you in San Francisco! There's the Argonaut Hotel, a 4-star hotel, with rooms starting at $408 per night. Or, there's Beck's Motor Lodge, a 2-star hotel with rooms starting at $60 per night. Does either of those sound like a good fit for what you're looking for?
+
+User: Oh, thank you so much for finding those! The Argonaut sounds lovely, but it might be a bit more than I was hoping to spend. Beck's Motor Lodge sounds more in my price range. Could you tell me a little more about it? What's the neighborhood like?
+
+System: Okay! Beck's Motor Lodge is located at 2222 Market Street, and the price per night is $60. They do not allow smoking and have a phone number of +1 415-621-8212. I don't have information about the neighborhood, but I can look for hotels with similar features if you'd like.
+
+User: Oh, thank you! That's very helpful. I appreciate you looking up the address and phone number. It's alright about the neighborhood information; I can probably look that up myself. Since it's more in my budget, could you tell me if they have rooms available for, say, a week starting next Saturday? I'd be so grateful if you could check that for me.
+
+System: Okay, I can help with that. Before I check the availability, could you please confirm the exact date you'd like to check in next Saturday, and the number of rooms you require?
+
+User: Oh, certainly! I'd like to book a room starting next Saturday, which is the 27th. I only need one room for myself. Thank you so much for your help with this.
+
+System: Okay, so you'd like to book one room at Beck's Motor Lodge in San Francisco, starting on 2024-07-27 for a week. Is that correct?
+
+User: Yes, that's absolutely correct! Thank you so much for confirming. If it's not too much trouble, could you go ahead and make that reservation for me? I really appreciate your help.
+
+System: APICall(method='ReserveHotel', parameters={place_name: "Beck'S Motor Lodge", check_in_date: 2024-07-27, stay_length: 7, number_of_rooms: 1, location: San Francisco})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-07-27'}]
+End Search Results
+System: Excellent! I have successfully reserved one room for you at Beck's Motor Lodge in San Francisco, starting on July 27th for a duration of 7 days. The phone number for the hotel is +1 415-621-8212. Is there anything else I can assist you with today?
+
+User: That's wonderful news! Thank you so much for taking care of the reservation for me. I truly appreciate your help and patience. No, I think that's all I need for now. You've been so kind and efficient!
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hi! I'm looking to book a hotel in San Francisco. Could you possibly help me with that? I'm open to suggestions!
+
+System: Okay, I can help with that! Do you have any preferences on star rating, or smoking allowance for the hotel?
+
+User: Oh, thank you so much! I appreciate your help. I don't have any strong preferences, really. Maybe something with a decent star rating, perhaps a 3 or 4? And non-smoking would be great, if possible.
+
+System: Okay, searching for a hotel in San Francisco with 3 or 4 stars and non-smoking rooms.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, smoking_allowed: False, star_rating: [3, 4] })
+
+<Failed Dialog>
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,103 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a restaurant in San Francisco. And it better be good.
+
+System: What type of cuisine would you prefer?
+
+User: I don't care about "cuisine." Just find me something expensive.
+
+System: Okay, I will find you an expensive restaurant in San Francisco. Is there any specific cuisine you would prefer, or are you open to any type?
+
+User: Anything but Italian. I'm sick of that garbage.
+
+System: Okay, I will find an expensive restaurant in San Francisco that is not Italian. Since you're open to other cuisines, how about American?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, price_range: expensive, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: I found three expensive American restaurants in San Francisco: 1760, 25 Lusk, and 3rd Cousin. 1760 is located at 1760 Polk Street, phone number 415-359-1212 and does not serve alcohol. 25 Lusk is located at 25 Lusk Street, phone number 415-495-5875 and serves alcohol. 3rd Cousin is located at 919 Cortland Avenue, phone number 415-814-3709 and does not serve alcohol.
+
+User: 25 Lusk, huh? Serves alcohol? Fine. Book it. Tomorrow night. Eight people. 8 PM sharp. And it better be a good table.
+
+System: OK. To confirm, you want me to reserve a table for 8 people at 25 Lusk in San Francisco for tomorrow, is that correct? What date would that be?
+
+User: What's the point of confirming? Just book it for tomorrow, whatever the date is. It's for 8 people at 8 PM. Get it done.
+
+System: Okay, I will book a table for 8 people at 25 Lusk for 8 PM tomorrow. Could you provide the date for the reservation?
+
+User: Ugh, fine. It's October 26th. Now hurry up and book it.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: 25 Lusk, city: San Francisco, date: 2019-10-26, party_size: 8, time: 8:00 PM})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'dontcare', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street', 'date': '2019-10-26', 'party_size': '8', 'time': '8:00 PM'}]
+End Search Results
+System: OK. I have booked a table for 8 people at 25 Lusk for tomorrow, October 26th at 8:00 PM. Their phone number is 415-495-5875. Is there anything else?
+
+User: I don't need their stupid phone number. Just tell me if the booking is actually confirmed or if you're wasting my time.
+
+System: OK. Your booking has been confirmed for 8 people at 25 Lusk on October 26th at 8:00 PM.
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a restaurant in San Francisco. Don't waste my time with garbage suggestions.
+
+System: Given your directness, I'll get straight to the point. What type of cuisine are you looking for in San Francisco?
+
+User: I don't care about the cuisine, just give me something expensive. I want to impress someone, and cheap food won't cut it.
+
+System: Since you want to impress someone, let's go with French cuisine. Does that sound good?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: French, price_range: expensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-202-0100', 'price_range': 'expensive', 'restaurant_name': 'Bistro Aix', 'serves_alcohol': False, 'street_address': '3340 Steiner Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-931-7272', 'price_range': 'expensive', 'restaurant_name': 'Bistro Central Parc', 'serves_alcohol': False, 'street_address': '560 Central Avenue'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-981-5565', 'price_range': 'expensive', 'restaurant_name': 'Cafe Jacqueline', 'serves_alcohol': False, 'street_address': '1454 Grant Avenue'}]
+End Search Results
+System: Alright, I see three expensive French restaurants in San Francisco: Bistro Aix, Bistro Central Parc, and Cafe Jacqueline. Do any of those names stand out to you?
+
+User: Cafe Jacqueline. Now, can I actually get a reservation there, or are you just going to list places I can't get into? I need it for tomorrow night.
+
+System: What time tomorrow night would you like to reserve a table at Cafe Jacqueline? I'll need to know the time and how many people will be in your party.
+
+User: 8 PM. Two people. And make sure it's a good table. I don't want to be stuck near the kitchen.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Cafe Jacqueline, city: San Francisco, date: 2019-03-02, time: 20:00, party_size: 2})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-981-5565', 'price_range': 'expensive', 'restaurant_name': 'Cafe Jacqueline', 'serves_alcohol': False, 'street_address': '1454 Grant Avenue', 'date': '2019-03-02', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: OK. I've booked a table for two at Cafe Jacqueline for tomorrow, March 2nd, at 8 PM. Just so we're clear, Cafe Jacqueline is located at 1454 Grant Avenue in San Francisco. Is that correct?
+
+User: Fine. Just confirm that the booking is under my name and that it's non-refundable. I don't want any surprises.
+
+System: I can confirm the booking details, but I do not have the ability to specify that the booking is non-refundable or under your name. However, I can give you the phone number, 415-981-5565, so you can confirm those details directly with the restaurant.
+
+User: Give me the phone number now. I want to confirm everything before I waste my time going there.
+
+System: As I mentioned before, the phone number for Cafe Jacqueline is 415-981-5565.
+
+User: Fine. Whatever. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

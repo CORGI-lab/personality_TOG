@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel in Vancouver. Could you help me find one?
+System: Do you have any specific preferences for the star rating of the hotel, or any particular features you're looking for, like smoking allowance or number of rooms?
+User: I prefer a hotel with at least a 4-star rating. Smoking allowance is not important to me, but I'd like to know if there are any quiet locations available.
+System: Let's start by looking for hotels in Vancouver with at least a 4-star rating. I'll proceed with the search and see if I can find some quiet locations for you. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}]
+End Search Results
+System: I found a few options for 4-star hotels in Vancouver. Here are some choices:
+
+1. **Auberge Vancouver Hotel**: Located at 837 West Hastings Street, with a price of $296 per night. It offers smoking rooms.
+
+2. **Coast Coal Harbour Vancouver Hotel By Apa**: This is situated at 1180 West Hastings Street, with a nightly rate of $108. Smoking is not allowed here.
+
+3. **Delta Hotels By Marriott Vancouver Downtown Suites**: Situated at 550 West Hastings Street, it costs $324 per night, and smoking is not permitted.
+
+Please let me know if any of these options suit you or if you would like more information.
+User: The Coast Coal Harbour Vancouver Hotel By Apa sounds appealing, especially since it's non-smoking, which suits my preference. Could you provide more details about its amenities or any quiet features it might have?
+System: Unfortunately, the search results do not provide specific information about the amenities or quiet features of the Coast Coal Harbour Vancouver Hotel By Apa. However, if the non-smoking environment aligns with your preference, it might be a good choice. Would you like to proceed with booking this hotel, or is there anything else you would like to know?
+User: Yes, I'd like to proceed with booking the Coast Coal Harbour Vancouver Hotel By Apa. I will need a reservation for one room starting from the 10th of this month for a duration of five nights.
+System: Please confirm the details: You'd like to book one room at the Coast Coal Harbour Vancouver Hotel By Apa starting from the 10th of this month for five nights in Vancouver. Is that correct?
+User: Yes, that's correct. Please go ahead and make the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-10, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your reservation at the Coast Coal Harbour Vancouver Hotel By Apa has been successfully confirmed. You'll have one room starting from the 10th of this month for five nights. If you need any further assistance or have more questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in Vancouver, please.
+System: Do you have any preference for the star rating of the hotel, or should I select one for you?
+User: I'm open to options, but I generally prefer something around 4 stars. Could you show me what you find?
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}]
+End Search Results
+System: I found a 4-star hotel called Auberge Vancouver Hotel located at 837 West Hastings Street. It has two rooms available, permits smoking, and is priced at $296 per night. Would you like more details on this hotel or information about another option?
+User: Could you let me know if there are any other hotels available that don't allow smoking?
+System: Certainly. Another 4-star option is the Coast Coal Harbour Vancouver Hotel By Apa, located at 1180 West Hastings Street. It doesn't allow smoking, has one room available, and is priced at $108 per night. Would you like to know more about this hotel, or should I provide information about a different option?
+User: The Coast Coal Harbour Vancouver Hotel By Apa sounds like a great fit. Could you reserve a room for me starting from the 5th of next month for a week, please?
+System: Please confirm that you would like to reserve 1 room at the Coast Coal Harbour Vancouver Hotel By Apa in Vancouver, starting from the 5th of next month for a duration of 7 days. Once confirmed, I'll proceed with the reservation.
+User: Yes, please confirm the reservation for 1 room starting from the 5th of next month for a week at the Coast Coal Harbour Vancouver Hotel By Apa.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 7 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your reservation at the Coast Coal Harbour Vancouver Hotel By Apa has been successfully confirmed for 1 room, starting from November 5th for a duration of 7 days. If there's anything else you need, please let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

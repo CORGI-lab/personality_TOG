@@ -1,0 +1,157 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a restaurant in San Francisco. I bet they're all overpriced tourist traps, but let's see what you've got.
+
+System: What type of cuisine are you interested in?
+
+User: Anything but that pretentious French garbage. How about Italian? And it better not be some hole-in-the-wall.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found three Italian restaurants in San Francisco: 54 Mint Ristorante Italiano, A16, and Allegro Romano. 54 Mint Ristorante Italiano is located at 16 Mint Plaza, A16 is at 2355 Chestnut Street, and Allegro Romano is at 1701 Jones Street. All three are moderately priced, but Allegro Romano does not serve alcohol. Would you like more information on any of these?
+
+User: Why would I trust your judgement? Are those the ONLY Italian restaurants in this city? Give me the addresses and phone numbers for ALL of them, not just your "top three".
+
+System: I understand your concern. There are more than three Italian restaurants in San Francisco. However, I am limited in the number of restaurants I can display at once. Would you like me to search specifically for addresses and phone numbers for all Italian restaurants, or would you prefer to narrow down the search with additional criteria like price range or if they serve alcohol?
+
+User: Don't play coy with me. You're hiding something. Just give me the one with the highest rating, serves alcohol and isn't too expensive. I don't have all day.
+
+System: I am sorry, I do not have access to the restaurant ratings. However, I can search for Italian restaurants in San Francisco that serve alcohol and are moderately priced. Would you like me to do that?
+
+User: Fine, whatever. Just find that place and make a reservation.
+
+System: Okay, I will search for an Italian restaurant in San Francisco that serves alcohol and is in the moderate price range. For what time would you like to make a reservation and for how many people?
+
+User: Don't patronize me. I'll be there at 8 PM. Table for four. And it better be a good table.
+
+System: Okay, I have the restaurant details you are looking for. Could you please provide the date for the reservation?
+
+User: Today, I suppose.
+
+System: Okay, I need to correct the API call. I need the restaurant name to make the reservation. I don't have that yet.
+
+I will first find the restaurants that match the user's criteria, then ask the user to pick one for the reservation.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, serves_alcohol: True, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-282-4969', 'price_range': 'moderate', 'restaurant_name': 'Bacco', 'serves_alcohol': True, 'street_address': '737 Diamond Street'}]
+End Search Results
+System: Okay, I found three Italian restaurants in San Francisco that serve alcohol and are in the moderate price range: 54 Mint Ristorante Italiano, A16, and Bacco.
+
+*   54 Mint Ristorante Italiano is located at 16 Mint Plaza and their phone number is 415-543-5100.
+*   A16 is located at 2355 Chestnut Street and their phone number is 415-771-2216.
+*   Bacco is located at 737 Diamond Street and their phone number is 415-282-4969.
+
+Which of these restaurants would you like to book for today at 8 PM for a party of four?
+
+User: None of those sound particularly appealing. Is Bacco the least likely to be filled with tourists? Book it, but if it's a dump, I'm blaming you.
+
+System: ```system
+Okay, I will book a table for four at Bacco for today at 8 PM. Is that correct?
+```
+User: Yeah, yeah, just do it. And confirm it's not some back alley dive when you're done.
+
+System: ```system
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Bacco, city: San Francisco, date: 2019-03-01, time: 20:00, party_size: 4})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-282-4969', 'price_range': 'moderate', 'restaurant_name': 'Bacco', 'serves_alcohol': True, 'street_address': '737 Diamond Street', 'date': '2019-03-01', 'party_size': '4', 'time': '20:00'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-955-1919', 'price_range': 'moderate', 'restaurant_name': 'Barbacco', 'serves_alcohol': False, 'street_address': '220 California Street', 'date': '2019-03-01', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: OK. The reservation at Bacco for today at 8 PM for a party of four has been made. The restaurant is located at 737 Diamond Street and their phone number is 415-282-4969.
+
+Is there anything else I can help you with?
+
+User: Yeah, whatever. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a restaurant in San Francisco. And it better be good.
+
+System: Given your enthusiasm, finding a great restaurant in San Francisco should be fun! Do you have a particular type of cuisine in mind, or are you open to suggestions?
+
+User: Open to suggestions? Please. Just find me the most expensive place you can. I want to see what kind of garbage they're serving for that price.
+
+System: Since you're open to suggestions and aiming for the most expensive experience, how about French cuisine? They often have very high prices.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: French, price_range: very expensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-202-0100', 'price_range': 'expensive', 'restaurant_name': 'Bistro Aix', 'serves_alcohol': False, 'street_address': '3340 Steiner Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-931-7272', 'price_range': 'expensive', 'restaurant_name': 'Bistro Central Parc', 'serves_alcohol': False, 'street_address': '560 Central Avenue'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-981-5565', 'price_range': 'expensive', 'restaurant_name': 'Cafe Jacqueline', 'serves_alcohol': False, 'street_address': '1454 Grant Avenue'}]
+End Search Results
+System: Bistro Aix, Bistro Central Parc, and Cafe Jacqueline are a few options. They're all French and expensive, though not "very expensive." Want to know more about them?
+
+User: French? Ugh. Find me something else. I want American cuisine, and it better be worth the exorbitant price.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: very expensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Alright, I see 1760, 25 Lusk, and 3rd Cousin. They all serve American cuisine and are on the pricier side, though still expensive and not very expensive. Do any of those names pique your interest, or should I keep digging?
+
+User: Keep digging. Those names sound like something a tourist would pick. I want something exclusive, something no one else knows about. And it better have good reviews, or I'll be back to complain.
+
+System: Since you're looking for something exclusive and very expensive, I'll search specifically for highly-regarded restaurants with American cuisine in San Francisco.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: very expensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: It seems we're having trouble finding something that's both "very expensive" and meets your standards for exclusivity. The most expensive American restaurants in San Francisco I'm seeing are 1760, 25 Lusk, and 3rd Cousin, but they are listed as expensive and not very expensive. Would you like to know more about them?
+
+User: Fine, tell me about 25 Lusk. But if it's not up to par, I'm holding you responsible.
+
+System: Alright, 25 Lusk it is! It's an American restaurant in San Francisco, with an expensive price range. They also serve alcohol. Sound interesting so far?
+
+User: Does it have a rooftop? Because if I'm paying that much, I expect a view.
+
+System: I am sorry, but I do not have the rooftop information. However, I can tell you that it is located at 25 Lusk Street. Would you like to know anything else about 25 Lusk?
+
+User: Fine. Book a reservation for me there. Tomorrow night, 8 PM. Four people. And make sure we get a good table, or there will be hell to pay.
+
+System: Understood. To confirm, you'd like a reservation for four people at 25 Lusk in San Francisco tomorrow, March 2nd, at 8 PM. Can I proceed with this information?
+
+User: Proceed. And don't screw it up.
+
+System: APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2019-03-02, party_size: 4, restaurant_name: 25 Lusk, time: 20:00, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street', 'date': '2019-03-02', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Excellent, your reservation at 25 Lusk is confirmed for tomorrow, March 2nd, at 8 PM for a party of four. I trust you'll have a memorable, and hopefully complaint-free, dining experience. Is there anything else I can assist you with?
+
+User: Is there parking available? And don't tell me about some valet service that costs more than my car. I want to know if there's actual, decent parking nearby.
+
+System: I do not have parking information, but I can provide their phone number, 415-495-5875, and street address, 25 Lusk Street, so you can check for parking options. Would you like anything else?
+
+User: Give me that number. I'll call them myself.
+
+System: As you wish. The number for 25 Lusk is 415-495-5875. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

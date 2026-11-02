@@ -1,0 +1,130 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. Make it quick; I don't have all day.
+System: What type of cuisine are you interested in for the restaurant in San Francisco? If you're open to suggestions, I can recommend something for you.
+User: I don't need your suggestions. I want a steakhouse, and it better be top-notch.
+System: Great! Let me find a top-notch steakhouse in San Francisco for you. Please hold on for a moment while I make an API call. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Steakhouse})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-989-2539', 'price_range': 'expensive', 'restaurant_name': '5a5 Steak Lounge', 'serves_alcohol': True, 'street_address': '244 Jackson Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-495-1111', 'price_range': 'very expensive', 'restaurant_name': "Alexander's Steakhouse", 'serves_alcohol': True, 'street_address': '448 Brannan Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-397-3003', 'price_range': 'very expensive', 'restaurant_name': 'Bourbon Steak Restaurant', 'serves_alcohol': True, 'street_address': '335 Powell Street'}]
+End Search Results
+System: Based on your request for a top-notch steakhouse in San Francisco, here are a couple of options: 
+
+1. **5a5 Steak Lounge** - It's an expensive choice located at 244 Jackson Street. They do serve alcohol, but there's no live music.
+
+2. **Alexander's Steakhouse** - This is a very expensive option situated at 448 Brannan Street. They also serve alcohol, but no live music.
+
+3. **Bourbon Steak Restaurant** - Another very expensive option, found at 335 Powell Street, offering alcohol but without live music.
+
+Please let me know which one you'd like more information about or if you need their contact details.
+User: Why are all the options so expensive? I want a top-notch steakhouse, but I'm not trying to spend a fortune. Find me something high quality but less pricey.
+System: I understand your concern. Let me search for a high-quality steakhouse in San Francisco that offers a more moderate price range. Please hold on for a moment while I make another API call. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Steakhouse, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-616-5000', 'price_range': 'moderate', 'restaurant_name': 'Daily Grill', 'serves_alcohol': True, 'street_address': '347 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-775-4877', 'price_range': 'moderate', 'restaurant_name': "Original Joe's", 'serves_alcohol': True, 'street_address': '601 Union Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-673-6672', 'price_range': 'moderate', 'restaurant_name': 'Leatherneck Steakhouse', 'serves_alcohol': False, 'street_address': '609 Sutter Street'}]
+End Search Results
+System: I've found some high-quality steakhouses in San Francisco with a more moderate price range:
+
+1. **Daily Grill** - Located at 347 Geary Street, they serve alcohol but don't feature live music.
+
+2. **Original Joe's** - Situated at 601 Union Street, this restaurant also serves alcohol with no live music.
+
+3. **Leatherneck Steakhouse** - Found at 609 Sutter Street, they don't serve alcohol, and there's no live music.
+
+Please let me know if you need more details or contact information for any of these options.
+User: What's the point of a steakhouse if they don't serve alcohol like the Leatherneck Steakhouse? I'll consider the Daily Grill. Reserve a table for me there.
+System: What date and time would you like the reservation to be made for at Daily Grill? Additionally, how many people will be in your party?
+User: For tomorrow at 7:00 PM, and make it for four people. I'm expecting top-notch service, so they'd better not disappoint.
+System: Thank you for the details. Let me confirm your reservation for four people at Daily Grill in San Francisco. The reservation will be for tomorrow at 7:00 PM. Please hold on for a moment while I make the reservation. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Daily Grill', city: 'San Francisco', date: '2023-10-16', time: '19:00', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-616-5000', 'price_range': 'moderate', 'restaurant_name': 'Daily Grill', 'serves_alcohol': True, 'street_address': '347 Geary Street', 'date': '2023-10-16', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Daily Grill in San Francisco has been successfully made for four people tomorrow at 7:00 PM. The restaurant is located at 347 Geary Street, and they do serve alcohol. If you need any further assistance or details, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. I want something upscale and exclusive, maybe a place that not everyone can just waltz into. What do you have?
+System: To find the perfect upscale and exclusive restaurant, can you specify the type of cuisine you're interested in? If you're open to any cuisine, I can select one for you.
+User: I'm not interested in your random picks. Just find me a place that serves contemporary American cuisine and make sure it's not crawling with the usual crowd.
+System: I understand you're looking for a contemporary American restaurant in San Francisco with an upscale vibe. Let me find the perfect spot that aligns with your preferences. One moment, please. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Contemporary})
+Search Results
+
+End Search Results
+System: Unfortunately, there are no contemporary American restaurants in San Francisco that fit your upscale criteria at the moment. Would you like me to search for a different cuisine or adjust your price range preference to see if we can find a suitable alternative?
+User: Let's try another city, then. How about Palo Alto? Find me a contemporary American restaurant there that's exclusive and worth my time.
+System: I understand you're seeking an exclusive contemporary American restaurant in Palo Alto. Let me find the right spot for you. One moment, please.
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Contemporary})
+Search Results
+
+End Search Results
+System: It seems there are no contemporary American restaurants in Palo Alto that match your exclusive criteria. Would you like to explore a different cuisine or perhaps consider a nearby area? Your preferences are my priority, so let me know how you'd like to proceed.
+User: Fine, let's try Los Gatos. It's got to be contemporary American, upscale, and exclusive. Don't waste my time with anything less.
+System: Let me find a contemporary American restaurant in Los Gatos that meets your high standards. Please hold on for a moment while I search for the best option available.
+
+APICall (method='FindRestaurants', parameters={city: Los Gatos, cuisine: Contemporary})
+Search Results
+
+End Search Results
+System: It looks like there aren't any contemporary American restaurants in Los Gatos that meet your upscale and exclusive criteria at the moment. Perhaps we could try expanding the search to a nearby city or consider a similar cuisine that might offer what you're looking for. Let me know how you'd like to proceed.
+User: Why is this so hard? Try Mountain View. I still want contemporary American, and it better be upscale and exclusive.
+System: I understand your desire for an upscale and exclusive contemporary American restaurant in Mountain View. Let me search for a suitable option that matches your criteria. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Mountain View, cuisine: Contemporary})
+Search Results
+
+End Search Results
+System: Unfortunately, there are no contemporary American restaurants in Mountain View that meet your upscale and exclusive criteria. Would you like to adjust your search by considering another cuisine or perhaps a nearby city? Let me know how you'd like to proceed, and I'll make it a priority to find something that suits your expectations.
+User: You know what, forget it. Just find me the best steakhouse in San Francisco instead. It better be top-tier and not some run-of-the-mill place.
+System: Let me search for a top-tier steakhouse in San Francisco that meets your exclusive and upscale expectations. Please give me a moment to find the best option available for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Steakhouse})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-989-2539', 'price_range': 'expensive', 'restaurant_name': '5a5 Steak Lounge', 'serves_alcohol': True, 'street_address': '244 Jackson Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-495-1111', 'price_range': 'very expensive', 'restaurant_name': "Alexander's Steakhouse", 'serves_alcohol': True, 'street_address': '448 Brannan Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-397-3003', 'price_range': 'very expensive', 'restaurant_name': 'Bourbon Steak Restaurant', 'serves_alcohol': True, 'street_address': '335 Powell Street'}]
+End Search Results
+System: I found a few top-tier steakhouses in San Francisco that match your upscale and exclusive expectations. Here are some options:
+
+1. **5a5 Steak Lounge**: Located at 244 Jackson Street, it's an expensive steakhouse with a refined atmosphere. They do serve alcohol, but there's no live music.
+
+2. **Alexander's Steakhouse**: Situated at 448 Brannan Street, this venue is very expensive and offers a premium dining experience. Alcohol is served, but there is no live music.
+
+3. **Bourbon Steak Restaurant**: Found at 335 Powell Street, this very expensive option ensures a luxurious dining experience. They serve alcohol, but don't have live music.
+
+Would you like more details about any of these options, or is there a specific one you'd like to choose?
+User: Alexander's Steakhouse sounds like it might be worth my time. Make a reservation for two people at 8:00 PM this Friday.
+System: To confirm the reservation at Alexander's Steakhouse in San Francisco, I need to know the date you have in mind for this Friday. Could you please provide that information so I can proceed with your reservation request?
+User: This Friday is October 13th. Make sure it's for two people at 8:00 PM.
+System: Thank you for providing the date. I will proceed to make a reservation for two people at Alexander's Steakhouse in San Francisco on October 13th at 8:00 PM. Please hold on for a moment while I confirm your booking.
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, restaurant_name: "Alexander's Steakhouse", date: 2023-10-13, time: 20:00, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-495-1111', 'price_range': 'very expensive', 'restaurant_name': "Alexander's Steakhouse", 'serves_alcohol': True, 'street_address': '448 Brannan Street', 'date': '2023-10-13', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,115 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I need to find a hotel in, uh, let's say... New York. Any suggestions? I haven't really thought about what I want.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: Smoking allowed, I guess? Doesn't really matter, does it?
+
+System: Okay, let's see what's available in New York.
+
+APICall(method='SearchHotel', parameters={ location: New York, smoking_allowed: dontcare, star_rating: dontcare })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: Okay, I found a few hotels in New York. 11 Howard and Adria Hotel & Conference Center both have 3 stars and allow smoking. Aloft Harlem is also a 3-star hotel, but smoking is not allowed. Do either of those sound good?
+
+User: Eh, just give me the cheapest one that allows smoking. Star rating? Whatever.
+
+System: Okay, the cheapest hotel that allows smoking is the Adria Hotel & Conference Center at $234 per night. Would you like more details on this hotel?
+
+User: Yeah, sure, whatever. Tell me about it.
+
+System: The Adria Hotel & Conference Center is a 3-star hotel located at 221-17 Northern Boulevard, Bayside, New York. The phone number is +1 718-631-5900 and they allow smoking. Is there anything else you would like to know?
+
+User: Sounds... fine. Can we just book it? I don't remember what date... uh... tomorrow? For... I don't know, 3 days? Is that enough?
+
+System: Okay, I can help you book the Adria Hotel & Conference Center. Just to confirm, you want to book it for 3 days starting tomorrow? What date will that be? Also, how many rooms will you need?
+
+User: Ugh, yeah, tomorrow, three days, one room. Just... get it done, I guess. Whatever the date is, just book it.
+
+System: Okay, let me book 1 room at the Adria Hotel & Conference Center for 3 days starting tomorrow. Could you please confirm the exact date you'd like the booking to begin?
+
+User: Whatever, just pick a date. The closest one, I guess? Just make sure it's booked.
+
+System: Okay, let's book it for tomorrow, which is 2024-03-29. So, to confirm, you want to book 1 room at the Adria Hotel & Conference Center in New York for 3 days starting on 2024-03-29?
+
+User: Yeah, yeah, just book it already. Whatever.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-29, location: New York, number_of_rooms: 1, place_name: Adria Hotel & Conference Center, stay_length: 3 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside', 'check_in_date': '2024-03-29'}]
+End Search Results
+System: Okay, your booking at the Adria Hotel & Conference Center for 1 room, starting on 2024-03-29 for 3 days has been confirmed.
+
+User: Cool, cool. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, wanna find a hotel in, uh, Vegas, I guess? Somewhere fun, maybe?
+
+System: Okay, I can help with that. To find the perfect hotel in Las Vegas, do you have any preferences on the star rating or smoking allowance?
+
+User: Smoking allowed, definitely. Star rating? Eh, doesn't really matter, whatever's cheapest, I suppose.
+
+System: Okay, searching for hotels in Las Vegas that allow smoking, with no preference on the star rating.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: True, star_rating: dontcare })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court'}]
+End Search Results
+System: Alright, I found a few options in Las Vegas that allow smoking. There's the Budget Suites Of America, a 1-star hotel at $44 a night, the Hampton Inn Las Vegas/Summerlin, a 3-star hotel at $279 a night, and La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, a 2-star hotel at $72 a night. Given you're looking for the cheapest option, Budget Suites Of America seems like the best fit. Does that sound good to you?
+
+User: Yeah, Budget Suites, that's cool. Just book it, I guess. Don't really care about the details.
+
+System: Okay, to book the Budget Suites Of America, I'll need a bit more information. What date would you like to check in, and how many nights will you be staying?
+
+User: Uh, check in... whenever, I guess. Let's say tomorrow? And, like, two nights? Or three? Whatever. Just pick something.
+
+System: Alright, so we're looking at checking you in tomorrow for a couple of nights at Budget Suites Of America in Las Vegas. To confirm, could you please provide the exact check-in date? Also, is it two or three nights you'd prefer? Just need to be sure before I finalize the booking.
+
+User: Ugh, two nights. Just do two nights, whatever the date is tomorrow. Can we just get this over with?
+
+System: Okay, I understand. So, two nights starting tomorrow at Budget Suites Of America in Las Vegas. To proceed with the booking, I need the exact check-in date. Could you please provide the year, month, and day you'd like to check in?
+
+User: Ugh, fine. Whatever the date is tomorrow, just make it for that. I don't know, is it 2024? Just put that in, I guess.
+
+System: Okay, to book two nights starting tomorrow, which will be November 22, 2024, at Budget Suites Of America in Las Vegas, I just need one more confirmation. How many rooms will you need for your stay?
+
+User: Rooms? Uh, one, I guess. Or two? Doesn't matter. Just one, yeah, one room.
+
+System: Okay, one room it is. Just to be absolutely sure, you want to book one room at Budget Suites Of America in Las Vegas, checking in on November 22, 2024, for two nights. Is that correct?
+
+User: Yeah, sounds right. Just book it already.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-11-22, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 2 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2024-11-22'}]
+End Search Results
+System: Alright, your booking at Budget Suites Of America in Las Vegas is confirmed! One room, check-in on November 22, 2024, for two nights. Just to be sure, the phone number for the hotel is +1 702-638-1800 and the address is 2219 North Rancho Drive. Is there anything else you need, or are we finally done here?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

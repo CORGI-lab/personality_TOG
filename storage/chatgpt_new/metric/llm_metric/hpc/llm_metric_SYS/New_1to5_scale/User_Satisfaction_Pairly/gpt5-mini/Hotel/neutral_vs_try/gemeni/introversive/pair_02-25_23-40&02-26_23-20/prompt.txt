@@ -1,0 +1,114 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: No smoking, please.
+
+System: Okay, I will search for hotels in Vancouver with no smoking allowed. Do you have any preferences for the star rating?
+
+User: Maybe a three-star hotel is okay.
+
+System: Okay, I will search for a three-star hotel in Vancouver with no smoking allowed. How many rooms do you need?
+
+User: Just one room.
+
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False, star_rating: 3, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found three hotels that match your criteria: Atrium Inn Vancouver, Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., and Best Western Plus Sands. Would you like to know more about any of these?
+
+User: Perhaps the Atrium Inn Vancouver.
+
+System: Okay, the Atrium Inn Vancouver has rooms available. It's located at 2889 East Hastings Street, and the phone number is +1 604-254-1000. The price per night is $228. Would you like to reserve a room there?
+
+User: Yes, please. I'd like to book a room.
+
+System: Okay, let me check the availability. What date would you like to check in, and how many days will you be staying?
+
+User: I would like to check in on the 27th and stay for two nights.
+
+System: What year would you like to check in?
+
+User: This year.
+
+System: Okay, so you want to book one room at the Atrium Inn Vancouver, checking in on October 27, 2024, for two nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ place_name: Atrium Inn Vancouver, location: Vancouver, check_in_date: 2024-10-27, stay_length: 2, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Okay, great. I have reserved one room for you at the Atrium Inn Vancouver, checking in on October 27, 2024, for two nights. The phone number is +1 604-254-1000. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really. Just something quiet.
+
+System: Okay, I understand. Since you prefer a quiet place and have no preference for the star rating, I will look for a hotel in San Francisco. 
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: dontcare })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Alright, I found a few options in San Francisco. There's the Amsterdam Hostel San Francisco, a 1-star hotel, with rooms starting at $24 per night. Then there's the Argonaut Hotel, a 4-star hotel, with rooms starting at $408 per night. Lastly, there's Beck's Motor Lodge, a 2-star hotel, where rooms are $60 per night. All of them do not allow smoking. Which of these sounds most appealing to you?
+
+User: The Beck's Motor Lodge sounds…okay. What's the exact address?
+
+System: Okay, Beck's Motor Lodge is located at 2222 Market Street. Is there anything else I can help you with regarding this hotel?
+
+User: No, that's fine. Just... book it.
+
+System: Okay, I can help you with that. To book a room at Beck's Motor Lodge, I'll need to know the check-in date and how many nights you'll be staying. Could you provide me with that information?
+
+User: Tomorrow, for one night.
+
+System: Alright, one night starting tomorrow at Beck's Motor Lodge. And how many rooms will you need?
+
+User: Just one.
+
+System: Okay, just to confirm, you'd like to book one room at Beck's Motor Lodge in San Francisco for one night, starting tomorrow. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-04-01, location: San Francisco, number_of_rooms: 1, place_name: "Beck'S Motor Lodge", stay_length: 1 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-04-01'}]
+End Search Results
+System: Excellent! I've booked one room at Beck's Motor Lodge for you, checking in tomorrow, April 1st, for one night. The address is 2222 Market Street. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

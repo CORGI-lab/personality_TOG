@@ -1,0 +1,137 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: No preference on smoking. What are the options for star ratings?
+
+System: Okay, I will search for hotels in San Francisco with any star rating.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, smoking_allowed: dontcare, star_rating: dontcare })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found three hotels in San Francisco. There is Amsterdam Hostel San Francisco with 1 star, Argonaut Hotel with 4 stars, and Beck'S Motor Lodge with 2 stars.
+
+User: Just list them.
+
+System: Okay, here's the list of hotels I found in San Francisco:
+
+*   Amsterdam Hostel San Francisco: 1 star, price per night is $24, phone number is +1 415-673-3277, located at 749 Taylor Street. Smoking is not allowed.
+*   Argonaut Hotel: 4 stars, price per night is $408, phone number is +1 415-563-0800, located at 495 Jefferson Street. Smoking is not allowed.
+*   Beck'S Motor Lodge: 2 stars, price per night is $60, phone number is +1 415-621-8212, located at 2222 Market Street. Smoking is not allowed.
+
+Would you like more details on any of these, or are you looking for something specific in terms of price, location or amenities?
+
+User: The 2-star one sounds… acceptable.
+
+System: Okay, so you're interested in Beck'S Motor Lodge. Do you want to know more about it, or are you interested in booking a room? If you want to book, please provide me with the check-in date and the number of nights you want to stay.
+
+User: I'd like to book a room. Check-in is for the 10th, for two nights.
+
+System: How many rooms would you like to reserve?
+
+User: Just one room, please.
+
+System: Okay, let me confirm: You'd like to book 1 room at Beck'S Motor Lodge in San Francisco, checking in on the 10th for 2 nights. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-10, location: San Francisco, number_of_rooms: 1, place_name: Beck'S Motor Lodge, stay_length: 2 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-07-10'}]
+End Search Results
+System: Excellent! I have reserved one room for you at Beck'S Motor Lodge in San Francisco, checking in on July 10th for 2 nights. The price is $60 per night. Is there anything else I can help you with?
+
+User: No, thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for the hotel's star rating?
+
+User: No, not really. Just something... quiet.
+
+System: Okay. APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: Okay. I have searched for 5 star hotels in San Francisco.
+
+service_result_1: []
+Since there weren't any 5-star hotels available, would you prefer I search for hotels with a different star rating?
+
+User: Yes, please. Something with fewer stars.
+
+System: Okay. APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: Okay. I found three 3-star hotels in San Francisco: Bei Hotel San Francisco, Beresford Arms Hotel, and Chancellor Hotel On Union Square. Would you like to know more about any of them?
+
+User: Just... the first one. Bei Hotel.
+
+System: Okay. Bei Hotel San Francisco has 3 rooms, the phone number is +1 415-626-6103, the price per night is $351, smoking is allowed, and the street address is 50 8th Street. Does that sound suitable?
+
+User: Okay. Is there anything quieter?
+
+System: I can search for hotels that don't allow smoking, as that might make it quieter. Would you like me to do that?
+
+User: Yes, please.
+
+System: Okay. APICall(method='SearchHotel', parameters={ location: San Francisco, smoking_allowed: False, star_rating: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-421-3154', 'place_name': 'Cornell Hotel De France', 'price_per_night': 306, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '715 Bush Street'}]
+End Search Results
+System: Okay. I found three 3-star hotels in San Francisco that don't allow smoking: Beresford Arms Hotel, Chancellor Hotel On Union Square, and Cornell Hotel De France. Would you like some more information about any of them?
+
+User: The last one, Cornell Hotel De France.
+
+System: Okay. Cornell Hotel De France has 3 rooms, the phone number is +1 415-421-3154, the price per night is $306, smoking is not allowed, and the street address is 715 Bush Street. Is this acceptable?
+
+User: That sounds... okay. Can I reserve it for one night, starting tomorrow?
+
+System: Okay. I'll just need a little more information. Could you please provide the full date for tomorrow's check-in? Also, what name would you like the reservation to be under?
+
+User: Just my name is fine. Check-in date is August 20, 2024.
+
+System: Okay. So, to confirm, you'd like to reserve one room at the Cornell Hotel De France in San Francisco for one night, checking in on August 20, 2024, under your name. Is that correct?
+
+User: Yes, that's correct.
+
+System: Okay. APICall(method='ReserveHotel', parameters={ place_name: Cornell Hotel De France, check_in_date: 2024-08-20, stay_length: 1, location: San Francisco, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': '1', 'phone_number': '+1 415-287-3657', 'place_name': 'Cornell Hotel De France', 'price_per_night': 66, 'smoking_allowed': True, 'star_rating': '3', 'street_address': '1485 Bush Street', 'check_in_date': '2024-08-20', 'stay_length': '1'}]
+End Search Results
+System: Okay. The reservation at Cornell Hotel De France for one night, checking in on August 20, 2024, is confirmed. The phone number is +1 415-287-3657 and the street address is 1485 Bush Street. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

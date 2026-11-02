@@ -1,0 +1,102 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+Please search for hotels in Toronto that are 4 or 5 stars and non-smoking.
+System: 
+
+To help you find the perfect hotel, could you specify whether you'd prefer a 4-star or 5-star hotel in Toronto that's non-smoking?
+User: 
+
+I'd like a 5-star hotel.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'Toronto', star_rating: 5, smoking_allowed: False })
+Search Results
+[{'location': 'Toronto', 'number_of_rooms': 1, 'phone_number': '+1 416-963-6300', 'place_name': 'The Hazelton Hotel', 'price_per_night': 125, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '118 Yorkville Avenue'}, {'location': 'Toronto', 'number_of_rooms': 1, 'phone_number': '+1 416-585-2500', 'place_name': 'The Ritz-Carlton, Toronto', 'price_per_night': 175, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '181 Wellington Street West'}]
+End Search Results
+System: 
+
+I found two 5-star non-smoking hotels in Toronto for you: The Hazelton Hotel at $125 per night (118 Yorkville Avenue) and The Ritz-Carlton, Toronto at $175 per night (181 Wellington Street West). Would you like to proceed with either of these?
+User: 
+
+Yes, I'd like to reserve The Ritz-Carlton, Toronto.
+System: 
+
+To reserve The Ritz-Carlton, Toronto, could you please let me know the check-in date and how many nights you'll be staying?
+User: 
+
+Check-in on October 15th for four nights.
+System: 
+
+Please confirm to book 1 room for 4 nights at The Ritz-Carlton, Toronto in Toronto starting October 15th.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'The Ritz-Carlton, Toronto', check_in_date: '2023-10-15', stay_length: 4, location: 'Toronto', number_of_rooms: 1 })
+<Failed Dialog>
+
+Dialogue B:
+  User: 
+
+I need to book two rooms in a London hotel with a 4-star rating or higher and no smoking allowed. Could you check availability?
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 800 330 8523', 'place_name': 'Amba Hotel Marble Arch', 'price_per_night': 444, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Bryanston Street'}]
+End Search Results
+System: 
+
+I found three hotels matching your criteria: Ace Hotel London at £176 per night (100 Shoreditch High Street), Amba Hotel Charing Cross at £312 (Strand), and Amba Hotel Marble Arch at £444 (Bryanston Street). All are 4-star and non-smoking. Which one would you like to proceed with?
+User: 
+
+Could you provide the exact total price for two rooms per night for each hotel, including all taxes and fees, along with the check-in and check-out times? I need to confirm all details before finalizing.
+System: 
+
+I don't have details on taxes, fees, or check-in/check-out times in the current data. The prices listed are base rates per night. To proceed with your booking, please confirm which hotel you'd like to reserve and share your check-in date and stay duration.
+User: 
+
+I'll reserve two rooms at Ace Hotel London. Check-in on October 5th for seven nights.
+System: 
+
+Confirming your reservation details: 2 rooms at Ace Hotel London, check-in on October 5th for 7 nights. Is this correct?
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: '2023-10-05', location: 'London', number_of_rooms: 2, place_name: 'Ace Hotel London', stay_length: 7 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street', 'check_in_date': '2023-10-05'}]
+End Search Results
+System: 
+
+Your reservation has been successfully confirmed. Is there anything else I can help with?
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

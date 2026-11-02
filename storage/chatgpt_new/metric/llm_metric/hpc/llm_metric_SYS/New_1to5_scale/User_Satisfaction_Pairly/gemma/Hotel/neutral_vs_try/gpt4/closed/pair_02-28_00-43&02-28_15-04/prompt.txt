@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Portland, please.
+System: Do you have any preferences for star rating or smoking allowance, or are you open to any options?
+User: No smoking, please. And I'd prefer a hotel with at least a 3-star rating.
+System: APICall(method='SearchHotel', parameters={ location: Portland, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Portland', 'number_of_rooms': 1, 'phone_number': '+1 503-200-5678', 'place_name': 'Aloft Portland Airport At Cascade Station', 'price_per_night': 93, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '9920 Northeast Cascades Parkway'}, {'location': 'Portland', 'number_of_rooms': 3, 'phone_number': '+1 503-255-2700', 'place_name': 'Country Inn & Suites By Radisson, Portland International Airport, Or', 'price_per_night': 297, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '7025 Northeast Alderwood Road'}, {'location': 'Portland', 'number_of_rooms': 3, 'phone_number': '+1 503-252-3200', 'place_name': 'Courtyard By Marriott Portland Airport', 'price_per_night': 315, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11550 Northeast Airport Way'}]
+End Search Results
+System: I've found a few 3-star hotels in Portland that do not allow smoking:
+
+1. **Aloft Portland Airport At Cascade Station**
+   - Price per night: $93
+   - Address: 9920 Northeast Cascades Parkway
+
+2. **Country Inn & Suites By Radisson, Portland International Airport, Or**
+   - Price per night: $297
+   - Address: 7025 Northeast Alderwood Road
+
+3. **Courtyard By Marriott Portland Airport**
+   - Price per night: $315
+   - Address: 11550 Northeast Airport Way
+
+Would you like more information on any of these options, or are you ready to make a reservation?
+User: I would like to know more about the first option, Aloft Portland Airport At Cascade Station.
+System: The Aloft Portland Airport At Cascade Station is a 3-star hotel located at 9920 Northeast Cascades Parkway, Portland. It offers rooms at a price of $93 per night and does not allow smoking. Is there anything else you would like to know, or would you like to proceed with a reservation?
+User: I'd like to make a reservation at Aloft Portland Airport At Cascade Station. Can you book one room for me? I'll be checking in on the 5th and staying for 3 nights.
+System: Please confirm to book 1 room for 3 nights at the Aloft Portland Airport At Cascade Station, starting from the 5th in Portland.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Portland, number_of_rooms: 1, place_name: Aloft Portland Airport At Cascade Station, stay_length: 3 })
+Search Results
+[{'location': 'Portland', 'number_of_rooms': 1, 'phone_number': '+1 503-200-5678', 'place_name': 'Aloft Portland Airport At Cascade Station', 'price_per_night': 93, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '9920 Northeast Cascades Parkway', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Aloft Portland Airport At Cascade Station has been successfully confirmed. You have reserved 1 room for 3 nights starting from November 5th. The hotel is located at 9920 Northeast Cascades Parkway, Portland. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I am looking to book a hotel in Vancouver. Can you help me with that?
+System: Sure, I can help with that. Could you please let me know your check-in date and how long you plan to stay?
+User: Check-in on the 15th, staying for three nights.
+System: Please confirm how many rooms you would like to book for your stay in Vancouver.
+User: One room, please.
+System: Thank you for your patience. Let's try that again. I will search for available hotels in Vancouver with one room, checking in on the 15th for three nights. APICall(method='ReserveHotel', parameters={ location: Vancouver, check_in_date: 2023-11-15, stay_length: 3, number_of_rooms: 1, place_name: dontcare })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-697-0202', 'place_name': 'dontcare', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-15', 'stay_length': '3'}]
+End Search Results
+System: I found a 4-star hotel available in Vancouver. The price per night is $108, and smoking is not allowed. The address is 1180 West Hastings Street. Would you like to proceed with booking this hotel?
+User: Is there any other option available?
+System: Unfortunately, based on the current search results, there is only one option available for your specified criteria in Vancouver. Would you like to proceed with booking this 4-star hotel, or would you like to adjust any of your preferences to explore more options?
+User: I will go ahead and book this one.
+System: Great choice! I will proceed with booking the 4-star hotel in Vancouver for you. Please confirm to book one room from November 15th for three nights at 1180 West Hastings Street.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={location: Vancouver, check_in_date: 2023-11-15, stay_length: 3, number_of_rooms: 1, place_name: dontcare})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-697-0202', 'place_name': 'dontcare', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': '', 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-15', 'stay_length': '3'}]
+End Search Results
+System: Your booking has been successfully confirmed for one room at a 4-star hotel in Vancouver, located at 1180 West Hastings Street, from November 15th for three nights. If you have any other questions or need further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

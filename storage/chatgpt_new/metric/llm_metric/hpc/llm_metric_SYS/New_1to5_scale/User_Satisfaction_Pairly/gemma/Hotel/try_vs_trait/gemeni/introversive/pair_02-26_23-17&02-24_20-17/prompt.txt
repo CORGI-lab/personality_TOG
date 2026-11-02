@@ -1,0 +1,128 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating or smoking allowance?
+
+User: No smoking.
+
+System: Okay, I understand. I will search for hotels in Vancouver that do not allow smoking. Do you have a preferred star rating or number of rooms you require?
+
+User: Just a quiet place, maybe three stars.
+
+System: Okay, searching for a 3-star hotel in Vancouver that does not allow smoking.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 3, smoking_allowed: False})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: We found three 3-star, non-smoking hotels in Vancouver: Atrium Inn Vancouver, Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., and Best Western Plus Sands. Which one sounds most appealing to you?
+
+User: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. Is it quiet?
+
+System: Based on the available information, I cannot confirm how quiet Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. is. However, it is a 3-star, non-smoking hotel located at 1100 Granville Street, with rooms available for $72 per night. Would you like to know more about the hotel, or would you like to make a reservation?
+
+User: Maybe... I'll take it. Can you book it?
+
+System: Okay, let's proceed with booking Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. To confirm, could you please provide me with the check-in date and the length of your stay?
+
+User: Check-in... the 20th. Three nights.
+
+System: Okay, to finalize the booking at Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, I need to confirm the check-in date and the length of your stay. You mentioned checking in on the 20th for three nights. Could you please specify the year you'd like to book for?
+
+User: This year.
+
+System: Okay, so that would be check-in on 2024-07-20 for three nights at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver. How many rooms will you need?
+
+User: One.
+
+System: Okay, one moment while I confirm the details. So I have one room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, checking in on 2024-07-20 for three nights. Is that correct?
+
+User: Yes, that's right.
+
+System: ```system
+APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-20, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., stay_length: 3})
+```
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2024-07-20'}]
+End Search Results
+System: Excellent! I have confirmed your reservation. You’re all set for one room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, checking in on 2024-07-20 for three nights. The phone number for the hotel is +1 604-669-7070, and the address is 1100 Granville Street. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences regarding the star rating of the hotel?
+
+User: Not really, just something quiet.
+
+System: Okay, I will search for a quiet hotel in Vancouver.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: dontcare })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel, Vancouver', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: Okay, I see a few options. There's Shangri-La Hotel, Vancouver and Wedgewood Hotel & Spa Vancouver, both are 5-star hotels. There is also Auberge Vancouver Hotel which is a 4-star hotel. Would you like to know more about any of these?
+
+User: Tell me about Auberge Vancouver Hotel.
+
+System: Okay. Auberge Vancouver Hotel is a 4-star hotel. It is located at 837 West Hastings Street in Vancouver. The phone number is +1 604-678-8899. The price per night is $296. They allow smoking and they have 2 rooms available. Would you like me to provide information on the other hotels as well?
+
+User: No, that's okay. Can you book Auberge Vancouver Hotel for me?
+
+System: Okay, I can help with that. To book the Auberge Vancouver Hotel, I'll need a little more information. Could you please tell me the date you'd like to check in and how many days you'll be staying?
+
+User: I'd like to book it for 2 nights, starting tomorrow.
+
+System: Okay, I can help with that. And to confirm, you'd like to book the Auberge Vancouver Hotel in Vancouver for 2 nights starting tomorrow. Could you please provide today's date so I can book it for tomorrow?
+
+User: It's April 2nd.
+
+System: Okay, I can help with that. So, you'd like to book the Auberge Vancouver Hotel in Vancouver for 2 nights starting on April 3rd. Could you please confirm the year, so I can book it accurately?
+
+User: 2024.
+
+System: Okay
+User: , I've got the details. You want to book Auberge Vancouver Hotel for 2 nights starting April 3, 2024. Is that correct?
+
+System: Okay, just to be sure, is the booking for one room?
+
+User: Yes, that's right. Please proceed with booking one room.
+
+System: Okay, I will proceed with booking one room at the Auberge Vancouver Hotel for you. Please confirm that the booking is for one room for 2 nights, starting on April 3, 2024.
+
+User: Yes, please confirm.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-04-03, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 2 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2024-04-03'}]
+End Search Results
+System: Okay, your booking at Auberge Vancouver Hotel has been confirmed. It's for one room, for two nights, starting on April 3, 2024. Is there anything else I can help you with?
+
+User: No, thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

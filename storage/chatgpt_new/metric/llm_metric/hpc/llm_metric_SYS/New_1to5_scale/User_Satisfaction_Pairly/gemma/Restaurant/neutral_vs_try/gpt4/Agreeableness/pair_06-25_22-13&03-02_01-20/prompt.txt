@@ -1,0 +1,52 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hi there! I'm looking to find a nice restaurant in Berkeley. I don't have a specific cuisine in mind, but I'd love a place that's cozy and welcoming. Could you help me with that?
+System: Is there a particular price range you're considering, or any specific features like live music or alcohol service that you prefer?
+User: I don't have a strict budget in mind, but something moderately priced would be great. As for features, a place that serves alcohol and maybe has live music would make for a lovely evening. Thank you for helping me with this!
+System: Let's find the perfect spot for you. I'll search for moderately priced restaurants in Berkeley that serve alcohol and have live music. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, price_range: moderate, serves_alcohol: True, has_live_music: True})
+<Failed Dialog>
+
+Dialogue B:
+  User: I would like to find a restaurant in Berkeley, please.
+System: What type of cuisine are you interested in? If you have a preference, such as Italian, Chinese, or something else, just let me know.
+User: I usually enjoy Italian cuisine. Could you help me find a nice Italian restaurant in Berkeley?
+System: APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Berkeley for you. One option is Cugini Restaurant, located at 1556 Solano Avenue. It has a moderate price range and does not serve alcohol. Would you like more information about this place or hear about other options?
+User: I appreciate your help! Could you let me know if there are any other Italian restaurants in Berkeley that serve alcohol?
+System: Certainly! "Filippo's Berkeley Elmwood" is an Italian restaurant that serves alcohol. It's located at 2930 College Avenue and also falls within a moderate price range. Would you like to know more about this restaurant or explore other options?
+User: That sounds like a great option! Could you please make a reservation for two people at Filippo's Berkeley Elmwood? I’d like to dine there this Friday at 7:00 PM. Thank you!
+System: Could you please confirm that you’d like to reserve a table for two at "Filippo's Berkeley Elmwood" in Berkeley this coming Friday at 7:00 PM? Once confirmed, I will proceed with the reservation.
+User: Yes, please confirm the reservation for me. Thank you so much for your help!
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: "Filippo's Berkeley Elmwood", city: Berkeley, time: 19:00, date: 2023-10-06, party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': '2023-10-06', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at "Filippo's Berkeley Elmwood" in Berkeley for two people on Friday, October 6th, at 7:00 PM has been successfully confirmed. If you need the address, it's located at 2930 College Avenue. Enjoy your dining experience! If there's anything else you need, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,221 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel. I'm already stressed about this trip, please tell me you can make this easy. Let's try London.
+
+System: Okay, I can definitely help with that. How many rooms do you need?
+
+User: Just one, I guess. But it *has* to be a good one. What are the star ratings available? I don't want to end up in some dodgy place.
+
+System: Okay, I understand. I will search for a hotel in London with one room. To ensure it meets your standards, do you have a preferred star rating?
+
+User: Ugh, preferred? Of course, I have preferences! Five stars, absolutely. Nothing less. And non-smoking, obviously. I can't stand the smell. Is that even still a thing? Please tell me all hotels are non-smoking these days.
+
+System: Okay, I will search for a 5-star, non-smoking hotel in London with one room.
+
+APICall(method='SearchHotel', parameters={location: London, number_of_rooms: 1, star_rating: 5, smoking_allowed: False})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7377 4390', 'place_name': "Batty Langley'S Hotel", 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '12 Folgate Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 3327 4142', 'place_name': 'Chelsea Bridge Apartments', 'price_per_night': 390, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '124 Prince Of Wales Drive'}]
+End Search Results
+System: I found three 5-star, non-smoking hotels in London. They are 45 Park Lane, Batty Langley'S Hotel, and Chelsea Bridge Apartments. Would you like to know more about any of them?
+
+User: Chelsea Bridge Apartments... that sounds a bit... impersonal, doesn't it? Tell me more about 45 Park Lane and Batty Langley's Hotel. Which one is less likely to have hidden problems? Like, are there any known issues with noise or cleanliness at either of them? I need to know everything before I commit.
+
+System: I don't have access to information about noise levels or cleanliness issues for either hotel. However, I can share the available details. 45 Park Lane has 2 rooms available and their phone number is +44 20 7493 4545. The price per night is $330 and the street address is 45 Park Lane. Batty Langley'S Hotel has 3 rooms available and their phone number is +44 20 7377 4390. The price per night is $510 and the street address is 12 Folgate Street. Does either of those sound appealing?
+
+User: Okay, $510 is a lot! But Folgate Street... is that a safe area? I keep hearing stories about London. And are those prices *really* fixed? What if I find a cheaper rate online later? Ugh, this is all so stressful. Fine, tell me more about 45 Park Lane. $330 is still expensive, but at least it's slightly less terrifying.
+
+System: Okay, 45 Park Lane is located at 45 Park Lane, London and their phone number is +44 20 7493 4545. They have 2 rooms available and the price per night is $330. Would you like to proceed with booking this hotel?
+
+User: Okay, but before I commit, are you *absolutely* sure there are no hidden catches? No extra fees that will suddenly appear? And is there any flexibility if, heaven forbid, I need to cancel? What's their cancellation policy? I need to know *everything* before I say yes.
+
+System: I don't have information about hidden fees or cancellation policies. However, I can confirm that 45 Park Lane is located at 45 Park Lane in London, their phone number is +44 20 7493 4545, they have 2 rooms available, and the price per night is $330. Would you like to proceed with booking this hotel?
+
+User: Okay, fine. Let's just book it. But if anything goes wrong, I'm holding *you* responsible. I need to book one room at 45 Park Lane. Check-in date... let's say October 27th. And I'll be staying for... oh, I don't know, four nights? I hope that's enough.
+
+System: Okay, I'll reserve one room at 45 Park Lane in London for four nights, starting on October 27th. Could you please confirm the year for the check-in date?
+
+User: Oh god, of course, there's a year to worry about too! This is a nightmare. Let's just make it 2024. Please, just get this over with.
+
+System: Okay, I will reserve one room at 45 Park Lane in London for four nights, starting on October 27, 2024. Is that correct?
+
+User: Yes, that's correct. Please just make the reservation. I can't handle any more decisions right now.
+
+System: APICall(method='ReserveHotel', parameters={location: London, number_of_rooms: 1, place_name: '45 Park Lane', check_in_date: 2024-10-27, stay_length: 4})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Okay, I have reserved one room at 45 Park Lane in London for four nights, starting on October 27, 2024. The phone number for the hotel is +44 20 7493 4545. Is there anything else I can help you with?
+
+User: No, I think that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to book a hotel. I'm so stressed about this trip, I just need it to be perfect.
+
+System: Okay, I understand. Let's find the perfect hotel for you to relax and unwind. First, where are you planning to travel to?
+
+User: I think... maybe Paris. But what if something goes wrong with the booking? Or the hotel isn't as nice as it looks online? I'm already feeling anxious.
+
+System: It's completely understandable to feel anxious, especially when you want everything to be perfect. Let's take things one step at a time and find you a wonderful hotel in Paris. To start, do you have any preferences for the star rating of the hotel? Knowing this will help narrow down the options and hopefully ease some of your worries.
+
+User: I guess... a four-star hotel sounds safe. But are they really clean? What if the reviews are fake? Oh god, I hope I'm making the right decision.
+
+System: Okay, a four-star hotel in Paris it is. I understand your concerns about cleanliness and reviews. While I don't have access to reviews, I can assure you that I'll only present hotels that meet your criteria.
+
+APICall(method='SearchHotel', parameters={location: Paris, star_rating: 4})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 45 38 52 59', 'place_name': 'Best Western Bretagne Montparnasse', 'price_per_night': 444, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '33 Rue Raymond Losserand, 75014'}]
+End Search Results
+System: Okay, I have found a few four-star hotels in Paris. "Ac Hotel By Marriott Paris Porte Maillot" is one option, with rooms available and a price of $192 per night. Another option is "Amastan Paris," which is priced at $96 per night. Finally, there's "Best Western Bretagne Montparnasse" at $444 per night. All of these hotels are four-star rated.
+
+Would you like me to provide you with details, such as the phone number or street address, to help ease your mind? Or perhaps you have a price range in mind?
+
+User: Are you absolutely sure those are reputable hotels? I mean, $96 seems kind of low for Paris... is it in a safe area? And the most expensive one, is it *really* worth that much? Oh, this is giving me a headache. Can you check if any of them have recent, verified reviews mentioning cleanliness and safety? It would really help me feel better about this.
+
+System: I understand your concerns about the hotels' reputation, safety, and cleanliness. Unfortunately, I don't have access to recent, verified reviews. However, I can share the street addresses and phone numbers for each hotel, which might help you find reviews on external sites and ease your mind.
+
+Would you like me to provide you with that information? Or perhaps you'd like to consider a different star rating to see if there are other options that might better suit your needs and preferences?
+
+User: Okay, give me the street addresses and phone numbers. Maybe I can call them and ask about their cleaning procedures directly. It sounds crazy, I know, but I just need to be sure.
+
+System: Okay, I understand. Here are the street addresses and phone numbers for the hotels:
+
+*   **Ac Hotel By Marriott Paris Porte Maillot:** 6 Rue Gustave Charpentier, 75017 Paris. Phone number: +33 1 84 82 49 09
+*   **Amastan Paris:** 34 Rue Jean Mermoz, 75008 Paris. Phone number: +33 1 49 52 99 70
+*   **Best Western Bretagne Montparnasse:** 33 Rue Raymond Losserand, 75014 Paris. Phone number: +33 1 45 38 52 59
+
+I hope this information helps you feel more confident in your decision. Please let me know if there's anything else I can do to assist you.
+
+User: Okay, thank you. Before I call, can you just double-check that the addresses are correct? I don't want to end up in the wrong part of town. And are you sure those are the *official* phone numbers? Sometimes websites have outdated information, which is so frustrating.
+
+System:  System: I understand your need for reassurance. Yes, I can confirm that the addresses and phone numbers I provided are the ones listed in the hotel records. However, since you expressed concerns about the information being outdated, I can run the search again to make sure that this is the most current information. Would you like me to do that?
+
+User: Yes, please run the search again, just to be absolutely sure. It's better to be safe than sorry, right? Oh, and could you also check if any of them have elevators? I have a bad knee and really can't manage stairs. This whole trip is turning into such a production...
+
+System: Okay, I will re-run the search to confirm the addresses and phone numbers. Unfortunately, I don't have information about elevators in the hotel details. However, when you call, it's a great question to ask.
+
+APICall(method='SearchHotel', parameters={location: Paris, star_rating: 4})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 45 38 52 59', 'place_name': 'Best Western Bretagne Montparnasse', 'price_per_night': 444, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '33 Rue Raymond Losserand, 75014'}]
+End Search Results
+System: Okay, I've re-run the search, and I can confirm that the addresses and phone numbers are still the same:
+
+*   **Ac Hotel By Marriott Paris Porte Maillot:** 6 Rue Gustave Charpentier, 75017 Paris. Phone number: +33 1 84 82 49 09
+*   **Amastan Paris:** 34 Rue Jean Mermoz, 75008 Paris. Phone number: +33 1 49 52 99 70
+*   **Best Western Bretagne Montparnasse:** 33 Rue Raymond Losserand, 75014 Paris. Phone number: +33 1 45 38 52 59
+
+I know it's a lot to think about, but you're doing great. Taking these extra steps will hopefully give you peace of mind. Once you have all information you need, let me know when you are ready to book.
+
+User: Okay, thank you. Now, about those elevators... are you *absolutely* sure all three have them? What if one is out of service when I get there? Is there any way to guarantee it? I'm picturing myself lugging my suitcase up flights of stairs, and it's not pretty.
+
+System: I understand your concern about the elevators and the possibility of one being out of service. Unfortunately, I don't have information about the availability or guarantee of elevators. However, when you call the hotels to inquire about their cleaning procedures, you can also ask about the elevators and their accessibility. This way, you can get the most up-to-date information directly from the source.
+
+Would you like me to provide the phone number again, so you have it handy?
+
+User: Yes, please give me the phone numbers again. And maybe also, could you check if any of them offer free cancellation? What if something unexpected comes up and I have to change my plans? Argh, this is so stressful!
+
+System: I understand your need for flexibility. I can check if any of them offer free cancellation.
+
+APICall(method='SearchHotel', parameters={location: Paris, star_rating: 4})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 45 38 52 59', 'place_name': 'Best Western Bretagne Montparnasse', 'price_per_night': 444, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '33 Rue Raymond Losserand, 75014'}]
+End Search Results
+System: Unfortunately, I don't have information about free cancellation for these hotels. However, you can ask about their cancellation policies when you call to inquire about cleaning procedures and elevators.
+
+Here are the phone numbers again, for your convenience:
+
+*   **Ac Hotel By Marriott Paris Porte Maillot:** +33 1 84 82 49 09
+*   **Amastan Paris:** +33 1 49 52 99 70
+*   **Best Western Bretagne Montparnasse:** +33 1 45 38 52 59
+
+I know it feels like a lot to manage, but you're doing a great job being thorough. Gathering this information will help you make the best choice for your trip. Let me know if there's anything else I can do to help.
+
+User: Okay, one last thing before I start calling... can you confirm that all of these hotels are actually *in* Paris? Like, within the city limits? I'd hate to book a place and then find out it's way out in the suburbs and I have to take a train every time I want to see something.
+
+System:  System: I understand your concern about the location of the hotels and wanting to ensure they are within Paris city limits. Yes, I can confirm that all three hotels are located within the city of Paris.
+
+*   **Ac Hotel By Marriott Paris Porte Maillot:** Located at 6 Rue Gustave Charpentier, 75017 Paris.
+*   **Amastan Paris:** Located at 34 Rue Jean Mermoz, 75008 Paris.
+*   **Best Western Bretagne Montparnasse:** Located at 33 Rue Raymond Losserand, 75014 Paris.
+
+The postal codes (75017, 75008, and 75014) indicate that these hotels are within the city limits of Paris. I hope this information puts your mind at ease. Please let me know if you need anything else before you make your calls.
+
+User: Okay, that's good to know. So, if I decide to book the Amastan Paris, could you just tell me again exactly where it is? I want to write it down *very* carefully, so there's no chance of confusion later. You know, sometimes I misread things and then everything goes wrong.
+
+System: Okay, I understand. To be absolutely clear, Amastan Paris is located at 34 Rue Jean Mermoz, 75008 Paris. The phone number is +33 1 49 52 99 70. Please take your time to write it down carefully, and don't hesitate to ask if you need me to repeat any part of it. It's important to feel confident with the information before making any decisions.
+
+User: Okay, could you double-check the exact address of the Amastan Paris again? I just want to make sure I didn't write it down wrong. It's 34 Rue Jean Mermoz, right? And the postal code is definitely 75008? Just confirm, please, before I do anything else.
+
+System: Okay, I understand. Let's confirm the address for Amastan Paris one more time, just to be absolutely sure.
+
+Yes, the address for Amastan Paris is indeed 34 Rue Jean Mermoz, and the postal code is definitely 75008. You have it correct. I hope this final confirmation helps you feel more confident and secure in your decision-making process. Please let me know if there is anything else that I can assist you with.
+
+User: Okay, I think I'm ready to try booking the Amastan Paris. But, before I do, can you just confirm one more time that they do, in fact, have elevators? I'm so worried about getting there and finding out I can't get to my room. This is important. Please just check again.
+
+System: I understand your concern about the elevators at Amastan Paris. Unfortunately, I don't have information about elevators in the hotel details. I recommend that you call Amastan Paris directly at +33 1 49 52 99 70 to inquire about the availability and accessibility of elevators. This will ensure that you have the most up-to-date information directly from the source.
+
+Once you have confirmed that they have elevators and you are ready to book, please let me know your check-in date and how many nights you'll be staying. I'll be happy to proceed with the booking for you.
+
+User: Okay, I'll call them now to ask about the elevators, and the cancellation policy, and everything else... But what if they're rude on the phone? Oh god, this is going to be a disaster. Okay, deep breaths...
+
+...Alright, I called them, and they said they DO have elevators, and the cancellation policy is okay. So... I guess I'm ready to book. But what if something cheaper comes up later? Or a better hotel? Oh, this is so hard. Okay, just do it...
+
+Can you book Amastan Paris for me? I'm so nervous...
+
+System: Okay, I understand you're ready to book Amastan Paris. Let's get this done and hopefully ease some of your anxiety.
+
+To proceed with the booking, could you please provide the check-in date and the number of nights you will be staying?
+
+User: Okay, um... I guess I'm checking in on the 15th... of next month. No, wait, the 16th. The 16th, definitely. And... three nights? No, four! I need four nights. But what if that's too long? Oh god, I don't know...
+
+Four nights, starting on the 16th. Please just book it. Hurry.
+
+System: Okay, I understand. Four nights, starting on the 16th. To confirm, what month are you checking in? Once I have that, I can proceed with the booking and hopefully give you some peace of mind.
+
+User: Okay, it's June. June 16th, four nights. Please, just get it done. I'm already picturing all the things that could go wrong...
+
+System: Okay, June 16th for four nights it is. Just to be absolutely sure, you'd like to book one room at Amastan Paris, located in Paris, checking in on June 16th for a four-night stay, correct?
+
+User: Yes, that is all correct. Please just confirm the booking. I need to know it's actually happening.
+
+System: Okay, now that you've confirmed all the details, I'll go ahead and book your room at Amastan Paris.
+
+APICall(method='ReserveHotel', parameters={location: Paris, place_name: Amastan Paris, check_in_date: 2024-06-16, stay_length: 4, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008', 'check_in_date': '2024-06-16'}]
+End Search Results
+System:  Great news! Your booking at Amastan Paris is confirmed for June 16th for four nights. You can relax now knowing that your reservation is secured.
+
+
+User: Okay, please tell me the exact dates. I’m so worried that something will get messed up.
+
+System:  Okay, to be absolutely clear, your reservation at Amastan Paris is confirmed from June 16th to June 20th. I hope that helps alleviate some of your worries. Is there anything else I can assist you with at this moment?
+
+User: Okay, what if they lose my reservation? Can you send me some kind of official confirmation, with a booking number? I need something to show them when I arrive, or else I'll panic.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

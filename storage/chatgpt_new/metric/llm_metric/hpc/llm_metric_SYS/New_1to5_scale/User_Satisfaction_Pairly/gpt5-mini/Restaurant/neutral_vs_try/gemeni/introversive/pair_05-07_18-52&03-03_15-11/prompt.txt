@@ -1,0 +1,96 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: Okay, I can help with that. Are you in the mood for any particular type of cuisine?
+
+User: Not really. Just a quiet place.
+
+System: Given your preference for a quiet place and the openness to cuisine, perhaps a calming Mediterranean restaurant would suit you?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mediterranean})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '415-957-5463', 'price_range': 'expensive', 'restaurant_name': 'Barcha', 'serves_alcohol': True, 'street_address': '28 Fremont Street'}, {'city': 'San Francisco', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '415-399-1155', 'price_range': 'expensive', 'restaurant_name': 'Boulibar', 'serves_alcohol': True, 'street_address': 'One Ferry Building #35'}, {'city': 'San Francisco', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '415-970-2428', 'price_range': 'inexpensive', 'restaurant_name': 'Goood Frikin Chicken', 'serves_alcohol': False, 'street_address': '10 29th Street'}]
+End Search Results
+System: I found three Mediterranean restaurants in San Francisco. Barcha and Boulibar are both expensive and serve alcohol, while Goood Frikin Chicken is inexpensive and does not serve alcohol. All three appear to be without live music, which should make for a quiet meal. Would any of these interest you?
+
+User: Maybe Goood Frikin Chicken. Can you reserve a table for me?
+
+System: Okay, I can help with that. What day and time would you like to make the reservation for Goood Frikin Chicken, and how many people will be in your party?
+
+User: Just myself, tomorrow at 7 pm.
+
+System: Okay, let me check the availability for you. Just to confirm, you'd like a table for one person at Goood Frikin Chicken in San Francisco tomorrow, March 2nd, at 7:00 PM?
+
+User: Yes, that's correct.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Goood Frikin Chicken, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 1})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '415-970-2428', 'price_range': 'inexpensive', 'restaurant_name': 'Goood Frikin Chicken', 'serves_alcohol': False, 'street_address': '10 29th Street', 'date': '2019-03-02', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Great, your table for one at Goood Frikin Chicken is booked for tomorrow, March 2nd, at 7:00 PM. Does that sound right?
+
+User: Yes, that sounds right. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: What type of cuisine would you prefer?
+
+User: Maybe something simple, like American food?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: OK. I see that 1760, 25 Lusk, and 3rd Cousin are all American restaurants in San Francisco. 1760 and 3rd Cousin do not serve alcohol and 25 Lusk does serve alcohol. All three are in the expensive price range. Do any of those sound good?
+
+User: Are there any others? I'd prefer something not so expensive.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': 'Alba Rays', 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: OK. I see that Academy Bar And Kitchen, Alba Rays, and Aliment are all American restaurants in San Francisco that are in the moderate price range. Academy Bar And Kitchen and Aliment do not serve alcohol and Alba Rays does serve alcohol. Do any of those sound good?
+
+User: Academy Bar And Kitchen sounds okay. Could you make a reservation for me?
+
+System: What day and time would you like to reserve a table at Academy Bar And Kitchen? Also, how many people will be in your party?
+
+User: Just two people, please. And could it be for tomorrow at 7 pm?
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Academy Bar And Kitchen, city: San Francisco, date: 2019-03-02, party_size: 2, time: 19:00})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: OK. I have a reservation for 2 at Academy Bar And Kitchen for tomorrow at 7 pm. Is that correct?
+
+User: Yes, that is correct.
+
+System: OK. Your reservation at Academy Bar And Kitchen has been successfully made for tomorrow, March 2nd, at 7 pm for a party of 2. The phone number is 415-775-1800. Is there anything else?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

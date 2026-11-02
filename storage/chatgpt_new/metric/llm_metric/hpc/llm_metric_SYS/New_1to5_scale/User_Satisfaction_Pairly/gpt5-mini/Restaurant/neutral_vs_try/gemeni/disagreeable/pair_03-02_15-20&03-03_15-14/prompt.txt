@@ -1,0 +1,94 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a restaurant in Napa. And it better be good.
+
+System: Given your preference for quality dining, what type of cuisine are you in the mood for?
+
+User: Doesn't matter. Just find the most expensive place. I want to see how much I can run up the bill.
+
+System: Given your desire for an extravagant experience, I suggest French cuisine.
+APICall (method='FindRestaurants', parameters= {city: Napa, cuisine: French, price_range: very expensive})
+
+Search Results
+[{'city': 'Napa', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '707-257-5157', 'price_range': 'very expensive', 'restaurant_name': 'La Toque', 'serves_alcohol': True, 'street_address': '1314 McKinstry Street'}]
+End Search Results
+System: Great choice! La Toque is an excellent French restaurant in Napa, known for its very expensive price range. It is located at 1314 McKinstry Street. Their phone number is 707-257-5157 if you want to inquire about reservations or other details.
+
+User: Fine, make a reservation for me there. Tomorrow night. Party of one. 8 PM. And it better be the best damn table in the house.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: La Toque, city: Napa, date: 2019-03-02, time: 20:00, party_size: 1})
+
+Search Results
+[{'city': 'Napa', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '707-257-5157', 'price_range': 'very expensive', 'restaurant_name': 'La Toque', 'serves_alcohol': True, 'street_address': '1314 McKinstry Street', 'date': '2019-03-02', 'party_size': '1', 'time': '20:00'}]
+End Search Results
+System: Excellent! I have secured a reservation for you at La Toque in Napa for tomorrow, March 2nd, at 8:00 PM, for a party of one. The restaurant is located at 1314 McKinstry Street.
+
+User: Whatever. Confirm the reservation. And make sure they know I'm expecting special treatment.
+
+System: Very well, your reservation at La Toque for tomorrow, March 2nd, at 8:00 PM for one person is confirmed. I'm sure they'll take good care of you.
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a restaurant in San Francisco. I don't care about the cuisine, as long as it's not something disgusting.
+
+System: Okay, I can help with that. Since you're open to any cuisine, how about we try American?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: I found three American restaurants in San Francisco: 1760, 25 Lusk, and 3rd Cousin. Would you like to know more about any of them?
+
+User: Why should I trust your recommendations? Tell me the price range of the most expensive one.
+
+System: The most expensive of the three is 1760, 25 Lusk and 3rd Cousin. All three are in the expensive price range. Do any of them sound good to you?
+
+User: Expensive, huh? Fine. Book a table at 25 Lusk for tomorrow night. Four people, 8 PM. And it better be a good table.
+
+System: Okay, I can help with that. Just to confirm, you want a table for four at 25 Lusk in San Francisco for tomorrow, is that correct? Also, what is the date for tomorrow?
+
+User: Don't play dumb with me. You know what tomorrow is. Just make the damn reservation.
+
+System: I apologize if my previous responses were not up to par. To confirm, you want to book a table for four at 25 Lusk in San Francisco for tomorrow at 8 PM. Could you please provide the date for which you'd like me to make the reservation?
+
+User: Fine, it's July 12th. And if they screw up the reservation, I'm holding you responsible.
+
+System: Okay, I have a table for four at 25 Lusk in San Francisco for July 12th at 8 PM. Is that correct?
+
+User: Correct. Now get it done.
+
+System: APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2019-07-12, party_size: 4, restaurant_name: 25 Lusk, time: 20:00 })
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street', 'date': '2019-07-12', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Great, I have booked a table for four at 25 Lusk in San Francisco for July 12th at 8 PM.
+
+User: And what's their cancellation policy? I don't want to be penalized if something better comes up.
+
+System: I am sorry, but I do not have access to the restaurant's cancellation policy. You can call them at 415-495-5875 to inquire about it.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,81 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in San Mateo.
+
+System: Okay, I can help with that. Do you have a particular type of cuisine in mind?
+
+User: No, not really. Anything is fine.
+
+System: Given you're open to anything, how about we try Italian cuisine in San Mateo?
+APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: Italian})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-342-3100', 'price_range': 'moderate', 'restaurant_name': 'Capellini Restaurant', 'serves_alcohol': True, 'street_address': '310 Baldwin Avenue'}, {'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-579-6021', 'price_range': 'moderate', 'restaurant_name': 'Osteria Coppa - Permanently Closed', 'serves_alcohol': True, 'street_address': '139 South B Street'}, {'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-375-0818', 'price_range': 'expensive', 'restaurant_name': 'Pausa Bar & Cookery', 'serves_alcohol': True, 'street_address': '223 East 4th Avenue'}]
+End Search Results
+System: Alright, I found a few Italian restaurants in San Mateo. There's Capellini Restaurant on Baldwin Avenue and Pausa Bar & Cookery on East 4th Avenue. Capellini is moderately priced, while Pausa is a bit more expensive. Would either of those interest you?
+
+User: Maybe Capellini. Can you just book it for me?
+
+System: Sure, I can book at Capellini Restaurant. What day and time would you like to book it for? And how many people?
+
+User: Tomorrow at 6 pm for 2 people.
+
+System: Okay, I'm booking you a table for tomorrow, March 2nd, at 6 pm for 2 people at Capellini Restaurant. Does that sound right?
+APICall (method='ReserveRestaurant', parameters= {city: San Mateo, date: 2019-03-02, party_size: 2, restaurant_name: Capellini Restaurant, time: 18:00})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-342-3100', 'price_range': 'moderate', 'restaurant_name': 'Capellini Restaurant', 'serves_alcohol': True, 'street_address': '310 Baldwin Avenue', 'date': '2019-03-02', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Perfect, I've booked you a table at Capellini Restaurant for tomorrow, March 2nd, at 6 pm for 2 people. Is there anything else I can help you with?
+
+User: No, that's all. Thanks a lot!
+
+System: Great! You're all set. Enjoy your Italian dinner at Capellini Restaurant tomorrow!
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a restaurant in San Mateo.
+
+System: OK. Is there a particular type of cuisine you're interested in?
+
+User: Maybe just something simple. American, I guess.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: American})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-212-2643', 'price_range': 'moderate', 'restaurant_name': 'Qube Bar & Grill', 'serves_alcohol': True, 'street_address': '4000 South El Camino Real'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-522-7526', 'price_range': 'expensive', 'restaurant_name': 'Poplar Creek Grill', 'serves_alcohol': True, 'street_address': '1700 Coyote Point Drive'}]
+End Search Results
+System: OK. I found three American restaurants in San Mateo: Central Park Bistro, Qube Bar & Grill, and Poplar Creek Grill. Central Park Bistro does not serve alcohol, Qube Bar & Grill serves alcohol, and Poplar Creek Grill serves alcohol. All three restaurants have a price range of moderate. Would you like more information on any of these?
+
+User: Maybe Central Park Bistro. What's the address?
+
+System: Central Park Bistro is located at 181 East 4th Avenue.
+
+User: Okay, thanks. Can you tell me the phone number?
+
+System: OK. The phone number for Central Park Bistro is 650-558-8401.
+
+User: Okay, I think that's enough. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

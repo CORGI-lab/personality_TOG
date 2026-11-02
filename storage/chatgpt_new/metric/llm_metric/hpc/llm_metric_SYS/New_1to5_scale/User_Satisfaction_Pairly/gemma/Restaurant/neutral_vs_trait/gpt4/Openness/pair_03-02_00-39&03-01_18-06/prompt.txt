@@ -1,0 +1,84 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm feeling adventurous today and would love to explore a unique dining experience in San Francisco. Could you help me find a restaurant that offers a diverse menu with perhaps some live music to enhance the atmosphere?
+System: What type of cuisine are you interested in exploring in San Francisco? If you're open to any cuisine, I can suggest a random option for you.
+User: I'm open to any cuisine! Surprise me with something unexpected and delightful.
+System: Great! Let's try something different. How about exploring an Ethiopian restaurant? Does that sound good? Also, do you have any preference for the price range?
+User: That sounds intriguing! I don't have a specific price range in mind, so I'm open to suggestions. I'm more interested in the experience and ambiance.
+System: Wonderful! Let me find an Ethiopian restaurant in San Francisco that offers live music for a unique dining experience. Please hold on for a moment while I search for options. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Ethiopian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': 5, 'time': '11:30'}]
+End Search Results
+System: I found a wonderful option for you! Sheba Piano Lounge in San Francisco offers Ethiopian cuisine along with live music to enhance your dining experience. It's located at 1419 Fillmore Street. Would you like the phone number or any additional information about this restaurant?
+User: That sounds like a fantastic choice! Could you please make a reservation for two at Sheba Piano Lounge? I'd love to experience the lively atmosphere there. Let's aim for this Saturday evening around 7:30 pm.
+System: To proceed with the reservation, could you please confirm if you would like to book a table for two people at Sheba Piano Lounge in San Francisco for this Saturday at 7:30 pm?
+User: Yes, please confirm the reservation for two people at Sheba Piano Lounge in San Francisco for this Saturday at 7:30 pm. Thank you!
+System: Great! Let me finalize that reservation for you. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Sheba Piano Lounge', city: 'San Francisco', date: '2019-03-02', time: '19:30', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:30'}]
+End Search Results
+System: Your reservation for two at Sheba Piano Lounge in San Francisco for this Saturday at 7:30 pm has been successfully confirmed. If you need the phone number for any further inquiries, it is 415-440-7414. Enjoy your unique dining experience with live music!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm feeling adventurous today and would love to explore a new dining experience in San Francisco. Could you help me find a unique restaurant, perhaps with some artistic flair or live music? I'm open to any type of cuisine!
+System: San Francisco is a fantastic city with a plethora of dining experiences to offer. Let's find you a place that matches your adventurous spirit! How about exploring a Vietnamese cuisine with a unique twist? Does that sound intriguing to you?
+User: That sounds absolutely delightful! I'd love to try something with a Vietnamese twist. Could you also check if the restaurant offers live music or has any artistic elements in its decor?
+System: Wonderful choice! Let me find a Vietnamese restaurant in San Francisco that might have live music or artistic decor. I'll just need a moment to gather the details for you. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems there were no results for Vietnamese restaurants in San Francisco with live music. Let's expand our search to find a Vietnamese restaurant with artistic decor or a unique ambiance. I'll proceed with that search. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street'}]
+End Search Results
+System: I found a few Vietnamese restaurants in San Francisco that might pique your interest. Anh Hong, located at 808 Geary Street, offers a moderate price range and serves alcohol. Alternatively, Aux Delices at 2327 Polk Street does not serve alcohol but might offer a unique ambiance. Would you like more information on any of these options, or perhaps make a reservation?
+User: Could you tell me if Anh Hong features live music or has any interesting artistic decor? That might help me make a decision!
+System: Anh Hong does not feature live music, but based on its location and offerings, it might have an interesting ambiance. If you're still interested, I can assist with making a reservation or provide further details. Let me know how you'd like to proceed!
+User: I'm intrigued by the possibility of an interesting ambiance at Anh Hong, but I’d love to explore a bit more. Could you find another restaurant in San Francisco that offers live music along with an artistic vibe?
+System: Let’s broaden our search to find a restaurant in San Francisco that offers live music and an artistic vibe. Perhaps exploring a different cuisine could bring you a fascinating experience. How about trying a Japanese cuisine this time? I'll look for a place that meets your adventurous criteria. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems there are no Japanese restaurants in San Francisco with live music available. Let's try a different approach and see if we can find a Japanese restaurant with a unique or artistic decor instead. I'll proceed with that search for you. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-655-3738', 'price_range': 'expensive', 'restaurant_name': 'Izakaya Sushi Ran', 'serves_alcohol': True, 'street_address': '2223 Market Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-484-1206', 'price_range': 'expensive', 'restaurant_name': 'Motze', 'serves_alcohol': True, 'street_address': '983 Valencia Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-552-4400', 'price_range': 'expensive', 'restaurant_name': 'Nihon Whisky Lounge', 'serves_alcohol': True, 'street_address': '1779 Folsom Street'}]
+End Search Results
+System: I found a few Japanese restaurants in San Francisco that might offer the unique ambiance you're looking for. Izakaya Sushi Ran, located at 2223 Market Street, and Motze at 983 Valencia Street both have a reputation for interesting decor and serve alcohol. They are both in the expensive price range. Would you like more information on any of these options, or perhaps make a reservation?
+User: Could you tell me if either Izakaya Sushi Ran or Motze offers live music? That would definitely help me decide!
+System: Neither Izakaya Sushi Ran nor Motze offers live music, but both are known for their unique ambiance and artistic decor. If you're interested in exploring either of these options further, I can assist with making a reservation or provide more details. Let me know how you'd like to proceed!
+User: I'd love to explore Izakaya Sushi Ran further. Could you please make a reservation for me? I'm planning for a party of four, and we'd like to dine on Saturday at 7:00 PM. Let's embark on this artistic culinary adventure!
+System: Fantastic choice! Before finalizing your reservation, can you please confirm that you'd like to book a table for four people at Izakaya Sushi Ran in San Francisco, for this coming Saturday at 7:00 PM? Once confirmed, I'll proceed with the reservation.
+User: Yes, please go ahead and confirm the reservation for four people at Izakaya Sushi Ran on Saturday at 7:00 PM. I'm excited about this unique experience!
+System: Great! I'll go ahead and reserve a table for four people at Izakaya Sushi Ran in San Francisco for this Saturday at 7:00 PM. Please give me a moment to finalize the details. APICall (method='ReserveRestaurant', parameters={city: San Francisco, party_size: 4, restaurant_name: Izakaya Sushi Ran, time: 19:00, date: [this coming Saturday]})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-655-3738', 'price_range': 'expensive', 'restaurant_name': 'Izakaya Sushi Ran', 'serves_alcohol': True, 'street_address': '2223 Market Street', 'date': '[this coming Saturday]', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Izakaya Sushi Ran for four people this Saturday at 7:00 PM has been successfully confirmed. The restaurant is located at 2223 Market Street, and you can contact them at 415-655-3738 if you need any further assistance. Enjoy your artistic culinary adventure, and have a wonderful time!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

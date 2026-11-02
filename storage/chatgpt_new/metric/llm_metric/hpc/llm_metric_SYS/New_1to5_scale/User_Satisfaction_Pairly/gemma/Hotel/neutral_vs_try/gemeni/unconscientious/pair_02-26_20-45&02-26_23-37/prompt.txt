@@ -1,0 +1,126 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, uh, I need to find a hotel. Somewhere... easy. Maybe in Vegas? Yeah, Vegas sounds good.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Star rating? Uh, not really. Whatever's... there, I guess. As long as it's cheap, I suppose.
+
+System: Okay, I will search for a hotel in Las Vegas. Since you don't have a preference for the star rating, I will search for any available hotel.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found three hotels in Las Vegas. Best Western Plus Las Vegas West is a 3-star hotel with rooms available for $117 per night. Budget Suites Of America is a 1-star hotel at $44 per night, and Hampton Inn Las Vegas/Summerlin is a 3-star hotel for $279 per night. Would you like more details on any of these, or would you like me to search for something different?
+
+User: Hmm, details... nah. Just gimme the cheapest one. Budget Suites, right? What's the catch?
+
+System: Budget Suites Of America is a 1-star hotel. It's located at 2219 North Rancho Drive, and the price is $44 per night. They do allow smoking. Does that sound right to you?
+
+User: Smoking allowed, huh? Okay, that's... fine. I guess. Book it. For, like, a week? Starting... uh... tomorrow? Yeah, tomorrow's good.
+
+System: Okay, so you want to book Budget Suites Of America in Las Vegas for a week, starting tomorrow. Could you please provide the exact date you'd like to check in? Also, how many rooms will you need?
+
+User: Tomorrow... is it the 9th? Yeah, the 9th. And just one room. I'm not sharing.
+
+System: Okay, so one room at Budget Suites Of America, checking in on July 9th for a week. Is that correct?
+
+User: Uh, yeah, sounds about right. Just book it already.
+
+System: Okay, I will book one room at Budget Suites Of America in Las Vegas, checking in on July 9th for a stay of 7 nights. Could you please confirm the year you'd like to book your room for?
+
+User: Year? Uh... this year, I guess. What year is it? 2024? Yeah, 2024. Just get it done.
+
+System: Okay, I will book one room at Budget Suites Of America in Las Vegas, checking in on July 9th, 2024, for a stay of 7 nights. Is that correct?
+
+User: Yeah, yeah, whatever. Just book the stupid room already.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-09, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 7 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2024-07-09'}]
+End Search Results
+System: Okay, I have booked one room at Budget Suites Of America in Las Vegas, checking in on July 9th, 2024, for a stay of 7 nights. Your confirmation number is +1 702-638-1800. The hotel's address is 2219 North Rancho Drive. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in... uh... maybe Paris? Yeah, Paris sounds good.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Star rating? Hmm... does it even matter? Just find me something cheap, I guess.
+
+System: Okay, I understand. I will search for a hotel in Paris. Since you prefer something cheap, I will look for hotels with lower star ratings.
+
+APICall(method='SearchHotel', parameters={location: Paris, star_rating: dontcare})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}]
+End Search Results
+System: Okay, I found a few options in Paris. There's the Ac Hotel By Marriott Paris Porte Maillot and Amastan Paris, both with 4 stars. The Ac Hotel is around $192 per night, while Amastan Paris is a bit cheaper at $96. There's also the Aparthotel Adagio Access Paris La Villette, a 3-star hotel at $120 per night. Does any of these sound good to you?
+
+User: Ugh, decisions, decisions... $96 sounds better than $192, right? What was the name again? Amastan Paris? Yeah, that one. Is it, like, in a decent location? I don't wanna end up in some dodgy area.
+
+System: Okay, Amastan Paris it is. It's located at 34 Rue Jean Mermoz, 75008, Paris. Is that location good for you?
+
+User: Oh, that's somewhere in Paris, right? Is it near anything interesting, or should I just pick something else randomly?
+
+System: Okay, let's see... Rue Jean Mermoz is in the 8th arrondissement. It's known for being a pretty central and upscale area, close to the Champs-Élysées and a lot of art galleries. Does that sound like the kind of area you'd prefer?
+
+User: Champs-Élysées, huh? Sounds fancy. Sure, why not? Let's just book it, then. What could go wrong?
+
+System: Okay, great! To book Amastan Paris, I'll need a few more details. What date would you like to check in, and how many nights will you be staying?
+
+User: Check-in date? Uh... next week maybe? And how long... I don't know, a few nights? Like, three? Is that enough?
+
+System: Okay, to confirm, you'd like to check in to Amastan Paris sometime next week for three nights. Could you please provide the exact date you'd like to check in?
+
+User: Ugh, exact dates... Fine, let's say the 27th. The 27th for three nights. Just get it done, please.
+
+System: Okay, I've got it. So, you want to book Amastan Paris starting on the 27th for three nights. Just to be absolutely sure, what is the year of check-in date?
+
+User: The year? Uh... this year, I guess? What year is it even? 2024, right? So, 2024. Just book it already!
+
+System: Okay, I've got it. You want to book Amastan Paris, checking in on 2024-07-27 for three nights. How many rooms will you need?
+
+User: Rooms? Just one, I guess. Unless... are they small? Maybe two? Nah, one. Book one.
+
+System: Okay, one room it is. Just to confirm everything: you want to book one room at Amastan Paris, checking in on July 27, 2024, for three nights. Is that all correct?
+
+User: Yeah, yeah, sounds about right. Just book the stupid room already.
+
+System: Okay, understood. Let me finalize this for you.
+
+APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-27, location: Paris, number_of_rooms: 1, place_name: Amastan Paris, stay_length: 3})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008', 'check_in_date': '2024-07-27'}]
+End Search Results
+System: Excellent. I have successfully booked one room at Amastan Paris for you, checking in on July 27, 2024, for three nights. Would you like any further assistance?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

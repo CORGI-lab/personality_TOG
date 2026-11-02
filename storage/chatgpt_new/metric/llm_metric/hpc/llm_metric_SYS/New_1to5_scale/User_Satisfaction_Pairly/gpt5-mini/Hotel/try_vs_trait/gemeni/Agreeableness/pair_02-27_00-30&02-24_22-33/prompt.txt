@@ -1,0 +1,158 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hi, I'm looking for a hotel in San Francisco. Could you help me find one? I'm open to suggestions!
+
+System: Okay, I can help with that!
+
+APICall(method='SearchHotel', parameters={location: San Francisco})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Alright! I found a few hotels in San Francisco. There's the Amsterdam Hostel San Francisco, a 1-star hotel, the Argonaut Hotel with 4 stars, and Beck'S Motor Lodge, which has 2 stars. Do any of these sound like a good fit for what you're looking for?
+
+User: Oh, thank you for finding those! I'm not familiar with the area, so I really appreciate you looking. Could you maybe tell me a little more about the Argonaut Hotel? A 4-star place sounds lovely.
+
+System: Okay, I can tell you more about the Argonaut Hotel. It's located at 495 Jefferson Street, has 3 rooms available, and the price per night is $408. Their phone number is +1 415-563-0800. Also, smoking is not allowed. Does that sound like a good option for you?
+
+User: That sounds like it could be really nice! It's so kind of you to provide all those details. It's a little pricier than I was hoping, though. Is there anything else with a lower price per night, perhaps? I'm flexible on the star rating if it helps! I just want to find something that works for everyone.
+
+System: Okay, let's see what other options we have. How about Beck'S Motor Lodge? It's a 2-star hotel with a price of $60 per night. It's located at 2222 Market Street, and their phone number is +1 415-621-8212. Smoking is not allowed there either. Would you like to know more about this option?
+
+User: That sounds much more affordable, thank you! I appreciate you being so patient and understanding with my budget. I'm happy to consider it. Could you tell me how many rooms they have available?
+
+System: Okay! Beck'S Motor Lodge has 1 room available. Is there anything else I can help you with regarding this hotel?
+
+User: Just one room, hmm... I'm traveling with family. Perhaps we could look for another hotel with at least two rooms available? I really appreciate you helping me find something suitable for all of us.
+
+System: Okay, let's find a hotel that can accommodate your family. Would you prefer to stick with the San Francisco area?
+
+User: Yes, please. If possible, I'd prefer something not too far from the city center so we can easily access everything. I'm sure anything you find will be great!
+
+System: Alright, I'll focus on hotels in San Francisco with at least two rooms.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, number_of_rooms: 2})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I've searched for hotels in San Francisco with at least two rooms available, but it seems like we have the same options as before. The Argonaut Hotel has 3 rooms available. Would you like to consider Argonaut Hotel again, or would you like me to search for other options with at least two rooms, perhaps adjusting other preferences?
+
+User: Oh, that's alright. I really appreciate you trying! Since the Argonaut Hotel has enough rooms, and it sounds like a nice place, let's go back to that one. Could you check if they happen to have any rooms with a nice view, perhaps? If not, that's perfectly fine too!
+
+System: I don't have access to information about room views. However, the Argonaut Hotel has 3 rooms available, is located at 495 Jefferson Street, and the price per night is $408. Their phone number is +1 415-563-0800, and smoking is not allowed. If you're happy with these details, I can proceed with a reservation for you! Just let me know the dates you'd like to stay and how long you'll be needing the rooms.
+
+User: That sounds wonderful! I'm happy to go ahead and book the Argonaut Hotel. We'll need two rooms, if that's possible. We're planning to check in on the 15th and stay for three nights. Thank you so much for your help with this – I really appreciate your patience and understanding!
+
+System: Okay, I'm happy to help you book the Argonaut Hotel. Just to confirm, you'd like two rooms at the Argonaut Hotel in San Francisco, checking in on the 15th for a three-night stay. Is that correct?
+
+User: Yes, that's absolutely correct! Thank you for confirming.
+
+System: Okay, let's finalize your reservation. I'll go ahead and book two rooms for you at the Argonaut Hotel in San Francisco, starting on the 15th for three nights.
+
+APICall(method='ReserveHotel', parameters={place_name: Argonaut Hotel, location: San Francisco, check_in_date: 2024-07-15, stay_length: 3, number_of_rooms: 2})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Excellent! I've successfully booked two rooms for you at the Argonaut Hotel in San Francisco, checking in on July 15th for a three-night stay. If you need anything else, feel free to ask!
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hi there! Could you please help me find a nice hotel? I'm thinking of going to Paris.
+
+System: Of course! I'd be happy to help you find a nice hotel in Paris. To start, do you have any preferences for the star rating of the hotel?
+
+User: Oh, that's so kind of you to ask! I'm not too picky, really. Somewhere clean and comfortable would be lovely. Maybe a 3 or 4-star hotel? I'm flexible, though. As long as it's not too noisy and the staff are friendly, I'm sure I'll be happy.
+
+System: That's very considerate of you! I'll search for hotels in Paris that are either 3 or 4 stars.
+
+APICall(method='SearchHotel', parameters={location: Paris, star_rating: dontcare})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}]
+End Search Results
+System: I found a few hotels in Paris that might suit you. There's the "Ac Hotel By Marriott Paris Porte Maillot," a 4-star hotel where rooms are available, with a price of $192 per night. There's also "Amastan Paris," another 4-star hotel, with a price of $96 per night. Finally, there's the "Aparthotel Adagio Access Paris La Villette," a 3-star hotel, with a price of $120 per night.
+
+Would you like me to provide more details on any of these, or perhaps explore other options?
+
+User: Oh, those sound interesting! Thank you for finding those for me. Could you tell me a little more about the "Ac Hotel By Marriott Paris Porte Maillot"? The price seems reasonable, and I trust Marriott hotels to generally be quite reliable.
+
+System: Certainly! I can share some additional information about the "Ac Hotel By Marriott Paris Porte Maillot". It's a 4-star hotel located at 6 Rue Gustave Charpentier, 75017 Paris, and the phone number is +33 1 84 82 49 09. The price per night is $192, and smoking is not allowed. They have 2 rooms available.
+
+Would you like to know anything else about this hotel, or perhaps compare it with the other options I found?
+
+User: That sounds wonderful! It's reassuring to know they have rooms available. Could you perhaps tell me a little about the neighborhood? Is it a safe and convenient area for getting around Paris? I value feeling secure and being able to easily access public transportation.
+
+System: I understand that feeling secure and having easy access to public transportation are important to you. However, I don't have information about the neighborhood's safety or public transportation options.
+
+Would you like me to check if smoking is allowed or provide any other details available about the "Ac Hotel By Marriott Paris Porte Maillot"? Or perhaps you'd like to explore the other hotel options I found?
+
+User: Oh, that's alright! I trust your judgment. Since it's a Marriott, I'm sure it's in a decent area. If it's not too much trouble, could you check if the price includes breakfast? It's always nice to start the day with a good meal, and it would be one less thing to worry about.
+
+System: I understand that having breakfast included is one less thing to worry about.
+Unfortunately, I don't have information about whether the price includes breakfast. However, is there anything else I can help you with regarding the "Ac Hotel By Marriott Paris Porte Maillot" or the other two options, "Amastan Paris" and "Aparthotel Adagio Access Paris La Villette"?
+
+User: Oh, that's perfectly fine! I wouldn't want to put you to any trouble. Based on what you've told me, the "Ac Hotel By Marriott Paris Porte Maillot" sounds lovely. I think I'm happy with that one. Could you go ahead and book it for me, please? I'm planning to arrive on the 15th of next month and stay for 5 nights.
+
+System: Certainly, I can help with that! To make the reservation, I'll need a little more information. Could you please confirm the month you're planning to arrive in? And how many rooms would you like to reserve?
+
+User: Oh, of course! I'm so sorry, I should have mentioned that. I'm planning to arrive on July 15th, and I'll just need one room, please. Thank you so much for your help!
+
+System: You're very welcome! I'm happy to help. Just to confirm, you'd like to reserve one room at the "Ac Hotel By Marriott Paris Porte Maillot" in Paris, arriving on July 15th for a 5-night stay. Is that correct?
+
+User: Yes, that's absolutely correct. Thank you for being so patient with me!
+
+System: You're most welcome! It's my pleasure to assist you.
+
+To proceed with the reservation, could you please specify the year you're planning to arrive on July 15th?
+
+User: Oh, goodness, I'm so sorry! I completely forgot the year. It's July 15th, 2024. Thank you for reminding me!
+
+System: You're very welcome! I'm happy to help.
+
+So, to be absolutely sure, you'd like me to book one room for you at the "Ac Hotel By Marriott Paris Porte Maillot" in Paris, with arrival on July 15th, 2024, for a stay of 5 nights. Is that all correct?
+
+User: Yes, that is perfectly correct! Thank you so much for confirming everything so thoroughly. I truly appreciate your attention to detail.
+
+System: You're very kind! It's my pleasure to make sure everything is just right for you.
+
+Now that I have all the details, I'll go ahead and make the reservation for one room at the "Ac Hotel By Marriott Paris Porte Maillot" in Paris, for 5 nights, starting on July 15th, 2024.
+
+APICall(method='ReserveHotel', parameters={place_name: Ac Hotel By Marriott Paris Porte Maillot, check_in_date: 2024-07-15, stay_length: 5, location: Paris, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Great! I have successfully made the reservation for you.
+
+I booked one room at the "Ac Hotel By Marriott Paris Porte Maillot" in Paris, for 5 nights, starting on July 15th, 2024. The hotel is located at 6 Rue Gustave Charpentier, 75017. The hotel's phone number is +33 1 84 82 49 09.
+
+Is there anything else I can assist you with today?
+
+User: That's absolutely wonderful! Thank you so much for all your help with the booking. I really appreciate it.
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Berlin.
+System: Do you have any specific preferences for the star rating, or should I consider any rating in Berlin?
+User: I'm looking for something quiet and not too extravagant, maybe a 3-star hotel.
+System: APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 3 })
+Search Results
+
+End Search Results
+System: I'm sorry, it seems there were no results found for a 3-star hotel in Berlin. Would you like to try a different star rating, or perhaps adjust other preferences such as smoking allowance?
+User: Is there an option for a less expensive hotel, maybe with a 2-star rating?
+System: APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 2 })
+Search Results
+
+End Search Results
+System: Unfortunately, it seems there are no results for a 2-star hotel in Berlin either. Would you be open to trying a different star rating, or perhaps adjusting other preferences such as smoking allowance or location specifics?
+User: Could you check for 4-star hotels instead? Maybe there's something suitable there.
+System: APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 4 })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+System: I found a few 4-star hotels in Berlin. One option is the Adina Apartment Hotel Berlin Mitte, which allows smoking and costs $160 per night. Another option is the Ameron Hotel Abion Spreebogen Waterside, which does not allow smoking and costs $360 per night. Lastly, the Arcotel John F Berlin allows smoking and is priced at $248 per night. Would you like more information on any of these options or assistance with something else?
+User: Could you tell me more about the Adina Apartment Hotel Berlin Mitte, like its location and address?
+System: The Adina Apartment Hotel Berlin Mitte is located at Platz vor dem Neuen Tor 6, 10115 Berlin. Is there anything else you would like to know about this hotel or would you like assistance with making a reservation?
+User: I think that might work. Can you reserve a room for me at the Adina Apartment Hotel Berlin Mitte? I plan to check in on the 15th and stay for five days.
+System: To proceed with the reservation, could you please confirm the number of rooms you would like to book at the Adina Apartment Hotel Berlin Mitte?
+User: Just one room, please.
+System: Please confirm to book 1 room for 5 days at the Adina Apartment Hotel Berlin Mitte, starting from the 15th in Berlin.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-10-15, location: Berlin, number_of_rooms: 1, place_name: Adina Apartment Hotel Berlin Mitte, stay_length: 5})
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Adina Apartment Hotel Berlin Mitte has been successfully confirmed for 1 room from October 15th for 5 days. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in Vancouver, please.
+System: Can you let me know if you have a preference for the star rating or if smoking is allowed? If not, I'm happy to find a selection for you and we can narrow it down from there.
+User: I'm not too concerned about smoking, but a higher star rating would be preferable.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: I found two 5-star hotels in Vancouver. The first one is Shangri-La Hotel located at 1128 West Georgia Street with a price of $300 per night. The second option is Wedgewood Hotel & Spa Vancouver at 845 Hornby Street for $510 per night. Would you like more details on either of these, or are you ready to proceed with a reservation?
+User: I'd like to know more details about the Shangri-La Hotel, please.
+System: I'm sorry, but the provided information doesn't include additional details about the features of the Shangri-La Hotel beyond its location, contact information, and pricing. If you'd like, I can assist you with making a reservation there or answer any other questions you might have.
+User: No, that's fine. Please go ahead and make a reservation for the Shangri-La Hotel.
+System: How many rooms would you like to book, and what will be the check-in date and the length of your stay at the Shangri-La Hotel?
+User: I need one room, checking in on the 15th. I'll be staying for five days.
+System: Please confirm to book 1 room for 5 days at the Shangri-La Hotel, starting from the 15th in Vancouver.
+User: Yes, that is confirmed.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Shangri-La Hotel, stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Shangri-La Hotel in Vancouver has been successfully confirmed. The hotel is located at 1128 West Georgia Street. If you have any other questions or need further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

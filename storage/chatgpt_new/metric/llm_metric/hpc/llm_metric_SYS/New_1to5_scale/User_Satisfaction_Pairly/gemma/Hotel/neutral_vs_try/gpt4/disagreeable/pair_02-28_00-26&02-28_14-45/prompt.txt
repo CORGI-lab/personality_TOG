@@ -1,0 +1,84 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in Las Vegas. What do you have for me?
+System: Do you have any preference for the star rating or whether smoking is allowed? This will help me find the best options for you in Las Vegas.
+User: I don't care about the star rating. Just find me something where I can smoke. I don't want to waste my time on useless rules.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: True })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court'}]
+End Search Results
+System: I found several options for you in Las Vegas where smoking is allowed. Here are the details:
+
+1. Budget Suites Of America: This is a 1-star hotel with rooms priced at $44 per night. The address is 2219 North Rancho Drive, and they have 2 rooms available. You can contact them at +1 702-638-1800.
+
+2. Hampton Inn Las Vegas/Summerlin: This 3-star hotel offers rooms at $279 per night. It is located at 7100 Cascade Valley Court, with 3 rooms available. Their contact number is +1 702-360-5700.
+
+3. La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech: A 2-star hotel with rooms priced at $72 per night. The address is 7101 Cascade Valley Court, and they have 1 room available. You can reach them at +1 702-360-1200.
+
+Please let me know if you need further information on any of these hotels or if you'd like to make a reservation.
+User: The Budget Suites Of America sounds good enough. Go ahead and reserve it for me. Make it for two rooms, starting from the 10th for a week. Don't mess it up.
+System: Please confirm that you would like to book 2 rooms at Budget Suites Of America in Las Vegas from 2023-10-10 for a 7-night stay.
+User: Yeah, that's right. Confirm it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-10, location: Las Vegas, number_of_rooms: 2, place_name: Budget Suites Of America, stay_length: 7 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking at Budget Suites Of America in Las Vegas has been successfully confirmed. You have reserved 2 rooms starting from 2023-10-10 for a 7-night stay. If there's anything else you need, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Berlin. What do you have?
+System: Do you have any specific preferences for the hotel's star rating, smoking allowance, or number of rooms?
+User: I'm not too bothered about the star rating, but I want a place that allows smoking. Also, make sure it has at least two rooms.
+System: Let me search for hotels in Berlin that allow smoking and have at least two rooms available. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={location: Berlin, smoking_allowed: True, number_of_rooms: 2})
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 383890', 'place_name': 'Holiday Inn Berlin - City West', 'price_per_night': 408, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Rohrdamm 80, 13629'}]
+End Search Results
+System: I found a few options for you in Berlin. One of them is the Adina Apartment Hotel Berlin Mitte, a 4-star hotel that allows smoking and offers two rooms at a price of 160 per night. Would you like more information about this hotel, or should I tell you about another one?
+User: Tell me about another one. I'm not here to settle for just anything.
+System: Another option is the Arcotel John F Berlin, also a 4-star hotel that allows smoking and provides two rooms, priced at 248 per night. Would you like more details about this hotel, or should I continue with another option?
+User: Give me more details about this Arcotel John F Berlin. I need to know what makes it worth that price.
+System: The Arcotel John F Berlin is a 4-star hotel located at Werderscher Markt 11, 10117 in Berlin. It allows smoking and provides two rooms at a price of 248 per night. If you need more specific details, such as amenities or services offered, I'm afraid I don't have that information available at the moment. Would you like to proceed with a reservation at this hotel, or would you like to explore other options?
+User: I want to explore other options. I'm not convinced this place is worth my money without more information.
+System: Another option is the Holiday Inn Berlin - City West, which is also a 4-star hotel that allows smoking and offers two rooms. The price per night is 408. Would you like more details about this hotel, or should I assist you with something else?
+User: None of these options sound appealing. Give me something better, or maybe I'll just find a place myself.
+System: I understand you want to find the right place for your stay. Based on the current options, these are the available hotels that meet your criteria. If you're open to adjusting your preferences, such as considering a different star rating or other amenities, we might find more suitable options. Let me know how you'd like to proceed, and I'll do my best to assist you.
+User: I don't see why I should adjust my preferences. Isn’t it your job to find something that suits me perfectly? Keep looking and find me a hotel that ticks all the boxes.
+System: It seems we've explored the available options that meet your current preferences in Berlin. If you're open to considering different criteria, such as a broader range of star ratings or different amenities, this might help us find a more suitable fit. Please let me know if you're willing to adjust any of the preferences, or if there's anything else specific you'd like me to focus on, and I'll continue searching for you.
+User: I'm not interested in changing my preferences. If you can't find anything, maybe you should work harder. Keep searching and find me something that meets what I asked for.
+System: I understand you're looking for the perfect fit. Based on the current available options, we've reached the limit of hotels that meet all your specified criteria in Berlin. To provide more choices, it might require adjusting preferences or expanding the search in some way. If there's any flexibility, such as considering a different location within Berlin or additional amenities, please let me know, and I'll continue searching diligently to find a hotel that suits your needs.
+User: I don't have time to waste on excuses. Just expand your search to nearby cities or something if you can't find anything in Berlin. I need a hotel that allows smoking and has two rooms. Get it done.
+System: I understand your need for efficiency and urgency. However, I'm only able to search within Berlin as per your request. If you're open to considering nearby areas or adjusting any preferences, such as star ratings or amenities, we could potentially find more options. Please let me know how you'd like to proceed, and I'll do my best to assist you further.
+User: Just expand the search to nearby cities. I need a hotel with smoking rooms and at least two rooms. Figure it out.
+System: I understand your urgency in finding a suitable hotel. However, my current capabilities allow me to search only within Berlin, as you've mentioned. If you're open to adjusting some preferences like considering different star ratings or amenities, we might discover more options that fit your needs. Please let me know if you’re willing to make any adjustments, and I’ll continue the search with those considerations.
+User: Why am I even dealing with this? Just expand the search to another city already. I need smoking rooms and two rooms minimum, and I don’t care how you do it, just get it done.
+System: I understand your frustration and I want to assist you in finding the right hotel. However, as my current capabilities are limited to searching within Berlin, it's essential to explore other preferences like star ratings or amenities to widen the options. Please let me know if you’re open to any adjustments, and I’ll do my best to find what you’re looking for within the scope of Berlin.
+User: Just try what I asked. Expand the search to another city nearby Berlin. I want smoking rooms and at least two rooms. You can handle that, right?
+System: I understand your determination to find the right hotel. Unfortunately, my search capabilities are restricted to Berlin at the moment. However, if you're flexible with criteria such as star ratings or amenities, I might be able to provide more options in Berlin. Please let me know how you'd like to proceed, and I'll do my best to assist you further.
+User: Forget it. I'll just find a place myself since this is clearly going nowhere.
+System: I'm sorry I couldn't meet your expectations. If you need further assistance in the future or have any other inquiries, feel free to reach out. Safe travels and best of luck with your search!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

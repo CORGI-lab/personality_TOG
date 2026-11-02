@@ -1,0 +1,151 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm kinda hungry. Maybe somewhere in San Francisco?
+
+System: Okay, I can help with that. What type of cuisine are you in the mood for?
+
+User: Umm, I don't know, anything's fine, really. Surprise me?
+
+System: Okay, how about American cuisine?
+
+User: Uh, sure, American sounds... okay.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: I found three American restaurants in San Francisco: 1760, 25 Lusk, and 3rd Cousin. 1760 and 3rd Cousin do not serve alcohol, while 25 Lusk does. All three are in the expensive price range. Do any of these sound good?
+
+User: Expensive, huh? Maybe not. Got anything cheaper? I'm not really trying to spend a ton.
+
+System: Okay, let me see what other American restaurants I can find in San Francisco with a different price range.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: I found three American restaurants in San Francisco that are in the moderate price range: Academy Bar And Kitchen, Alba Ray's, and Aliment. Alba Ray's serves alcohol, while Academy Bar And Kitchen and Aliment do not. Do any of those sound good?
+
+User: Alba Ray's sounds... okay, I guess. Tell me more about it.
+
+System: Alba Ray's is located at 2293 Mission Street in San Francisco. Their phone number is 415-872-9409. They serve alcohol and are in the moderate price range. Does that sound good?
+
+User: Yeah, Mission Street... sounds familiar. Okay, uh, can you just book it? For, like, tomorrow? I think.
+
+System: What time and how many people?
+
+User: Uh, tomorrow... how about 7 pm? And, uh, maybe like four people? Yeah, four sounds right.
+
+System: Okay, so you want to book a table for four at Alba Ray's in San Francisco for tomorrow, March 2nd, at 7 pm?
+
+User: Yeah, sounds about right. Just go ahead and book it.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Alba Ray's, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 4})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Okay, I have a reservation for 4 at Alba Ray's on March 2nd at 7 pm. Is that correct?
+
+User: Yeah, whatever. Sounds good.
+
+System: Great, your table is booked. You can contact them at 415-872-9409. Is there anything else?
+
+User: Ugh, wait, actually, is there, like, live music there? I kinda want live music.
+
+System: Okay, let me check if Alba Ray's has live music.
+
+APICall (method='FindRestaurants', parameters= {restaurant_name: Alba Ray's, city: San Francisco, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street'}]
+End Search Results
+System: No, Alba Ray's does not have live music. Would you like me to find a different restaurant with live music for you?
+
+User: Uh, yeah, maybe. Is it too late to change the booking? Can you find something with live music? I don't care about the price, I guess.
+
+System: Okay, I can search for American restaurants in San Francisco with live music.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, has_live_music: True})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-292-2583', 'price_range': 'moderate', 'restaurant_name': 'Biscuits & Blues', 'serves_alcohol': False, 'street_address': '401 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-433-6300', 'price_range': 'expensive', 'restaurant_name': 'Bix', 'serves_alcohol': False, 'street_address': '56 Gold Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-923-1138', 'price_range': 'inexpensive', 'restaurant_name': "Mcdonald's", 'serves_alcohol': False, 'street_address': '1100 Fillmore Street', 'date': '2019-03-01', 'party_size': 2, 'time': '17:00'}]
+End Search Results
+System: Okay, I found three American restaurants in San Francisco with live music: Biscuits & Blues, Bix, and McDonald's. Biscuits & Blues is in the moderate price range, Bix is expensive, and McDonald's is inexpensive. None of them serve alcohol. Which one sounds best?
+
+User: McDonald's with live music? Seriously? Uh, just forget about it. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm kinda hungry, wanna find a place to eat in San Francisco, I guess.
+
+System: Okay, San Francisco it is! Any type of food you're in the mood for? Or should I just pick something totally random?
+
+User: Uh, surprise me. Anything's fine, I guess.
+
+System: Alright, let's go with something... hmm... How about Thai food?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Thai})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-379-4505', 'price_range': 'moderate', 'restaurant_name': 'Baan Thai House & Wine Bar', 'serves_alcohol': False, 'street_address': '534 Irving Street'}, {'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-552-8999', 'price_range': 'moderate', 'restaurant_name': 'Basil', 'serves_alcohol': False, 'street_address': '1175 Folsom Street'}, {'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-999-0345', 'price_range': 'moderate', 'restaurant_name': 'Chaiya Thai Restaurant', 'serves_alcohol': False, 'street_address': '272 Claremont Boulevard'}]
+End Search Results
+System: Okay, so we've got a few Thai places in San Francisco. There's Baan Thai House & Wine Bar, Basil, and Chaiya Thai Restaurant. They're all pretty similar, price-wise. Wanna just pick one and roll with it?
+
+User: Ugh, Thai food? Sure, whatever. Just pick one, I don't really care.
+
+System: Okay, how about Baan Thai House & Wine Bar? It's on Irving Street. Sound good enough?
+
+User: Yeah, whatever. Just book it, I guess.
+
+System: Alright, cool. Let's get this over with. What time and how many people?
+
+User: Uh, tomorrow night, maybe? Like, 7ish? And, uh, two people. I think.
+
+System: Okay, so tomorrow at 7 PM for two people at Baan Thai House & Wine Bar. Got it. Just to be super clear, that's in San Francisco. Is that all correct?
+
+User: Yeah, sounds about right. Just get it done.
+
+System: Okay, booking it is. One last thing: what date are we talking about here? I need the actual date to make the reservation.
+
+User: Ugh, fine. How about, uh, next Saturday? The 20th?
+
+System: Okay, so Saturday the 20th it is! Just making sure, that's Saturday, March 20th, 7 PM, two people, at Baan Thai House & Wine Bar in San Francisco. Ready to lock it in?
+
+User: Yeah, yeah, whatever. Just book it already.
+
+System: APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2020-03-20, party_size: 2, restaurant_name: Baan Thai House & Wine Bar, time: 19:00, cuisine: Thai})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-379-4505', 'price_range': 'moderate', 'restaurant_name': 'Baan Thai House & Wine Bar', 'serves_alcohol': False, 'street_address': '534 Irving Street', 'date': '2020-03-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Alright, it's booked. Baan Thai House & Wine Bar, San Francisco, March 20th, 7 PM, party of two. You're all set. Don't forget!
+
+User: Cool, cool. Whatever. Does the place have, like, a phone number or something? I'll probably forget all this anyway.
+
+System: Okay, here you go: the phone number for Baan Thai House & Wine Bar is 415-379-4505. Maybe jot it down somewhere so you don't space it out, alright?
+
+User: Yeah, yeah, whatever. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

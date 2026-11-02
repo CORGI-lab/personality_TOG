@@ -1,0 +1,97 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Palo Alto.
+
+System: Okay, I can help with that. Do you have a particular type of cuisine in mind?
+
+User: No preference.
+
+System: Given you're open to anything, how about we explore some American cuisine in Palo Alto?
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: American})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street'}]
+End Search Results
+System: Alright, I see three American restaurants in Palo Alto: Bazille, Bird Dog, and Bistro Elan. Bazille is located at 550 Stanford Shopping Center and they serve alcohol. Bird Dog is at 420 Ramona Street, and Bistro Elan is at 2363 Birch Street. Which one sounds good to you?
+
+User: Perhaps Bird Dog. Can you reserve a table there?
+
+System: What time and for how many people would you like to reserve a table at Bird Dog?
+
+User: Just two people, tomorrow at 7pm.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Bird Dog, city: Palo Alto, date: 2019-03-02, time: 19:00, party_size: 2})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Okay, I've made a reservation for you at Bird Dog in Palo Alto for tomorrow, March 2nd, at 7pm for a party of two. Just to confirm, Bird Dog is an American restaurant located at 420 Ramona Street. Is that correct?
+
+User: Yes, that's correct. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Berkeley. Maybe Italian?
+
+System: Okay. I can help with that.
+
+APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: Italian})
+
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found three Italian restaurants in Berkeley: Cugini Restaurant, Donato & Co., and Filippo's Berkeley Elmwood. Would you like to know more about any of them?
+
+User: Maybe just find one that's not too crowded.
+
+System: I understand. Since I don't have real-time crowding information, perhaps you would prefer Filippo's Berkeley Elmwood? It's located at 2930 College Avenue and they serve alcohol. Would you like to know anything else about it?
+
+User: No, that's probably fine. Could you reserve a table there?
+
+System: What time would you like to reserve a table for?
+
+User: Around 7 pm?
+
+System: And how many people should I reserve it for?
+
+User: Just one, please. And for tomorrow.
+
+System: Okay, I can reserve a table for one at Filippo's Berkeley Elmwood tomorrow at 7 pm. Is that correct?
+
+User: Yes, that is correct.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Filippo's Berkeley Elmwood, city: Berkeley, date: 2024-05-03, party_size: 1, time: 7:00 })
+```
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': '2024-05-03', 'party_size': '1', 'time': '7:00'}]
+End Search Results
+System: Okay, I have reserved a table for you at Filippo's Berkeley Elmwood for tomorrow, May 3rd, at 7:00 PM for one person. Is there anything else I can help you with?
+
+User: No, that's all. Thanks a lot!
+
+System:  System: You're welcome. Have a pleasant evening.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

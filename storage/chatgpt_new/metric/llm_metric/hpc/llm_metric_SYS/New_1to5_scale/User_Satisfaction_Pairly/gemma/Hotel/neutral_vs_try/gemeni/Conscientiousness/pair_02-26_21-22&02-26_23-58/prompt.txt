@@ -1,0 +1,185 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel. I want to be thorough in my search to ensure I find the best option. Can you assist me?
+
+System: Okay, I can help with that. First, where are you looking to book a hotel?
+
+User: Okay, I'm planning a trip to San Francisco. Let's start the search there.
+
+System: Okay, let's find a hotel in San Francisco. Do you have any preferences for the star rating of the hotel?
+
+User: I'd prefer a hotel with a 4 or 5-star rating. I'm looking for quality and comfort.
+
+System: Okay, I will search for hotels in San Francisco with either a 4 or 5-star rating.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 4, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: No hotels found that match your preferences. Would you like me to search again without the star rating preference?
+
+User: Perhaps broaden the search slightly. Could you look for hotels with at least a 3-star rating in San Francisco? I'd also like to know if they offer free Wi-Fi and what their cancellation policy is.
+
+System: I can search for hotels with at least a 3-star rating in San Francisco. However, I do not have information about free Wi-Fi or cancellation policies. Would you like me to proceed with searching for hotels with a 3-star rating or higher?
+
+User: Yes, please proceed with searching for hotels with at least a 3-star rating. Once you have a few options, I'll cross-reference their Wi-Fi and cancellation policies using external sources.
+
+System: APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 3, star_rating: 4, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: No hotels found that match your preferences. Would you like me to search again without the star rating preference?
+
+User: Okay, please search again without the star rating preference. I'll make sure to thoroughly investigate each option you provide.
+
+System: APICall(method='SearchHotel', parameters={ location: San Francisco })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I found three hotels in San Francisco: Amsterdam Hostel San Francisco (1 star), Argonaut Hotel (4 stars), and Beck'S Motor Lodge (2 stars). Would you like more details on any of these, or would you like me to search for other options?
+
+User: Let's start with the Argonaut Hotel. Can you provide more details about its location, price per night, and the number of rooms available? I want to ensure it aligns with my itinerary and budget.
+
+System: The Argonaut Hotel is located at 495 Jefferson Street in San Francisco. The price per night is $408, and they have 3 rooms available. Does this information help you decide if you want to book a room there?
+User: That's helpful. Before I make a decision, are there any other hotels in San Francisco with a 4 or 5-star rating that you haven't mentioned yet? I'd like to have a comprehensive overview before choosing.
+
+System: Okay, let me check for other 4 or 5-star hotels in San Francisco.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 4, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: I am sorry, I could not find any other 4 or 5 star hotels in San Francisco.
+
+User: Okay, in that case, let's proceed with the Argonaut Hotel. Given the price and location, I'd like to confirm a few things before booking. Can you confirm if the $408 price per night includes all taxes and fees, or are there additional charges I should be aware of? Also, what are the specific check-in and check-out times?
+
+System: I do not have information on whether the $408 price includes all taxes and fees, or the specific check-in and check-out times. However, I can confirm the Argonaut Hotel is located at 495 Jefferson Street in San Francisco, it has a 4-star rating, and they have 3 rooms available, and the phone number is +1 415-563-0800. Would you like to proceed with booking a room there?
+
+User: Before I decide, could you clarify if the Argonaut Hotel allows smoking? I need to ensure it aligns with my preferences.
+
+System: Okay, I can check if the Argonaut Hotel allows smoking.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, place_name: Argonaut Hotel })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}]
+End Search Results
+System: Okay, the Argonaut Hotel does not allow smoking. Are you ready to make a reservation?
+
+User: Yes, I am. I'd like to reserve one of the rooms at the Argonaut Hotel. The check-in date will be October 26, 2024, and I'll be staying for 3 nights.
+
+System: Okay, let me reserve a room for you at the Argonaut Hotel. To confirm, you'd like to book 1 room at the Argonaut Hotel in San Francisco, checking in on 2024-10-26 for a stay of 3 nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-10-26, location: San Francisco, number_of_rooms: 1, place_name: Argonaut Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2024-10-26'}]
+End Search Results
+
+Dialogue B:
+  User: I need to book a hotel in Berlin. I'd like to start by finding a well-reviewed one, preferably with a high star rating.
+
+System: Okay, I can help with that. Do you have any preferences regarding the star rating of the hotel?
+
+User: I would prefer a hotel with at least a 4-star rating. And please, ensure that it has a reputation for cleanliness and excellent service.
+
+System: Given your preference for cleanliness and excellent service, I'll focus on 4-star and 5-star hotels in Berlin.
+
+APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 4})
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+System: Alright, based on your preference, I found three 4-star hotels in Berlin:
+
+1.  **Adina Apartment Hotel Berlin Mitte:** Located at Platz vor dem Neuen Tor 6, 10115, phone number +49 30 2000320. The price per night is $160, and smoking is allowed.
+2.  **Ameron Hotel Abion Spreebogen Waterside:** Situated at Alt-Moabit 99, 10559, phone number +49 30 399200. The price per night is $360, and smoking is not allowed.
+3.  **Arcotel John F Berlin:** Found at Werderscher Markt 11, 10117, phone number +49 30 4050460. The price per night is $248, and smoking is allowed.
+
+Given your emphasis on cleanliness and service, would you like me to share more details about any of these options, or perhaps explore hotels with even higher ratings?
+
+User: Thank you for these options. Before I proceed, can you confirm that all three hotels have been recently inspected and meet current health and safety standards? I'm particularly interested in the Ameron Hotel, given the higher price point. Could you please provide details on their specific cleaning protocols and guest satisfaction ratings related to service quality? Also, is there a possibility to have a non-smoking room at the Adina Apartment Hotel?
+
+System: I understand your concerns about health and safety standards. Unfortunately, I do not have access to real-time inspection reports or guest satisfaction ratings regarding cleaning protocols. However, I can confirm the available details for each hotel.
+
+For the Adina Apartment Hotel Berlin Mitte, while smoking is generally allowed, I cannot confirm the availability of non-smoking rooms specifically. You may want to contact the hotel directly at +49 30 2000320 to inquire about this option.
+
+Regarding the Ameron Hotel Abion Spreebogen Waterside, the information I have indicates that smoking is not allowed.
+
+Would you like me to provide any other information about these hotels based on the available details, such as the number of rooms or street address?
+
+User: Thank you. Before I make a decision, can you tell me the number of rooms available at the Ameron Hotel and the Arcotel John F Berlin? I also need to know if they offer guaranteed reservation options and what their cancellation policies are. I want to make sure I understand all the terms before committing.
+
+System: I do not have access to real-time availability or specific details on guaranteed reservation options and cancellation policies. However, I can share the number of rooms available, according to my information.
+
+*   **Ameron Hotel Abion Spreebogen Waterside:** has 2 rooms.
+*   **Arcotel John F Berlin:** has 2 rooms.
+
+For details on guaranteed reservations and cancellation policies, please contact the hotels directly. The phone number for Ameron Hotel is +49 30 399200, and for Arcotel John F Berlin, it's +49 30 4050460.
+
+Would you like to explore other options or get more information about these hotels based on the details I have, such as the street address or price per night?
+
+User: Given the limited information and the need to ensure a smooth and predictable stay, I think I'll proceed with the Ameron Hotel Abion Spreebogen Waterside. Can you book a room for me? I'll be arriving on October 26th and staying for four nights.
+
+System: Okay, I can help you with that. To finalize the reservation at the Ameron Hotel Abion Spreebogen Waterside, I need a bit more information. Could you please specify the year you plan to check in on October 26th?
+
+User: I plan to check in on October 26th, 2024. Please confirm the booking for one room for four nights. I'd also appreciate it if you could provide the exact check-in and check-out times associated with this reservation.
+
+System: I do not have access to real-time check-in and check-out times. However, I can proceed with the reservation for one room at the Ameron Hotel Abion Spreebogen Waterside, starting on October 26, 2024, for four nights. If you'd like to know the exact check-in and check-out times, please contact the hotel directly at +49 30 399200.
+
+Shall I proceed with the reservation based on the information I have?
+
+User: Yes, please proceed with the reservation as you've described. I trust that the hotel will provide standard check-in and check-out times. Once the reservation is confirmed, could you please provide me with a confirmation number for my records?
+
+System: I do not have access to a confirmation number, but I can proceed with the reservation for one room at the Ameron Hotel Abion Spreebogen Waterside, starting on October 26, 2024, for four nights.
+
+APICall(method='ReserveHotel', parameters={place_name: Ameron Hotel Abion Spreebogen Waterside, check_in_date: 2024-10-26, stay_length: 4, location: Berlin, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559', 'check_in_date': '2024-10-26'}]
+End Search Results
+System: Okay, I have successfully booked one room at the Ameron Hotel Abion Spreebogen Waterside for you. The check-in date is October 26, 2024, for a stay of four nights.
+
+Would you like any other information, such as the hotel's address or phone number?
+
+User: Yes, please provide the confirmation number and the total cost of the stay, including all taxes and fees. I need to ensure I have a complete record for accounting purposes.
+
+System: I do not have access to the confirmation number or the total cost of the stay, including all taxes and fees. However, the hotel's address is Alt-Moabit 99, 10559, and the phone number is +49 30 399200. You may want to contact the hotel directly to get the confirmation number and the total cost of the stay.
+
+Is there anything else I can assist you with?
+
+User: Okay, I understand. Could you please provide me with the booking reference number from the Ameron Hotel? I need to cross-reference it with my records to ensure everything is correctly documented.
+
+System: I do not have access to the booking reference number. Please contact the hotel directly at +49 30 399200 to get the booking reference number.
+
+Is there anything else I can assist you with?
+
+User: I will contact the hotel directly to confirm the reservation and obtain the reference number. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,129 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in Chicago, please.
+
+System: Okay, I can help with that.
+
+APICall(method='SearchHotel', parameters={ location: Chicago })
+
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street'}, {'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street'}, {'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-894-0800', 'place_name': 'Acme Hotel Company Chicago', 'price_per_night': 222, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '15 East Ohio Street'}]
+End Search Results
+System: Alright, I found a few hotels in Chicago. There's the 3-star AC Hotel By Marriott Chicago Downtown, the 4-star Ace Hotel Chicago, and the 3-star Acme Hotel Company Chicago. Do any of those sound interesting to you?
+
+User: Those all sound fine. Could you tell me the price per night for each, please?
+
+System: Okay, no problem!
+
+AC Hotel By Marriott Chicago Downtown is $342 per night, Ace Hotel Chicago is $132 per night, and Acme Hotel Company Chicago is $222 per night. Does one of these prices stand out to you?
+
+User: The Ace Hotel Chicago sounds reasonable. Could you tell me more about it?
+
+System: Okay, Ace Hotel Chicago is a 4-star hotel located at 311 North Morgan Street. They do not allow smoking and have 1 room available. The phone number is +1 312-764-1919. Is there anything specific you'd like to know about it?
+
+User: That sounds like a decent option. How far is it from the city center?
+
+System: I am sorry, that information is not available. However, would you like to proceed with a reservation at the Ace Hotel Chicago?
+
+User: It sounds suitable. Yes, let's book a room there. I'll be arriving on the 15th and staying for three nights.
+
+System: Okay, I can help you with that! To confirm, you'd like to book a room at the Ace Hotel Chicago, arriving on the 15th for a three-night stay. Could you please specify the year and the number of rooms you will need?
+
+User: Yes, that's correct. I'd like to book one room at Ace Hotel Chicago, arriving on December 15th, 2024, for three nights.
+
+System:  System: Great! Just to confirm, you want to reserve one room at Ace Hotel Chicago, arriving on December 15th, 2024, for a three-night stay. Is that all correct?
+
+User: Yes, that is perfectly correct.
+
+System: Okay, perfect! One moment while I confirm the details with the hotel.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-12-15, location: Chicago, number_of_rooms: 1, place_name: Ace Hotel Chicago, stay_length: 3 })
+
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street', 'check_in_date': '2024-12-15'}]
+End Search Results
+System: Fantastic! I've successfully booked one room for you at the Ace Hotel Chicago, arriving on December 15th, 2024, for a three-night stay! Is there anything else I can assist you with today?
+
+User: That's perfect. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: I'm open to suggestions. Perhaps something mid-range, like a 3 or 4 star hotel?
+
+System: Okay, searching for hotels in San Francisco.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 3})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: I found a few options for you. There's the Bei Hotel San Francisco, the Beresford Arms Hotel, and the Chancellor Hotel On Union Square, all with 3 stars. Would you like to know more about any of these?
+
+User: The Bei Hotel San Francisco sounds promising. Can you tell me the price per night and if smoking is allowed?
+
+System: Certainly. The Bei Hotel San Francisco costs $351 per night and smoking is allowed. Does that sound good?
+
+User: $351 is a bit steep. Are there any 4-star hotels that are non-smoking and perhaps a little less expensive? I'm flexible, but prefer to stay under $300 if possible.
+
+System: Okay, let me check for 4-star hotels in San Francisco that don't allow smoking and are priced under $300.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 4, smoking_allowed: False})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-348-1111', 'place_name': 'Hotel Zelos San Francisco', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '12 4th Street'}]
+End Search Results
+System: Alright, I found three 4-star hotels in San Francisco that don't allow smoking. The Argonaut Hotel is priced at $408 per night, Hotel Spero is $80 per night, and Hotel Zelos San Francisco is $96 per night. Are either Hotel Spero or Hotel Zelos San Francisco of interest, given your budget?
+
+User: Hotel Spero sounds reasonable. What's the address and phone number?
+
+System: Okay, the address for Hotel Spero is 405 Taylor Street, and the phone number is +1 415-885-2500. Would you like to proceed with a reservation at Hotel Spero?
+
+User: Yes, Hotel Spero sounds like a good fit. Let's book that. My check-in date is tomorrow, and I'll be staying for 3 nights.
+
+System: Okay, I can help you with that. Just to confirm, you would like to book a room at Hotel Spero in San Francisco, checking in tomorrow for a 3-night stay. Could you please specify the exact date you'd like to check in and how many rooms you'll need?
+
+User: Check-in date is July 8th, and I'll need one room, please.
+
+System: Okay, just to confirm, you'd like to book one room at Hotel Spero in San Francisco, with check-in on July 8th for a 3-night stay. Is that correct?
+
+
+User: Yes, that is correct. Please go ahead and make the reservation.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={'place_name': 'Hotel Spero', 'check_in_date': '2024-07-08', 'stay_length': 3, 'location': 'San Francisco', 'number_of_rooms': 1})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street', 'check_in_date': '2024-07-08'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street', 'check_in_date': '2024-07-08'}]
+End Search Results
+System: Excellent! Your reservation at Hotel Spero in San Francisco for one room, checking in on July 8th for a 3-night stay, is confirmed.
+
+User: Great! Thank you for confirming all the details. 
+
+System: You're welcome! Is there anything else I can assist you with regarding your reservation or anything else at all?
+
+User: No, that's all in order. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

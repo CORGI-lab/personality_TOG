@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco.
+System: What kind of cuisine are you interested in? For example, Italian, Mexican, or something else?
+User: Italian would be fine.
+System: Alright, I'll find some Italian restaurants in San Francisco for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco for you. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They serve alcohol. Would you like more details about this restaurant or information about another option?
+User: Can you tell me if they have any quiet spots or private seating areas?
+System: Unfortunately, I don't have information about quiet spots or private seating areas at 54 Mint Ristorante Italiano. Would you like to know more about another restaurant, or is there anything else I can assist you with?
+User: Do you have another option that might be more suitable for a quieter experience?
+System: Certainly! Another option is Allegro Romano, located at 1701 Jones Street. While I don't have specific information about quiet spots, they don't have live music, which might make for a quieter dining experience. Would you like more details about Allegro Romano, or would you prefer information about a different restaurant?
+User: Allegro Romano sounds okay. Can you make a reservation for two people tomorrow evening around 7 pm?
+System: For making a reservation at Allegro Romano, I need to confirm a few details. Can you please specify the date for the reservation?
+User: Tomorrow's date is fine.
+System: Thank you for confirming. I will proceed to make a reservation for two people at Allegro Romano, located at 1701 Jones Street in San Francisco, for tomorrow at 7 pm. Please hold on for a moment while I complete the reservation. 
+
+APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: [insert tomorrow's date], party_size: 2, restaurant_name: Allegro Romano, time: 19:00})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street', 'date': "[insert tomorrow's date]", 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at Allegro Romano, located at 1701 Jones Street in San Francisco, has been successfully made for tomorrow at 7 pm. If you need any further assistance or have any other questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a quiet restaurant in Berkeley. Can you help me find one? I prefer something with a simple menu, maybe even vegetarian options.
+System: Sure, I can help with that. Can you clarify if you have any specific price range in mind for the restaurant?
+User: I'm not too concerned about the price, but it would be nice if it's not too expensive.
+System: Great, thank you for the information. I'll look for vegetarian-friendly restaurants in Berkeley. Let's see what we can find. APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Vegetarian, price_range: moderate})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Vegetarian', 'has_live_music': False, 'phone_number': '510-658-8458', 'price_range': 'moderate', 'restaurant_name': 'Great Wall | Chinese Restaurant', 'serves_alcohol': False, 'street_address': '6247 College Avenue'}, {'city': 'Berkeley', 'cuisine': 'Vegetarian', 'has_live_music': False, 'phone_number': '510-704-0174', 'price_range': 'moderate', 'restaurant_name': 'Himalayan Flavors', 'serves_alcohol': False, 'street_address': '1585 University Avenue'}, {'city': 'Berkeley', 'cuisine': 'Vegetarian', 'has_live_music': False, 'phone_number': '510-549-0612', 'price_range': 'moderate', 'restaurant_name': 'Thai Delight Cuisine', 'serves_alcohol': False, 'street_address': '1700 Shattuck Avenue'}]
+End Search Results
+System: Here are a few vegetarian-friendly options in Berkeley that you might like. "Great Wall | Chinese Restaurant" is located at 6247 College Avenue, "Himalayan Flavors" can be found at 1585 University Avenue, and "Thai Delight Cuisine" is on 1700 Shattuck Avenue. None of these places have live music, and they don't serve alcohol, ensuring a quiet dining experience. If you need more details or have another preference, feel free to let me know!
+User: Could you tell me more about Thai Delight Cuisine? Like what time they're open and if there's any parking nearby?
+System: Unfortunately, I don't have information on the opening hours or parking options for Thai Delight Cuisine. However, you can contact them directly at 510-549-0612 for more details. If there's anything else you'd like to know or another restaurant you're curious about, feel free to ask!
+User: Is there another vegetarian option you recommend? Maybe something with a smaller seating area for a quieter atmosphere.
+System: Another option you might find appealing is "Himalayan Flavors," which is located at 1585 University Avenue. While I don't have detailed seating information, its moderate size and vegetarian-friendly menu could offer the quieter atmosphere you're seeking. You can reach them at 510-704-0174 for more specific inquiries about their seating arrangements or any other details you might need. Let me know if there's anything else I can assist with!
+User: Is it possible to make a reservation at Himalayan Flavors for a small party? If so, I'd like to reserve a table for two.
+System: What date and time would you like to make the reservation for at Himalayan Flavors in Berkeley?
+User: Tomorrow evening around 7 PM would be ideal.
+System: Great! To complete your reservation at Himalayan Flavors for tomorrow evening, could you please confirm the date and party size? I have you down for a table for two at 7 PM.
+User: Yes, that's correct. A table for two at 7 PM tomorrow.
+System: Thank you for confirming. I'll proceed with your reservation at Himalayan Flavors in Berkeley for a table for two at 7 PM tomorrow. APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Himalayan Flavors', city: 'Berkeley', date: '2023-10-22', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Vegetarian', 'has_live_music': False, 'phone_number': '510-704-0174', 'price_range': 'moderate', 'restaurant_name': 'Himalayan Flavors', 'serves_alcohol': False, 'street_address': '1585 University Avenue', 'date': '2023-10-22', 'party_size': '2', 'time': '19:00'}, {'city': 'Berkeley', 'cuisine': 'Vegetarian', 'has_live_music': False, 'phone_number': '510-704-0174', 'price_range': 'moderate', 'restaurant_name': 'Himalayan Flavors', 'serves_alcohol': False, 'street_address': '1585 University Avenue', 'date': '2023-10-22', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Himalayan Flavors in Berkeley has been successfully booked for two people at 7 PM tomorrow. The restaurant is located at 1585 University Avenue. If you have any more questions or need further assistance, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

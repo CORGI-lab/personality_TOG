@@ -1,0 +1,103 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Vancouver, please.
+System: Do you have any preferences for the star rating or smoking allowance for the hotel in Vancouver?
+User: I prefer a non-smoking hotel. As for the star rating, something modest would be fine.
+System: Thank you for sharing your preferences. I'll search for a non-smoking hotel in Vancouver with a modest star rating. Please hold on for a moment.  
+APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False, star_rating: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a few options for you in Vancouver. One option is the Atrium Inn Vancouver, which is a non-smoking hotel with a 3-star rating. The price per night is $228. Would you like more information on this option, or should I tell you about another hotel?
+User: Can you tell me about another hotel option?
+System: Another option is the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. It is also a non-smoking hotel with a 3-star rating, and the price per night is $72. Would you like more details on this hotel, or should I provide information about another one?
+User: The Best Western Plus Chateau Granville Hotel sounds reasonable. Can you book it for me?
+System: Certainly! Before I proceed with the booking, could you please let me know the check-in date and the number of nights you plan to stay?
+User: I plan to check in on the 15th and stay for four nights.
+System: Please confirm that you would like to reserve a room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, with a check-in date of 2023-11-15, for a stay of four nights. Should I proceed with booking one room, or would you need more?
+User: Yes, please proceed with booking one room.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., stay_length: 4 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver has been successfully confirmed. The check-in date is 2023-11-15, for a stay of four nights. If you need the hotel's contact information, it is +1 604-669-7070, and the address is 1100 Granville Street. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in New York. Can you find one for me?
+System: Do you have any specific star rating or preferences regarding smoking allowance in the hotel? If not, I can choose a random option for you.
+User: No preference for smoking. A 3-star hotel would be fine.
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 3, smoking_allowed: dontcare })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: I found a 3-star hotel named 11 Howard in New York, which allows smoking. Would you like more information about it, or should I proceed with another option?
+User: Could you provide more information about the hotel, like the price per night and the address?
+System: The hotel 11 Howard in New York has a price of $270 per night, and the address is 11 Howard Street. Would you like to proceed with booking this hotel, or do you want to explore other options?
+User: Please check if there are any cheaper options available.
+System: The Adria Hotel & Conference Center is a more affordable 3-star option in New York, with a price of $234 per night. The address is 221-17 Northern Boulevard, Bayside, and it allows smoking. Would you like to proceed with booking this hotel, or do you want more information about other options?
+User: Are there any other hotels that are even less expensive?
+System: The Aloft Harlem is another 3-star hotel option in New York, priced at $243 per night. It does not allow smoking. The address is 2296 Frederick Douglass Boulevard. Would you like to proceed with booking this hotel, or do you prefer another option?
+User: Could you check if there's a 3-star hotel that is under $200 per night?
+System: I'm sorry, but I couldn't find any 3-star hotels under $200 per night in New York based on the current search results. Would you like me to search for hotels with a different star rating or any other preferences you might have?
+User: What about a 2-star hotel? Can you find one under $200 per night?
+System: Let me search for 2-star hotels in New York under $200 per night. Please hold on for a moment. APICall(method='SearchHotel', parameters={ location: New York, star_rating: 2, price_per_night: 200, smoking_allowed: dontcare })
+Search Results
+
+End Search Results
+System: I'm sorry, but it seems that there are no 2-star hotels under $200 per night in New York based on the current search results. Would you like me to try searching with a different star rating or adjust other preferences to help find a suitable option?
+User: Let's try a 1-star hotel instead. Can you find anything under $200 per night?
+System: Let me search for 1-star hotels in New York under $200 per night for you. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 1, price_per_night: 200, smoking_allowed: dontcare })
+Search Results
+
+End Search Results
+System: I'm sorry, but it seems that there are no 1-star hotels under $200 per night in New York based on the current search results. Would you like me to adjust the search criteria, such as increasing the budget or considering different star ratings, to help find a suitable option?
+User: No, I think I will stick to a 3-star hotel. Could you check for any other options that are not too expensive?
+System: I can continue searching for more 3-star hotel options in New York for you. Please hold on for a moment while I perform the search. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 3, price_per_night: dontcare, smoking_allowed: dontcare })
+Search Results
+
+End Search Results
+System: I'm sorry, but it seems that there are no additional 3-star hotel options available in New York based on the current search results. Would you like me to adjust the search criteria, such as considering a different star rating or location, to help find a suitable option?
+User: Could you check if there are any 3-star hotels in a quieter area of New York that might be more affordable?
+System: I'm sorry, but I don't have specific information about quieter areas within New York from the current search results. However, I can perform a search for 3-star hotels in New York once more and see if there are any other available options. Please hold on for a moment while I perform the search.
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 3, smoking_allowed: dontcare })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: Based on the search results, I found the following 3-star hotels in New York: 11 Howard at $270 per night, Adria Hotel & Conference Center at $234 per night, and Aloft Harlem at $243 per night. All these options have been previously mentioned. Would you like to proceed with booking one of these hotels, or do you need more information about any of them?
+User: I think I'll go with the Adria Hotel & Conference Center. Can you make a reservation for me?
+System: Sure! To proceed with the reservation at the Adria Hotel & Conference Center, could you please let me know the check-in date and the number of days you plan to stay? Additionally, how many rooms would you like to book?
+User: Check-in on the 10th for five days and one room, please.
+System: Please confirm to book 1 room for 5 days at the Adria Hotel & Conference Center in New York, with a check-in date of the 10th.
+User: Yes, please go ahead and confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: New York, number_of_rooms: 1, place_name: Adria Hotel & Conference Center, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside', 'check_in_date': '2023-11-10'}]
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

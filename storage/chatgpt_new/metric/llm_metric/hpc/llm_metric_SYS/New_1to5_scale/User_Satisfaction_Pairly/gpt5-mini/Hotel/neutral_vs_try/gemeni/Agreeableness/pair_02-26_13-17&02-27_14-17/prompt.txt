@@ -1,0 +1,122 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hi, I'd like to find a hotel in San Francisco, please. I'm hoping you can help me find a good one.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating of the hotel?
+
+User: Oh, not really. Anything that's clean and comfortable would be lovely. I'm not too fussy!
+
+System: Okay, searching now!
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: dontcare })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I found a few options in San Francisco. There's the Amsterdam Hostel San Francisco, a 1-star hotel, with rooms starting at $24 a night. There's also the Argonaut Hotel, a 4-star hotel, with rooms starting at $408 per night. And Beck's Motor Lodge, a 2-star hotel, has rooms for $60 a night. Do any of those sound appealing?
+
+User: Oh my, those all sound...interesting. The Argonaut sounds lovely but might be a bit much for my budget. Could you perhaps see if there are any 3-star hotels available? I'm sure they'd be perfectly comfortable and a bit easier on the wallet.
+
+System: Okay, let me check for 3-star hotels in San Francisco for you.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: Alright, I've found a few 3-star hotels in San Francisco for you. There's the Bei Hotel San Francisco, where rooms start at $351 per night and smoking is allowed. The Beresford Arms Hotel has rooms from $132 per night and smoking is not allowed. And the Chancellor Hotel On Union Square has rooms from $189 per night, where smoking is also not allowed. Do any of these sound like a good fit for you?
+
+User: Oh, the Beresford Arms Hotel sounds nice, especially since smoking isn't allowed. Could you tell me a bit more about it? What's the address, and does it have good reviews, do you know? I just want to make sure it's a reputable place before I consider booking.
+
+System: Okay, I can give you some more information about the Beresford Arms Hotel. The address is 701 Post Street and the phone number is +1 415-673-2600. Unfortunately, I don’t have access to guest reviews, but I can tell you that it's a 3-star hotel and the price per night is $132. Does that help you get a better sense of the place?
+
+User: Yes, that's helpful. Thank you! Knowing the address is great. If it's not too much trouble, could you check if they have rooms available for, say, three nights starting next Tuesday? I'd really appreciate it.
+
+System: Could you please confirm the exact date you'd like to check in next Tuesday? And how many rooms will you need? Once I have that information, I can check availability for you.
+
+User: Oh, goodness, I'm so sorry, I should have been clearer! I'd like to check in next Tuesday, March 5th, and I'll just need one room, please. Thank you so much for your patience with me!
+
+System: Okay, just to confirm, you'd like to book one room at the Beresford Arms Hotel in San Francisco for three nights starting on March 5th?
+
+User: Yes, that's absolutely correct! If it's available, I'd be so grateful if you could book it for me. Thank you again for all your help!
+
+System: APICall(method='ReserveHotel', parameters={ place_name: Beresford Arms Hotel, check_in_date: 2024-03-05, stay_length: 3, location: San Francisco, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street', 'check_in_date': '2024-03-05'}]
+End Search Results
+System: Great! I have a room for you at the Beresford Arms Hotel in San Francisco for three nights starting on March 5th. Your booking is confirmed! The price is $132 per night. You can reach them at +1 415-673-2600. Is there anything else I can help you with today?
+
+User: That's wonderful news! Thank you so much for arranging that for me. I really appreciate your help! Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to look for a hotel in San Francisco, please. I'm hoping you can find something nice for me.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not particularly, I'm open to suggestions! As long as it'
+System: Since you're open to suggestions, I can search for hotels of any star rating in San Francisco. How many rooms do you need?
+
+User: Just one room, please. I'm traveling solo.
+
+System: Okay, I will search for a hotel room in San Francisco.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, number_of_rooms: 1, star_rating: dontcare })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: OK. I see three hotels in San Francisco that match your request: Amsterdam Hostel San Francisco, a 1-star hotel; Argonaut Hotel, a 4-star hotel; and Beck'S Motor Lodge, a 2-star hotel. Would you like to know more about any of these options?
+
+User: Oh, my goodness, a 4-star hotel sounds lovely! Could you tell me a little more about the Argonaut Hotel? I'm sure the others are nice too, but that one caught my eye.
+
+System: Okay, regarding the Argonaut Hotel, it is located in San Francisco at 495 Jefferson Street. The price per night is $408, and their phone number is +1 415-563-0800. Smoking is not allowed. Does this information sound good?
+
+User: Yes, that sounds wonderful. Is it alright if I ask about the smoking policy for the other hotels as well, just to be thorough?
+
+System: Okay, let me check the smoking policies for the other hotels. Amsterdam Hostel San Francisco and Beck'S Motor Lodge also do not allow smoking.
+
+User: Thank you for checking that for me! Since none of them allow smoking, I think I'll stick with the Argonaut Hotel. It sounds perfect. Could you please book a room for me there?
+
+System: Great! I can help you with that. To reserve a room at the Argonaut Hotel, I'll need the check-in date and the length of your stay. Could you please provide that information?
+
+User: Certainly! I'm planning to check in on the 10th and stay for three nights, if that's alright. I really appreciate your help with this.
+
+System: Okay, I need to confirm the month and year for your check-in date. Could you please provide the full check-in date, including the month and year?
+
+User: Oh, of course! I'm so sorry, I should have been more specific. I'd like to check in on December 10th, 2024. Thank you for your patience!
+
+System: Okay, so you want to book 1 room at the Argonaut Hotel in San Francisco, checking in on December 10, 2024, and staying for three nights. Is that correct?
+
+User: Yes, that's absolutely correct! Thank you so much for confirming.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-12-10, location: San Francisco, number_of_rooms: 1, place_name: Argonaut Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2024-12-10'}]
+End Search Results
+System: OK. I have confirmed your reservation at the Argonaut Hotel in San Francisco for one room, checking in on December 10, 2024, and staying for three nights. Your booking is confirmed. Is there anything else I can assist you with?
+
+User: That’s perfect, thank you so much! No, I think that’s all I need. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

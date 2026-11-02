@@ -1,0 +1,117 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm in the mood for an adventure! Let's find a restaurant in San Francisco, somewhere that tickles the senses.
+
+System: Given your adventurous spirit, how about trying a Fusion restaurant? Does that sound good, and is San Francisco still your desired location?
+
+User: Fusion sounds intriguing! Yes, San Francisco is still the place. I'm open to anything, really, but maybe something with a vibrant atmosphere, perhaps with some local art on display?
+
+System: Considering your interest in a vibrant atmosphere, I'll look for Fusion restaurants in San Francisco. Do you have a price range in mind, or any preference for whether they serve alcohol or have live music?
+
+User: Oh, surprise me! No price range in mind, let's be extravagant! Alcohol would be a plus, wouldn't mind finding a place with live music, but it is not a must.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Fusion, serves_alcohol: True, has_live_music: dontcare, price_range: expensive})
+
+Search Results
+
+End Search Results
+System: Given your openness to extravagance and preference for alcohol, I'll focus on the more upscale Fusion restaurants with alcohol in San Francisco. I'll check for live music too, though it's not a must. Let me see what I can find!
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Fusion, serves_alcohol: True, has_live_music: dontcare, price_range: very expensive})
+
+Search Results
+
+End Search Results
+System: Since there were no results with the previous API call, I will broaden the search by removing the expensive price range.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Fusion, serves_alcohol: True, has_live_music: dontcare})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street'}]
+End Search Results
+System: Alright, I found one Fusion restaurant in San Francisco that serves alcohol and has live music: El Valenciano, located at 1153 Valencia Street. The price range is moderate. How does that sound?
+
+User: El Valenciano... hmm, Valencia Street! That sounds like it could have some character. Yes, let's go with that! Can you book a table for me? I'll be dining solo, a party of one, on Friday evening – say, around 8 pm.
+
+System: Okay, let's book a table at El Valenciano in San Francisco for Friday at 8 pm for one person. Could you please provide the date (YYYY-MM-DD) you would like to make the reservation for?
+
+User: Let’s make it for 2024-03-08! I am excited!
+
+System: APICall (method='ReserveRestaurant', parameters= {city: San Francisco, cuisine: Fusion, restaurant_name: El Valenciano, date: 2024-03-08, time: 20:00, party_size: 1})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street', 'date': '2024-03-08', 'party_size': '1', 'time': '20:00'}]
+End Search Results
+System: Perfect! I've made a reservation for you at El Valenciano for Friday, March 8, 2024, at 8:00 PM for a party of one. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm feeling a bit adventurous tonight! Let's find a restaurant in San Francisco, somewhere that sparks the imagination.
+
+System: Do you have any specific cuisine in mind, or are you open to suggestions?
+
+User: Open to suggestions! Maybe something unique or with a creative twist? I'm not feeling anything too ordinary tonight.
+
+System: Okay, since you're feeling adventurous and open to suggestions in San Francisco, how about we try a restaurant with a unique cuisine? I can suggest a restaurant that serves Vietnamese cuisine. Does that sound good?
+
+User: Vietnamese, huh? I'm game! As long as it's not just your standard pho place. Something with a bit of artistry, perhaps? What's the name and vibe?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Vietnamese})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street'}]
+End Search Results
+System: I found three Vietnamese restaurants in San Francisco: Anh Hong, Aux Delices, and Co Nam. Anh Hong and Co Nam both serve alcohol, while Aux Delices does not. All three are in the moderate price range and do not have live music. Which one sparks your interest the most?
+
+User: Hmm, "Aux Delices" sounds intriguing, a little mysterious maybe. Could you tell me more about it? What's the address and maybe a hint of the atmosphere?
+
+System: Okay, Aux Delices is located at 2327 Polk Street in San Francisco. I don't have detailed information about the atmosphere, but I can tell you that it is a Vietnamese restaurant in the moderate price range and does not serve alcohol. Would you like to know their phone number?
+
+User: No, that is fine. I'm curious about "Anh Hong," since it serves alcohol. What's their address, and do you know anything about their ambiance? I am looking for a place with a certain artistic flair.
+
+System: Anh Hong is located at 808 Geary Street in San Francisco. I don't have specific details about the ambiance or artistic flair, but I can confirm they serve alcohol and are in the moderate price range. Is there anything else I can help you with regarding Anh Hong?
+
+User: Do they have any signature dishes or something that sets them apart? Any reviews that mention a creative presentation or unique flavors?
+
+System: Unfortunately, I do not have access to information about signature dishes, creative presentation, or unique flavors. I can only provide information about the restaurant's address, price range, whether they serve alcohol, and if they have live music.
+
+User: Alright, let's go with Anh Hong. I'm trusting my gut here. Can you book a table for two this Saturday at 7:30 PM?
+
+System: Okay, I can help you book a table at Anh Hong for this Saturday at 7:30 PM. Just to confirm, that's Anh Hong in San Francisco for two people on Saturday, [Current Date + Number of Days until Saturday] at 7:30 PM. Is that correct?
+
+User: Spot on! And just to be clear, what is today's date, so I can make sure it is booked for the right day?
+
+System: Today is Thursday, November 9, 2023, so I will book the table for Saturday, November 11, 2023. Is that correct?
+
+User: Perfect! Book it for Saturday, November 11th at 7:30 PM at Anh Hong for two people.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Anh Hong, city: San Francisco, date: 2023-11-11, time: 19:30, party_size: 2})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street', 'date': '2023-11-11', 'party_size': '2', 'time': '19:30'}]
+End Search Results
+System: Great! I have booked a table for two at Anh Hong in San Francisco for Saturday, November 11th at 7:30 PM. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

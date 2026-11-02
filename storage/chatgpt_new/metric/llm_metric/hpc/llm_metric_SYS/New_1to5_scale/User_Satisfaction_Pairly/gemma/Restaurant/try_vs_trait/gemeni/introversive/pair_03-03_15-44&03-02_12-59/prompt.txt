@@ -1,0 +1,90 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: Okay, I can help with that! Are you in the mood for any particular type of cuisine?
+
+User: Maybe something simple, like American.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Alright, I see three American restaurants in San Francisco: 1760, 25 Lusk, and 3rd Cousin. All are on the expensive side. Would you like to hear more about any of them?
+
+User: Perhaps something a bit less expensive?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: Okay, I found three American restaurants in San Francisco with moderate price ranges: Academy Bar And Kitchen, Alba Ray's, and Aliment. Would you like me to provide you with additional information about any of these options?
+
+User: Alba Ray's sounds… okay. Can you tell me the address?
+
+System: Alba Ray's is located at 2293 Mission Street. Is there anything else I can help you with regarding Alba Ray's or another restaurant?
+
+User: No, that's fine. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: Okay. I can help with that. Do you have a particular type of cuisine in mind?
+
+User: Not really, anything is fine.
+
+System: Given your preference, how about we look for an Ethiopian restaurant in San Francisco?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Ethiopian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': 5, 'time': '11:30'}, {'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': False, 'phone_number': '415-285-2728', 'price_range': 'inexpensive', 'restaurant_name': 'Cafe Ethiopia', 'serves_alcohol': False, 'street_address': 'San Francisco'}]
+End Search Results
+System: I found two Ethiopian restaurants in San Francisco: Sheba Piano Lounge and Cafe Ethiopia. Sheba Piano Lounge has live music and serves alcohol, with a moderate price range. Cafe Ethiopia is less expensive and does not serve alcohol. Would either of these interest you?
+
+User: Perhaps the less expensive one, Cafe Ethiopia.
+
+System: Okay, I can provide you with details for Cafe Ethiopia. It's located in San Francisco, is an Ethiopian restaurant, and is in the inexpensive price range. Is there anything specific you'd like to know about it?
+
+User: No, that's enough. Can you make a reservation for me?
+
+System: Could you please specify the date and time you'd like to reserve? Also, how many people will be in your party?
+
+User: Just two people, tomorrow at 7 pm.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Cafe Ethiopia, city: San Francisco, date: 2024-04-19, party_size: 2, time: 7:00 PM, cuisine: Ethiopian})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': False, 'phone_number': '415-285-2728', 'price_range': 'inexpensive', 'restaurant_name': 'Cafe Ethiopia', 'serves_alcohol': False, 'street_address': 'San Francisco', 'date': '2024-04-19', 'party_size': '2', 'time': '7:00 PM'}]
+End Search Results
+System: Okay, I've made a reservation for you at Cafe Ethiopia in San Francisco for tomorrow, April 19, at 7:00 PM for a party of two. Does that sound correct?
+
+User: Yes, that's correct.
+
+System: Okay, your reservation at Cafe Ethiopia is confirmed. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in San Francisco. Could you suggest a place with Italian cuisine?
+System: Let me check for available Italian restaurants in San Francisco. Please hold on a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that might interest you. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. Would you like more information about this restaurant, or would you prefer to hear about another option?
+User: Could you tell me a bit more about 54 Mint Ristorante Italiano, please?
+System: 54 Mint Ristorante Italiano is located at 16 Mint Plaza in San Francisco. It offers a moderate price range and serves alcohol. Unfortunately, it does not feature live music. If you need their contact information, you can reach them at 415-543-5100. Would you like to make a reservation or explore other options?
+User: I would like to make a reservation at 54 Mint Ristorante Italiano. Could you book a table for two people for tomorrow evening at 7:00 pm, please?
+System: To make a reservation at 54 Mint Ristorante Italiano, could you please confirm that you want to book a table for two people in San Francisco for tomorrow evening at 7:00 pm?
+User: Yes, that's correct. Please proceed with the reservation.
+System: Great! I'll proceed with the reservation at 54 Mint Ristorante Italiano for two people tomorrow evening at 7:00 pm in San Francisco. Please hold on while I make the reservation. 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: '54 Mint Ristorante Italiano', city: 'San Francisco', time: '19:00', date: '2023-10-31', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2023-10-31', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at 54 Mint Ristorante Italiano for two people on October 31st at 7:00 pm in San Francisco has been successfully made. If you need any further assistance or details, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to find a restaurant in San Francisco. Can you help me with that?
+System: Certainly! Do you have a particular cuisine in mind, or are you open to exploring different options?
+User: I'm open to exploring different options. What do you suggest?
+System: Let's explore some options. How about trying a Japanese restaurant in San Francisco? It could be an exciting culinary experience. Would you like me to find some Japanese restaurants for you?
+User: Sure, Japanese sounds great. Please go ahead and find some options for me.
+System: Great choice! I'll find some Japanese restaurants in San Francisco for you. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-655-3738', 'price_range': 'expensive', 'restaurant_name': 'Izakaya Sushi Ran', 'serves_alcohol': True, 'street_address': '2223 Market Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-484-1206', 'price_range': 'expensive', 'restaurant_name': 'Motze', 'serves_alcohol': True, 'street_address': '983 Valencia Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-552-4400', 'price_range': 'expensive', 'restaurant_name': 'Nihon Whisky Lounge', 'serves_alcohol': True, 'street_address': '1779 Folsom Street'}]
+End Search Results
+System: I found a few Japanese restaurant options for you in San Francisco. One option is Izakaya Sushi Ran, located at 2223 Market Street. It's an expensive restaurant that serves alcohol. Would you like more information about this restaurant or hear about another option?
+User: Izakaya Sushi Ran sounds interesting. Could you tell me if they have live music there?
+System: Izakaya Sushi Ran does not have live music. If you have any other questions or need further assistance, feel free to ask!
+User: That's alright. Could you recommend another Japanese restaurant in San Francisco, preferably one that's a bit more budget-friendly?
+System: I understand you're looking for something more budget-friendly. While the options I found are all categorized as expensive, let's see if there's a similar restaurant with a moderate price range. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-292-9997', 'price_range': 'moderate', 'restaurant_name': '2g Japanese Brasserie', 'serves_alcohol': True, 'street_address': '601 Van Ness Avenue'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-567-4903', 'price_range': 'moderate', 'restaurant_name': 'Ace Wasabi Rock-n-roll Sushi', 'serves_alcohol': False, 'street_address': '3339 Steiner Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-800-8498', 'price_range': 'moderate', 'restaurant_name': 'Akira Japanese Restaurant', 'serves_alcohol': True, 'street_address': '1634 Bush Street'}]
+End Search Results
+System: I found some more budget-friendly Japanese restaurants in San Francisco for you. One option is 2g Japanese Brasserie, located at 601 Van Ness Avenue. It has a moderate price range and serves alcohol. Would you like more information about this restaurant or hear about another option?
+User: 2g Japanese Brasserie sounds like a good option. Can you make a reservation for me there? I'm looking for a table for two at 7:00 pm tomorrow.
+System: Certainly! Let me confirm the details with you. You would like to reserve a table for two at 2g Japanese Brasserie in San Francisco at 7:00 pm tomorrow. Is that correct?
+User: Yes, that's correct. Please go ahead and make the reservation.
+System: Great, I'll proceed with making the reservation for you. APICall (method='ReserveRestaurant', parameters={restaurant_name: 2g Japanese Brasserie, city: San Francisco, time: 19:00, date: YYYY-MM-DD, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-292-9997', 'price_range': 'moderate', 'restaurant_name': '2g Japanese Brasserie', 'serves_alcohol': True, 'street_address': '601 Van Ness Avenue', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation has been successfully made at 2g Japanese Brasserie for two people at 7:00 pm tomorrow. If you have any other questions or need further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

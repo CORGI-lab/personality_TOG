@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Palo Alto for a dinner reservation. Could you recommend a place with Italian cuisine?
+System: Could you please let me know the date and time for the dinner reservation, as well as the number of people in your party? This information will help me find the best options for you.
+User: The reservation is for this Saturday at 7:00 pm for a party of four.
+System: Thank you for providing the details. I will search for an Italian restaurant in Palo Alto that fits your needs. Please hold on for a moment while I make an API call to find available options for your reservation. 
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: I found a few options for Italian restaurants in Palo Alto. Here are some choices:
+
+1. **Italico Restaurant** at 341 California Avenue. It is an expensive restaurant, and unfortunately, they do not serve alcohol.
+2. **Osteria Toscana** located at 247 Hamilton Avenue. It is also in the expensive price range and does not serve alcohol.
+3. **Vina Enoteca** on 700 Welch Road. It is an expensive option, but they do serve alcohol.
+
+Please let me know which restaurant you prefer, and I can proceed with making your reservation for Saturday at 7:00 pm for a party of four.
+User: I would like to make a reservation at Vina Enoteca since they serve alcohol. Please proceed with the reservation for Saturday at 7:00 pm for four people.
+System: To confirm your reservation at Vina Enoteca, I will proceed with making the booking for Saturday at 7:00 pm for a party of four. Please hold on a moment while I complete the reservation.
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Vina Enoteca, city: Palo Alto, date: 2023-10-07, time: 19:00, party_size: 4})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road', 'date': '2023-10-07', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Vina Enoteca has been successfully made for Saturday, October 7th, at 7:00 pm for a party of four. The restaurant is located at 700 Welch Road in Palo Alto. If you have any further questions or need assistance with anything else, feel free to let me know. Enjoy your dinner!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in San Francisco. Could you help me with that?
+System: Certainly! Could you please specify the type of cuisine you're interested in, such as Italian, Mexican, or any other preference?
+User: I'm interested in Italian cuisine. Could you provide some options within a moderate price range?
+System: Let me find some Italian restaurants in San Francisco with a moderate price range for you. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco within a moderate price range. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza, and they do serve alcohol. Would you like more information about this restaurant, or are you interested in another option like A16 on Chestnut Street or Allegro Romano on Jones Street?
+User: Could you provide more details about 54 Mint Ristorante Italiano, such as if they have live music and their reservation availability for this weekend?
+System: 54 Mint Ristorante Italiano does not feature live music. As for reservation availability, I can help you with that. Could you please specify the date and time you are interested in, as well as the number of people in your party?
+User: I'm looking to make a reservation for four people this Saturday evening around 7:00 pm. Can you check if that's possible?
+System: Let me confirm your reservation request for 7:00 pm on Saturday for four people at 54 Mint Ristorante Italiano. Please hold on while I check the availability. APICall (method='ReserveRestaurant', parameters={restaurant_name: '54 Mint Ristorante Italiano', city: 'San Francisco', cuisine: 'Italian', date: 'YYYY-MM-DD', time: '19:00', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': 'YYYY-MM-DD', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation for four people at 54 Mint Ristorante Italiano on Saturday at 7:00 pm is confirmed. The restaurant is located at 16 Mint Plaza, and you can contact them at 415-543-5100 if you need further assistance. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

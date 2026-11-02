@@ -1,0 +1,112 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. I'm open to suggestions, but I'd prefer something not too expensive.
+
+System: Okay, I'm on it! To find the perfect spot, do you have any cuisine preferences in mind?
+
+User: I'm easy, anything but French would be just fine.
+
+System: Okay, I'm on it! Since you're open to suggestions other than French, how about American cuisine?
+```
+User: American sounds good. Let's see what's available.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: I found three American restaurants in San Francisco that fit your preference for a moderate price range: Academy Bar And Kitchen, Alba Ray's, and Aliment. Would you like to know more about any of them?
+
+User: Tell me a bit about Academy Bar And Kitchen.
+
+System: Okay, sure! Academy Bar And Kitchen is located at 1800 Fillmore Street in San Francisco. Their phone number is 415-775-1800. They serve American cuisine, and their price range is moderate. They do not have live music and do not serve alcohol. Would you like to know anything else about them?
+
+User: That sounds alright. Can you book a table for me there? I'll be with three other people.
+
+System: And what day and time would you like to make a reservation for?
+
+User: Let's say tomorrow evening, around 7:00 PM.
+
+System: Just to confirm, you'd like to book a table for 4 people at Academy Bar And Kitchen in San Francisco for tomorrow, March 2nd, at 7:00 PM?
+
+User: Yes, that's correct. Please proceed with the booking.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Academy Bar And Kitchen, city: San Francisco, date: 2019-03-02, party_size: 4, time: 19:00 })
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: OK. I've made the reservation for you. Your booking has been made for Academy Bar And Kitchen for tomorrow, March 2nd, at 7:00 PM for a party of 4. The restaurant is located at 1800 Fillmore Street. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Palo Alto. I'm open to suggestions, but I'd prefer something not too expensive.
+
+System: Since you're open to suggestions and prefer a moderate price range in Palo Alto, I'll look for a restaurant with those criteria. How does Italian sound?
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian, price_range: moderate})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-326-1626', 'price_range': 'moderate', 'restaurant_name': 'Cafe Pro Bono', 'serves_alcohol': False, 'street_address': '2437 Birch Street'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-324-8033', 'price_range': 'moderate', 'restaurant_name': 'La Strada Ristorante Italiano', 'serves_alcohol': False, 'street_address': '335 University Avenue'}]
+End Search Results
+System: Buca Di Beppo Italian Restaurant, Cafe Pro Bono, and La Strada Ristorante Italiano all fit your criteria. Would you like to know more about any of them?
+
+User: Those all sound fine. Could you tell me more about Cafe Pro Bono?
+
+System: Okay, Cafe Pro Bono is located at 2437 Birch Street in Palo Alto. Their phone number is 650-326-1626. It's an Italian restaurant with a moderate price range, but they do not serve alcohol. Would you like to know anything else?
+
+User: That sounds alright. Could you find me a place that serves alcohol, perhaps still in Palo Alto?
+
+System: I can certainly look for another option. Sticking with Italian cuisine and a moderate price range in Palo Alto, but this time ensuring they serve alcohol, how does that sound?
+
+User: Yes, that sounds good.
+
+System: APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian, price_range: moderate, serves_alcohol: True})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}]
+End Search Results
+System: Alright, I found one restaurant that fits the bill: Buca Di Beppo Italian Restaurant. It's located at 643 Emerson Street in Palo Alto, has a moderate price range, serves alcohol, and is an Italian restaurant. Their phone number is 650-329-0665. Does this sound like a good option for you?
+
+User: Yes, that seems suitable. Could you book a table for me there? I'll need it for tomorrow evening.
+
+System: Certainly. What time tomorrow evening would you like to book a table, and for how many people?
+
+User: I think 7:00 PM would be a good time, and we'll need a table for four.
+
+System: Okay, so you'd like to book a table at Buca Di Beppo Italian Restaurant in Palo Alto for tomorrow at 7:00 PM for a party of four. Is that correct?
+
+User: Yes, that's all correct. Please proceed with the booking.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Buca Di Beppo Italian Restaurant, city: Palo Alto, date: 2019-03-02, time: 19:00, party_size: 4})
+```
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Excellent. I've booked a table for four at Buca Di Beppo Italian Restaurant in Palo Alto for tomorrow, March 2nd, at 7:00 PM. Is there anything else I can assist you with?
+
+User: No, that will be all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

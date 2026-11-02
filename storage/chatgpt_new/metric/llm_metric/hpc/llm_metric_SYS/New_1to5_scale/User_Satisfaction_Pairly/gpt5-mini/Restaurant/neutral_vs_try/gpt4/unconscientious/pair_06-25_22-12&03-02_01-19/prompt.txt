@@ -1,0 +1,67 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm kinda hungry and thinking of finding a spot to eat in Oakland. What do you suggest?
+System: Do you have a particular type of cuisine in mind, or are you open to suggestions?
+User: Uh, I don't know, maybe something like pizza or burgers? I'm not too picky.
+System: Let's find you a nice spot in Oakland! How about we start with pizza? I'll look for some options there. Please hold on for a moment while I search for restaurants. 
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: Italian})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-768-8003', 'price_range': 'expensive', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '5356 College Avenue'}, {'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-350-7619', 'price_range': 'moderate', 'restaurant_name': 'Belotti Ristorante E Bottega', 'serves_alcohol': True, 'street_address': '5403 College Avenue'}, {'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-918-3205', 'price_range': 'moderate', 'restaurant_name': 'Contrasto', 'serves_alcohol': True, 'street_address': '388 Grand Avenue'}]
+End Search Results
+System: I found a few Italian spots in Oakland for you. A16 offers a more upscale dining experience and is located at 5356 College Avenue. If you're looking for something more moderate, Belotti Ristorante E Bottega at 5403 College Avenue and Contrasto at 388 Grand Avenue are both great options. All of these places serve alcohol. Would you like more details on any of these restaurants, or do you have a preference for one?
+User: Uh, I guess Belotti Ristorante E Bottega sounds alright. Can you book a table for me there?
+System: Sure, I can help with that. Could you please let me know the date, time, and the number of people for the reservation at Belotti Ristorante E Bottega in Oakland?
+User: Um, let's do it for tonight at like 7:30 pm, and it'll be for... I think four people should be good.
+System: Great! Let me confirm your reservation details: You would like to book a table for four people tonight at 7:30 pm at Belotti Ristorante E Bottega in Oakland. Is that correct?
+User: Yeah, that sounds about right. Just make sure it's all set.
+System: Perfect! I'll proceed with the reservation. Please hold on for a moment while I make the booking for you.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: Belotti Ristorante E Bottega, city: Oakland, time: 19:30, date: 2023-10-17, party_size: 4})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-350-7619', 'price_range': 'moderate', 'restaurant_name': 'Belotti Ristorante E Bottega', 'serves_alcohol': True, 'street_address': '5403 College Avenue', 'date': '2023-10-17', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Your reservation at Belotti Ristorante E Bottega for four people tonight at 7:30 pm is confirmed. The restaurant is located at 5403 College Avenue in Oakland. If you need any further assistance, feel free to ask. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm feeling kind of lazy today and thinking about grabbing a bite somewhere in San Francisco. Can you help me find a place to eat? Maybe something with Italian food.
+System: Do you have any preferences regarding the price range or any specific features like live music or if the restaurant serves alcohol?
+User: I don't really care about the price or any of that. Just as long as the food is good and it's Italian, I'm down.
+System: Alright, let me find some Italian restaurants for you in San Francisco. Please hold on for a moment while I search for options. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that you might like. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They serve alcohol but do not have live music. Would you like more information about this restaurant, or should I tell you about another option?
+User: Hmm, I'm not sure. Maybe tell me about another option? Something a bit more exciting, if that's even a thing.
+System: Another option is A16, located at 2355 Chestnut Street. This restaurant also serves alcohol and offers a vibrant atmosphere, although it doesn't have live music. Would you like to know more about A16, or should I provide details about the third option?
+User: That sounds interesting, but I'm kind of indecisive right now. Maybe there's a third option that's a bit different or quirky?
+System: The third option is Allegro Romano, located at 1701 Jones Street. This Italian restaurant offers a cozy and intimate setting and does not serve alcohol or have live music. Would you like more details about Allegro Romano, or do you need help deciding between these options?
+User: I’m still not sure, you know? What about a place that’s a bit more lively? Maybe with live music or something fun going on?
+System: Unfortunately, none of the Italian restaurants I found have live music. If you'd like, I can search for another type of cuisine that offers a lively atmosphere with live music. Would you like me to do that, or are you interested in one of the options I've already provided?
+User: You know what, let's just go with the first option, 54 Mint Ristorante Italiano. I guess I'm more in the mood for some regular Italian food after all.
+System: Great choice! If you need the phone number to make a reservation or any further details, feel free to ask. The address for 54 Mint Ristorante Italiano is 16 Mint Plaza, and you can reach them at 415-543-5100. Enjoy your meal! Take care and have a lovely evening!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

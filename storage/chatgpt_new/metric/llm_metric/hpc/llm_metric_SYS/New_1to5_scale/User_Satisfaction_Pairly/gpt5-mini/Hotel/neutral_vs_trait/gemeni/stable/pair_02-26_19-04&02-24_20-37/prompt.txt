@@ -1,0 +1,100 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in San Diego. I'd like to start with that.
+
+System: Okay, I can help you with that.
+
+APICall(method='SearchHotel', parameters={ location: San Diego })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found three hotels in San Diego. Bahia Resort Hotel and Best Western Plus Hacienda Hotel Old Town are both 3-star hotels that do not allow smoking. Best Western Plus Bayside Inn is also a 3-star hotel, but it does allow smoking. Would you like more information on any of these?
+
+User: The Bahia Resort Hotel sounds good. Can you tell me more about it?
+
+System: Okay, the Bahia Resort Hotel is located at 998 West Mission Bay Drive. It's a 3-star hotel with a price of $225 per night. The phone number is +1 858-539-8666 and smoking is not allowed. They have 1 room available. Is there anything else you'd like to know about it?
+
+User: That sounds reasonable. I'd like to book it for, say, five nights, starting next Monday.
+
+System: What date is next Monday and how many rooms will you need?
+
+User: Next Monday is July 8th, and I'll need one room, please.
+
+System: Just to confirm, you would like to book 1 room at the Bahia Resort Hotel for 5 nights starting on July 8th. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-08, location: San Diego, number_of_rooms: 1, place_name: Bahia Resort Hotel, stay_length: 5 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-07-08'}]
+End Search Results
+System: Okay, I have reserved one room for 5 nights at the Bahia Resort Hotel, starting on July 8th. The phone number is +1 858-539-8666 and the address is 998 West Mission Bay Drive. Is there anything else I can help you with?
+
+User: No, that sounds perfect. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to book a hotel in San Diego, please.
+
+System: Okay, I can help with that. To find the perfect hotel for you in San Diego, could you please tell me what star rating you're looking for?
+
+User: A three-star hotel would suit me just fine.
+
+System: APICall(method='SearchHotel', parameters={ location: San Diego, star_rating: 3 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found three hotels in San Diego that match your preference for a three-star rating. They are Bahia Resort Hotel, Best Western Plus Bayside Inn, and Best Western Plus Hacienda Hotel Old Town. Would you like to know more about any of these?
+
+User: Yes, please. Could you tell me about the Bahia Resort Hotel? What's the price per night and do they allow smoking?
+
+System: Okay, for Bahia Resort Hotel in San Diego, the price per night is $225, and smoking is not allowed. Does that information help you in making a decision?
+
+User: That's good to know. What about the Best Western Plus Bayside Inn? Same questions - price per night and smoking policy, please.
+
+System: Alright, for the Best Western Plus Bayside Inn in San Diego, the price per night is $234, and smoking is allowed. Does this help you compare your options?
+
+User: Yes, it does. Knowing that smoking is allowed at the Best Western Plus Bayside Inn is a plus. I think I'd like to go ahead and reserve a room there.
+
+System: Okay, that sounds like a plan. To proceed with the reservation at the Best Western Plus Bayside Inn, I'll need a bit more information. Could you please provide the check-in date and the length of your stay?
+
+User: I'm planning to arrive on the 15th of next month, and I'll be staying for four nights.
+
+System: Okay, just to confirm, you'd like to reserve a room at the Best Western Plus Bayside Inn in San Diego, checking in on the 15th of next month for a four-night stay. Could you please specify the year, and also let me know how many rooms you'll need?
+
+User: Yes, that's correct. Check-in is on the 15th of next month, 2024, and I'll need one room, please.
+
+System:
+```tool_code
+APICall(method='ReserveHotel', parameters={location: San Diego, place_name: Best Western Plus Bayside Inn, check_in_date: 2024-07-15, stay_length: 4, number_of_rooms: 1})
+```
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Okay, I have reserved one room for you at the Best Western Plus Bayside Inn in San Diego, with check-in on July 15, 2024, for a stay of four nights. The price per night is $234. Is there anything else I can assist you with?
+
+User: No, everything sounds perfect. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

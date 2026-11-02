@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Napa that serves Italian cuisine. Could you help me find one?
+System: Certainly! Let me find some Italian restaurants for you in Napa. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Napa, cuisine: Italian})
+Search Results
+[{'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-224-3300', 'price_range': 'expensive', 'restaurant_name': 'Bistro Don Giovanni', 'serves_alcohol': False, 'street_address': '4110 Howard Lane'}, {'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-252-1022', 'price_range': 'expensive', 'restaurant_name': 'Oenotri', 'serves_alcohol': False, 'street_address': '1425 1st Street'}, {'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-254-8006', 'price_range': 'moderate', 'restaurant_name': 'Allegria', 'serves_alcohol': False, 'street_address': '1026 1st Street'}]
+End Search Results
+System: I found a few Italian restaurants in Napa for you. One option is Bistro Don Giovanni, located at 4110 Howard Lane, which has a price range of expensive. Another choice is Oenotri, at 1425 1st Street, also in the expensive range. If you're looking for something more moderate, you might consider Allegria at 1026 1st Street. All these options do not feature live music or serve alcohol. Would you like more details on any of these restaurants?
+User: I'd like more details on Allegria, please.
+System: Certainly! Allegria is an Italian restaurant located at 1026 1st Street in Napa. It falls within a moderate price range. Unfortunately, it does not feature live music or serve alcohol. If you have any other questions or need further assistance with reservations or directions, just let me know!
+User: Could you make a reservation for Allegria for two people this Saturday at 7:00 PM?
+System: Sure! I can help you with that. Can you please confirm the date for this Saturday? Once confirmed, I'll proceed with the reservation for Allegria for two people at 7:00 PM.
+User: Yes, the reservation is for this Saturday.
+System: Great, thank you for confirming! I will now proceed with making the reservation for two people at Allegria in Napa for this Saturday at 7:00 PM. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Allegria', city: 'Napa', date: '2023-10-07', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-254-8006', 'price_range': 'moderate', 'restaurant_name': 'Allegria', 'serves_alcohol': False, 'street_address': '1026 1st Street', 'date': '2023-10-07', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Allegria in Napa for two people on Saturday, October 7th, at 7:00 PM has been successfully made. If you have any other questions or need further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Walnut Creek. Can you help me find a good place to eat?
+System: What type of cuisine are you interested in trying at the restaurant in Walnut Creek? For example, are you interested in Italian, Mexican, or something else?
+User: I'm in the mood for some Italian food. Can you find a nice Italian restaurant for me in Walnut Creek?
+System: APICall (method='FindRestaurants', parameters={city: Walnut Creek, cuisine: Italian})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-943-1094', 'price_range': 'moderate', 'restaurant_name': 'Caffe Delle Stelle Restaurant', 'serves_alcohol': True, 'street_address': '1532 North Main Street'}, {'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-932-1474', 'price_range': 'expensive', 'restaurant_name': 'Massimo Ristorante', 'serves_alcohol': True, 'street_address': '1604 Locust Street'}, {'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-943-6608', 'price_range': 'moderate', 'restaurant_name': 'Montecatini Ristorante', 'serves_alcohol': True, 'street_address': '1528 Civic Drive'}]
+End Search Results
+System: I found a few Italian restaurants in Walnut Creek for you. One option is the Caffe Delle Stelle Restaurant, which is moderately priced and located at 1532 North Main Street. Would you like more information about this restaurant or details about another option?
+User: Could you please tell me if Caffe Delle Stelle has live music or serves alcohol?
+System: Caffe Delle Stelle Restaurant does not have live music, but it does serve alcohol. Would you like more information about this restaurant or details about another option?
+User: Do you have any other Italian restaurant options that might offer live music?
+System: Currently, none of the Italian restaurants I found in Walnut Creek, including Caffe Delle Stelle, Massimo Ristorante, and Montecatini Ristorante, offer live music. Would you like more information about any of these options, or would you like to explore restaurants with different cuisines that might offer live music?
+User: Let's go with Montecatini Ristorante then. Can you please reserve a table for two at 7:00 PM this Friday?
+System: Could you please confirm the date for this Friday so I can proceed with the reservation at Montecatini Ristorante for two people at 7:00 PM?
+User: This Friday is the 20th. Please proceed with the reservation for that date.
+System: Thank you for confirming. I will now proceed to reserve a table for two at Montecatini Ristorante in Walnut Creek on October 20th at 7:00 PM. APICall (method='ReserveRestaurant', parameters={city: Walnut Creek, restaurant_name: Montecatini Ristorante, date: 2023-10-20, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-943-6608', 'price_range': 'moderate', 'restaurant_name': 'Montecatini Ristorante', 'serves_alcohol': True, 'street_address': '1528 Civic Drive', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Montecatini Ristorante in Walnut Creek has been successfully made for two people on October 20th at 7:00 PM. If you need the address, it's located at 1528 Civic Drive. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

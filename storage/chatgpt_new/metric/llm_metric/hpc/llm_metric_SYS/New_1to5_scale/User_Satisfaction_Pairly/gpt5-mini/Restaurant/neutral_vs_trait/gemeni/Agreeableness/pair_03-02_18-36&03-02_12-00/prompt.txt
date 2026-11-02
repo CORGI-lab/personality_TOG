@@ -1,0 +1,106 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a nice restaurant in San Rafael. I'm open to suggestions on the cuisine, anything that's popular and well-regarded would be lovely. I'd like to find and reserve if possible.
+
+System: Given your agreeable nature and willingness to try new things, I would suggest Italian cuisine. Is that alright with you?
+
+User: That sounds delightful! Italian would be wonderful. Could you please find a well-regarded Italian restaurant in San Rafael and see about making a reservation?
+
+System: Do you have a specific date and time in mind for the reservation, as well as the number of people in your party?
+
+User: Oh, of course! For the reservation, would tomorrow evening be alright? Say, around 7:30 PM for a party of four?
+
+System: My apologies, I missed the restaurant name in my previous search. I will need the restaurant name to make a reservation. Let me find the Italian restaurants first, and then we can proceed with the reservation.
+
+APICall (method='FindRestaurants', parameters= {city: San Rafael, cuisine: Italian})
+
+Search Results
+[{'city': 'San Rafael', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-472-7100', 'price_range': 'moderate', 'restaurant_name': "Gaspare's Pizzeria Ristorante", 'serves_alcohol': False, 'street_address': '200 Merrydale Road'}, {'city': 'San Rafael', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-485-0469', 'price_range': 'moderate', 'restaurant_name': 'Il Davide', 'serves_alcohol': False, 'street_address': '901 A Street'}, {'city': 'San Rafael', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-492-9100', 'price_range': 'moderate', 'restaurant_name': 'Ristorante La Toscana', 'serves_alcohol': False, 'street_address': '3751 Redwood Highway'}]
+End Search Results
+System: Okay, I found three Italian restaurants in San Rafael: Gaspare's Pizzeria Ristorante, Il Davide, and Ristorante La Toscana. They are all moderately priced. Would you like to know more about any of them, or do you have a preference?
+
+User: Oh, that's so kind of you to provide options! Il Davide sounds familiar; do you know if they have a particularly nice ambiance or any special features that make them stand out? I’m sure any of them would be lovely, but knowing a bit more might help us decide.
+
+System: Il Davide is located at 901 A Street. I don't have information about the ambiance or special features. Would you like to proceed with the reservation at Il Davide for tomorrow at 7:30 PM for a party of four?
+
+User: Yes, that sounds perfect. I trust your judgment. Let's go ahead and make the reservation at Il Davide for tomorrow at 7:30 PM for four people. Thank you so much!
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Il Davide, city: San Rafael, date: 2024-07-19, time: 19:30, party_size: 4})
+```
+Search Results
+[{'city': 'San Rafael', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-485-0469', 'price_range': 'moderate', 'restaurant_name': 'Il Davide', 'serves_alcohol': False, 'street_address': '901 A Street', 'date': '2024-07-19', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Great! I have successfully made a reservation for you at Il Davide for tomorrow, July 19, at 7:30 PM for a party of four. Is there anything else I can help you with?
+
+User: That's just perfect! Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Rafael, please. I'm open to suggestions!
+
+System: Okay, I can help with that! Is there any particular type of cuisine you're in the mood for?
+
+User: Oh, not really! Anything would be fine, as long as it's a nice place.
+
+System: Okay, how about American cuisine?
+
+User: That sounds lovely! Could you perhaps suggest a place that's not too expensive? I'm trying to be mindful of my budget.
+
+System: Okay, let me check for American restaurants in San Rafael that are moderately priced.
+
+APICall (method='FindRestaurants', parameters= {city: San Rafael, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Rafael', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-454-6450', 'price_range': 'moderate', 'restaurant_name': 'Rangecafe Bar And Grill', 'serves_alcohol': True, 'street_address': '337 Biscayne Drive', 'date': '2019-03-05', 'party_size': 2, 'time': '13:00'}, {'city': 'San Rafael', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-755-6250', 'price_range': 'moderate', 'restaurant_name': "Bj's Restaurant & Brewhouse", 'serves_alcohol': True, 'street_address': '5800 Northgate Mall Suite 159', 'date': '2019-03-11', 'party_size': 2, 'time': '12:00'}, {'city': 'San Rafael', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-456-2425', 'price_range': 'moderate', 'restaurant_name': "San Rafael Joe's", 'serves_alcohol': False, 'street_address': '931 4th Street'}]
+End Search Results
+System: I found three restaurants that fit your criteria. Rangecafe Bar And Grill, Bj's Restaurant & Brewhouse and San Rafael Joe's. Would you like to know more about any of them?
+
+User: Oh, they all sound interesting! Could you tell me a little more about Rangecafe Bar And Grill, please? What kind of atmosphere does it have?
+
+System: Okay, Rangecafe Bar And Grill is an American cuisine restaurant that has a moderate price range. It is located at 337 Biscayne Drive, San Rafael. The phone number is 415-454-6450. It serves alcohol but does not have live music. Does that sound good?
+
+User: That sounds perfectly pleasant! Does it tend to get very crowded, or is it usually a relaxed atmosphere? I'm just hoping for a nice, easygoing evening.
+
+System: I do not have information about how crowded the restaurant usually is. However, I can tell you that the restaurant serves alcohol. Would you like me to book a table for you?
+
+User: Oh, that's alright! I'm sure it'll be fine. It sounds lovely, actually. Yes, please, could you book a table for me?
+
+System: Great! To make the reservation, I need a little more information. What day and time would you like to book a table for at Rangecafe Bar And Grill, and how many people will be in your party?
+
+User: Oh, thank you so much! How about tomorrow evening, say around 7:00 PM? And there will be four of us, if that's alright.
+
+System: Okay, let me book a table for you at Rangecafe Bar And Grill for tomorrow, March 6, 2019, at 7:00 PM for a party of four. Does that sound right?
+
+User: Yes, that's perfect! Thank you for being so helpful.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Rangecafe Bar And Grill, city: San Rafael, date: 2019-03-06, time: 19:00, party_size: 4})
+```
+Search Results
+[{'city': 'San Rafael', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-454-6450', 'price_range': 'moderate', 'restaurant_name': 'Rangecafe Bar And Grill', 'serves_alcohol': True, 'street_address': '337 Biscayne Drive', 'date': '2019-03-06', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Excellent! I have successfully made a reservation for you at Rangecafe Bar And Grill for tomorrow, March 6, 2019, at 7:00 PM for a party of four. Is there anything else I can help you with?
+
+User: No, that will be all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

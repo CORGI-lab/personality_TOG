@@ -1,0 +1,107 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel in Berlin. Could you please help me find one?
+
+System: Okay, I can help with that. How many rooms do you need?
+
+User: I need one room. I'd like to find a hotel with a high star rating – preferably 4 or 5 stars – as I value quality and comfort.
+
+System: Do you have any preference on the smoking allowance?
+
+User: Non-smoking, definitely. And I'd like to know the price per night upfront to ensure it aligns with my budget. I also prefer hotels that are known for their excellent service and cleanliness, so perhaps you could filter based on guest reviews, if possible?
+
+System: I understand. I will search for a non-smoking hotel in Berlin with 1 room and a star rating of 4 or 5. Unfortunately, I don't have access to guest reviews. Would you like me to proceed with the search based on the other criteria?
+
+User: Yes, please proceed with the search. I'd also like to know the street address of the hotels you find, so I can check their proximity to the places I plan to visit.
+
+System: APICall(method='SearchHotel', parameters={ location: Berlin, number_of_rooms: 1, smoking_allowed: False, star_rating: [4, 5] })
+
+<Failed Dialog>
+
+Dialogue B:
+  User: I need to book a hotel room in New York. I'd like to start the search now.
+
+System: Okay, I can certainly help you with that. To ensure I find the most suitable options, could you please specify the dates you're planning to check in and how long you intend to stay?
+
+User: I'm planning to check in on October 27th and will be staying for three nights. I'd also prefer a hotel with a high star rating, ideally four or five stars, and non-smoking rooms are a must.
+
+System: Okay, I understand. Just to confirm, you're looking for a hotel in New York with a 4 or 5-star rating, non-smoking rooms, and you plan to check in on October 27th for a three-night stay. Do you have a preference on the number of rooms you need?
+
+User: Yes, that's correct. I will need one room.
+
+System: Okay, great. I have all the necessary details to find a suitable hotel for you. I will now search for hotels in New York that have a 4 or 5-star rating, offer non-smoking rooms, and are available for a three-night stay starting on October 27th, for one room.
+
+APICall(method='SearchHotel', parameters={location: New York, check_in_date: 2023-10-27, stay_length: 3, number_of_rooms: 1, smoking_allowed: False, star_rating: dontcare})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard', 'check_in_date': '2023-10-27'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-433-9305', 'place_name': 'Aloft Long Island City-Manhattan View', 'price_per_night': 234, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '27-45 Jackson Avenue, Long Island City', 'check_in_date': '2023-10-27'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-513-0003', 'place_name': 'Aloft Manhattan Downtown - Financial District', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '49-53 Ann Street', 'check_in_date': '2023-10-27'}]
+End Search Results
+System: I found three hotels in New York that match your criteria: Aloft Harlem, Aloft Long Island City-Manhattan View, and Aloft Manhattan Downtown - Financial District. All three are 3-star hotels and offer non-smoking rooms. Would you like me to provide you with more details about each of them to help you make a decision?
+
+User: While I appreciate the options, I was specifically looking for a 4 or 5-star hotel. Could you please refine the search to only include hotels that meet that criteria? I'd rather not compromise on the star rating if possible.
+
+System: My apologies, I missed a required parameter. I will refine the search to only include hotels that meet that criteria in New York, with non-smoking rooms and a star rating of 4 or 5, available for your three-night stay starting on October 27th, and for one room.
+
+APICall(method='SearchHotel', parameters={location: New York, check_in_date: 2023-10-27, stay_length: 3, number_of_rooms: 1, smoking_allowed: False, star_rating: 4})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street', 'check_in_date': '2023-10-27'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street', 'check_in_date': '2023-10-27'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 646-744-3100', 'place_name': 'Aka Central Park', 'price_per_night': 232, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '42 West 58th Street', 'check_in_date': '2023-10-27'}]
+End Search Results
+System: Okay, I understand your preference for a 4 or 5-star hotel. This search found three 4-star hotels that meet your requirements: AC Hotel New York Times Square, Ace Hotel, and AKA Central Park. Would you like to know more about these options to help you decide?
+
+User: Yes, please provide more detailed information about the AC Hotel New York Times Square first. I'd like to know the price per night and the exact street address.
+
+System: Okay, I understand. For the AC Hotel New York Times Square, the price per night is $176, and the street address is 260 West 40th Street. Would you like any further details about this hotel, or would you like me to provide information on the other two options as well?
+
+User: That sounds promising. Before I make a decision, could you tell me if the AC Hotel New York Times Square has any on-site parking facilities? I'd also like to know if they offer free Wi-Fi. Knowing these details will help me ensure it meets all my needs for a comfortable and productive stay.
+
+System: I understand you are looking for the availability of on-site parking facilities and free Wi-Fi at the AC Hotel New York Times Square. Unfortunately, this information is not available. I can only see the location, number of rooms, phone number, place name, price per night, smoking allowance, star rating, and street address. Would you like me to provide information on the other two options as well?
+
+User: Yes, please. Let's explore the details of the Ace Hotel next. I'd appreciate knowing the price per night and the street address for that one as well.
+
+System: Okay, for the Ace Hotel, the price per night is $296, and the street address is 20 West 29th Street. Would you like me to provide information on the other option, AKA Central Park, or would you like any further details about Ace Hotel?
+
+User: Let's proceed with the AKA Central Park option. I'd like the price per night and street address for that hotel, please.
+
+System: Okay, for AKA Central Park, the price per night is $232, and the street address is 42 West 58th Street. Do you need any further details about AKA Central Park or any other information to help you make an informed decision?
+
+User: Thank you. Based on the information provided, the AC Hotel New York Times Square seems like the best fit for my needs, considering the price point. Please go ahead and reserve one non-smoking room for me at the AC Hotel New York Times Square for three nights, checking in on October 27th.
+
+System: Okay, I understand you've chosen the AC Hotel New York Times Square. Before I finalize the reservation, could you please confirm the check-in date and the number of nights you'll be staying? You mentioned checking in on October 27th for three nights, but I want to ensure everything is accurate before proceeding.
+
+User: Yes, please proceed with one non-smoking room at the AC Hotel New York Times Square, checking in on October 27th for three nights. All details are correct.
+
+System: APICall(method='ReserveHotel', parameters={place_name: AC Hotel New York Times Square, check_in_date: 2023-10-27, stay_length: 3, number_of_rooms: 1, location: New York})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street', 'check_in_date': '2023-10-27'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street', 'check_in_date': '2023-10-27'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-764-5700', 'place_name': 'Aka Times Square', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '123 West 44th Street', 'check_in_date': '2023-10-27'}]
+End Search Results
+System: Okay, I have located the AC Hotel New York Times Square in our database. Just to confirm, the price per night is $176, the address is 260 West 40th Street, and the phone number is +1 212-398-2700. I have reserved one non-smoking room for you, checking in on October 27th for three nights. Is that correct?
+
+User: Yes, that is correct. Can you please send me a confirmation email with all the reservation details? I'd also like to know the cancellation policy, just in case.
+
+System: I am sorry, I am unable to send a confirmation email or provide the cancellation policy, as I do not have those capabilities. However, the reservation has been made for one non-smoking room at the AC Hotel New York Times Square, checking in on October 27th for three nights. The price per night is $176, and the address is 260 West 40th Street. Is there anything else I can assist you with?
+
+User: No, that's all, thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to search for a hotel in Vancouver.
+System: Do you have any specific requirements for the hotel in terms of star rating or smoking allowance, or should I proceed with a general search for available options in Vancouver?
+User: A general search is fine.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: We found a few options for you in Vancouver. The Shangri-La Hotel is a 5-star hotel with rooms available at $300 per night, but smoking is not allowed. Another 5-star option is the Wedgewood Hotel & Spa Vancouver, with rooms priced at $510 per night and also non-smoking. If you're looking for a hotel that allows smoking, the Auberge Vancouver Hotel is a 4-star hotel that permits smoking and offers rooms at $296 per night. Which option would you like to know more about or proceed with?
+User: I would like to know more about the Auberge Vancouver Hotel, please.
+System: The Auberge Vancouver Hotel is a 4-star hotel located at 837 West Hastings Street in Vancouver. It offers smoking-allowed rooms at a price of $296 per night. If you have any more questions or would like to proceed with a reservation, feel free to let me know!
+User: Could you please reserve a room for me at the Auberge Vancouver Hotel?
+System: Certainly! May I know the check-in date and the length of your stay before I proceed with the reservation at the Auberge Vancouver Hotel?
+User: I would like to check in on the 15th and stay for five nights.
+System: Great! To confirm, you would like to reserve a room at the Auberge Vancouver Hotel, checking in on the 15th for a stay of five nights. Is that correct?
+User: Yes, that's correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Auberge Vancouver Hotel has been successfully confirmed. You'll be staying in Vancouver starting on the 15th for five nights. If there's anything else you'd like to know or arrange, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Chicago. Can you help me find one?
+System: Could you please let me know if you have any specific preferences regarding the star rating, or should I select one based on your comfort?
+User: I prefer something simple. Please look for a 3-star hotel.
+System: APICall(method='SearchHotel', parameters={location: Chicago, star_rating: 3})
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street'}, {'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-894-0800', 'place_name': 'Acme Hotel Company Chicago', 'price_per_night': 222, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '15 East Ohio Street'}, {'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-661-1000', 'place_name': 'Aloft Chicago Downtown River North', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '515 North Clark Street'}]
+End Search Results
+System: I found a few 3-star hotels for you in Chicago. One option is the Ac Hotel By Marriott Chicago Downtown located at 630 North Rush Street, with a price of $342 per night. Would you like more details about this hotel, or should I provide information about another option?
+User: Can you tell me if smoking is allowed at the Ac Hotel By Marriott Chicago Downtown?
+System: Smoking is not allowed at the Ac Hotel By Marriott Chicago Downtown. Would you like information on another hotel or any other details about this one?
+User: No, that's fine. I would like to book a room at the Ac Hotel By Marriott Chicago Downtown.
+System: How many rooms would you like to book, and could you please provide the check-in date and the duration of your stay?
+User: I need one room from the 10th for five nights.
+System: Please confirm that you would like to book 1 room at the Ac Hotel By Marriott Chicago Downtown in Chicago, starting from 2023-11-10 for a duration of 5 nights.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-10, location: Chicago, number_of_rooms: 1, place_name: 'Ac Hotel By Marriott Chicago Downtown', stay_length: 5})
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Ac Hotel By Marriott Chicago Downtown in Chicago has been successfully confirmed. You have reserved 1 room starting from 2023-11-10 for a duration of 5 nights. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

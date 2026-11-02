@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a hotel in Vancouver. Can you help me with that?
+System: Do you have any specific preferences for the hotel's star rating, smoking allowance, or the number of rooms you would like to book in Vancouver?
+User: I prefer a hotel with a 3-star rating, no smoking allowed, and one room.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a 3-star hotel in Vancouver called Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. It allows no smoking and offers rooms for $72 per night. Would you like more details about this hotel or explore other options?
+User: Could you tell me the address of this hotel?
+System: The address of Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. is 1100 Granville Street, Vancouver. Is there anything else you would like to know or do?
+User: Yes, please go ahead and make a reservation for one room.
+System: For making the reservation, could you please confirm the check-in date and the number of nights you plan to stay at Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver?
+User: Check-in on the 10th and stay for four nights, please.
+System: Please confirm that you would like to book one room for four nights at Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, starting from the 10th.
+User: Yes, that is confirmed.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-10, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., stay_length: 4 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking at Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver has been successfully confirmed for one room from October 10th for four nights. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Fresno. Can you help me with that?
+System: Could you please specify any preferences regarding the star rating or smoking allowance for the hotel in Fresno?
+User: No smoking allowed. A decent star rating would be fine.
+System: APICall(method='SearchHotel', parameters={ location: Fresno, smoking_allowed: False })
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-268-1000', 'place_name': 'Doubletree By Hilton Hotel Fresno Convention Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2233 Ventura Street'}, {'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-233-6650', 'place_name': 'Radisson Hotel Fresno Conference Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1055 Van Ness Avenue'}, {'location': 'Fresno', 'number_of_rooms': 1, 'phone_number': '+1 888-287-9400', 'place_name': 'Springhill Suites By Marriott Fresno', 'price_per_night': 87, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '6844 North Fresno Street'}]
+End Search Results
+System: I found a few options in Fresno with no smoking allowed and a decent star rating. Would you like more details about the Doubletree By Hilton Hotel Fresno Convention Center, Radisson Hotel Fresno Conference Center, or Springhill Suites By Marriott Fresno?
+User: Doubletree By Hilton Hotel Fresno Convention Center sounds okay. Can you give me more details about it?
+System: The Doubletree By Hilton Hotel Fresno Convention Center in Fresno is a 3-star hotel. The price per night is $222, and they do not allow smoking. The hotel is located at 2233 Ventura Street. Would you like to proceed with a reservation?
+User: Yes, please make a reservation for me.
+System: How many rooms would you like to reserve, and when would you like to check in? Additionally, please let me know how many days you plan to stay.
+User: I need one room, checking in on the 5th, and I'll stay for five days.
+System: Please confirm that you would like to book 1 room at the Doubletree By Hilton Hotel Fresno Convention Center for 5 days, starting from the 5th of the month.
+User: Yes, that's correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Fresno, number_of_rooms: 1, place_name: Doubletree By Hilton Hotel Fresno Convention Center, stay_length: 5 })
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-268-1000', 'place_name': 'Doubletree By Hilton Hotel Fresno Convention Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2233 Ventura Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your reservation at the Doubletree By Hilton Hotel Fresno Convention Center has been successfully confirmed for 1 room, starting from the 5th of November for 5 days. Is there anything else you need assistance with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,93 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: What type of cuisine would you prefer?
+
+User: Um, maybe Italian.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found three Italian restaurants in San Francisco: 54 Mint Ristorante Italiano, A16, and Allegro Romano. Would you like to know more about any of them?
+
+User: Maybe just tell me about 54 Mint Ristorante Italiano.
+
+System: 54 Mint Ristorante Italiano is located at 16 Mint Plaza in San Francisco. The phone number is 415-543-5100. It's a moderately priced restaurant that serves alcohol and does not have live music. Does that sound good?
+
+User: Okay, um, can you check if they have a table for, uh, one person?
+
+System: For what time and date would you like to reserve a table for one at 54 Mint Ristorante Italiano?
+
+User: Perhaps tomorrow at 7 pm?
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: 54 Mint Ristorante Italiano, city: San Francisco, date: 2019-03-02, party_size: 1, time: 19:00})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2019-03-02', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Great, I have a table for one at 54 Mint Ristorante Italiano for tomorrow, March 2nd, at 7 pm. Is that correct?
+
+User: Yes, that is correct.
+
+System: Perfect, your reservation has been made. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a restaurant in Berkeley.
+
+System: Okay. Do you have a particular type of cuisine in mind?
+
+User: Maybe something simple, like American food?
+
+System: APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: American})
+
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-647-9329', 'price_range': 'moderate', 'restaurant_name': 'B&b Kitchen & Wine Bar', 'serves_alcohol': True, 'street_address': '2116 Shattuck Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-338-3464', 'price_range': 'moderate', 'restaurant_name': 'Beer Baron Bar & Kitchen', 'serves_alcohol': True, 'street_address': '5900 College Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-809-8282', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '2068 Center Street'}]
+End Search Results
+System: I found a few American restaurants in Berkeley. B&b Kitchen & Wine Bar, Beer Baron Bar & Kitchen, and Eureka! are all moderate in price. Would you like to know more about any of them?
+
+User: B\&b Kitchen & Wine Bar sounds okay. Can you tell me its address?
+
+System: The address for B&b Kitchen & Wine Bar is 2116 Shattuck Avenue, Berkeley.
+
+User: Okay, thanks. Can you see if they have any tables free on, say, the 18th of July? Just for myself. I'd like to eat around 7pm.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: B&b Kitchen & Wine Bar, city: Berkeley, date: 2019-07-18, party_size: 1, time: 19:00})
+```
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-647-9329', 'price_range': 'moderate', 'restaurant_name': 'B&b Kitchen & Wine Bar', 'serves_alcohol': True, 'street_address': '2116 Shattuck Avenue', 'date': '2019-07-18', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Alright, I've got a table for one at B&b Kitchen & Wine Bar in Berkeley on July 18th at 7pm. Does that sound right?
+
+User: Yes, that sounds right. Please go ahead and book it.
+
+System: Your table for one at B&b Kitchen & Wine Bar on July 18th at 7pm is confirmed.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

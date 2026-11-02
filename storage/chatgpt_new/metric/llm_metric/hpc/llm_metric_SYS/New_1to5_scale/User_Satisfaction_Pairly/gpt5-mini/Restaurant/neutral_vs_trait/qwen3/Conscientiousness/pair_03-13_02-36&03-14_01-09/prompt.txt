@@ -1,0 +1,97 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need to find a restaurant in Palo Alto to reserve for tomorrow at 7 PM for four people with American cuisine, moderate price range, and serves alcohol.
+System: 
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: American, price_range: moderate, serves_alcohol: True})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-326-8640', 'price_range': 'moderate', 'restaurant_name': 'Cafe Brioche', 'serves_alcohol': True, 'street_address': '445 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-321-3514', 'price_range': 'moderate', 'restaurant_name': 'Palo Alto Grill', 'serves_alcohol': True, 'street_address': '140 University Avenue'}]
+End Search Results
+System: 
+
+I found three restaurants in Palo Alto that meet your criteria for American cuisine, moderate price range, and serving alcohol:  
+1. Bazille: 550 Stanford Shopping Center, phone 650-688-2614  
+2. Cafe Brioche: 445 California Avenue, phone 650-326-8640  
+3. Palo Alto Grill: 140 University Avenue, phone 650-321-3514  
+
+Please confirm which restaurant you'd like to reserve for tomorrow at 7 PM for four people.
+User: 
+
+I'd like to reserve Cafe Brioche. Please confirm the address is 445 California Avenue, phone number 650-326-8640, and that it serves alcohol for tomorrow at 7 PM for four people.
+System: 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Cafe Brioche', city: 'Palo Alto', time: '19:00', date: '2023-10-06', party_size: 4})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-326-8640', 'price_range': 'moderate', 'restaurant_name': 'Cafe Brioche', 'serves_alcohol': True, 'street_address': '445 California Avenue', 'date': '2023-10-06', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: 
+
+Your reservation at Cafe Brioche for October 6th at 7:00 PM for four people is confirmed. The address is 445 California Avenue, phone number is 650-326-8640, and they serve alcohol. Have a great meal!
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I need to find a restaurant in San Francisco for a reservation tomorrow at 7 PM for four people with French cuisine and a moderate price range.
+System: 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: French, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-292-6916', 'price_range': 'moderate', 'restaurant_name': 'Amelie San Francisco', 'serves_alcohol': True, 'street_address': '1754 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-402-5290', 'price_range': 'moderate', 'restaurant_name': 'Aquitaine Wine Bar & Bistro', 'serves_alcohol': False, 'street_address': '175 Sutter Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-986-5673', 'price_range': 'moderate', 'restaurant_name': 'Cafe Bastille', 'serves_alcohol': False, 'street_address': '22 Belden Place'}]
+End Search Results
+System: 
+
+I found a French restaurant in San Francisco with moderate pricing: Amelie San Francisco at 1754 Polk Street. Would you like to reserve a table for four at 7 PM tomorrow?
+User: 
+
+Could you confirm the phone number and whether they serve alcohol at Amelie San Francisco?
+System: 
+
+The phone number for Amelie San Francisco is 415-292-6916, and they do serve alcohol. Would you like to proceed with the reservation for four people at 7 PM tomorrow?
+User: 
+
+Yes, proceed with the reservation. Confirm the address is 1754 Polk Street and they serve alcohol for four people at 7 PM tomorrow.
+System: 
+
+To proceed with your reservation, I need the exact date in YYYY-MM-DD format. Could you please confirm the date for tomorrow's booking?
+User: 
+
+2023-10-06
+System: 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Amelie San Francisco', city: 'San Francisco', time: '19:00', cuisine: 'French', date: '2023-10-06', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-292-6916', 'price_range': 'moderate', 'restaurant_name': 'Amelie San Francisco', 'serves_alcohol': True, 'street_address': '1754 Polk Street', 'date': '2023-10-06', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: 
+
+Your reservation at Amelie San Francisco for 4 people on October 6, 2023, at 7:00 PM is confirmed. The address is 1754 Polk Street, and they serve alcohol. Let me know if you need further assistance!
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

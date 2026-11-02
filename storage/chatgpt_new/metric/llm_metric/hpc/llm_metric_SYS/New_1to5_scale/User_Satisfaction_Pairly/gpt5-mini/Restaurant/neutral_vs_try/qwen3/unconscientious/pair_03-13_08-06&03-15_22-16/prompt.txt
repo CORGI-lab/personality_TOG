@@ -1,0 +1,122 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I'm hungry, find a restaurant in San Francisco.
+System: 
+
+What type of cuisine are you interested in? For example, Mexican, Italian, Japanese, or something else?
+User: 
+
+Mexican, I guess.
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mexican})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-660-7701', 'price_range': 'expensive', 'restaurant_name': 'Cala', 'serves_alcohol': True, 'street_address': '149 Fell Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-431-1826', 'price_range': 'expensive', 'restaurant_name': 'Fenix', 'serves_alcohol': True, 'street_address': '1077 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-926-5630', 'price_range': 'expensive', 'restaurant_name': 'Hecho', 'serves_alcohol': True, 'street_address': '2200 Market Street'}]
+End Search Results
+System: 
+
+I found a Mexican restaurant called Cala located at 149 Fell Street. It's in the expensive price range. Would you like to know more about this restaurant, or would you prefer to see other options?
+User: 
+
+Book it for me.
+System: 
+
+For which time do you want the booking to be?
+User: 
+
+8 pm
+System: 
+
+Great! I'll book Cala in San Francisco for 8 PM. How many people will be joining you?
+User: 
+
+Two.
+System: 
+
+I'll book Cala in San Francisco for today at 8 PM for 2 people. Is that correct?
+User: 
+
+Yeah, sure.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Cala, city: San Francisco, time: 20:00, date: 2023-10-05, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-660-7701', 'price_range': 'expensive', 'restaurant_name': 'Cala', 'serves_alcohol': True, 'street_address': '149 Fell Street', 'date': '2023-10-05', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: 
+
+Your reservation at Cala in San Francisco for 8 PM tonight for 2 people is confirmed. The address is 149 Fell Street. Enjoy your meal!
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I'm hungry, let's find a restaurant in San Francisco. I don't know what I want, just something easy.
+System: 
+
+Got it! San Francisco is a great place to eat. What type of cuisine are you interested in? For example, American, Italian, or Mexican?
+User: 
+
+I don't know. Maybe Italian? Or maybe American. I don't care, just find me a place.
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: 
+
+I found a couple of Italian restaurants in San Francisco: 54 Mint Ristorante Italiano at 16 Mint Plaza and A16 at 2355 Chestnut Street. Would you like more details about either of these?
+User: 
+
+Just book one. I don't care which one. Whatever.
+System: 
+
+Sure! I'll book 54 Mint Ristorante Italiano for you. What time would you like to reserve, and how many people will be joining?
+User: 
+
+7:30 pm, one person. Just book it.
+System: 
+
+Can you please confirm that you want to book a table for 1 person at 7:30 PM today at 54 Mint Ristorante Italiano in San Francisco?
+User: 
+
+That's fine.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: '54 Mint Ristorante Italiano', city: 'San Francisco', time: '19:30', cuisine: 'Italian', date: '2023-10-05', party_size: 1})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2023-10-05', 'party_size': '1', 'time': '19:30'}]
+End Search Results
+System: 
+
+Your reservation at 54 Mint Ristorante Italiano for 1 person at 7:30 PM today in San Francisco has been successfully confirmed. Enjoy your meal!
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

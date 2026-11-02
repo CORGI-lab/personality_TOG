@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in Berkeley. Got any suggestions?
+System: Do you have a particular type of cuisine in mind, or are you open to any suggestions?
+User: I don't know, maybe something like Mexican or whatever. Just as long as it's not too pricey.
+System: Great, let me find some options for you. I'll start by looking for Mexican restaurants in Berkeley that aren't too expensive. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Mexican, price_range: inexpensive})
+Search Results
+
+End Search Results
+System: It seems there are no inexpensive Mexican restaurants available in Berkeley at the moment. Let's try looking for a moderately priced option instead. Please hold on for a moment while I search for you.
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Mexican, price_range: moderate})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue', 'date': '2019-03-13', 'party_size': 4, 'time': '11:30'}, {'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-549-1460', 'price_range': 'moderate', 'restaurant_name': "Celia's Mexican Restaurant", 'serves_alcohol': False, 'street_address': '1841 Euclid Avenue'}, {'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-548-2222', 'price_range': 'moderate', 'restaurant_name': 'El Patio', 'serves_alcohol': True, 'street_address': '2056 San Pablo Avenue'}]
+End Search Results
+System: Here are a few moderately priced Mexican restaurants in Berkeley that you might like:
+
+1. **Comal** - Located at 2020 Shattuck Avenue, this restaurant offers a lively atmosphere and serves alcohol. You can contact them at 510-926-6300.
+
+2. **Celia's Mexican Restaurant** - You can find it at 1841 Euclid Avenue. This spot does not serve alcohol, but it's a cozy choice. Reach out to them at 510-549-1460.
+
+3. **El Patio** - Situated at 2056 San Pablo Avenue, El Patio is another great option that serves alcohol. You can give them a call at 510-548-2222.
+
+Would you like any further details or assistance with a reservation?
+User: Hmm, Comal sounds interesting. Can you reserve a table for me there? Maybe around 7 pm tonight for like 3 people?
+System: Sure! Let me confirm the reservation details with you. You would like to reserve a table for 3 people at Comal in Berkeley at 7 pm tonight, correct? Once you confirm, I'll proceed with making the reservation.
+User: Yeah, that sounds about right. Go ahead and book it.
+System: Great! I'll proceed with the reservation for 3 people at Comal in Berkeley at 7 pm tonight. Please hold on for a moment while I make the booking for you.
+
+APICall (method='ReserveRestaurant', parameters={city: Berkeley, date: 2023-10-19, party_size: 3, restaurant_name: Comal, time: 19:00})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue', 'date': '2023-10-19', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your table for 3 people at Comal in Berkeley has been successfully reserved for 7 pm tonight. If you need to reach them for any reason, you can contact them at 510-926-6300. Enjoy your meal and have a wonderful evening!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a place to eat in San Francisco. Maybe something with Italian food. Do you have any suggestions?
+System: Let me find some Italian restaurants in San Francisco for you. I'll get back to you with the options shortly. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco for you. How about trying 54 Mint Ristorante Italiano? It's located at 16 Mint Plaza and has a moderate price range. They also serve alcohol. Would you like more information or perhaps another suggestion?
+User: Uh, 54 Mint sounds okay, I guess. Can you make a reservation for me there? Maybe around 7 pm, and it's just for me, so a table for one.
+System: Can you confirm that you'd like to make a reservation for one person at 7 pm at 54 Mint Ristorante Italiano in San Francisco? Once I have your confirmation, I'll proceed with the booking.
+User: Yeah, sure. Go ahead and make the reservation for me.
+System: Great! I'll make a reservation for one person at 7 pm at 54 Mint Ristorante Italiano in San Francisco. Please hold on for a moment while I confirm your booking.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: '54 Mint Ristorante Italiano', city: 'San Francisco', time: '19:00', party_size: 1})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Your reservation for one person at 7 pm at 54 Mint Ristorante Italiano in San Francisco has been successfully made. If you need their contact number, it’s 415-543-5100. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

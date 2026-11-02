@@ -1,0 +1,66 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to find a restaurant in Sunnyvale. Could you assist me with that? I'm particularly interested in Italian cuisine.
+System: Sure, I can help with that. Let me find some Italian restaurants in Sunnyvale for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Sunnyvale, cuisine: Italian})
+Search Results
+[{'city': 'Sunnyvale', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-737-8384', 'price_range': 'moderate', 'restaurant_name': "Gumba's", 'serves_alcohol': True, 'street_address': '176 South Murphy Avenue'}, {'city': 'Sunnyvale', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-733-5351', 'price_range': 'moderate', 'restaurant_name': 'Il Postale', 'serves_alcohol': False, 'street_address': '100 South Murphy Avenue'}, {'city': 'Sunnyvale', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-738-2400', 'price_range': 'moderate', 'restaurant_name': "Pezzella's Villa Napoli", 'serves_alcohol': True, 'street_address': '1025 West El Camino Real'}]
+End Search Results
+System: I found a few Italian restaurants in Sunnyvale for you. One option is Gumba's, located at 176 South Murphy Avenue. Would you like more information about this restaurant or any other options?
+User: Could you provide more details about Gumba's, such as whether they serve alcohol, their price range, and if they have live music?
+System: Gumba's is a moderate-priced Italian restaurant located at 176 South Murphy Avenue in Sunnyvale. They do serve alcohol, but they do not have live music. If you need more information or wish to explore other options, feel free to let me know!
+User: I'm interested in making a reservation at Gumba's. Could you please book a table for two this Saturday at 7:00 pm?
+System: Sure, I can assist with that. To proceed with the reservation, could you please confirm the date for the reservation?
+User: The reservation is for this Saturday. Please go ahead and book a table for two at 7:00 pm.
+System: Thank you for confirming the details. Let me proceed with the reservation for you. APICall (method='ReserveRestaurant', parameters={restaurant_name: "Gumba's", city: Sunnyvale, date: 2023-10-14, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Sunnyvale', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-737-8384', 'price_range': 'moderate', 'restaurant_name': "Gumba's", 'serves_alcohol': True, 'street_address': '176 South Murphy Avenue', 'date': '2023-10-14', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Gumba's in Sunnyvale for two people on October 14th at 7:00 pm has been successfully made. If you need any further assistance or have any other questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in San Francisco. I'm interested in Italian cuisine. Could you help me with that?
+System: Sure! Let me find some Italian restaurants in San Francisco for you. Please hold on for a moment while I gather the information. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that might interest you. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. Another is A16, which you can find at 2355 Chestnut Street. Finally, there's Allegro Romano at 1701 Jones Street. All three offer a moderate price range, and both 54 Mint Ristorante Italiano and A16 serve alcohol. Is there a specific one you would like more information about or perhaps make a reservation at?
+User: Could you provide me with the details of A16, such as whether they have live music and their phone number?
+System: A16 is located at 2355 Chestnut Street in San Francisco. They do not have live music, but they do serve alcohol. You can contact them at 415-771-2216. Would you like to make a reservation at A16, or do you need any more information?
+User: Yes, I would like to make a reservation at A16. Could you please book a table for two on October 20th at 7:00 PM?
+System: Could you please confirm that you want to reserve a table for two at A16 in San Francisco on October 20th at 7:00 PM? Once confirmed, I'll proceed with the reservation.
+User: Yes, that is correct. Please proceed with the reservation.
+System: Great! I will now make the reservation for a table for two at A16 in San Francisco on October 20th at 7:00 PM. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: A16, city: San Francisco, time: 19:00, date: 2023-10-20, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 in San Francisco for two people on October 20th at 7:00 PM has been successfully made. If there's anything else you need or any other questions you have, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

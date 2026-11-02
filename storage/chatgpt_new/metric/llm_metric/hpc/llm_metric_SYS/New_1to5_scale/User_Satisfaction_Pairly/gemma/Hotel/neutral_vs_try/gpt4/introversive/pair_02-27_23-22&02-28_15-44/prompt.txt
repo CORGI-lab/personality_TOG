@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Seattle. Could you help me find one?
+System: Do you have any preferences regarding the star rating or smoking allowance for the hotel in Seattle?
+User: I prefer a non-smoking hotel. Could you find one with at least a 3-star rating?
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-596-2302', 'place_name': 'Even Hotel Seattle Downtown - Lake Union', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '527 Fairview Avenue North'}]
+End Search Results
+System: I found a few options for non-smoking hotels in Seattle with at least a 3-star rating. The first option is the Best Western Plus Pioneer Square Hotel Downtown, which is priced at $63 per night and is located at 77 Yesler Way. Would you like more information about this hotel or would you like to hear about another option?
+User: Could you tell me about another option?
+System: The second option is the Courtyard By Marriott Seattle Downtown/Lake Union, priced at $168 per night. It is located at 925 Westlake Avenue North. Would you like more information about this hotel or would you like to hear about the third option?
+User: I'd like to hear about the third option, please.
+System: The third option is Even Hotel Seattle Downtown - Lake Union. It has a 3-star rating and is priced at $216 per night. The hotel is located at 527 Fairview Avenue North. Would you like more information about this hotel, or is there anything else you'd like to know?
+User: Could you give me more details about the Even Hotel Seattle Downtown - Lake Union, please?
+System: The Even Hotel Seattle Downtown - Lake Union is a 3-star, non-smoking hotel. It is priced at $216 per night and is located at 527 Fairview Avenue North. For further details or if there's anything specific you would like to know, please let me know!
+User: I think this sounds suitable. Please go ahead and make a reservation for me.
+System: To proceed with the reservation at Even Hotel Seattle Downtown - Lake Union, please let me know the check-in date, the number of rooms you need, and the length of your stay.
+User: Check-in on the 15th, please. I need one room for a seven-night stay.
+System: Please confirm to book 1 room for 7 nights at the Even Hotel Seattle Downtown - Lake Union starting from the 15th in Seattle.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Seattle, number_of_rooms: 1, place_name: Even Hotel Seattle Downtown - Lake Union, stay_length: 7 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-596-2302', 'place_name': 'Even Hotel Seattle Downtown - Lake Union', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '527 Fairview Avenue North', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking has been successfully confirmed at the Even Hotel Seattle Downtown - Lake Union. If there’s anything else you need or any more information you’d like, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Vancouver. Can you help me find one?
+System: What star rating are you looking for in a hotel in Vancouver? If you don't have a preference, I can search for a variety of options for you.
+User: I don't have a specific star rating in mind. You can show me different options.
+System: Great! I'll find a few options for you. Let me check the available hotels in Vancouver for you. Please give me a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: dontcare })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found several hotels in Vancouver for you. Here are a few options: 
+
+1. Shangri-La Hotel, a luxurious 5-star hotel located at 1128 West Georgia Street, with a price of $300 per night. Please note that smoking is not allowed.
+
+2. Wedgewood Hotel & Spa Vancouver, another 5-star option located at 845 Hornby Street, priced at $510 per night, also non-smoking.
+
+3. Auberge Vancouver Hotel, a 4-star hotel at 837 West Hastings Street, offering rooms at $296 per night, where smoking is permitted.
+
+Would you like more information on any of these, or is there a specific option you are interested in?
+User: Could you tell me more about the Auberge Vancouver Hotel, please?
+System: The Auberge Vancouver Hotel is a 4-star hotel located at 837 West Hastings Street. It offers rooms at $296 per night, and smoking is permitted. If you need more details or would like to proceed with a reservation, please let me know!
+User: I think the Auberge Vancouver Hotel sounds suitable. Can you help me reserve a room?
+System: Certainly! To proceed with the reservation at the Auberge Vancouver Hotel, could you please provide me with your desired check-in date and the length of your stay? Additionally, let me know how many rooms you would like to reserve.
+User: I'll be checking in on the 10th and would like to stay for five days. Just one room will be fine.
+System: To confirm your reservation at the Auberge Vancouver Hotel, please verify that you'd like to book 1 room for 5 days starting from 2023-11-10. Once confirmed, I will proceed with the reservation.
+User: Yes, please go ahead with the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Auberge Vancouver Hotel has been successfully confirmed. You'll be staying for 5 days starting from 2023-11-10. If you need any further assistance or have other questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

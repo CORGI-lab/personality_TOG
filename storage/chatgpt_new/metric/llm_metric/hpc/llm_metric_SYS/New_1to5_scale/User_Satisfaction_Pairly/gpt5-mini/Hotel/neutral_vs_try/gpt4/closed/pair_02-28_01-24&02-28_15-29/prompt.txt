@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I am looking for a hotel in Philadelphia. Can you help me find one?
+System: Do you have any specific preferences for the star rating or smoking allowance for the hotel in Philadelphia?
+User: No smoking, please. A 3-star rating would be fine.
+System: Thank you for providing your preferences. Let me search for a 3-star hotel in Philadelphia that does not allow smoking. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Philadelphia, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 267-298-1700', 'place_name': 'Aloft Philadelphia Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4301 Island Avenue'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-607-2020', 'place_name': 'Aloft Philadelphia Downtown', 'price_per_night': 297, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '101 North Broad Street'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-398-3080', 'place_name': 'Best Western Plus Philadelphia Convention Center Hotel', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1225 Vine Street'}]
+End Search Results
+System: I found a few 3-star hotels in Philadelphia that do not allow smoking. One option is the Aloft Philadelphia Airport, located at 4301 Island Avenue, with a price of $216 per night. Would you like more information on this hotel, or would you prefer details about another option?
+User: Please provide details about another option.
+System: Another option is the Aloft Philadelphia Downtown, located at 101 North Broad Street. The price is $297 per night. Would you like more information about this hotel, or would you like to hear about the next option?
+User: Can you tell me the star rating of Aloft Philadelphia Downtown?
+System: The Aloft Philadelphia Downtown is a 3-star hotel. Would you like more information about this hotel or details about another option?
+User: I'll take the Aloft Philadelphia Downtown. Can you make a reservation for me?
+System: How many rooms would you like to reserve at the Aloft Philadelphia Downtown, and for how many nights? Additionally, please let me know your check-in date so that I can proceed with the reservation.
+User: I need one room for three nights, starting from the 15th.
+System: Please confirm that you would like to reserve 1 room for 3 nights at the Aloft Philadelphia Downtown, starting from 2023-11-15. Once confirmed, I'll proceed with the reservation.
+User: Yes, please confirm the reservation for me.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Philadelphia, number_of_rooms: 1, place_name: Aloft Philadelphia Downtown, stay_length: 3 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-607-2020', 'place_name': 'Aloft Philadelphia Downtown', 'price_per_night': 297, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '101 North Broad Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Aloft Philadelphia Downtown has been successfully confirmed. You have reserved 1 room for 3 nights starting from November 15, 2023. The hotel is located at 101 North Broad Street. If you need any more assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a hotel in Fresno.
+System: Do you have any preferences for the star rating or if smoking is allowed in the hotel?
+User: No smoking, please. A 3-star hotel would be fine.
+System: APICall(method='SearchHotel', parameters={ location: Fresno, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-268-1000', 'place_name': 'Doubletree By Hilton Hotel Fresno Convention Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2233 Ventura Street'}, {'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-233-6650', 'place_name': 'Radisson Hotel Fresno Conference Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1055 Van Ness Avenue'}, {'location': 'Fresno', 'number_of_rooms': 1, 'phone_number': '+1 888-287-9400', 'place_name': 'Springhill Suites By Marriott Fresno', 'price_per_night': 87, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '6844 North Fresno Street'}]
+End Search Results
+System: I found a 3-star hotel named Doubletree By Hilton Hotel Fresno Convention Center. Would you like more details about this hotel, or would you like information on another option?
+User: Is there a different option available?
+System: I have another 3-star hotel option for you: Radisson Hotel Fresno Conference Center. Would you like more details about this hotel, or would you like to hear about another option?
+User: Can you tell me the price per night for the Radisson Hotel Fresno Conference Center?
+System: The price per night for the Radisson Hotel Fresno Conference Center is $222. Would you like any additional information about this hotel, or are you interested in exploring another option?
+User: That price is a bit high. Do you have any other options that are more affordable?
+System: I found another 3-star hotel in Fresno named Springhill Suites By Marriott Fresno, with a price per night of $87. Would you like more details about this hotel?
+User: What is the address of the Springhill Suites By Marriott Fresno?
+System: The address of the Springhill Suites By Marriott Fresno is 6844 North Fresno Street. Is there anything else you would like to know about this hotel?
+User: Is smoking allowed at the Springhill Suites By Marriott Fresno?
+System: Smoking is not allowed at the Springhill Suites By Marriott Fresno. Would you like to proceed with this hotel or need more information?
+User: Yes, I would like to proceed with this hotel. Can you make a reservation for me?
+System: How many rooms would you like to reserve at the Springhill Suites By Marriott Fresno, and what are your check-in date and the length of your stay?
+User: I would like to reserve one room. I'll check in on the 10th and stay for five days.
+System: Please confirm that you want to book 1 room at the Springhill Suites By Marriott Fresno from 2023-10-10 for 5 days.
+User: Yes, that's correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-10, location: Fresno, number_of_rooms: 1, place_name: Springhill Suites By Marriott Fresno, stay_length: 5 })
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': 1, 'phone_number': '+1 888-287-9400', 'place_name': 'Springhill Suites By Marriott Fresno', 'price_per_night': 87, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '6844 North Fresno Street', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking at the Springhill Suites By Marriott Fresno has been successfully confirmed. Is there anything else you need assistance with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

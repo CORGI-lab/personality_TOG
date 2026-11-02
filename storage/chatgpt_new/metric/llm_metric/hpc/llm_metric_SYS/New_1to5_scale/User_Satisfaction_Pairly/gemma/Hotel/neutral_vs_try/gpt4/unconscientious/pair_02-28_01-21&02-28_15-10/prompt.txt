@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Sydney. Can you help me out?
+System: Do you have any preferences for the star rating or smoking allowance for the hotel in Sydney?
+User: I don't really care about the star rating, but I definitely need a place that allows smoking. Can you find something like that?
+System: APICall(method='SearchHotel', parameters={ location: Sydney, smoking_allowed: True })
+Search Results
+[{'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9249 7000', 'place_name': 'Adina Apartment Hotel Sydney Darling Harbour', 'price_per_night': 360, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '55 Shelley Street'}, {'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 8017 8888', 'place_name': 'Breakfree On Clarence', 'price_per_night': 207, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '193-195 Clarence Street'}, {'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 132007', 'place_name': 'Breakfree On George', 'price_per_night': 360, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '653 George Street'}]
+End Search Results
+System: I found a 4-star hotel named Adina Apartment Hotel Sydney Darling Harbour, which allows smoking. Would you like more details or to explore other options?
+User: Uh, I guess that sounds okay. But is there anything cheaper?
+System: Another option is the Breakfree On Clarence, a 3-star hotel that allows smoking, priced at $207 per night. Would you like more details about this option?
+User: Hmm, $207 sounds a bit much. Do you have anything else that's even cheaper?
+System: The most affordable option available is Breakfree On George, a 4-star hotel that allows smoking, with a price of $360 per night. Would you like to know more about this option or explore other preferences?
+User: Wait, how is that cheaper? Can you find something else? Maybe like a 2-star hotel or something?
+System: Unfortunately, there are no 2-star hotels available that allow smoking in Sydney based on the search results. Would you like to adjust your preferences, such as considering a non-smoking hotel? Alternatively, you could consider the Breakfree On Clarence, which is the lowest-priced option at $207 per night among those that allow smoking.
+User: Ugh, fine, let's just go with the Breakfree On Clarence then. Can you book it for me?
+System: To proceed with the booking at Breakfree On Clarence, could you please provide your check-in date and the length of your stay? Also, let me know how many rooms you would like to reserve.
+User: Uh, let's see, how about checking in on the 10th and staying for like, maybe, five days? Just one room should be fine, I guess.
+System: Please confirm to book 1 room for 5 days at the Breakfree On Clarence starting from the 10th of this month in Sydney.
+User: Yeah, whatever, just book it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Sydney, number_of_rooms: 1, place_name: Breakfree On Clarence, stay_length: 5 })
+Search Results
+[{'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 8017 8888', 'place_name': 'Breakfree On Clarence', 'price_per_night': 207, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '193-195 Clarence Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Breakfree On Clarence for 1 room from November 10th for 5 days in Sydney has been successfully confirmed. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I guess I'm looking for a hotel in Las Vegas. Can you check what's available there?
+System: Do you have any preferences for the star rating or any specific features like smoking allowance for the hotel in Las Vegas?
+User: Uh, I don't really have any specific preferences. Just find me something decent, I guess.
+System: Great, I'll find a hotel for you in Las Vegas. Let's see what's available. APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: dontcare, smoking_allowed: dontcare })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: Here's a 3-star option for you: the Best Western Plus Las Vegas West, located at 8669 West Sahara Avenue. The price per night is $117, and smoking is not allowed. Would you like more details, or should I go ahead with a reservation?
+User: I'm not too sure, could you check if there's anything cheaper? I might want to save some money to gamble later.
+System: Of course! There's a more affordable option available: Budget Suites Of America, which is a 1-star hotel located at 2219 North Rancho Drive. The price per night is $44, and smoking is allowed. Would you like more details about this hotel, or should we consider making a reservation here?
+User: Hmm, that sounds more like my style. Can you book a room for me there? Just one room, please. Oh, and make it for like, a week starting... let's say tomorrow.
+System: To confirm, you'd like to book one room at Budget Suites Of America in Las Vegas for a week starting from tomorrow. Let me proceed with the reservation. APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-25, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 7 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-10-25'}]
+End Search Results
+System: Your reservation at Budget Suites Of America in Las Vegas has been successfully confirmed. You'll be staying for a week starting from October 25, 2023. If you need any more assistance or have further questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

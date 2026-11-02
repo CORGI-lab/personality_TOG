@@ -1,0 +1,92 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in San Francisco. Maybe something with, I don't know, Italian food?
+System: Do you have any specific preferences for the price range or any features like live music or serving alcohol?
+User: Umm, I'm not too sure about the price, but live music sounds fun. Not really fussed about alcohol.
+System: Could you please confirm if San Francisco is the city where you'd like to find the restaurant? Once confirmed, I'll proceed to find some Italian restaurants with live music for you.
+User: Yeah, San Francisco is good. Let's see what you can find.
+System: Great! I'll look for Italian restaurants in San Francisco that feature live music. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found a couple of Italian restaurants in San Francisco with live music. One option is Fior D'italia, located at 2237 Mason Street. Another choice is Zingari Ristorante + Jazz Bar at 501 Post Street. Both are on the expensive side and serve alcohol. Would you like more information on either of these, or do you have a preference?
+User: Hmm, Zingari Ristorante + Jazz Bar sounds interesting because of the jazz. Let's go with that one. Could you book a table for me? I'm not sure about the date or time... maybe tomorrow? And, uh, let's say for two people.
+System: Sure! To proceed with the reservation at Zingari Ristorante + Jazz Bar, could you please confirm the exact date and time for your booking tomorrow? Once I have that information, I can finalize the reservation for two people.
+User: Alright, let's say tomorrow at, I don't know, 7:00 pm? That should work. Go ahead and book it for two people.
+System: Great! Just to confirm, you would like to book a table for two at Zingari Ristorante + Jazz Bar in San Francisco for tomorrow at 7:00 pm. Let me proceed with the reservation for you.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Zingari Ristorante + Jazz Bar', city: 'San Francisco', time: '19:00', date: '2023-10-05', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-05', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: The reservation for two at Zingari Ristorante + Jazz Bar in San Francisco has been successfully made for tomorrow at 7:00 pm. If you need further assistance or have any more questions, feel free to ask. Enjoy your dining experience with some jazz music!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Uh, I'm in San Francisco and kinda hungry. What restaurants can you find for me? I'm not really picky about the type of food.
+System: Do you have a preference for the price range, or should I look for something moderate?
+User: I don't really care about the price. Just find me something that sounds good.
+System: Alright, how about I suggest a Vietnamese restaurant for you? Let me find some options in San Francisco. Please hold on for a moment while I search. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese, price_range: dontcare})
+Search Results
+
+End Search Results
+System: I'm sorry, it seems there are no available Vietnamese restaurants in San Francisco at the moment. Would you like me to try searching for a different type of cuisine, or perhaps a different part of the city?
+User: Yeah, try looking for something Italian or whatever's easy. I just want to eat.
+System: Let me search for Italian restaurants in San Francisco for you. Please hold on for a moment while I find some options. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: dontcare})
+Search Results
+
+End Search Results
+System: I'm sorry, it seems there are no available Italian restaurants in San Francisco at the moment. Would you like me to try searching for another type of cuisine, or perhaps suggest a different price range?
+User: Honestly, just find anything that's open. I don't really care what kind of food it is anymore.
+System: Let's try finding a different cuisine for you. I'll look for an American restaurant in San Francisco. Please hold on for a moment while I search. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: American, price_range: dontcare})
+Search Results
+
+End Search Results
+System: I'm sorry, it seems there are no available American restaurants in San Francisco at the moment either. Would you like me to try searching for another cuisine or perhaps focus on a different area within San Francisco?
+User: Can you just find any place that's open? I'm not really in the mood to be picky about the area or type of food right now.
+System: APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, price_range: dontcare})
+Search Results
+
+End Search Results
+System: I apologize, it seems there are no available Mexican restaurants in San Francisco either. Let's try a different approach. How about I look for a place that serves brunch or breakfast? Please hold on while I search for options. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Breakfast, price_range: dontcare})
+Search Results
+
+End Search Results
+System: I apologize for the inconvenience. It seems there are no available breakfast places in San Francisco at the moment either. Let's try searching for a different cuisine that might suit your needs. How about I look for a seafood restaurant? Please hold on while I search for options. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Seafood, price_range: dontcare})
+Search Results
+
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

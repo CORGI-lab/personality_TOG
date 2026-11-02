@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Berkeley. Something quiet would be nice.
+System: Is there a specific type of cuisine you prefer, or would you like me to suggest something for you?
+User: I'm not too particular about the cuisine, as long as it's quiet and not too crowded.
+System: Let's consider a cuisine that aligns with a calm and serene dining experience. I'll suggest Japanese cuisine for you. Allow me to find a suitable restaurant in Berkeley. APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Japanese})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '510-845-8100', 'price_range': 'expensive', 'restaurant_name': 'Iyasare', 'serves_alcohol': True, 'street_address': '1830 Fourth Street'}, {'city': 'Berkeley', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '510-848-5260', 'price_range': 'moderate', 'restaurant_name': 'Joshu-ya Brasserie', 'serves_alcohol': True, 'street_address': '2441 Dwight Way'}, {'city': 'Berkeley', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '510-540-5000', 'price_range': 'moderate', 'restaurant_name': 'Kamado Sushi', 'serves_alcohol': False, 'street_address': '1400 Shattuck Avenue'}]
+End Search Results
+System: I found a few Japanese restaurants in Berkeley that might suit your preference for a quiet dining experience. "Iyasare" is located at 1830 Fourth Street and offers an expensive dining option with alcohol service. Alternatively, "Joshu-ya Brasserie" and "Kamado Sushi" provide moderate price ranges, located at 2441 Dwight Way and 1400 Shattuck Avenue, respectively. Would you like more information on any of these, or do you have a preference?
+User: I'm interested in "Kamado Sushi." Can you tell me more about it?
+System: Kamado Sushi is located at 1400 Shattuck Avenue in Berkeley. It offers a moderate price range and focuses on Japanese cuisine. They do not serve alcohol, and there is no live music, which might contribute to a quieter dining experience. Would you like any additional information or assistance with a reservation?
+User: Yes, I'd like to make a reservation at Kamado Sushi. Can you reserve a table for one on Friday at 7:00 pm?
+System: Let me confirm the details with you: You would like to reserve a table for one at Kamado Sushi in Berkeley on Friday at 7:00 pm. Is that correct?
+User: Yes, that's correct. 
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Kamado Sushi', city: 'Berkeley', time: '19:00', date: '2023-10-13', party_size: 1})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '510-540-5000', 'price_range': 'moderate', 'restaurant_name': 'Kamado Sushi', 'serves_alcohol': False, 'street_address': '1400 Shattuck Avenue', 'date': '2023-10-13', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Kamado Sushi has been successfully made for one person on Friday, October 13th, at 7:00 pm. If you need any further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Berkeley.
+System: What type of cuisine are you interested in? For example, would you like Italian, Mexican, or something else?
+User: Something quiet, maybe a place with some Asian cuisine.
+System: Thank you for letting me know. Just to confirm, are you specifically looking for any type of Asian cuisine, such as Vietnamese, Japanese, or Chinese, or would you like me to pick any Asian cuisine for you?
+User: Any Asian cuisine is fine.
+System: Great! I will look for restaurants with Asian cuisine in Berkeley for you. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Asian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '510-843-3951', 'price_range': 'moderate', 'restaurant_name': 'Mount Everest Restaurant', 'serves_alcohol': True, 'street_address': '2598 Telegraph Avenue'}, {'city': 'Berkeley', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '510-883-1883', 'price_range': 'moderate', 'restaurant_name': 'Da Lian Restaurant', 'serves_alcohol': False, 'street_address': '1674 Shattuck Avenue'}, {'city': 'Berkeley', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '510-843-7996', 'price_range': 'moderate', 'restaurant_name': 'Great China Restaurant', 'serves_alcohol': False, 'street_address': '2190 Bancroft Way'}]
+End Search Results
+System: I found a few Asian cuisine restaurants in Berkeley for you. One option is Mount Everest Restaurant, located at 2598 Telegraph Avenue. They offer a moderate price range and do serve alcohol. Would you like more information about this restaurant or any other options?
+User: Can you tell me if this restaurant has a calm atmosphere?
+System: I'm sorry, but I don't have information about the specific atmosphere of Mount Everest Restaurant. However, it is an Asian cuisine restaurant that is known for not having live music, which might indicate a quieter setting. Would you like to know more about another restaurant option or proceed with this one?
+User: I think I'll proceed with this one. Can you make a reservation for two people, please?
+System: Certainly! For when would you like to make the reservation at Mount Everest Restaurant, and at what time?
+User: Tomorrow at 7:00 pm would be fine.
+System: Thank you for providing the details. To confirm, you would like to make a reservation for two people at Mount Everest Restaurant in Berkeley for tomorrow at 7:00 pm. Is that correct?
+User: Yes, that's correct.
+System: Perfect! I will proceed with making the reservation for you. Please give me a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Mount Everest Restaurant', city: 'Berkeley', date: '2023-10-20', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '510-843-3951', 'price_range': 'moderate', 'restaurant_name': 'Mount Everest Restaurant', 'serves_alcohol': True, 'street_address': '2598 Telegraph Avenue', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at Mount Everest Restaurant in Berkeley for October 20th at 7:00 pm has been successfully made. Should you need to contact them, their phone number is 510-843-3951. If you have any other questions or need further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in Fremont.
+System: Do you have a specific cuisine in mind, or are you open to suggestions? If you have any preference for the price range or any specific features like live music or serving alcohol, please let me know as well.
+User: I'm looking for a simple place, maybe something like American cuisine, and it should be reasonably priced.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American, price_range: moderate})
+Search Results
+
+End Search Results
+System: Unfortunately, I couldn't find any American cuisine restaurants in Fremont within the moderate price range. Would you like me to search for similar options in a different price range or suggest another cuisine that might interest you?
+User: No, I'd prefer to stick with American cuisine. Can you check if there's anything similar in a nearby city like Union City?
+System: Sure, let me check for American cuisine restaurants in Union City for you. I'll look for options that are reasonably priced. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Union City, cuisine: American, price_range: moderate})
+Search Results
+[{'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-429-6860', 'price_range': 'moderate', 'restaurant_name': "Chaplin's Sports Bistro", 'serves_alcohol': True, 'street_address': '29200 Kohoutek Way'}, {'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-489-2797', 'price_range': 'moderate', 'restaurant_name': 'Tgi Fridays', 'serves_alcohol': True, 'street_address': '31900 Dyer Street'}, {'city': 'Union City', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-675-0101', 'price_range': 'moderate', 'restaurant_name': 'Tribu Grill', 'serves_alcohol': True, 'street_address': '32208 Dyer Street'}]
+End Search Results
+System: I found a few American cuisine restaurants in Union City that might interest you. One option is Chaplin's Sports Bistro, located at 29200 Kohoutek Way, which offers a moderate price range and serves alcohol. Another option is TGI Fridays at 31900 Dyer Street, also reasonably priced and serving alcohol. If you're interested in a place with live music, Tribu Grill at 32208 Dyer Street might be a good choice. Let me know if you need more details or if you'd like to make a reservation at any of these places.
+User: I think Chaplin's Sports Bistro sounds fine. Can you make a reservation for me there?
+System: What date and time would you like to make the reservation for? Also, could you please let me know the size of your party?
+User: I would like to make a reservation for two people on this coming Saturday at 7:00 pm.
+System: Thank you for providing the details. Let me confirm your reservation for two people at Chaplin's Sports Bistro in Union City on this coming Saturday at 7:00 pm. Please hold on for a moment while I process your request.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Chaplin's Sports Bistro", city: Union City, date: 2023-10-07, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-429-6860', 'price_range': 'moderate', 'restaurant_name': "Chaplin's Sports Bistro", 'serves_alcohol': True, 'street_address': '29200 Kohoutek Way', 'date': '2023-10-07', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at Chaplin's Sports Bistro in Union City on Saturday, October 7th at 7:00 pm has been successfully made. If you have any other requests or need further assistance, feel free to let me know. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in Concord.
+System: Do you have a preferred type of cuisine, or should I select a random option for you?
+User: Just a simple place with American food is fine.
+System: APICall (method='FindRestaurants', parameters={city: Concord, cuisine: American})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-265-2120', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '1975 Diamond Boulevard Ste. C 160'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-309-7774', 'price_range': 'moderate', 'restaurant_name': 'Lima', 'serves_alcohol': True, 'street_address': '2151 Salvio Street Suite I'}]
+End Search Results
+System: I found a few American restaurants in Concord. One option is Claim Jumper Restaurants located at 1981 Diamond Boulevard. Would you like the phone number or more information about this place?
+User: No, that's fine. Can you find another option?
+System: Another option in Concord is Eureka!, located at 1975 Diamond Boulevard Ste. C 160. Would you like the phone number or more information about this place?
+User: No, I don't need more information. Can you suggest one more restaurant?
+System: Certainly, another option is Lima, located at 2151 Salvio Street Suite I in Concord. Would you like the phone number or more information about this place?
+User: No, I just want to make a reservation at the last one, Lima.
+System: For your reservation at Lima, could you please provide the date, time, and the number of people for the booking?
+User: Tomorrow at 7:00 pm for 2 people.
+System: Can you please confirm that you want to book a table for 2 at 7:00 pm tomorrow at Lima in Concord?
+User: Yes, please confirm the reservation.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: Lima, city: Concord, time: 19:00, date: [Tomorrow's Date], party_size: 2})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-309-7774', 'price_range': 'moderate', 'restaurant_name': 'Lima', 'serves_alcohol': True, 'street_address': '2151 Salvio Street Suite I', 'date': "[Tomorrow's Date]", 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Lima has been successfully confirmed for 2 people at 7:00 pm tomorrow in Concord. If you need any further assistance or details, feel free to ask. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

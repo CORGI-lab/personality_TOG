@@ -1,0 +1,96 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Las Vegas. Make it quick and find me something decent.
+System: Do you have any specific star rating in mind for the hotel, or should I find one for you with any available star rating?
+User: Just find me the best one you've got. I don't waste my time on mediocre places.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5 })
+Search Results
+
+End Search Results
+System: It seems there are no search results for a 5-star hotel in Las Vegas. Would you like me to search for hotels with a different star rating, or do you have any other preferences, such as smoking allowance?
+User: Fine, check for 4-star hotels then. But make sure they allow smoking.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: It seems there are no search results for a 4-star hotel in Las Vegas with smoking allowed. Would you like me to try a different star rating or modify your preferences?
+User: Try 3-star hotels, but make sure they allow smoking this time. I don't want to hear any more excuses.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3, smoking_allowed: True })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found a 3-star hotel in Las Vegas that allows smoking. It's the Hampton Inn Las Vegas/Summerlin, located at 7100 Cascade Valley Court. The price per night is $279. Would you like to proceed with a reservation or need more information?
+User: I'd like to know if they have any extra amenities or if I'm just paying for a bed. And don't bother wasting my time if it's not worth it.
+System: I'm sorry, but the information regarding extra amenities is not available in the current search results. However, the Hampton Inn Las Vegas/Summerlin is a 3-star hotel that allows smoking, and the price per night is $279. Would you like to proceed with a reservation or modify your search criteria?
+User: $279 for a 3-star hotel without even knowing the amenities? You must be joking. Fine, just book it. Make it two rooms, and I'll stay for five nights starting the 10th.
+System: Please confirm that you would like to book 2 rooms for 5 nights at the Hampton Inn Las Vegas/Summerlin, starting from the 10th of this month.
+User: Yes, confirm the booking. Make sure everything is in order.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-10-10, location: Las Vegas, number_of_rooms: 2, place_name: Hampton Inn Las Vegas/Summerlin, stay_length: 5})
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking for 2 rooms at the Hampton Inn Las Vegas/Summerlin has been successfully confirmed. You will be staying for 5 nights starting from October 10th, 2023. If there's anything else you need, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Let's cut to the chase. I want a hotel in Las Vegas, and it better be top-notch. Show me the best options you've got.
+System: Do you have any specific requirements like smoking allowance or the number of rooms you're looking for in Las Vegas? Once I have that information, I'll search for the best options for you.
+User: Make sure the hotel allows smoking and has at least two rooms. And don't waste my time with anything less than 5 stars.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5, smoking_allowed: True, number_of_rooms: 2 })
+Search Results
+
+End Search Results
+System: It seems there were no results found for a 5-star hotel in Las Vegas that allows smoking and has at least two rooms. Would you like me to adjust the star rating or the smoking allowance to find available options for you?
+User: Why would I settle for anything less? Try searching again, this time make sure you find me something that fits my standards. I don't care how long it takes.
+System: Understood. Let's try expanding the search criteria a bit to ensure we find something suitable for you. Would you be open to considering 4-star hotels that allow smoking and have at least two rooms, or should I focus on maintaining the 5-star requirement without smoking allowance? Let me know your preference, and I'll proceed with the search accordingly.
+User: I suppose a 4-star hotel could be acceptable if it allows smoking and has at least two rooms. Just make sure it's one of the best 4-star options out there, and don't waste my time with anything subpar.
+System: Great, let's proceed with that. I'll search for 4-star hotels in Las Vegas that allow smoking and have at least two rooms. Please hold on for a moment while I find the best options for you. APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4, smoking_allowed: True, number_of_rooms: 2 })
+Search Results
+
+End Search Results
+System: Unfortunately, there are still no 4-star hotels in Las Vegas that meet your criteria of allowing smoking and having at least two rooms. Would you like me to continue adjusting the search criteria, or perhaps consider a nearby city? Let me know how you'd like to proceed.
+User: I can't believe this is so difficult. Fine, try expanding to other nearby cities like Los Angeles or Anaheim, but make sure you stick to the 4-star hotels with smoking allowed and at least two rooms. And it better be worth my time.
+System: Understood. I'll expand the search to include nearby cities like Los Angeles and Anaheim, focusing on 4-star hotels that allow smoking and have at least two rooms. Please hold on while I find the best options for you. APICall(method='SearchHotel', parameters={ location: Los Angeles or Anaheim, star_rating: 4, smoking_allowed: True, number_of_rooms: 2 })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 213-624-0000', 'place_name': 'Hilton Checkers Los Angeles', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '535 South Grand Avenue'}, {'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 310-410-4000', 'place_name': 'Hilton Los Angeles Airport', 'price_per_night': 456, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '5711 West Century Boulevard'}, {'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 213-279-3532', 'place_name': 'Kimpton Everly Hotel', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '1800 Argyle Avenue'}]
+End Search Results
+System: I found a few 4-star hotels in Los Angeles that meet your criteria. Here are some options:
+
+1. Hilton Checkers Los Angeles, located at 535 South Grand Avenue. The price per night is $208.
+2. Hilton Los Angeles Airport, located at 5711 West Century Boulevard. The price per night is $456.
+3. Kimpton Everly Hotel, located at 1800 Argyle Avenue. The price per night is $312.
+
+All of these options allow smoking and have at least two rooms available. Let me know if any of these meet your standards or if there's anything else you'd like to know.
+User: Out of those, the Hilton Los Angeles Airport sounds like it might be the most convenient. But I need to know what makes it worth such a high price. What amenities does it offer that could possibly justify $456 a night?
+System: Unfortunately, the specific amenities for Hilton Los Angeles Airport are not available in our search results. However, I can tell you it is a 4-star hotel that allows smoking and provides at least two rooms. If you want more detailed information about the amenities, I recommend contacting the hotel directly at +1 310-410-4000. Let me know if there's anything else I can assist with.
+User: Well, isn't that just fantastic? No amenities info, and you expect me to make a decision based on that? Useless. Alright, let's just book this Hilton Los Angeles Airport for now. I need two rooms, checking in on the 15th, and I'll be staying for a week. Make sure it's all set.
+System: Please confirm that you'd like to book 2 rooms at Hilton Los Angeles Airport, located at 5711 West Century Boulevard in Los Angeles, starting from the 15th for a week. Once confirmed, I'll proceed with the reservation.
+User: Yes, confirm the booking. Just make sure everything is in order. I don't want to hear about any issues later.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Los Angeles, number_of_rooms: 2, place_name: Hilton Los Angeles Airport, stay_length: 7 })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 310-410-4000', 'place_name': 'Hilton Los Angeles Airport', 'price_per_night': 456, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '5711 West Century Boulevard', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at Hilton Los Angeles Airport has been successfully confirmed for 2 rooms from November 15th for a week. The hotel is located at 5711 West Century Boulevard in Los Angeles. If you have any further questions or need additional assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

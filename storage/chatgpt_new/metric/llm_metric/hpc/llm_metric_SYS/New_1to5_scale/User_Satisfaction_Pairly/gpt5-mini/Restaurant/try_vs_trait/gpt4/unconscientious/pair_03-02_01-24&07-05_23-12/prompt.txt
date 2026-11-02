@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm in the mood to eat out. Can you help me find a place in San Francisco?
+System: Certainly! Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: I don't know, maybe something with Italian vibes? Or maybe something else... I'm not really sure.
+System: Let's explore some delightful Italian options for you in San Francisco. I'll find a few restaurants that match your mood. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: How about trying 54 Mint Ristorante Italiano? It's located at 16 Mint Plaza and offers a moderate price range with a cozy Italian vibe. They also serve alcohol if you're interested. Would you like any more details about this restaurant, or perhaps information on another option?
+User: I guess that sounds alright. Do they have live music or anything fun like that?
+System: Unfortunately, 54 Mint Ristorante Italiano does not feature live music. However, it offers a cozy atmosphere and serves alcohol, which might enhance your dining experience. If you'd like, I can provide details about another restaurant option or assist with anything else you might need.
+User: Hmm, maybe tell me about another place. Something with live music could be fun!
+System: Certainly! Let me find another option for you that includes live music. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: How about Zingari Ristorante + Jazz Bar? It's located at 501 Post Street and offers a lively atmosphere with live music and an Italian menu. It's on the expensive side, and they serve alcohol as well. Would you like more information about this restaurant, or is there anything else you'd like to explore?
+User: Oh, that sounds kinda cool! I like the idea of live music. Can you just go ahead and book a table for me there? Maybe for tonight, around 7 pm? I guess for two people?
+System: Could you please confirm that you want to book a table for two people at Zingari Ristorante + Jazz Bar in San Francisco for tonight at 7 pm? Once you confirm, I'll proceed with the reservation.
+User: Yeah, let's do that. Book it for me.
+System: Great! I'm booking a table for two at Zingari Ristorante + Jazz Bar in San Francisco for tonight at 7 pm. Please hold on for a moment while I complete the reservation for you. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Zingari Ristorante + Jazz Bar', city: 'San Francisco', time: '19:00', date: '2023-10-11', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-11', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Zingari Ristorante + Jazz Bar in San Francisco for tonight at 7 pm has been successfully made for two people. Enjoy the live music and your dining experience! If there's anything else you need, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Uh, hey. I guess I'm supposed to find a place to eat or something. I don't really know what I'm in the mood for, but I'm in San Francisco. Can you just like, find me a spot that sounds cool? Maybe something with, I dunno, a chill vibe or whatever.
+System: Do you have a preference for any type of cuisine, or should I pick something for you? And also, are you looking for a particular price range, or are you open to any options? Let me know, so I can find a place that fits your vibe in San Francisco.
+User: I don't really care about the type of cuisine, just something that isn’t too expensive. Maybe a place with some music or something fun going on? Just find me something that seems cool, I guess.
+System: APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese, price_range: inexpensive, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems like there were no results for inexpensive Japanese restaurants with live music. Would you be open to trying something a bit more moderate in price or perhaps exploring a different cuisine that offers a fun atmosphere? Let me know how you'd like to proceed!
+User: Uh, sure, I guess I can try something more moderate. I mean, why not? Just find me a place that seems fun and has a good vibe, whatever that means.
+System: APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, price_range: moderate, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue', 'date': '2019-03-03', 'party_size': 3, 'time': '12:00'}]
+End Search Results
+System: I found a place called Los Yaquis that might fit what you're looking for. It's a Mexican restaurant in San Francisco with live music and a moderate price range. The address is 324 South Van Ness Avenue. Would you like more information or help with anything else?
+User: Yeah, Los Yaquis sounds okay, I guess. Can you just go ahead and book a table for me there? Maybe for, like, tonight around 7 pm? Oh, and it's just for me. Thanks.
+System: Sure, I can help with that. Just to confirm, you'd like to book a table for 1 at Los Yaquis in San Francisco for tonight at 7 pm. Is that correct?
+User: Yeah, that's cool. Just make sure it's all set, okay? Thanks.
+System: Great, I'll take care of it for you. Booking a table for 1 at Los Yaquis in San Francisco for tonight at 7 pm. Please give me a moment while I finalize your reservation. APICall (method='ReserveRestaurant', parameters={city: San Francisco, date: 2023-10-20, party_size: 1, restaurant_name: Los Yaquis, time: 19:00})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': True, 'street_address': '25 Lusk Street', 'date': '2023-10-20', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: It looks like your reservation at Los Yaquis has been successfully made for tonight at 7 pm. Please note that the restaurant is located at 25 Lusk Street, and they serve alcohol, although they don't have live music tonight. Should you need anything else or have any questions, feel free to let me know! Enjoy your evening!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

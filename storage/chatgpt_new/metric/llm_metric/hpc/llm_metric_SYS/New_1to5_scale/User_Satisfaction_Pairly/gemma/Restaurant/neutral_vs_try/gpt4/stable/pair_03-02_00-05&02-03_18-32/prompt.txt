@@ -1,0 +1,84 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Berkeley. Could you help me find one?
+System: Could you please specify the type of cuisine you are interested in, such as Italian, Mexican, or any other preference?
+User: I would prefer Italian cuisine.
+System: Great! Let me find some Italian restaurants in Berkeley for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Berkeley for you. One option is Cugini Restaurant located at 1556 Solano Avenue. They offer a moderate price range and can be reached at 510-558-9000. Would you like more information about another restaurant?
+User: Yes, could you tell me about another Italian restaurant in Berkeley?
+System: Another option is Donato & Co., located at 2635 Ashby Avenue. They also offer a moderate price range and their phone number is 510-838-1131. Would you like information on another restaurant or is there anything else I can assist you with?
+User: I think Donato & Co. sounds like a good option. Could you please make a reservation there for me?
+System: For what date and time would you like to make the reservation at Donato & Co.? Additionally, could you please confirm the number of people for the reservation?
+User: I would like to make a reservation for two people on Saturday at 7:00 pm.
+System: Could you please confirm the date for the reservation? If you mean this Saturday, could you kindly provide the exact date in the format YYYY-MM-DD?
+User: Yes, I mean this Saturday, which is 2023-10-14.
+System: Thank you for confirming. I will proceed to make a reservation for two people at Donato & Co. on 2023-10-14 at 7:00 pm. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Donato & Co.', city: 'Berkeley', cuisine: 'Italian', date: '2023-10-14', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue', 'date': '2023-10-14', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Donato & Co. for two people on 2023-10-14 at 7:00 pm has been successfully made. If you need any further assistance or have any other questions, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to find a restaurant in Palo Alto. I would like to make a reservation. Can you help with that?
+System: Certainly! To assist you with the reservation, could you let me know the type of cuisine you're interested in, as well as the number of people and the date and time for the reservation?
+User: I'm in the mood for some Italian cuisine. It will be for a party of four. I'd like to reserve a table for this Saturday at 7:00 PM.
+System: Thank you for providing the details. Let me confirm: you want to make a reservation for four people at an Italian restaurant in Palo Alto this coming Saturday at 7:00 PM. Is that correct? Once you confirm, I'll proceed to find a suitable restaurant for you.
+User: Yes, that is correct. Please go ahead and find a suitable restaurant for us.
+System: APICall (method='ReserveRestaurant', parameters={city: Palo Alto, cuisine: Italian, party_size: 4, date: [this coming Saturday's date], time: 19:00, restaurant_name: [restaurant_name]})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '408-370-7705', 'price_range': 'moderate', 'restaurant_name': '[restaurant_name]', 'serves_alcohol': False, 'street_address': '33 South Central Avenue', 'date': "[this coming Saturday's date]", 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: I've found an Italian restaurant in Palo Alto where you can make a reservation for four people this Saturday at 7:00 PM. The restaurant is located at 33 South Central Avenue and falls within a moderate price range. They don't serve alcohol or have live music. Would you like to proceed with this reservation, or do you need any more information?
+User: Could you let me know the name of the restaurant, please? I'd like to make sure it suits our preferences before proceeding with the reservation.
+System: The restaurant is named [restaurant_name]. If there's anything else you'd like to know or any adjustments needed, feel free to let me know!
+User: Could you also tell me if the restaurant serves any vegetarian options? I'd like to make sure everyone in our group will have something they enjoy.
+System: I'm sorry, but the search results do not provide information on whether the restaurant serves vegetarian options. Would you like me to look for another restaurant that specifies vegetarian options, or would you like to proceed with this reservation?
+User: Could you look for another restaurant that offers vegetarian options, please? I want to ensure everyone in our group is accommodated.
+System: Certainly, I'll look for another Italian restaurant in Palo Alto that offers vegetarian options. Please hold on for a moment while I find one for you. APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Italian, serves_vegetarian: True})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: I've found a few Italian restaurants in Palo Alto that offer vegetarian options. Here are some choices:
+
+1. **Italico Restaurant** - Located at 341 California Avenue. It's an expensive restaurant, and they do not serve alcohol.
+2. **Osteria Toscana** - Located at 247 Hamilton Avenue. It's also on the expensive side and does not serve alcohol.
+3. **Vina Enoteca** - Located at 700 Welch Road. This restaurant is expensive as well, but they do serve alcohol.
+
+Please let me know if any of these options suit your preferences, and I can proceed with the reservation for you.
+User: Thank you for these options. I would like to proceed with a reservation at Vina Enoteca, as they serve alcohol and cater to vegetarians. Please go ahead and book a table for four this Saturday at 7:00 PM.
+System: Great choice! I'll go ahead and make the reservation for you. Please hold on for a moment. APICall (method='ReserveRestaurant', parameters={city: Palo Alto, cuisine: Italian, party_size: 4, date: [this coming Saturday's date], time: 19:00, restaurant_name: Vina Enoteca})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road', 'date': "[this coming Saturday's date]", 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Vina Enoteca has been successfully made for four people this Saturday at 7:00 PM. The restaurant is located at 700 Welch Road. If you have any other questions or need further assistance, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

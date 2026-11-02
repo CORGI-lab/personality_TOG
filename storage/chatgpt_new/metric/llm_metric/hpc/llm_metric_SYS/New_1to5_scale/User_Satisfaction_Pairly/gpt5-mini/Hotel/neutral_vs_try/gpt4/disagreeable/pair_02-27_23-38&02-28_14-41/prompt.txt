@@ -1,0 +1,100 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a hotel in Las Vegas. Make sure it's top-notch and allows smoking.
+System: Could you please confirm if you have a specific star rating in mind for the hotel, or are you open to any high-rated options in Las Vegas?
+User: I want nothing less than 5 stars, and smoking must be allowed. Don't waste my time with anything else.
+System: Thank you for providing your preferences. I'll search for a 5-star hotel in Las Vegas that allows smoking. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: I'm sorry, but it seems there are no available 5-star hotels in Las Vegas that allow smoking at the moment. Would you like me to search for 4-star hotels with smoking allowed, or would you prefer other options?
+User: 4 stars? That's pathetic. Fine, just find me the best 4-star option with smoking allowed. It better be worth my time.
+System: I'll search for the best 4-star hotel in Las Vegas that allows smoking. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: Unfortunately, there are no available 4-star hotels in Las Vegas that allow smoking at the moment. Would you like me to try searching for a 3-star hotel with smoking allowed, or is there another preference you would like to explore?
+User: Ugh, what a disappointment. Okay, let's see if you can find a 3-star hotel that allows smoking, but it better not be a dump.
+System: I'll search for a 3-star hotel in Las Vegas that allows smoking. Please hold on for a moment.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3, smoking_allowed: True })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found a 3-star hotel named Hampton Inn Las Vegas/Summerlin that allows smoking. It's located at 7100 Cascade Valley Court, and the price is $279 per night. Would you like to proceed with this option?
+User: $279 for a 3-star hotel? Are you kidding me? I guess I don't have a choice. Go ahead, book it for me. I'll stay for five days starting from the 10th. Let's get this over with.
+System: To confirm, you would like to book 1 room at the Hampton Inn Las Vegas/Summerlin for 5 days starting from the 10th in Las Vegas. Is that correct?
+User: Yes, that's correct. Just make sure everything is set up properly.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Las Vegas, number_of_rooms: 1, place_name: Hampton Inn Las Vegas/Summerlin, stay_length: 5 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Hampton Inn Las Vegas/Summerlin has been successfully confirmed for 5 days starting from the 10th of November. If you need anything else, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Las Vegas. Make it quick and don't waste my time with useless options.
+System: Do you have a specific star rating in mind for the hotel in Las Vegas, or are you open to any rating? Additionally, let me know if you have any preferences regarding smoking allowance or the number of rooms needed.
+User: I want a 5-star hotel, and smoking better be allowed. I need just one room. Don't give me anything less than perfect.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5, smoking_allowed: True, number_of_rooms: 1 })
+Search Results
+
+End Search Results
+System: It seems there are no 5-star hotels in Las Vegas that allow smoking and have one room available. Would you like me to search for hotels with a different star rating or check for non-smoking options?
+User: I don't care about non-smoking options. Check for 4-star hotels, but they better allow smoking. 
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4, smoking_allowed: True, number_of_rooms: 1 })
+Search Results
+
+End Search Results
+System: Unfortunately, there are no 4-star hotels in Las Vegas that allow smoking and have one room available. Would you like me to try searching for hotels with a lower star rating or explore other options in terms of smoking allowance?
+User: I don’t want anything lower than 4 stars. Just find me any 5-star hotel, even if it means I have to step outside to smoke. I want the best, and I’m not settling for less.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+
+End Search Results
+System: It appears there are no 5-star hotels in Las Vegas available with the given criteria. Would you like me to look for options in a nearby area or adjust any other preferences?
+User: Fine, check for 4-star hotels that are the closest to 5-star quality. They better be in a prime location.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4, number_of_rooms: 1 })
+Search Results
+
+End Search Results
+System: Unfortunately, there are no 4-star hotels in Las Vegas that meet your criteria for a prime location and one room available. Would you like me to explore other cities nearby or adjust your preferences in terms of star rating or smoking allowance?
+User: Find 4-star hotels in a nearby city then, but they better be worth my time and in a prime location. I won't settle for anything less than the best available.
+System: Can you please specify a nearby city where you would like me to search for 4-star hotels? This will help me find the best available options for you.
+User: Check in Henderson. It’s close enough, but you better find something impressive.
+System: APICall(method='SearchHotel', parameters={ location: Henderson, star_rating: 4, number_of_rooms: 1 })
+Search Results
+
+End Search Results
+System: Unfortunately, there are no 4-star hotels available in Henderson with one room. Would you like me to try searching in another nearby city or adjust any of your preferences?
+User: Try looking in Summerlin. But make sure it’s a top-notch place. I’m not interested in average options.
+System: APICall(method='SearchHotel', parameters={ location: Summerlin, star_rating: 4, number_of_rooms: 1 })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

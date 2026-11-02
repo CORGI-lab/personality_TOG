@@ -1,0 +1,129 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really, but I'd prefer a quieter place.
+
+System: Okay, searching for hotels in Vancouver. 
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 5 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel, Vancouver', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: Okay. I found two 5-star hotels in Vancouver: Shangri-La Hotel and Wedgewood Hotel & Spa Vancouver. Would you like to know more about either of them?
+
+User: Tell me about Shangri-La Hotel.
+
+System: The Shangri-La Hotel has 2 rooms available, and the price is $300 per night. The address is 1128 West Georgia Street, and their phone number is +1 604-689-1120. Smoking is not allowed. Does that sound suitable?
+
+User: Are there any other options besides the Shangri-La?
+
+System: Okay. There is also the Wedgewood Hotel & Spa Vancouver. It has 3 rooms available, and the price is $510 per night. The address is 845 Hornby Street, and their phone number is +1 800-663-0666. Smoking is not allowed there either.
+
+Would you like more information about the Wedgewood Hotel?
+
+User: No, that’s okay. Can you just book me a room at the Shangri-La?
+
+System: Okay. To confirm, you'd like me to book a room at the Shangri-La Hotel in Vancouver? I will need to know the check-in date and how many nights you'll be staying.
+
+User: I'd like to book it for two nights, starting tomorrow.
+
+System: Okay. Could you please provide the full date for tomorrow's check-in? I need the year, month, and day to make the reservation.
+
+User: 2024-07-04
+
+System: Okay, so you'd like to book a room at the Shangri-La Hotel in Vancouver for two nights, starting on 2024-07-04. Is that correct? If so, I will also need the place name.
+
+User: Yes, that's correct. The place name is Shangri-La Hotel.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-04, location: Vancouver, place_name: Shangri-La Hotel, stay_length: 2 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel, Vancouver', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2024-07-04'}]
+End Search Results
+System: Okay, I have a reservation for you at the Shangri-La Hotel in Vancouver, checking in on 2024-07-04 for two nights. The price is $300 per night. Is that correct?
+
+User: Yes, that's all correct.
+
+System: Okay, I've made a reservation for you at the Shangri-La Hotel in Vancouver, checking in on 2024-07-04 for two nights at $300 per night. The address is 1128 West Georgia Street, and their phone number is +1 604-689-1120. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really. Just something... quiet.
+
+System: Okay, since you don't have a preference for the star rating, I will search for hotels in Vancouver.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: dontcare })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found three hotels in Vancouver. Shangri-La Hotel and Wedgewood Hotel & Spa Vancouver are both 5-star hotels, and Auberge Vancouver Hotel is a 4-star hotel. Would you like to know more about any of them?
+
+User: Tell me about Auberge Vancouver Hotel.
+
+System: The Auberge Vancouver Hotel is a 4-star hotel. It has 2 rooms available, and the price per night is $296. The phone number is +1 604-678-8899, and the street address is 837 West Hastings Street. Smoking is allowed. Would you like to know anything else about it?
+
+User: Smoking is allowed? No, thank you. Anything else available?
+
+System: Okay, let me check for other options. How about we try hotels where smoking is not allowed?
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}]
+End Search Results
+System: Okay, I found three hotels in Vancouver where smoking is not allowed: Shangri-La Hotel and Wedgewood Hotel & Spa Vancouver are both 5-star hotels, and Coast Coal Harbour Vancouver Hotel By Apa is a 4-star hotel. Would you like to know more about any of them?
+
+User: Coast Coal Harbour Vancouver Hotel By Apa... tell me about it.
+
+System: The Coast Coal Harbour Vancouver Hotel By Apa is a 4-star hotel. It has 1 room available, and the price per night is $108. The phone number is +1 604-697-0202, and the street address is 1180 West Hastings Street. Smoking is not allowed. Does this sound like a good option for you?
+
+User: Yes, it sounds adequate. Can you book it for me? I'll be arriving on the 10th and staying for three nights.
+
+System: Could you please confirm the full date of your arrival? I need the year to book the room accurately. Also, how many rooms would you like to reserve?
+
+User: Just one room. And the year is 2024.
+
+System: Okay, so you want to book one room at the Coast Coal Harbour Vancouver Hotel By Apa, arriving on October 10, 2024, and staying for three nights. Is that correct?
+
+
+User: Yes, that's correct.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'location': 'Vancouver', 'check_in_date': '2024-10-10', 'stay_length': 3, 'number_of_rooms': 1})
+```
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2024-10-10'}]
+End Search Results
+System: Great! I have successfully reserved one room for you at the Coast Coal Harbour Vancouver Hotel By Apa, arriving on 2024-10-10 and staying for three nights. The phone number is +1 604-697-0202, and the street address is 1180 West Hastings Street. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in London. Can you assist me with that?
+System: Do you have any specific requirements, such as star rating or smoking preference, for the hotel in London?
+User: I prefer a hotel with a high star rating and no smoking allowed.
+System: APICall(method='SearchHotel', parameters={ location: London, star_rating: 5, smoking_allowed: False })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7377 4390', 'place_name': "Batty Langley'S Hotel", 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '12 Folgate Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 3327 4142', 'place_name': 'Chelsea Bridge Apartments', 'price_per_night': 390, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '124 Prince Of Wales Drive'}]
+End Search Results
+System: I found a few high-star rating hotels in London that do not allow smoking. Here are some options:
+
+1. **45 Park Lane**: Located at 45 Park Lane, the price is $330 per night. 
+2. **Batty Langley's Hotel**: Located at 12 Folgate Street, the price is $510 per night.
+3. **Chelsea Bridge Apartments**: Located at 124 Prince Of Wales Drive, the price is $390 per night.
+
+Would you like more information on any of these hotels, or is there anything else I can assist you with?
+User: Can you tell me more about 45 Park Lane, like how many rooms are available and any additional details?
+System: The hotel **45 Park Lane** in London has 2 rooms available. It's a 5-star hotel that does not allow smoking. The price per night is $330, and it is located at 45 Park Lane. If there's anything else you'd like to know or if you're ready to proceed with a reservation, just let me know!
+User: I'd like to reserve a room at 45 Park Lane. Can you help me with that?
+System: How many rooms would you like to reserve at 45 Park Lane, and what would be your check-in date and length of stay? Please provide these details so I can assist you with the reservation.
+User: I would like to reserve 1 room, checking in on the 10th, and staying for 5 days.
+System: Please confirm that you would like to book 1 room at 45 Park Lane in London, checking in on 2023-10-10 for a 5-day stay. Once confirmed, I will proceed with the reservation.
+User: Yes, please confirm the booking for me.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-10-10, location: London, number_of_rooms: 1, place_name: 45 Park Lane, stay_length: 5})
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking at 45 Park Lane in London has been successfully confirmed. You'll be checking in on 2023-10-10 for a 5-day stay in 1 room. If you need any more assistance or information, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Chicago. Can you help me find one?
+System: Do you have any specific preferences for the star rating or any other requirements like smoking allowance?
+User: A hotel with a three-star rating would be fine. I prefer a non-smoking room.
+System: APICall(method='SearchHotel', parameters={ location: Chicago, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street'}, {'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-661-1000', 'place_name': 'Aloft Chicago Downtown River North', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '515 North Clark Street'}, {'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-429-6600', 'place_name': 'Aloft Chicago Mag Mile', 'price_per_night': 111, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '243 East Ontario Street'}]
+End Search Results
+System: I found a few options for you in Chicago. The first one is Ac Hotel By Marriott Chicago Downtown, located at 630 North Rush Street, with a price of $342 per night. Another option is Aloft Chicago Downtown River North, located at 515 North Clark Street, with a price of $225 per night. Lastly, there's Aloft Chicago Mag Mile, located at 243 East Ontario Street, priced at $111 per night. All of these hotels have a three-star rating and are non-smoking. Would you like more details on any of these, or do you have a preference?
+User: I'll go with Aloft Chicago Mag Mile. Please reserve a room for me.
+System: How many days are you planning to stay, and when would you like to check in at Aloft Chicago Mag Mile?
+User: I would like to check in on the 5th and stay for five days.
+System: Please confirm to book 1 room for 5 days at Aloft Chicago Mag Mile starting from 2023-11-05 in Chicago.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Chicago, number_of_rooms: 1, place_name: Aloft Chicago Mag Mile, stay_length: 5 })
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-429-6600', 'place_name': 'Aloft Chicago Mag Mile', 'price_per_night': 111, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '243 East Ontario Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at Aloft Chicago Mag Mile has been successfully confirmed. If you need any more information or assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

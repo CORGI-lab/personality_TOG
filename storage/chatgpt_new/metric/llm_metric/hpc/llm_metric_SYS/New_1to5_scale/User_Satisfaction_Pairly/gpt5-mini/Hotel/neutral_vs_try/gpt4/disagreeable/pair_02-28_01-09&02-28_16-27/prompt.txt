@@ -1,0 +1,110 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Let's look for a hotel in New York. Just make sure it's top-notch, and I don't want to hear about any of those budget dumps.
+System: Do you have a specific star rating in mind for the hotel in New York? We can start with a 5-star option if you're looking for top-notch accommodations.
+User: I don't care about the star rating; I just need to know if they allow smoking. And don't bother suggesting anything less than perfect.
+System: Do you have a preferred location or area within New York where you'd like to find the hotel? Once I have that information, I can proceed to find hotels that allow smoking.
+User: Just find something in Manhattan. I'm not interested in the other areas.
+System: APICall(method='SearchHotel', parameters={ location: Manhattan, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: It seems there were no results for hotels in Manhattan that allow smoking. Would you like to adjust your preferences, such as considering non-smoking hotels or expanding the search to different star ratings?
+User: You must be kidding me. Expand the search to other parts of New York but don't waste my time with non-smoking hotels. 
+System: Understood. I will expand the search to other parts of New York while ensuring the hotels allow smoking. Please hold on a moment while I find suitable options for you. APICall(method='SearchHotel', parameters={ location: New York, smoking_allowed: True })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: I found a few hotels in New York that allow smoking. Here are your options:
+
+1. **11 Howard**: This hotel is located at 11 Howard Street, with a star rating of 3 and a price of $270 per night.
+
+2. **Adria Hotel & Conference Center**: Located at 221-17 Northern Boulevard, Bayside, it offers 3-star accommodations at $234 per night.
+
+3. **Amsterdam Court Hotel**: Situated at 226 West 50th Street, also with a 3-star rating and priced at $216 per night.
+
+Would you like more details on any of these options, or do you have a preference among them?
+User: They're all 3-star hotels? That's disappointing. Give me more details on the 11 Howard. I want to see if it's worth my time.
+System: The 11 Howard is a 3-star hotel located at 11 Howard Street, New York. It allows smoking and offers rooms at a price of $270 per night. If there are any specific details you would like to know about the hotel that are not covered here, please let me know, and I'll do my best to assist you. Would you like to proceed with a booking, or would you like more information on another hotel?
+User: $270 a night for a 3-star hotel? What a rip-off. Fine, just go ahead and book it for me. I need this room from the 5th for seven days, and don't mess it up.
+System: Please confirm: You would like to book 1 room at the 11 Howard hotel in New York, starting from the 5th, for a duration of 7 days. Is that correct?
+User: Yeah, that's correct. Just get it done.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: New York, number_of_rooms: 1, place_name: 11 Howard, stay_length: 7 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the 11 Howard hotel in New York has been successfully confirmed for 1 room starting from November 5th, for a duration of 7 days. If you need any further assistance or have any other requests, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Las Vegas. Find me something top-notch, nothing less than 5 stars. And I'm not interested in any of that non-smoking nonsense.
+System: To get started with your search for a top-notch hotel in Las Vegas, can you please confirm if you're looking for more than one room or any specific number of rooms? Once I have that information, I'll proceed with the search.
+User: I'm looking for just one room. Don't waste my time with the details, just find me the best option.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5, smoking_allowed: True, number_of_rooms: 1 })
+Search Results
+
+End Search Results
+System: It seems there are no available 5-star hotels in Las Vegas that allow smoking. Would you like to consider hotels with a lower star rating or those that do not allow smoking?
+User: I don't care about your excuses. Just find me a 5-star hotel where I can smoke. I don't mind paying extra if that's what it takes.
+System: I understand your preference. Let's try searching for a 5-star hotel in Las Vegas regardless of the smoking policy. I will proceed with the search now. APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5, number_of_rooms: 1 })
+Search Results
+
+End Search Results
+System: Unfortunately, there are still no available 5-star hotels in Las Vegas that match your criteria. Would you like to explore other options, such as a nearby city or a different star rating, to find a suitable hotel?
+User: Fine, search in Los Angeles then. But it better be 5-star and smoking-friendly, or you're wasting my time.
+System: I'll search for a 5-star hotel in Los Angeles that allows smoking. Let's see what options are available. APICall(method='SearchHotel', parameters={ location: Los Angeles, star_rating: 5, smoking_allowed: True, number_of_rooms: 1 })
+Search Results
+
+End Search Results
+System: It appears there are no available 5-star hotels in Los Angeles that permit smoking. Would you like to consider exploring hotels with a different smoking policy or perhaps a nearby location with similar luxury standards?
+User: You're really not getting this, are you? I specifically asked for a 5-star hotel that allows smoking. Do I need to spell it out for you again? Find me what I asked for, and don't suggest anything else.
+System: I understand your frustration, and I apologize for the inconvenience. Let me try searching again in Los Angeles for a 5-star hotel, this time without considering the smoking policy. I will proceed with the search now. 
+
+APICall(method='SearchHotel', parameters={ location: Los Angeles, star_rating: 5, number_of_rooms: 1 })
+Search Results
+
+End Search Results
+System: Unfortunately, there are still no available 5-star hotels in Los Angeles that match your criteria. Would you like to try searching in another city, or perhaps consider a different star rating while keeping the smoking preference?
+User: Let's try searching in New York. I expect a 5-star hotel where I can enjoy a smoke. Make it happen and don't disappoint me again.
+System: I'll search for a 5-star hotel in New York that allows smoking. Let's see what options are available. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5, smoking_allowed: True, number_of_rooms: 1 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I found several 5-star hotels in New York that allow smoking. The options include:
+
+1. 1 Hotel Central Park located at 1414 6th Avenue, priced at $330 per night.
+2. Baccarat Hotel located at 28 West 53rd Street, priced at $525 per night.
+3. 1 Hotel Brooklyn Bridge located at 60 Furman Street, Brooklyn, priced at $465 per night.
+
+Please let me know which one you would like to proceed with or if you need more details about any of these options.
+User: I don't need the extra fluff. Just book the Baccarat Hotel for me. I'm checking in on the 10th and staying for a week. Make sure it's confirmed.
+System: To book your stay at the Baccarat Hotel in New York, I will proceed with the reservation for one room starting from the 10th for a duration of 7 days. Please confirm the details before I finalize the booking.
+User: Yeah, yeah, just get it done. One room, check-in on the 10th, staying for a week. Confirm it already.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: New York, number_of_rooms: 1, place_name: Baccarat Hotel, stay_length: 7 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

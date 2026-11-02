@@ -1,0 +1,108 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Alameda. Can you help me find one?
+System: Certainly! Do you have any particular cuisine in mind, or are you open to suggestions?
+User: I'm open to suggestions.
+System: Great! How about trying some Vietnamese cuisine? It's a delightful experience with a mix of flavors. Let me find a suitable restaurant for you in Alameda. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Alameda, cuisine: Vietnamese})
+Search Results
+
+End Search Results
+System: It seems there are no Vietnamese restaurants available in Alameda at the moment. Would you be open to trying a different cuisine, or perhaps you have a preference for a specific price range? Let me know how you'd like to proceed!
+User: Something affordable would be nice.
+System: APICall (method='FindRestaurants', parameters={city: Alameda, cuisine: Vietnamese, price_range: inexpensive})
+Search Results
+
+End Search Results
+System: It appears there are no inexpensive Vietnamese restaurants available in Alameda at this time. Would you like to explore a different cuisine or perhaps try a moderate price range? Let me know how you'd like to proceed!
+User: Let's try a different cuisine, maybe something Italian.
+System: Alright, let's explore some Italian dining options in Alameda. Please hold on for a moment while I find suitable restaurants for you. 
+
+APICall (method='FindRestaurants', parameters={city: Alameda, cuisine: Italian})
+Search Results
+[{'city': 'Alameda', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-769-4828', 'price_range': 'moderate', 'restaurant_name': "C'era Una Volta", 'serves_alcohol': False, 'street_address': '1332 Park Street D'}, {'city': 'Alameda', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-521-2141 ext. 1', 'price_range': 'moderate', 'restaurant_name': "Linguini's Restaurant", 'serves_alcohol': True, 'street_address': '1506 Park Street'}, {'city': 'Alameda', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-864-7427', 'price_range': 'moderate', 'restaurant_name': 'Pasta Pelican Restaurant', 'serves_alcohol': False, 'street_address': '2455 Mariner Square Drive'}]
+End Search Results
+System: I found a few Italian restaurants in Alameda for you. Here are some options:
+
+1. **C'era Una Volta**: Located at 1332 Park Street D. They don't serve alcohol.
+2. **Linguini's Restaurant**: Situated at 1506 Park Street. They do serve alcohol.
+3. **Pasta Pelican Restaurant**: Found at 2455 Mariner Square Drive. They don't serve alcohol.
+
+All of these options fall into the moderate price range. If any of these sound appealing, let me know if you need more information or if you'd like to make a reservation!
+User: Linguini's Restaurant sounds okay. Can you reserve a table for me there?
+System: Certainly! Could you please provide the date, time, and the number of people for the reservation at Linguini's Restaurant in Alameda?
+User: Tomorrow, at 7:00 PM, for two people.
+System: Thank you for the details. Let me confirm your reservation at Linguini's Restaurant in Alameda for tomorrow at 7:00 PM for two people. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Linguini's Restaurant", city: Alameda, time: "19:00", date: "2023-11-01", party_size: 2})
+Search Results
+[{'city': 'Alameda', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-521-2141 ext. 1', 'price_range': 'moderate', 'restaurant_name': "Linguini's Restaurant", 'serves_alcohol': True, 'street_address': '1506 Park Street', 'date': '2023-11-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Linguini's Restaurant in Alameda has been successfully confirmed for tomorrow at 7:00 PM for two people. If you need the phone number to contact them, it's 510-521-2141 ext. 1. Enjoy your meal! Let me know if there's anything else I can assist you with.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Berkeley.
+System: What type of cuisine are you interested in, such as Italian, Mexican, or something else?
+User: I prefer something simple, maybe American or Italian.
+System: Would you like me to find an American or an Italian restaurant in Berkeley for you?
+User: American would be fine.
+System: Great! Let me find an American restaurant in Berkeley for you. Please hold on for a moment. SYSTEM: APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: American})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-647-9329', 'price_range': 'moderate', 'restaurant_name': 'B&b Kitchen & Wine Bar', 'serves_alcohol': True, 'street_address': '2116 Shattuck Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-338-3464', 'price_range': 'moderate', 'restaurant_name': 'Beer Baron Bar & Kitchen', 'serves_alcohol': True, 'street_address': '5900 College Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-809-8282', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '2068 Center Street'}]
+End Search Results
+System: I found a few American restaurants in Berkeley for you. One option is B&b Kitchen & Wine Bar, which is located at 2116 Shattuck Avenue. They have a moderate price range and serve alcohol. Would you like more information on another restaurant or details about a specific one?
+User: Can you tell me if B&b Kitchen & Wine Bar has live music?
+System: The B&b Kitchen & Wine Bar does not have live music. Would you like information on another restaurant or anything else about B&b Kitchen & Wine Bar?
+User: Can you tell me if there's another American restaurant with live music in Berkeley?
+System: Based on the current search results, none of the American restaurants in Berkeley have live music. Would you like information on any other features or details about these restaurants, or would you like me to search for a different type of restaurant that might offer live music?
+User: Do any of these American restaurants have a quiet atmosphere?
+System: The current search results do not provide information on the atmosphere of the restaurants. Would you like me to provide more details about one of the American restaurants in Berkeley, or would you prefer to explore a different type of restaurant that might have a quiet atmosphere?
+User: Can you give me details about another American restaurant in Berkeley?
+System: Certainly! Another option is Beer Baron Bar & Kitchen, which is located at 5900 College Avenue. They have a moderate price range and serve alcohol. Would you like more information about this restaurant or details about a different one?
+User: Is Beer Baron Bar & Kitchen known for having a quiet atmosphere?
+System: The current search results do not provide information about the atmosphere of Beer Baron Bar & Kitchen. Would you like details about another restaurant or any other specific features of Beer Baron Bar & Kitchen?
+User: Is there another American restaurant you could suggest?
+System: Certainly! Another option is Eureka!, located at 2068 Center Street in Berkeley. They have a moderate price range and also serve alcohol. Would you like more information about this restaurant or explore other dining options?
+User: Is Eureka! known for having a quiet atmosphere?
+System: The current search results do not provide information about the atmosphere at Eureka!. Would you like to know more about other features of Eureka! or details about another restaurant in Berkeley?
+User: Can you tell me if there are any other American restaurants in Berkeley with a quiet atmosphere?
+System: The current search results do not provide information about the atmosphere of the American restaurants in Berkeley. Would you like me to search for other types of restaurants that might offer a quiet atmosphere, or is there anything else I can assist you with regarding the dining options in Berkeley?
+User: Could you suggest a restaurant with a reasonable price range?
+System: The American restaurants I found in Berkeley, including B&b Kitchen & Wine Bar, Beer Baron Bar & Kitchen, and Eureka!, all have a moderate price range. If you're looking for options within this price range, these could be suitable choices. Would you like more information about any of these restaurants or explore other dining options?
+User: I'm interested in learning more about Eureka!. Can you tell me if they have any special features or unique offerings?
+System: Eureka! in Berkeley is known for serving alcohol, which might appeal to those looking for a drink with their meal. Unfortunately, the current search results do not provide specific information on any additional special features or unique offerings. Would you like to explore any other restaurants or need more details about Eureka!?
+User: I'm interested in making a reservation at Eureka!. Can you help with that?
+System: Certainly! To assist with making a reservation at Eureka!, could you please provide the date, time, and party size for your reservation?
+User: I would like to reserve a table for two people on Friday at 7:00 PM.
+System: To confirm, you would like to reserve a table for two people at Eureka! in Berkeley on Friday at 7:00 PM. Is that correct?
+User: Yes, that's correct.
+System: Thank you for confirming. I will proceed with making the reservation at Eureka! for two people on Friday at 7:00 PM. Please hold on for a moment. SYSTEM: APICall (method='ReserveRestaurant', parameters={restaurant_name: Eureka!, city: Berkeley, date: 2023-10-20, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-809-8282', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '2068 Center Street', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Eureka! in Berkeley for two people on Friday, October 20th at 7:00 PM has been successfully made. If you need further assistance or have any other questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,130 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, uh, find me a hotel... somewhere. I don't really care where.
+
+System: Okay, no worries! How about we look for something in London? It's as good a place as any, right?
+APICall(method='SearchHotel', parameters={ location: London })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: Alright, London it is! Check this out: there's a fancy 5-star place called 45 Park Lane. Sounds kinda posh, huh?
+
+User: Ugh, 5-star? Sounds expensive. What else ya got? Something... cheaper? Maybe in London still, I guess, since you already picked it.
+
+System: Okay, no problem! How about Abercorn House? It's just a 1-star, so it should be pretty cheap. Does that sound like a good option for you?
+
+User: Yeah, whatever. Is it, like, actually in London? And does it even matter if it's got, like, a bathroom?
+
+System: Yeah, Abercorn House is in London. As for the bathroom, I'm sure it's got one, but I don't have details on that. You wanna just book it and hope for the best? Or should we check if they allow smoking, since you don't seem to care much either way?
+
+User: Smoking? Hmm, I guess it doesn't matter that much. Sure, check if they allow smoking. If not, whatever, I'll just deal with it.
+
+System: Alright, checking if Abercorn House allows smoking... Just a sec.
+
+Based on the hotel info, smoking is not allowed at Abercorn House. Should we just go ahead and book it anyway since it doesn't matter to you?
+
+User: Yeah, fine, whatever. Book it. I guess.
+
+System: Okay, cool. So, how many days will you be staying and what date would you like to check in? Let's just get this over with, haha.
+
+User: Uh, I don't know... a week? Starting... whenever. Just pick a date, I guess.
+
+System: Alright, a week it is! Since you don't have a preference, how about we start the booking from tomorrow, 2024-03-22? And how many rooms do you need?
+
+User: Rooms? Uh, just one, I guess. Is that all I gotta tell you?
+
+System: Okay, just one room it is! So, to quickly recap and finalize this, you want me to book one room at Abercorn House in London for a week starting tomorrow, 2024-03-22. Is that all correct?
+
+User: Yeah, whatever, sounds right. Just do it.
+
+System: Alright, cool. APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-22, location: London, number_of_rooms: 1, place_name: Abercorn House, stay_length: 7 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens', 'check_in_date': '2024-03-22'}]
+End Search Results
+System: Okay, great! Your booking at Abercorn House for one room, starting tomorrow (2024-03-22) for 7 days is confirmed. Just so you know, their address is 28-30 Bute Gardens, and their phone number is +44 20 8563 8692 if you need to call them for anything. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I need to find a hotel somewhere... uh, let's say Las Vegas. I guess.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating of the hotel?
+
+User: Star rating? Uh, does it really matter? I guess not too fancy, maybe 3 stars? Or whatever is easiest to find.
+
+System: Okay, no problem. I'll look for hotels in Las Vegas, focusing on 3-star options, but I'm open to others if those are scarce.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: Alright, I found a few options for you. There's the Best Western Plus Las Vegas West at $117 a night, the Hampton Inn Las Vegas/Summerlin at $279 a night, and the Oasis At Gold Spike for $63 a night. All are 3-star hotels. Do any of those sound interesting to you?
+
+User: Hmm, Oasis At Gold Spike... that sounds kinda cool. What's the deal with that one? Like, what's it even like?
+
+System: Okay, the Oasis At Gold Spike is located at 217 Las Vegas Boulevard North. It's a 3-star hotel where smoking is not allowed. The price is $63 per night, and they have 1 room available. Does that sound like it might work for you?
+
+User: Smoking not allowed? Ugh, never mind. Find something where I CAN smoke. I can't be bothered going outside all the time.
+
+System: Okay, let me find a hotel in Las Vegas that allows smoking. How about I search for hotels that specifically allow smoking?
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: True })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court'}]
+End Search Results
+System: Alright, I found a few hotels in Las Vegas that allow smoking. There's the Budget Suites Of America, a 1-star hotel at $44 per night. Then there's the Hampton Inn Las Vegas/Summerlin, which is 3 stars and costs $279 per night. Lastly, there's the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, a 2-star option for $72 a night. Any of those catch your eye?
+
+User: Eh, the La Quinta Inn... $72 isn't too bad. Tell me more about that one. I can't be bothered to look it up myself.
+
+System: Okay, the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech is located at 7101 Cascade Valley Court. It's a 2-star hotel, and smoking is allowed. They have 1 room available. Would you like to know anything else, or does this seem like a good option for you?
+
+User: Sounds alright. What's the check-in date and how long can I crash there? I haven't really thought about it. Uh, make it for like, tomorrow? And I dunno, a week maybe?
+
+System: Okay, so you're looking to check in tomorrow, and you want to stay for a week at the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech. Can you please provide the exact check-in date (YYYY-MM-DD) so I can finalize the booking details for you?
+
+User: Ugh, fine. Let's say 2024-03-16. Just get it over with, I guess.
+
+System: Okay, so you want to book a room at the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, checking in on 2024-03-16 for a week. Just to confirm, you need one room, right?
+
+User: Yeah, one room is fine. Whatever. Just book the thing.
+
+System: Okay, I will book one room at the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, checking in on 2024-03-16 for a stay of 7 days. Is that all correct?
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-16, location: Las Vegas, number_of_rooms: 1, place_name: La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, stay_length: 7 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court', 'check_in_date': '2024-03-16'}]
+End Search Results
+System: Alright, I've booked one room at the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, checking in on 2024-03-16 for 7 days. Just to confirm, the total price for the stay will be $504. Is that correct?
+
+User: Yeah, yeah, sounds about right. Just do it.
+
+System: Okay, the booking is confirmed. One room at the La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, checking in on 2024-03-16 for 7 days, at a total cost of $504. Is there anything else I can help you with today?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

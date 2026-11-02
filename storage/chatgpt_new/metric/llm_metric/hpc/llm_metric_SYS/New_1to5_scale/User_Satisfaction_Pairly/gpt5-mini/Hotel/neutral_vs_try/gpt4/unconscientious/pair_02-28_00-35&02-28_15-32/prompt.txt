@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, can you help me find a hotel in Las Vegas?
+System: Do you have any specific star rating, smoking preference, or number of rooms in mind for the hotel in Las Vegas?
+User: Uh, I haven't really thought about that. Just find something that looks fun, I guess. Maybe not too expensive? And I don't mind if it's smoking or non-smoking. Just show me what's out there.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: dontcare, smoking_allowed: dontcare, number_of_rooms: dontcare })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found a few options for you in Las Vegas. One option is the Best Western Plus Las Vegas West, a 3-star hotel with a price of $117 per night, located at 8669 West Sahara Avenue. Another choice is Budget Suites Of America, a 1-star hotel that allows smoking, priced at $44 per night, located at 2219 North Rancho Drive. Would you like more information on any of these, or do you have a preference?
+User: Hmm, the Budget Suites Of America sounds cheap and they allow smoking. Let's go with that one. Can you book it for me? I think I'll stay for, like, a week starting from tomorrow.
+System: Please confirm that you want to book 1 room for 7 days at the Budget Suites Of America starting from tomorrow in Las Vegas.
+User: Yeah, that sounds good. Go ahead and book it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-04, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 7 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-11-04'}]
+End Search Results
+System: Your booking at Budget Suites Of America in Las Vegas has been successfully confirmed for 7 days, starting from November 4th. If you need any further assistance or have any more questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm thinking of heading to Paris. Can you help me find a hotel there?
+System: Do you have any preferences for the star rating or smoking allowance for the hotel in Paris?
+User: Uh, I'm not really sure. Maybe something that's not too fancy, but also not a complete dive. Smoking doesn't really matter too much to me. Can you just see what's available?
+System: APICall(method='SearchHotel', parameters={ location: Paris, star_rating: dontcare, smoking_allowed: dontcare })
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}]
+End Search Results
+System: I found a couple of hotels in Paris that might suit your needs. The Ac Hotel By Marriott Paris Porte Maillot is a 4-star hotel, with rooms priced at $192 per night. Alternatively, there's Amastan Paris, also a 4-star option, at $96 per night. Both hotels do not allow smoking. Would you like more details on these or perhaps consider the 3-star Aparthotel Adagio Access Paris La Villette, which is priced at $120 per night?
+User: Hmm, so many choices! I guess the cheaper one sounds tempting. Can you tell me more about Amastan Paris? And maybe, like, how many rooms they have or something?
+System: The Amastan Paris offers 1 room, priced at $96 per night, and is a 4-star hotel. The address is 34 Rue Jean Mermoz, 75008, and they do not allow smoking. Would you like to proceed with a reservation, or is there anything else you'd like to know?
+User: Oh man, just one room? That might be a bit tight if I decide to bring a friend along. Can you see if there's something else with more rooms or maybe just a bit cheaper?
+System: I found another option for you: the Aparthotel Adagio Access Paris La Villette, which is a 3-star hotel offering 2 rooms at $120 per night. It also does not allow smoking. Would you like more details about this option, or would you prefer to consider another alternative?
+User: Hmm, $120 per night is a bit more than I wanted to spend. Can you find something else that's cheaper, maybe even if it's a lower star rating?
+System: Let me check for more budget-friendly options for you. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Paris, star_rating: 1, smoking_allowed: dontcare })
+Search Results
+
+End Search Results
+System: It seems there are no available hotels matching your criteria at a lower star rating in Paris at the moment. Would you like to adjust your preferences, such as considering a slightly higher price range or different star rating, to explore more options?
+User: Ugh, I guess I'll have to be flexible. Let's see what else is out there, even if it costs a bit more. I'm not really picky about star ratings anyway. 
+System: I'll expand the search to include a wider range of options for you. Please hold on for a moment while I look for more hotels within a slightly higher price range in Paris. 
+
+APICall(method='SearchHotel', parameters={ location: Paris, star_rating: dontcare, smoking_allowed: dontcare })
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}]
+End Search Results
+System: I have the same options available: the Ac Hotel By Marriott Paris Porte Maillot, a 4-star hotel priced at $192 per night with 2 rooms, and the Aparthotel Adagio Access Paris La Villette, a 3-star hotel with 2 rooms at $120 per night. Both options do not allow smoking. Would you like to proceed with any of these options, or should I continue searching for something else?
+User: I guess the Aparthotel Adagio Access Paris La Villette sounds alright. Let's just go with that. Can you book it for me? I'm not sure about the check-in date, maybe just pick something soon for a week or so?
+System: Could you please confirm the check-in date for your reservation at the Aparthotel Adagio Access Paris La Villette? Once I have that, I can proceed to book it for a week-long stay.
+User: Uh, let's say the check-in date is like the day after tomorrow. That should work, I think.
+System: Great choice! To confirm, you want to book 2 rooms at the Aparthotel Adagio Access Paris La Villette for a week, starting from the day after tomorrow. Is that correct?
+User: Yeah, that sounds about right. Let's go ahead and book it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-25, location: Paris, number_of_rooms: 2, place_name: Aparthotel Adagio Access Paris La Villette, stay_length: 7 })
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019', 'check_in_date': '2023-10-25'}]
+End Search Results
+System: Your booking at the Aparthotel Adagio Access Paris La Villette has been successfully confirmed. You have reserved 2 rooms for a 7-night stay starting from October 25, 2023. If you need any further assistance or have any questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

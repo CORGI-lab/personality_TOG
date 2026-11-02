@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm planning a trip and would love your help in finding a hotel in Sydney. Could you assist me with that?
+System: Do you have any preferences for the star rating or any other specific requirements for the hotel in Sydney?
+User: I would appreciate a hotel with a good star rating, perhaps 4 or 5 stars. I'm also looking for a non-smoking environment. Thank you for your help!
+System: Great! Let me find some hotels in Sydney with a 4 or 5-star rating and a non-smoking environment for you. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Sydney, star_rating: 5, smoking_allowed: False })
+Search Results
+[{'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9696 2500', 'place_name': 'Amora Hotel', 'price_per_night': 315, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '11 Jamison Street'}, {'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9240 3100', 'place_name': 'Establishment Hotel', 'price_per_night': 495, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '5 Bridge Lane'}, {'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 8823 8888', 'place_name': 'Fraser Suites Sydney', 'price_per_night': 585, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '488 Kent Street'}]
+End Search Results
+System: I found several 5-star hotels in Sydney that meet your requirements for a non-smoking environment. Here are a few options:
+
+1. **Amora Hotel** - Located at 11 Jamison Street, with a price of $315 per night. 
+2. **Establishment Hotel** - Situated at 5 Bridge Lane, priced at $495 per night.
+3. **Fraser Suites Sydney** - Found at 488 Kent Street, with a rate of $585 per night.
+
+Would you like more details on any of these options or assistance with anything else?
+User: Thank you for these options! Could you please tell me a bit more about the Amora Hotel? Maybe some amenities or nearby attractions? That would be really helpful.
+System: I currently don't have information about the amenities or nearby attractions for the Amora Hotel. However, it's located at 11 Jamison Street in Sydney and is a 5-star hotel with a non-smoking environment. If there's anything else specific you'd like to know or if you need assistance with booking or further details, please let me know!
+User: That sounds great! Could you please reserve a room for me at the Amora Hotel? I'll be checking in on the 15th of next month and staying for five nights. Thank you so much for your help!
+System: To confirm, you would like to reserve a room at the Amora Hotel in Sydney, checking in on the 15th of next month for a stay of five nights. How many rooms would you like to book?
+User: Just one room, please. Thank you for your assistance!
+System: Thank you for confirming. I will proceed with the reservation for one room at the Amora Hotel in Sydney, checking in on the 15th of next month for a five-night stay. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Sydney, number_of_rooms: 1, place_name: Amora Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9696 2500', 'place_name': 'Amora Hotel', 'price_per_night': 315, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '11 Jamison Street', 'check_in_date': '2023-11-15'}, {'location': 'Sydney', 'number_of_rooms': 2, 'phone_number': '+61 2 9696 2500', 'place_name': 'Amora Hotel Jamison Sydney', 'price_per_night': 230, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '11 Jamison Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Amora Hotel in Sydney has been successfully confirmed. You have booked one room, checking in on the 15th of November for a five-night stay. If you need anything else or have further questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to book a hotel in Vancouver, please. Could you help me find one?
+System: Do you have a specific check-in date and how long do you plan to stay in Vancouver?
+User: I plan to check in on the 10th of this month and stay for five nights.
+System: How many rooms would you like to book for your stay in Vancouver?
+User: I would like to book one room, please. Thank you for asking!
+System: Please confirm to book 1 room for 5 nights in Vancouver starting from the 10th of this month.
+User: Yes, that sounds perfect. Please go ahead and make the reservation. Thank you so much for your help!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-10, location: Vancouver, number_of_rooms: 1, stay_length: 5, place_name: RandomHotelName })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-697-0202', 'place_name': 'RandomHotelName', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-10-10', 'stay_length': '5'}]
+End Search Results
+System: Your booking at RandomHotelName in Vancouver has been successfully confirmed. The hotel is located at 1180 West Hastings Street, and the contact number is +1 604-697-0202. Enjoy your stay! Is there anything else you need help with?
+User: No, that's all I need. Thanks a lot!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I'm kind of feeling hungry and don't really know where to go. Can you help me find a restaurant in Oakland?
+System: Sure! Do you have a particular type of cuisine in mind, such as Italian, Mexican, or something else?
+User: Uh, I don't know, maybe something like... Italian? Or whatever. Just something tasty.
+System: Alright, let's go with Italian cuisine for now. I'll find some options for you in Oakland. Please hold on a moment while I search for Italian restaurants in Oakland. 
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: Italian})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-768-8003', 'price_range': 'expensive', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '5356 College Avenue'}, {'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-350-7619', 'price_range': 'moderate', 'restaurant_name': 'Belotti Ristorante E Bottega', 'serves_alcohol': True, 'street_address': '5403 College Avenue'}, {'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-918-3205', 'price_range': 'moderate', 'restaurant_name': 'Contrasto', 'serves_alcohol': True, 'street_address': '388 Grand Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Oakland for you. One option is A16, which is located at 5356 College Avenue. It's a bit on the expensive side, and they do serve alcohol. Would you like more information about this place or hear about another restaurant?
+User: Uh, yeah, tell me about another place. Maybe something not too pricey.
+System: Sure, another option for you is Belotti Ristorante E Bottega, located at 5403 College Avenue. It has a moderate price range and also serves alcohol. Would you like more information about this restaurant or hear about another option?
+User: Yeah, I guess that sounds okay. Can you just make a reservation for me there?
+System: For what time and date would you like to make the reservation at Belotti Ristorante E Bottega? Also, please let me know the number of people for the reservation.
+User: Uh, let's go with tomorrow night, around 7 pm, for like, I don't know, maybe 3 people?
+System: Just to confirm, you would like to make a reservation for 3 people at Belotti Ristorante E Bottega in Oakland, for tomorrow night at 7 pm. Is that correct?
+User: Yeah, that sounds about right. Let's do it.
+System: Great! I'll make the reservation for you now. Please hold on a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: Belotti Ristorante E Bottega, city: Oakland, time: 19:00, date: 2023-10-27, party_size: 3})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-350-7619', 'price_range': 'moderate', 'restaurant_name': 'Belotti Ristorante E Bottega', 'serves_alcohol': True, 'street_address': '5403 College Avenue', 'date': '2023-10-27', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Belotti Ristorante E Bottega for 3 people tomorrow at 7 pm has been successfully made. The restaurant is located at 5403 College Avenue, and they do serve alcohol. If you need anything else, feel free to let me know!
+User: Cool, thanks. That's all I need.
+
+Dialogue B:
+  User: I'm kinda hungry but not sure where to eat. Maybe somewhere in San Francisco?
+System: Do you have a particular type of cuisine in mind, or are you open to trying something new? If you're open, I can suggest a random cuisine for you.
+User: I don't really know... maybe something with a bit of everything? Like a buffet or whatever.
+System: Let's go with a buffet option then. I'll find a place for you in San Francisco. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Buffet})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Buffet', 'has_live_music': False, 'phone_number': '415-682-4578', 'price_range': 'moderate', 'restaurant_name': 'Fiery Hot Pot Buffet', 'serves_alcohol': False, 'street_address': '1626 Taraval', 'date': '2019-03-01', 'party_size': 2, 'time': '18:00'}]
+End Search Results
+System: I found a buffet option for you in San Francisco. The restaurant is called Fiery Hot Pot Buffet. It's located at 1626 Taraval, and it's moderately priced. Do you need any more details, or would you like to make a reservation?
+User: Uh, I guess that sounds alright. Can you just book a table there for me? Maybe around 7:00 pm or something.
+System: Could you please confirm the number of people you'll be reserving for at Fiery Hot Pot Buffet in San Francisco? Once I have that, I'll make the reservation for you at 7:00 pm.
+User: Let's go with four people.
+System: Great, I'll make a reservation for four people at Fiery Hot Pot Buffet in San Francisco at 7:00 pm. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters= {city: San Francisco, restaurant_name: Fiery Hot Pot Buffet, time: 19:00, party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Buffet', 'has_live_music': False, 'phone_number': '415-682-4578', 'price_range': 'moderate', 'restaurant_name': 'Fiery Hot Pot Buffet', 'serves_alcohol': False, 'street_address': '1626 Taraval', 'date': '2019-03-01', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation is confirmed for four people at Fiery Hot Pot Buffet in San Francisco at 7:00 pm. If you need their phone number, it's 415-682-4578. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

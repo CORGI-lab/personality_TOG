@@ -1,0 +1,78 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel, somewhere in Los Angeles. Can you help me find one?
+System: Do you have any preferences for star rating or if smoking is allowed in the hotel? Or should I proceed with a random selection?
+User: Uh, I don't really have any specific preferences. Just find something that's decent. If smoking is allowed, that's cool, but if not, whatever. Just show me what you've got.
+System: APICall(method='SearchHotel', parameters={ location: Los Angeles })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 323-852-7000', 'place_name': 'Ac Hotel By Marriott Beverly Hills', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '6399 Wilshire Boulevard'}, {'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 800-224-7835', 'place_name': 'Airtel Plaza Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7277 Valjean Avenue, Van Nuys, California 91406, United States'}, {'location': 'Los Angeles', 'number_of_rooms': 3, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow - Hollywood Hostel', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, CA 90028, USA'}]
+End Search Results
+System: I found a few options for you in Los Angeles. One option is the Airtel Plaza Hotel, which is a 3-star hotel allowing smoking, and it costs $216 per night. Another option is the Banana Bungalow - Hollywood Hostel, a 1-star hotel that also allows smoking, priced at $72 per night. Would you like more information about any of these hotels, or is there something else I can assist you with?
+User: Can you tell me more about the Airtel Plaza Hotel? Like, how many rooms do they have available or anything else interesting?
+System: The Airtel Plaza Hotel in Los Angeles has 2 rooms available. It's a 3-star hotel that allows smoking, and the price per night is $216. Is there anything else you would like to know about this hotel, or would you like assistance with making a reservation?
+User: Hmm, I'm not sure. What about the Banana Bungalow? Can you give me more details on that one too?
+System: The Banana Bungalow - Hollywood Hostel in Los Angeles has 3 rooms available. It's a 1-star hotel that allows smoking, with a price of $72 per night. Would you like to know anything else about this hostel, or are you considering making a reservation?
+User: I guess the Banana Bungalow sounds alright. Can you reserve a room for me there?
+System: How many rooms would you like to reserve at the Banana Bungalow - Hollywood Hostel, and when would you like to check in? Additionally, please let me know the duration of your stay.
+User: Let's just go with one room, and, uh, I guess I'll check in tomorrow. I'll stay for like, a week or something.
+System: Please confirm that you would like to reserve 1 room at the Banana Bungalow - Hollywood Hostel in Los Angeles, checking in tomorrow and staying for 7 days. Once you confirm, I'll proceed with the reservation.
+User: Yeah, sure, go ahead and reserve it for me.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-28, location: Los Angeles, number_of_rooms: 1, place_name: Banana Bungalow - Hollywood Hostel, stay_length: 7 })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 3, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow - Hollywood Hostel', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, CA 90028, USA', 'check_in_date': '2023-10-28'}, {'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow Hollywood', 'price_per_night': 21, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, California 90028, United States', 'check_in_date': '2023-10-28'}]
+End Search Results
+System: Your reservation at the Banana Bungalow - Hollywood Hostel in Los Angeles has been successfully confirmed. You will be checking in tomorrow, October 28th, and staying for 7 days. If you need anything else or have any further questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a hotel in Las Vegas. Can you help me out with that?
+System: Do you have a preferred star rating for the hotel in Las Vegas, or should I search for any available options?
+User: Uh, I guess it doesn't really matter. Just find something that sounds alright.
+System: Sure, I'll start by searching for a hotel with a random star rating in Las Vegas. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5 })
+Search Results
+
+End Search Results
+System: It seems there were no results returned for a 5-star hotel in Las Vegas. Would you like me to try searching with a different star rating or any other specific preferences you might have, such as smoking allowance?
+User: Can you just find something cheap and maybe they allow smoking?
+System: Let's try searching for a hotel in Las Vegas with a focus on affordability and the possibility of allowing smoking. Please hold on while I perform the search.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: True, star_rating: 3 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found a 3-star hotel named Hampton Inn Las Vegas/Summerlin that allows smoking. The price per night is $279, and it's located at 7100 Cascade Valley Court. Would you like more information or assistance with anything else?
+User: Yeah, I guess that works. Go ahead and book it for me.
+System: To proceed with the booking, I need a few more details. Could you please let me know your check-in date and the number of nights you plan to stay? Also, how many rooms would you like to reserve?
+User: Uh, let's go with tomorrow for like, maybe three nights? And just one room should be fine.
+System: Please confirm that you would like to book 1 room at Hampton Inn Las Vegas/Summerlin for 3 nights starting from tomorrow. Once confirmed, I will proceed with the reservation.
+User: Yeah, that's cool. Go ahead and book it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-11, location: Las Vegas, number_of_rooms: 1, place_name: Hampton Inn Las Vegas/Summerlin, stay_length: 3 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court', 'check_in_date': '2023-10-11'}]
+End Search Results
+System: Your booking at Hampton Inn Las Vegas/Summerlin has been successfully confirmed. You have reserved 1 room for 3 nights starting from October 11, 2023. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,126 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm absolutely starving and in the mood for a fun night out. Let's find a great restaurant in San Francisco! I'm open to suggestions, but something lively would be awesome!
+
+System: Okay! I can help with that! First, do you have a specific cuisine in mind, or are you open to anything?
+
+User: Oh, I'm totally open to anything! Surprise me! As long as it's a place with a good vibe, maybe some music, and definitely serves alcohol. What have you got that's super popular right now?
+
+System: Okay, since you're open to anything, how about American cuisine? I can look for restaurants in San Francisco that serve alcohol, maybe have live music and offer American cuisine.
+```tool_code
+APICall(method='FindRestaurants', parameters={'city': 'San Francisco', 'serves_alcohol': True, 'has_live_music': 'dontcare', 'cuisine': 'American'})
+```
+Search Results
+
+End Search Results
+System: Okay, I will search for American restaurants in San Francisco that serve alcohol and I will check if they have live music.
+
+User: Great! I'm excited to hear what you find! Let's make it a place where I can actually make a reservation too, so I don't have to wait in line all night!
+
+System: ```tool_code
+APICall(method='FindRestaurants', parameters={'city': 'San Francisco', 'serves_alcohol': True, 'has_live_music': 'dontcare', 'cuisine': 'American'})
+```
+
+Search Results
+
+End Search Results
+System: Okay, I will search for American restaurants in San Francisco that serve alcohol, and I will check if they have live music and take reservations.
+
+User: Fantastic! Any of them have a real buzz about the place? You know, somewhere with a lively crowd?
+
+System: ```tool_code
+APICall(method='FindRestaurants', parameters={'city': 'San Francisco', 'serves_alcohol': True, 'has_live_music': True, 'cuisine': 'American'})
+```
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-986-0069', 'price_range': 'expensive', 'restaurant_name': "John's Grill", 'serves_alcohol': True, 'street_address': '63 Ellis Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-956-2013', 'price_range': 'moderate', 'restaurant_name': 'Hard Rock Cafe', 'serves_alcohol': True, 'street_address': '39 Pier #256'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-384-9365', 'price_range': 'moderate', 'restaurant_name': "Mr. Tipple's Recording Studio", 'serves_alcohol': True, 'street_address': '39 Fell Street'}]
+End Search Results
+System: I found three American restaurants in San Francisco that serve alcohol and have live music: John's Grill, Hard Rock Cafe, and Mr. Tipple's Recording Studio. John's Grill is expensive, while Hard Rock Cafe and Mr. Tipple's Recording Studio are moderately priced. Does any of these sound good?
+
+User: Ooh, they all sound fun! Tell me more about Mr. Tipple's Recording Studio – that name is intriguing! What's the atmosphere like there?
+
+System: Mr. Tipple's Recording Studio is located at 39 Fell Street, serves alcohol, features live music, and is in the moderate price range. Their phone number is 415-384-9365. Is there anything else you'd like to know about it?
+
+User: That sounds like my kind of place! Okay, so if it has live music and serves alcohol, then I'm pretty much sold. Can you book a table there for me? I'm thinking tomorrow night would be perfect!
+
+System: What time tomorrow night would you like to make the reservation for? Also, how many people should I reserve for?
+
+User: Oh, perfect! Let's say 8:00 PM, and there will be four of us. Can't wait!
+
+System: Okay, let me make sure I have everything right: You want to reserve a table at Mr. Tipple's Recording Studio in San Francisco for tomorrow at 8:00 PM for a party of four. Is that correct?
+
+User: Absolutely perfect! Go ahead and book it!
+
+System: ```tool_code
+APICall(method='ReserveRestaurant', parameters={'restaurant_name': "Mr. Tipple's Recording Studio", 'city': 'San Francisco', 'date': '2024-05-03', 'time': '8:00 PM', 'party_size': 4})
+```
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-384-9365', 'price_range': 'moderate', 'restaurant_name': "Mr. Tipple's Recording Studio", 'serves_alcohol': True, 'street_address': '39 Fell Street', 'date': '2024-05-03', 'party_size': '4', 'time': '8:00 PM'}]
+End Search Results
+System: Great! I have a table for four at Mr. Tipple's Recording Studio in San Francisco for tomorrow, May 3, at 8:00 PM. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm absolutely starving and in the mood for something delicious in San Francisco! Let's find a fun place to grab a bite, maybe even make a reservation if we find the perfect spot!
+
+System: Alright! San Francisco, here we come! To make sure we find the perfect place for your taste, do you have a particular type of cuisine in mind, or are you open to suggestions? I'm thinking something exciting and new!
+
+User: Ooh, exciting and new sounds fantastic! I'm generally a fan of anything with a bit of zest, maybe something Mediterranean or even some really good fusion? I'm open to ideas, though! What do you think?
+
+System: Given your adventurous palate, I'm thinking we should explore some delicious Mediterranean options in San Francisco! How about we start with that?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mediterranean})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '415-957-5463', 'price_range': 'expensive', 'restaurant_name': 'Barcha', 'serves_alcohol': True, 'street_address': '28 Fremont Street'}, {'city': 'San Francisco', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '415-399-1155', 'price_range': 'expensive', 'restaurant_name': 'Boulibar', 'serves_alcohol': True, 'street_address': 'One Ferry Building #35'}, {'city': 'San Francisco', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '415-970-2428', 'price_range': 'inexpensive', 'restaurant_name': 'Goood Frikin Chicken', 'serves_alcohol': False, 'street_address': '10 29th Street'}]
+End Search Results
+System: Fantastic! I've got a few amazing Mediterranean restaurants in San Francisco that I think you'll absolutely love.
+
+First up, there's Barcha at 28 Fremont Street. They serve alcohol and it's in the expensive price range. Another option is Boulibar, located at One Ferry Building #35, which also serves alcohol and is in the expensive price range. Lastly, there's Goood Frikin Chicken at 10 29th Street; it's in the inexpensive price range, but doesn't serve alcohol.
+
+Which one sounds like it's hitting the spot for your adventurous self?
+
+User: Wow, those all sound amazing! Barcha and Boulibar both being expensive… hmm, decisions, decisions! Tell me, does Barcha have a lively atmosphere? I'm kind of in the mood for a place with a buzz, you know?
+
+System: Okay, let's dive into Barcha! I don't have information about the vibe or atmosphere, but I can tell you that Barcha is located at 28 Fremont Street. It's a Mediterranean restaurant that serves alcohol and is in the expensive price range. Does that sound like the kind of place you're looking for?
+
+User: Fabulous! Fremont Street sounds like it could be the heart of the action. Okay, I'm feeling good about Barcha! Let's lock it in! Can you make a reservation for me? I'm thinking tomorrow night, say... 7:30 PM? And there will be four of us ready to have a fantastic time!
+
+System: Great choice! Barcha sounds like it'll be a blast. Just to confirm, you'd like a reservation for 4 people at Barcha in San Francisco for tomorrow at 7:30 PM?
+
+User: Yes, that's exactly right! Book it! I'm already picturing the fun we're going to have!
+
+System: Perfect! Let me make that reservation for you right away!
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Barcha, city: San Francisco, date: 2024-07-19, time: 19:30, party_size: 4})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '415-957-5463', 'price_range': 'expensive', 'restaurant_name': 'Barcha', 'serves_alcohol': True, 'street_address': '28 Fremont Street', 'date': '2024-07-19', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Awesome! I've got you all set! Your reservation for 4 at Barcha in San Francisco is confirmed for tomorrow, July 19th, at 7:30 PM. Get ready for some delicious Mediterranean food and good times!
+
+User: Fantastic! That's all the details I need! Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

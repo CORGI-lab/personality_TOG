@@ -1,0 +1,98 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel in Vancouver. Can you help me find something quiet and comfortable?
+System: Sure, I can help with that. Could you please let me know how many rooms you need and your preferred check-in date?
+User: One room, please. I'll be checking in on the 10th.
+System: Great, thank you for that information. How many nights are you planning to stay in Vancouver?
+User: Four nights, please.
+System: Thank you for providing the details. Let me confirm: you need one room in Vancouver with a check-in date of the 10th, staying for four nights. Is that correct? Once confirmed, I'll proceed with the booking.
+User: Yes, that's correct.
+System: APICall(method='ReserveHotel', parameters={place_name: dontcare, location: Vancouver, check_in_date: 2023-11-10, stay_length: 4, number_of_rooms: 1})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-697-0202', 'place_name': 'dontcare', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-10', 'stay_length': '4'}]
+End Search Results
+System: Your booking has been successfully confirmed at a 4-star hotel in Vancouver. The address is 1180 West Hastings Street, and the price per night is $108. Smoking is not allowed in this hotel. If you need any more information or assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Seattle. Can you help with that?
+System: Could you please let me know if you have any preferences for the star rating of the hotel? If you're open to any options, I can select one for you.
+User: I'm fine with any star rating. Just looking for something quiet and comfortable.
+System: APICall(method='SearchHotel', parameters={ location: Seattle })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few options for you in Seattle. One of them is the Ace Hotel Seattle, which has a 2-star rating. Would you like more details about this hotel, or should I look into another option for you?
+User: Could you look for another option, please?
+System: Certainly. Another option in Seattle is the Belltown Inn, which also has a 2-star rating. Would you like more details about this hotel, or should I continue searching for other options?
+User: Could you continue searching for other options, please?
+System: Of course. Another hotel option available in Seattle is the Days Inn By Wyndham Seattle North Of Downtown, which also has a 2-star rating. Would you like more details about this hotel, or should I explore further options for you?
+User: Could you explore further options, please?
+System: I'm sorry, but it seems that all the available options in Seattle have been exhausted based on the current search results. You might want to consider adjusting your preferences, like the star rating or smoking allowance, to find more options. Let me know if you'd like to try this approach.
+User: Could you check if there are any hotels that allow smoking?
+System: The current search results indicate that none of the hotels in Seattle allow smoking. Would you like to consider adjusting other preferences, such as the star rating, to find more options? Let me know how you'd like to proceed.
+User: I guess I'll have to adjust my preferences. Can you try looking for hotels with a higher star rating, maybe 3 stars or more?
+System: I'll check for hotels in Seattle with a 3-star rating or higher. Please hold on for a moment while I perform the search. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found some 3-star hotels in Seattle. One option is the Best Western Plus Pioneer Square Hotel Downtown. Would you like more details about this hotel, or should I check another one for you?
+User: Could you check another one for me, please?
+System: Certainly. Another option is the Courtyard By Marriott Seattle Downtown/Lake Union, which also has a 3-star rating. Would you like more details about this hotel, or should I continue searching for other options?
+User: Could you continue searching for other options, please?
+System: Of course. Another option is the Embassy Suites By Hilton Seattle Downtown Pioneer Square, which has a 3-star rating and allows smoking. Would you like more details about this hotel, or should I assist you further in another way?
+User: Could you provide more details about the Embassy Suites By Hilton Seattle Downtown Pioneer Square, please?
+System: The Embassy Suites By Hilton Seattle Downtown Pioneer Square is a 3-star hotel located at 255 South King Street in Seattle. The hotel allows smoking, and the price per night is $342. If you need any further assistance or have any additional questions about this hotel, please let me know how I can assist you further.
+User: Is there a quieter hotel option available?
+System: The current search results indicate that Embassy Suites By Hilton Seattle Downtown Pioneer Square is the only hotel among the options that allows smoking. However, if you are looking for a quieter environment, you might want to consider the other non-smoking options available. Would you like me to provide details about another hotel, such as the Best Western Plus Pioneer Square Hotel Downtown or Courtyard By Marriott Seattle Downtown/Lake Union, which may offer a more peaceful setting?
+User: Could you provide details about the Courtyard By Marriott Seattle Downtown/Lake Union, please?
+System: The Courtyard By Marriott Seattle Downtown/Lake Union is a 3-star hotel located at 925 Westlake Avenue North in Seattle. This hotel does not allow smoking, and the price per night is $168. If you have any more questions or need further assistance with this hotel, please let me know how I can help you further.
+User: Could you tell me more about the amenities at the Courtyard By Marriott Seattle Downtown/Lake Union?
+System: I'm sorry, but the current search results do not provide detailed information about the amenities at the Courtyard By Marriott Seattle Downtown/Lake Union. If there is anything else you would like to know or any other assistance you need, please let me know.
+User: Could you check if there are any other hotels available with similar amenities?
+System: The current search results don't provide detailed information about amenities for the hotels, but I can assist you in finding other options if you're interested in exploring more hotels in Seattle. Would you like me to perform a new search with different criteria, or is there any specific preference you would like to adjust? Please let me know how you'd like to proceed.
+User: Could you search for other hotels with a similar star rating and a quieter atmosphere, even if they don't allow smoking?
+System: I will search for other 3-star hotels in Seattle that may provide a quieter atmosphere. Please hold on for a moment while I perform the search.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: Would you like more details about the Best Western Plus Pioneer Square Hotel Downtown, which is a 3-star hotel located at 77 Yesler Way in Seattle? It is a non-smoking hotel and might offer a quieter atmosphere at a price of $63 per night. Let me know if this option interests you, or if you'd like to explore further.
+User: Could you explore further, please?
+System: Certainly. Based on the current search results, we've already reviewed the available 3-star hotels in Seattle. Unfortunately, the options are limited, and no additional hotels with a 3-star rating or higher have been found. If you're open to considering different preferences or if there's another way I can assist you, please let me know.
+User: Could you check for any 4-star hotels available, please?
+System: I will check for 4-star hotels in Seattle for you. Please hold on for a moment while I perform the search.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-448-8600', 'place_name': 'Hotel Andra', 'price_per_night': 372, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2000 4th Avenue'}]
+End Search Results
+System: I found some 4-star hotels in Seattle. One option is the Crowne Plaza Seattle Downtown, located at 1113 6th Avenue. This hotel does not allow smoking, and the price per night is $120. Would you like more details about this hotel, or should I check another one for you?
+User: Could you check another one for me, please?
+System: Certainly. Another option is the Grand Hyatt Seattle, which is a 4-star hotel located at 721 Pine Street. This hotel also does not allow smoking, and the price per night is $456. Would you like more details about this hotel, or should I continue searching for other options?
+User: Could you continue searching for other options, please?
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

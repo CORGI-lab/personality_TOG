@@ -1,0 +1,157 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in New York. Don't try to sell me something cheap.
+
+System: Okay, I will search for a hotel in New York. Do you have any preferences for the star rating?
+
+User: Five stars, obviously. And make sure it's in a good location, not some back alley.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: New York, star_rating: 5})
+```
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I found three 5-star hotels in New York. 1 Hotel Central Park is located at 1414 6th Avenue, Baccarat Hotel is at 28 West 53rd Street, and 1 Hotel Brooklyn Bridge is at 60 Furman Street, Brooklyn. All of them allow smoking. Which one appeals to you the most?
+
+User: Smoking allowed in a five-star? That's disgusting. Recategorize to non-smoking. And what kind of prices are we talking about? Don't waste my time with exorbitant figures.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: New York, star_rating: 5, smoking_allowed: False})
+```
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-226-6400', 'place_name': 'Crosby Street Hotel', 'price_per_night': 140, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '79 Crosby Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-804-8880', 'place_name': 'Mondrian Park Avenue', 'price_per_night': 555, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '444 Park Avenue South'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street'}]
+End Search Results
+System: Alright, I've updated the search to only show 5-star hotels in New York that do not allow smoking. Crosby Street Hotel is priced at $140 per night, Mondrian Park Avenue is $555 per night, and Park Hyatt New York is $450 per night. Does any of these prices meet your expectations?
+
+User: $140? Please! What kind of dive charges that little? There's gotta be a catch. What's wrong with it?
+
+System: I understand your concern about the price. Let me assure you, Crosby Street Hotel is a reputable 5-star hotel. It is located at 79 Crosby Street in New York, and their phone number is +1 212-226-6400. Would you like to know anything else about it?
+
+User: Yeah, yeah, "reputable." What's the real dirt? How many rooms? And does it have a decent view, or am I staring at a brick wall?
+
+System: Crosby Street Hotel has one room available. I do not have the information to answer your question regarding the view from the rooms. Would you like me to find out if a 'decent view' is guaranteed? I can call them for you.
+
+User: Don't bother calling. One room only? That's pathetic. Find me another non-smoking, 5-star in New York. And this time, make sure it has more than one room available and a decent view. I'm not paying for a cramped cell with a view of the dumpster.
+
+System: Okay, I understand. Let's focus on the other options then. Mondrian Park Avenue and Park Hyatt New York both have 3 rooms available and are non-smoking 5-star hotels. However, I do not have the information to answer your question regarding the view from the rooms. Do you want me to find out about the views from these hotels?
+
+User: Fine, check the view for Park Hyatt New York. And the price. I expect it's going to be outrageous.
+
+System: I do not have the information to answer your question regarding the view from the rooms. But the price per night is $450. Do you want me to check to see if Park Hyatt New York guarantees a 'decent view'?
+
+User: Don't bother. $450 for a maybe? I'll take my chances. Book it. Check-in tomorrow for one night. See if they dare to give me a crummy room.
+
+System: Alright, booking one room at the Park Hyatt New York for check-in tomorrow, which would be 2024-04-08 for one night. Is that correct?
+
+User: Correct. And make damn sure it's confirmed. I don't want any surprises.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={check_in_date: 2024-04-08, location: New York, number_of_rooms: 1, place_name: Park Hyatt New York, stay_length: 1})
+```
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street', 'check_in_date': '2024-04-08'}]
+End Search Results
+System: Excellent, your reservation at Park Hyatt New York for one room, checking in on 2024-04-08 for one night, is confirmed. The price is $450 per night. You can reach them at +1 646-774-1234. Is there anything else I can assist you with today?
+
+User: Don't give me that phone number. I want the address. And tell me, does this "confirmation" mean they've already charged my card? They better not be playing games with my money.
+
+System: The address for Park Hyatt New York is 153 West 57th Street. Regarding your card, I do not have access to billing information. You would need to contact the hotel directly to confirm their payment policies. Is there anything else?
+
+User: Fine. So, I'm all set. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in New York. Don't give me any of those tourist traps.
+
+System: Okay, I will help you find a hotel in New York. Do you have any preferences for star rating or smoking allowance?
+
+User: What do I care about stars? Just find me the cheapest room you've got. And it better not be some dump.
+
+System: Okay, I understand. I will find you the cheapest room in New York. Do you have any preferences for smoking allowance?
+
+User: Smoking? What do you think I am, some kind of health nut? Of course, I want to be able to smoke. Now get on with it.
+
+System: APICall(method='SearchHotel', parameters={ location: New York, smoking_allowed: True })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: I found three hotels in New York that allow smoking. 11 Howard, Adria Hotel & Conference Center, and Amsterdam Court Hotel. All of them are 3-star hotels. Do you have a preference?
+
+User: Hmph, 3-star? What are those prices? Give me the cheapest of the lot, and don't try to upsell me.
+
+System: The cheapest one is Amsterdam Court Hotel, which costs $216 per night. Would you like to know more about it?
+
+User: $216? For a 3-star dump? Fine, tell me about it. But I expect a discount for that price.
+
+System: The Amsterdam Court Hotel is located at 226 West 50th Street in New York. It has 2 rooms available and their phone number is +1 855-781-0088. Is there anything else you'd like to know?
+
+User: Two rooms? I'm not paying for two rooms when I only need one. What's the price for a single room? And don't try to tell me it's the same.
+
+System: I understand your concern. The information available indicates that the hotel has 2 rooms. I do not have the information about the price for a single room. Would you like me to search for other hotels that might have a single room available?
+
+User: Fine, look for another one that allows smoking and has a single room available. And make sure it's cheaper than that last rip-off.
+
+System: APICall(method='SearchHotel', parameters={ location: New York, smoking_allowed: True, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: I am sorry, but I am unable to find a hotel with a single room. The available hotels have either 2 or 3 rooms. Would you like me to proceed with the previous options, or would you like me to search for hotels with a different smoking allowance?
+
+User: Hmph. So, I'm stuck with these two-room dumps? Fine. Give me the address and phone number for the Amsterdam Court Hotel. I'll deal with them directly. And don't think I won't be complaining about that extra room.
+
+System: Okay, the address for the Amsterdam Court Hotel is 226 West 50th Street, and their phone number is +1 855-781-0088. Is there anything else I can help you with?
+
+User: Just book it. One room, whatever the price. Check-in tomorrow for one night. And don't try to charge me extra for anything.
+
+System: Could you please confirm the date you'd like to check in? I need the year, month, and day to make the reservation.
+
+User: Tomorrow. What year do you think this is? Just book it for tomorrow's date, whatever that is. And make sure it's just one night.
+
+System: Could you please confirm the exact date for tomorrow? For example, 2024-07-24. Once I have that, I can proceed with the reservation.
+
+User: Fine, 2024-07-25. Now get on with it.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-25, location: New York, number_of_rooms: 1, place_name: Amsterdam Court Hotel, stay_length: 1 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street', 'check_in_date': '2024-07-25'}]
+End Search Results
+System: I am unable to book a single room as the hotel has a minimum of 2 rooms. Would you like me to proceed with booking 2 rooms for the night of 2024-07-25 at the Amsterdam Court Hotel?
+
+User: Book it. Two rooms, one night. But I want a discount for the extra room I don't need. Make sure to note that in the reservation.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-25, location: New York, number_of_rooms: 2, place_name: Amsterdam Court Hotel, stay_length: 1 })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street', 'check_in_date': '2024-07-25'}]
+End Search Results
+System: Okay, I have booked 2 rooms for you at the Amsterdam Court Hotel for the night of 2024-07-25. The price is $216 per night. Please note that I am unable to apply any discounts. Is there anything else I can help you with?
+
+User: Fine, send me the confirmation details, and then get out of my hair.
+
+System: You are all set. The confirmation details are: Amsterdam Court Hotel, 2 rooms, check-in date 2024-07-25, price $216. Their phone number is +1 855-781-0088 and the address is 226 West 50th Street. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

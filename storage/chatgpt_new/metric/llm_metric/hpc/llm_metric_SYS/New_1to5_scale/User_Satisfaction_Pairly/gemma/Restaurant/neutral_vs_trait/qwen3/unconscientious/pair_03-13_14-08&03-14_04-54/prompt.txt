@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I'm hungry, need a restaurant in San Francisco. Whatever works.
+System: 
+
+What cuisine would you like to try? We have options like American, Italian, Mexican, or others!
+User: 
+
+Mexican. Whatever works.
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mexican})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-660-7701', 'price_range': 'expensive', 'restaurant_name': 'Cala', 'serves_alcohol': True, 'street_address': '149 Fell Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-431-1826', 'price_range': 'expensive', 'restaurant_name': 'Fenix', 'serves_alcohol': True, 'street_address': '1077 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-926-5630', 'price_range': 'expensive', 'restaurant_name': 'Hecho', 'serves_alcohol': True, 'street_address': '2200 Market Street'}]
+End Search Results
+System: 
+
+I see that Cala is a good Mexican restaurant in San Francisco.
+User: 
+
+Okay, book it for me.
+System: 
+
+What time would you like to reserve Cala for?
+User: 
+
+8
+System: 
+
+Would you like to book for 8:00 AM or 8:00 PM? Also, how many people will be in your party?
+User: 
+
+8 pm, 4 people.
+System: 
+
+Confirming your reservation for Cala in San Francisco at 8:00 PM today for 4 people. Is that correct?
+User: 
+
+Yeah, that's fine.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Cala, city: San Francisco, time: 20:00, cuisine: Mexican, date: 2023-10-05, party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-660-7701', 'price_range': 'expensive', 'restaurant_name': 'Cala', 'serves_alcohol': True, 'street_address': '149 Fell Street', 'date': '2023-10-05', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: 
+
+Your reservation at Cala for 4 people on October 5th at 8:00 PM has been confirmed. The address is 149 Fell Street, San Francisco. Enjoy your dinner!
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I'm starving. Find a restaurant in San Francisco. Whatever, I don't care.
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Take-out})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Take-out', 'has_live_music': False, 'phone_number': '415-564-5514', 'price_range': 'moderate', 'restaurant_name': 'Golden Gate Indian Cuisine & Pizza', 'serves_alcohol': True, 'street_address': '4038 Judah Street'}, {'city': 'San Francisco', 'cuisine': 'Take-out', 'has_live_music': False, 'phone_number': '415-775-4735', 'price_range': 'inexpensive', 'restaurant_name': 'Hunan Empire Restaurant', 'serves_alcohol': True, 'street_address': '2001 Union Street'}, {'city': 'San Francisco', 'cuisine': 'Take-out', 'has_live_music': False, 'phone_number': '415-346-5288', 'price_range': 'moderate', 'restaurant_name': 'Jackson Fillmore Trattoria', 'serves_alcohol': False, 'street_address': '2506 Fillmore Street'}]
+End Search Results
+System: 
+
+I found a restaurant called Golden Gate Indian Cuisine & Pizza at 4038 Judah Street.
+User: 
+
+Book it for me.
+System: 
+
+What time should I book it for?
+User: 
+
+Whatever time, just book it.
+System: 
+
+Okay, I'll book it for 7 PM today for 2 people. Is that okay?
+User: 
+
+Yeah, whatever.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 'Golden Gate Indian Cuisine & Pizza', city: 'San Francisco', time: '19:00', date: '2023-10-05', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Take-out', 'has_live_music': False, 'phone_number': '415-564-5514', 'price_range': 'moderate', 'restaurant_name': 'Golden Gate Indian Cuisine & Pizza', 'serves_alcohol': True, 'street_address': '4038 Judah Street', 'date': '2023-10-05', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: 
+
+Your reservation at Golden Gate Indian Cuisine & Pizza for 2 people at 7 PM today is confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

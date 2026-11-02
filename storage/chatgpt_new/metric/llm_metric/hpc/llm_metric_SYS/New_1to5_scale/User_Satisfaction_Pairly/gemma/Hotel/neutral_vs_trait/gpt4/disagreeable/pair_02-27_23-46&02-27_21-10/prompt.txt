@@ -1,0 +1,100 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to book a hotel in Paris. Find me something that stands out from the rest.
+System: Do you have any specific preferences for the hotel's star rating or any other features you would like?
+User: I don't care about the star rating. Just find me the best deal, preferably with some perks like free breakfast or a room upgrade. And make sure they allow smoking, or else it's a no-go.
+System: Could you please confirm the date you wish to check in and how many nights you plan to stay? Additionally, how many rooms will you need for your stay in Paris?
+User: I want to check in on the 15th and stay for a week. Just one room. Don't mess this up.
+System: I will search for hotels in Paris that allow smoking and offer the best deal. Let me check for available options. APICall(method='SearchHotel', parameters={ location: Paris, star_rating: dontcare, smoking_allowed: True, number_of_rooms: 1 })
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 42 57 14 55', 'place_name': 'Aparthotel Adagio Paris Montmartre', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '10 Place Charles Dullin, 75018'}, {'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 45 38 52 59', 'place_name': 'Best Western Bretagne Montparnasse', 'price_per_night': 444, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '33 Rue Raymond Losserand, 75014'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 40 43 02 33', 'place_name': 'Bob Hotel By Elegancia', 'price_per_night': 84, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '30 Rue Pernety, 75014'}]
+End Search Results
+System: I found a few hotels in Paris that allow smoking and offer some good deals:
+
+1. **Aparthotel Adagio Paris Montmartre**: This is a 3-star hotel with a price of $90 per night. It's located at 10 Place Charles Dullin, 75018.
+
+2. **Best Western Bretagne Montparnasse**: A 4-star hotel with a price of $444 per night, located at 33 Rue Raymond Losserand, 75014.
+
+3. **Bob Hotel By Elegancia**: Another 4-star option with a price of $84 per night, located at 30 Rue Pernety, 75014.
+
+Please let me know if you would like to proceed with a reservation at any of these hotels.
+User: The Best Western sounds way too expensive for just a place to sleep. And who wants to stay at a 3-star? Go ahead and reserve the Bob Hotel By Elegancia for me.
+System: To confirm, you would like to reserve 1 room at the Bob Hotel By Elegancia in Paris, starting from the 15th for a week. Please confirm so I can proceed with the reservation.
+User: Yeah, whatever, just book it already.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Paris, number_of_rooms: 1, place_name: Bob Hotel By Elegancia, stay_length: 7 })
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 40 43 02 33', 'place_name': 'Bob Hotel By Elegancia', 'price_per_night': 84, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '30 Rue Pernety, 75014', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Bob Hotel By Elegancia in Paris has been successfully confirmed. Enjoy your stay! If you need any further assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Find me a hotel in Las Vegas. Let's see if you can actually get something decent.
+System: Do you have a preference for the star rating of the hotel in Las Vegas, or should I just go ahead with a random selection for you?
+User: I want a 5-star hotel. I doubt you'll find anything good, but let's see if you can surprise me. And it better allow smoking.
+System: I'll search for a 5-star hotel in Las Vegas that allows smoking. Let's see what we can find. APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: It seems we couldn't find any 5-star hotels in Las Vegas that allow smoking. Perhaps you can reconsider the smoking preference or allow me to find a different star rating that meets your requirements.
+User: Fine, forget about the smoking thing. Just find a 5-star hotel, and it better not be a dump.
+System: I'll search for a 5-star hotel in Las Vegas without considering the smoking preference. Let's see what options we have. APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5 })
+Search Results
+
+End Search Results
+System: It looks like we couldn't find any 5-star hotels in Las Vegas even without considering the smoking preference. You might want to consider a different star rating. Should I go ahead and search for a 4-star hotel instead?
+User: I can't believe this is so difficult. Fine, search for a 4-star hotel, but it better be worth my time.
+System: Let's see if we can find a 4-star hotel in Las Vegas that meets your expectations. APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4 })
+Search Results
+
+End Search Results
+System: Unfortunately, it seems we couldn't find any 4-star hotels in Las Vegas either. Perhaps considering a 3-star hotel might yield better results. Would you like me to proceed with that search?
+User: This is ridiculous. Fine, try a 3-star hotel, but it better not be a total dive.
+System: I'll search for a 3-star hotel in Las Vegas. Let's hope we find something that meets your standards. APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: We've found a few options for 3-star hotels in Las Vegas. The Hampton Inn Las Vegas/Summerlin allows smoking and is priced at $279 per night. Would you like more details about this one, or should I provide information on another option?
+User: Tell me about the others. I'm not convinced this one is any good.
+System: Here are two more options for 3-star hotels in Las Vegas: 
+
+1. Best Western Plus Las Vegas West, located at 8669 West Sahara Avenue. It does not allow smoking and is priced at $117 per night.
+
+2. Oasis At Gold Spike, located at 217 Las Vegas Boulevard North. This hotel also does not allow smoking and is priced at $63 per night.
+
+Would you like more details on either of these, or do you have any other preferences?
+User: Let's face it, these options are pretty underwhelming. Give me more details about Oasis At Gold Spike, but I'm not holding my breath that it'll impress me.
+System: The Oasis At Gold Spike is located at 217 Las Vegas Boulevard North. It’s a 3-star hotel with a price of $63 per night. Please note that this hotel does not allow smoking. Is there anything else specific you would like to know, or are you considering making a reservation?
+User: I guess I'll have to settle for this one. Make the reservation for me, but don't expect me to be thrilled about it. I'll need it from the 5th for five nights in Las Vegas.
+System: Let's confirm your reservation. You'd like to book a room at the Oasis At Gold Spike in Las Vegas, starting from the 5th for five nights. How many rooms would you like to reserve?
+User: One room is enough. Just get it done.
+System: Please confirm that you'd like to book 1 room at the Oasis At Gold Spike in Las Vegas, starting from the 5th for five nights. Once confirmed, I'll proceed with the reservation.
+User: Yes, confirm it and get the reservation done.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Las Vegas, number_of_rooms: 1, place_name: Oasis At Gold Spike, stay_length: 5 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your reservation at the Oasis At Gold Spike in Las Vegas has been successfully confirmed. You'll have one room from November 5th for five nights. If there's anything else you need or any changes you'd like to make, let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

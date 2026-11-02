@@ -1,0 +1,85 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in San Mateo.
+
+System: Do you have a specific type of cuisine in mind?
+
+User: Um, no preference.
+
+System: Okay, I will pick one for you. How about American cuisine?
+
+APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: American})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-212-2643', 'price_range': 'moderate', 'restaurant_name': 'Qube Bar & Grill', 'serves_alcohol': True, 'street_address': '4000 South El Camino Real'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-522-7526', 'price_range': 'expensive', 'restaurant_name': 'Poplar Creek Grill', 'serves_alcohol': True, 'street_address': '1700 Coyote Point Drive'}]
+End Search Results
+System: I found three American restaurants in San Mateo: Central Park Bistro, Qube Bar & Grill, and Poplar Creek Grill. Central Park Bistro is , Qube Bar & Grill is moderate, and Poplar Creek Grill is expensive. Would you like more details on any of these?
+
+User: Maybe Central Park Bistro.
+
+System: Okay, Central Park Bistro is located at 181 East 4th Avenue, their phone number is 650-558-8401, and they do not serve alcohol. Would you like to make a reservation?
+
+User: No, thank you.
+
+System: Is there anything else I can help you with?
+
+User: No, that's fine.
+
+System: Alright, enjoy your meal!
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a restaurant in San Mateo.
+
+System: Okay. Do you have any preference for the cuisine?
+
+User: Um, maybe just American food.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: American})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-212-2643', 'price_range': 'moderate', 'restaurant_name': 'Qube Bar & Grill', 'serves_alcohol': True, 'street_address': '4000 South El Camino Real'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-522-7526', 'price_range': 'expensive', 'restaurant_name': 'Poplar Creek Grill', 'serves_alcohol': True, 'street_address': '1700 Coyote Point Drive'}]
+End Search Results
+System: I found three American restaurants in San Mateo. Central Park Bistro is moderate priced and does not serve alcohol. Qube Bar & Grill is also moderate priced and serves alcohol. Poplar Creek Grill is expensive and serves alcohol. Do any of those sound good?
+
+User: Maybe Central Park Bistro. Can you book it?
+
+System: Okay. I can book Central Park Bistro. What time and date would you like to book it for? And how many people?
+
+User: Just tomorrow night, two people, 7pm?
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Central Park Bistro, city: San Mateo, date: 2024-07-03, time: 19:00, party_size: 2})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue', 'date': '2024-07-03', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Alright, I have a booking for you at Central Park Bistro in San Mateo for tomorrow, July 3rd, at 7pm for two people. Is that correct?
+
+User: Yes, that's correct.
+
+System: Okay, your reservation is confirmed. Is there anything else?
+
+User: No, I think that's all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

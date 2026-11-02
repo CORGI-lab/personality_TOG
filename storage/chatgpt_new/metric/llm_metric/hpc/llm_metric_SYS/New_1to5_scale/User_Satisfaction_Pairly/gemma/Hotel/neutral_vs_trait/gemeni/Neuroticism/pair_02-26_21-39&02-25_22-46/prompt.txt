@@ -1,0 +1,166 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel. This is going to be a disaster, I just know it. But I have to try.
+
+System: Which city are you looking to book a hotel in?
+
+User: Okay, uh... maybe Paris? But what if something goes wrong? What if the hotel is awful?
+
+System: I understand your concerns. Let's focus on finding a hotel that meets your needs. Do you have any preferences for the star rating of the hotel in Paris?
+
+User: Okay, um... a high star rating, I guess? Five stars, maybe? But are you absolutely sure they're really five stars? I don't want to be disappointed, and I really don't want any surprises...
+
+System: Okay, I understand. I will search for a 5-star hotel in Paris.
+
+APICall(method='SearchHotel', parameters={location: Paris, star_rating: 5})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 30 10 00', 'place_name': 'Brach Paris', 'price_per_night': 290, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1-7 Rue Jean Richepin, 75016'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 83 96 88 88', 'place_name': 'Buddha-Bar Hotel Paris', 'price_per_night': 210, 'smoking_allowed': True, 'star_rating': 5, 'street_address': "4 Rue d'Anjou, 75008"}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 87 86 28 00', 'place_name': "Fauchon L'HoTel", 'price_per_night': 135, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '4 Boulevard Malesherbes, 75008'}]
+End Search Results
+System: I found three 5-star hotels in Paris: Brach Paris, Buddha-Bar Hotel Paris, and Fauchon L'HoTel. Would you like to know more about any of them?
+
+User: Oh god, three options? Okay, uh... tell me about Brach Paris. But, like, *everything*. And please double-check that it really *is* a five-star hotel. I don't want any false advertising here.
+
+System: Brach Paris is indeed a 5-star hotel located at 1-7 Rue Jean Richepin, 75016. They have 2 rooms available. The price per night is $290 and smoking is allowed. Their phone number is +33 1 44 30 10 00. Does this information help you decide?
+
+User: Smoking is *allowed*?! Oh no, absolutely not. That's a dealbreaker. My allergies will go crazy, and what about the smell? Please, search again, but this time, *absolutely no smoking allowed*. This is a non-negotiable, do you understand? And please, double, triple-check that it really is non-smoking this time. I can't handle any more surprises.
+
+System: Okay, I understand. I will search again for a 5-star hotel in Paris that does not allow smoking.
+
+APICall(method='SearchHotel', parameters={location: Paris, star_rating: 5, smoking_allowed: False})
+
+Search Results
+
+End Search Results
+System: I am sorry, there are no hotels with a 5-star rating that do not allow smoking in Paris. Would you like me to search for hotels with a different star rating or allow smoking to see more options?
+
+User: Oh, great, so I have to lower my standards now? Wonderful. Fine, search for a four-star hotel in Paris, but *absolutely* no smoking. And please, I beg you, make sure it's actually a decent four-star hotel. I don't want some rundown place pretending to be fancy.
+
+System: APICall(method='SearchHotel', parameters={location: Paris, star_rating: 4, smoking_allowed: False})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 45 86 35 99', 'place_name': 'C.O.Q Hotel Paris', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '15 Rue Edouard Manet, 75013'}]
+End Search Results
+System: I found three 4-star hotels in Paris that do not allow smoking: Ac Hotel By Marriott Paris Porte Maillot, Amastan Paris, and C.O.Q Hotel Paris. Would you like to know more about any of them?
+
+User: Okay. Tell me everything about the Ac Hotel By Marriott Paris Porte Maillot. Address, price, number of rooms... everything. And I mean *everything*. But also, can you check reviews or something? I want to make absolutely sure it’s clean and quiet. I can’t stand noisy hotels. I'll be so upset if I can't sleep.
+
+System: The AC Hotel By Marriott Paris Porte Maillot is located at 6 Rue Gustave Charpentier, 75017. They have 2 rooms available. The price per night is $192 and smoking is not allowed. Their phone number is +33 1 84 82 49 09. Unfortunately, I do not have access to guest reviews or information about the hotel's noise levels or cleanliness.
+
+Would you like to proceed with booking this hotel, or would you like to explore other options?
+
+User: Oh god, I don't know. I really don't know. I mean, it *sounds* okay, but what if the pictures online are misleading? What if the neighborhood is actually dangerous? What if the beds are rock hard? Okay, um... what's the cancellation policy? I need to know I can get my money back if this all goes south.
+
+System: I do not have the information about the cancellation policy. Would you like me to search for another hotel or would you like to contact the hotel directly at +33 1 84 82 49 09 to inquire about their cancellation policy?
+
+User: Okay, okay... maybe contact them? I don't know... what if they're rude? What if they don't speak English? Fine, fine, give me the number again, but please, promise me you'll find another hotel if this doesn't work out. I'm already feeling overwhelmed.
+
+System: The phone number for AC Hotel By Marriott Paris Porte Maillot is +33 1 84 82 49 09. Would you like me to search for another hotel while you consider this option?
+
+User: Okay, okay... but what if I try calling and they don't answer? Or what if they lie about the cancellation policy just to get me to book? Fine, just... just find another hotel. This time, can you look for one that *specifically* advertises free cancellation? I need that security blanket. And still four stars, and *still* absolutely no smoking. I can't handle any more surprises.
+
+System: I understand your concerns. I will search for another 4-star hotel in Paris that does not allow smoking and specifically advertises free cancellation. However, please note that I do not have direct access to information about free cancellation policies. I can only provide the information listed in the search result.
+
+APICall(method='SearchHotel', parameters={location: Paris, star_rating: 4, smoking_allowed: False})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 45 86 35 99', 'place_name': 'C.O.Q Hotel Paris', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '15 Rue Edouard Manet, 75013'}]
+End Search Results
+System: Okay, I understand. I have found the same three 4-star hotels in Paris that do not allow smoking: Ac Hotel By Marriott Paris Porte Maillot, Amastan Paris, and C.O.Q Hotel Paris. Unfortunately, none of the search results specify whether they offer free cancellation. Would you like to know more about Amastan Paris or C.O.Q Hotel Paris? Alternatively, you could contact either of these hotels directly to inquire about their cancellation policies.
+
+User: Oh, great, so I have to call *another* hotel? This is just getting more and more stressful! Okay, fine, tell me about the C.O.Q Hotel Paris. But this time, please, *please* try to find something, *anything*, that suggests they have a flexible cancellation policy. I need some reassurance here. I can't deal with losing all that money if something goes wrong.
+
+System: The C.O.Q Hotel Paris is located at 15 Rue Edouard Manet, 75013. They have 2 rooms available. The price per night is $312 and smoking is not allowed. Their phone number is +33 1 45 86 35 99. I do not have information about the cancellation policy. Would you like to contact the hotel directly to inquire about their cancellation policy?
+
+User: Okay, okay, fine. Just... just give me the number. I'll call. But if something goes wrong, I'm blaming you. I swear, if they don't speak English, or they're rude, or they refuse to give me a refund, I'm going to lose it. Just give me the number and I'll deal with it. But please, tell me you'll be here if I need to find a backup plan. I can't do this alone.
+
+System: The phone number for C.O.Q Hotel Paris is +33 1 45 86 35 99. I will be here if you need help with a backup plan.
+
+User: Okay, okay... fine. I'll call them. But what if they don't answer? Or what if they *do* answer, and they're just trying to trick me into booking? Okay, okay... what's their address again? I need to know *exactly* where it is, so I can look it up on a map and make sure it's not in some horrible, crime-ridden area. I can't sleep if I don't feel safe. I'm going to be a wreck the whole trip if I don't feel safe.
+
+System: The address for C.O.Q Hotel Paris is 15 Rue Edouard Manet, 75013. Please let me know if you need anything else.
+
+User: Okay, okay... Rue Edouard Manet... let me just check that out. But what if the map is wrong? Or what if the street looks okay on the map, but it's actually really dangerous at night? Okay, okay... what's the closest metro stop? I need to know how close I'll be to public transportation, just in case I need to make a quick escape. I can't be stuck in some remote area with no way out. I'll be so anxious the whole time if I'm not near a metro stop.
+
+System: I do not have access to information about the closest metro stop. Is there anything else I can help you with regarding C.O.Q Hotel Paris, or would you like me to search for another hotel?
+
+User: Okay, okay... fine. Just search for another hotel. This is just too much. But this time, I need a guarantee. I need a hotel that is *explicitly* near a metro stop. Like, right next door. I need to know I can get out of there quickly if I need to. And still four stars, and *still* absolutely no smoking. And please, for the love of all that is holy, can we make sure it's a safe neighborhood? I can't handle any more stress. I just can't.
+
+System: I understand your concerns. Unfortunately, I do not have access to information about proximity to metro stops or neighborhood safety. I can search for another 4-star, non-smoking hotel in Paris, but I cannot guarantee it will be near a metro stop or in a specific neighborhood. Would you like me to proceed with that search?
+
+User: Okay, okay... fine. Just proceed with the search. But this time… this time, can you check for hotels that are known for being really, really quiet? Like, super soundproofed or something? I can't handle any noise at all. Any little sound will drive me crazy. And still four stars, and still absolutely no smoking. I'm starting to feel like this is impossible.
+
+System: I understand your concerns. Unfortunately, I do not have access to information about noise levels or soundproofing. I can search for another 4-star, non-smoking hotel in Paris, but I cannot guarantee it will be quiet. Would you like me to proceed with that search?
+
+User: Okay, okay… just proceed with the search. But this time… oh god, I don’t even know anymore. Just… just find me a four-star, non-smoking hotel in Paris. And… and make sure it has good reviews. Like, *really* good reviews. I need to know that other people have stayed there and survived. I can't be the first one to try it out if it's a disaster. I just can't.
+
+System: I understand your concerns. Unfortunately, I do not have access to guest reviews. I can search for another 4-star, non-smoking hotel in Paris, but I cannot guarantee it will have good reviews. Would you like me to proceed with that search?
+
+User: Okay, okay… just proceed with the search. But… can you at least tell me how many rooms they have? Because what if I get there and they’re overbooked? What if I’m stranded in Paris with no place to stay? I need to know they actually have rooms available before I even consider it. And still four stars, and still absolutely no smoking. This is never going to work, is it?
+
+System: APICall(method='SearchHotel', parameters={location: Paris, star_rating: 4, smoking_allowed: False})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 45 86 35 99', 'place_name': 'C.O.Q Hotel Paris', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '15 Rue Edouard Manet, 75013'}]
+End Search Results
+System: Okay, I understand. I have found the same three 4-star hotels in Paris that do not allow smoking: Ac Hotel By Marriott Paris Porte Maillot, Amastan Paris, and C.O.Q Hotel Paris. Ac Hotel By Marriott Paris Porte Maillot and C.O.Q Hotel Paris both have 2 rooms available, while Amastan Paris has 1 room available.
+
+Would you like to know more about any of them?
+
+Dialogue B:
+  User: I need to book a hotel. I'm so stressed about finding the right one.
+
+System: Okay, I understand you're feeling stressed. I'll do my best to make this process as smooth as possible for you. To start, could you please tell me the location where you'd like to book a hotel?
+
+User: Okay, uh, let's try... Paris. I hope it's not too noisy there. I really need some peace and quiet.
+
+System: Okay, Paris. I understand your need for a quiet environment. I'll do my best to find a peaceful hotel for you in Paris.
+
+APICall(method='SearchHotel', parameters={ location: Paris })
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}]
+End Search Results
+System: Okay, I've found a few options for you in Paris. I see a 4-star hotel called Ac Hotel By Marriott Paris Porte Maillot. It has rooms available and doesn't allow smoking, which might help ensure a quieter stay. There's also Amastan Paris, another 4-star hotel. Or, there's a 3-star option called Aparthotel Adagio Access Paris La Villette.
+
+Would you like me to tell you more about any of these, or perhaps search for something with a different star rating to ease your mind about the choices?
+
+User: Oh dear, so many choices! Um... tell me more about the Ac Hotel By Marriott Paris Porte Maillot. Is it near anything… potentially noisy? Like, are there any major roads nearby? And what's the soundproofing like? I'm just worried about getting a room where I can't sleep.
+
+System: Okay, I understand your concerns about noise. Let me see what I can find regarding the Ac Hotel By Marriott Paris Porte Maillot.
+
+Based on the available information, the hotel is located at 6 Rue Gustave Charpentier, 75017 Paris. I don't have specific details about nearby major roads or the soundproofing quality of the rooms.
+
+To help ease your mind, perhaps we could look at hotels with a different star rating? Sometimes smaller hotels might be in quieter locations. Or, if you're very concerned about noise, we could try to find a hotel that specifically mentions soundproof rooms in its description, though I don't have that level of detail right now.
+
+What do you think? Would you like me to investigate other options to make you feel more secure about your choice?
+
+User: Maybe... maybe a smaller hotel would be better. Could you look for something with, like, two or three stars? And please, please check if they have reviews mentioning quiet rooms. I'd be so grateful.
+
+System: I understand your concerns, and I'll do my best to find a quieter, smaller hotel for you. I don't have access to reviews, but I can search for 2 or 3-star hotels in Paris.
+
+APICall(method='SearchHotel', parameters={ location: Paris, star_rating: [2,3] })
+
+<Failed Dialog>
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,124 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in San Diego, please.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: Not particularly. Just a decent, clean place to stay would be fine. What options are available?
+
+System: APICall(method='SearchHotel', parameters={location: San Diego, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: Okay, I found three hotels in San Diego. Bahia Resort Hotel and Best Western Plus Hacienda Hotel Old Town are both 3-star hotels that do not allow smoking. Best Western Plus Bayside Inn is also a 3-star hotel, but it does allow smoking. Would you like more details on any of these options?
+
+User: The Bahia Resort Hotel sounds reasonable. Can you tell me more about it, please?
+
+System: The Bahia Resort Hotel has a price per night of $225 and their phone number is +1 858-539-8666. The address is 998 West Mission Bay Drive. Would you like to know anything else about it?
+
+User: That seems perfectly adequate. I'd like to book a room there, please.
+
+System: How many rooms will you need and what dates are you looking to book for? Also, how many nights will you be staying?
+
+User: Two rooms, please. Check-in date is October 26th, and we'll be staying for four nights.
+
+System: Okay, so that's two rooms at the Bahia Resort Hotel in San Diego, checking in on October 26th for four nights. Can you confirm the year for the check-in date?
+
+User: Yes, that is correct. The year is 2023.
+
+System: Okay, so to confirm, you need two rooms at the Bahia Resort Hotel in San Diego, checking in on October 26, 2023, for four nights. Is that correct?
+
+User: Yes, that is completely correct. Please proceed with the reservation.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Bahia Resort Hotel, location: San Diego, number_of_rooms: 2, check_in_date: 2023-10-26, stay_length: 4})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2023-10-26'}]
+End Search Results
+System: Okay, I have reserved two rooms for you at the Bahia Resort Hotel in San Diego, checking in on October 26, 2023, for four nights. The phone number for the hotel is +1 858-539-8666. Is there anything else I can assist you with?
+
+User: No, that will be all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Diego.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: I'm open to suggestions. Perhaps something around 3 or 4 stars would be suitable.
+
+System: Given your preference for a comfortable and reliable experience, I can look for hotels in San Diego with 3 or 4 stars. Would you also like to specify if you require a smoking-allowed room or any specific number of rooms? If not, I can search based on star rating alone.
+
+User: Let's start with the star rating. Just focusing on hotels with 3 or 4 stars is perfectly fine for now.
+
+System: APICall(method='SearchHotel', parameters={ location: San Diego, star_rating: 3 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found three hotels in San Diego that match your preference for a 3-star rating. They are Bahia Resort Hotel, Best Western Plus Bayside Inn, and Best Western Plus Hacienda Hotel Old Town. Would you like to know more about any of these options?
+
+User: Bahia Resort Hotel sounds pleasant. Could you tell me a little more about it?
+
+System: Certainly. Bahia Resort Hotel is located at 998 West Mission Bay Drive in San Diego. They can be reached at +1 858-539-8666. The price per night is $225, and smoking is not allowed. It has one room available. Does this information align with what you're looking for?
+
+User: That sounds reasonable. What's the street address again, just to be sure?
+
+System: The street address for Bahia Resort Hotel is 998 West Mission Bay Drive. Is there anything else I can help you with regarding this hotel, or would you like to explore other options?
+
+User: That sounds like it could work. If it's not too much trouble, could you check if they have any rooms available with a view of the bay?
+
+System: I do not have access to information about room views. However, I can confirm the other details for you, or check the availability of rooms if you're interested in booking. Would you like me to proceed with checking availability for your stay?
+
+User: Yes, please check the availability for a room for, say, 3 nights, starting next Friday.
+
+System: Okay, I can check the availability for you. To make sure I have all the details correct, could you please provide the exact date you'd like to check in next Friday? Also, could you confirm the year?
+
+User: Next Friday... let's say check-in date is next Friday, November 8th, 2024, for 3 nights at the Bahia Resort Hotel.
+
+System: Okay, I can check the availability for you. Just to confirm, you're looking to book a room at the Bahia Resort Hotel in San Diego, with check-in on November 8th, 2024, for a 3-night stay. Is that correct? If so, how many rooms would you like to reserve?
+
+User: Yes, that's all correct. Just one room, please.
+
+System: APICall(method='ReserveHotel', parameters={ place_name: Bahia Resort Hotel, check_in_date: 2024-11-08, stay_length: 3, location: San Diego, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-11-08'}]
+End Search Results
+System: Okay, I have checked the availability for you. For a 3-night stay at the Bahia Resort Hotel, checking in on November 8th, 2024, for one room, the price per night is $225. Shall I proceed with the reservation?
+
+User: Yes, please proceed with the reservation.
+
+System: Okay, I will proceed with the reservation for one room at the Bahia Resort Hotel in San Diego, checking in on November 8th, 2024, for a 3-night stay. Is that correct?
+
+User: Yes, that is correct. Please confirm the reservation.
+
+System: APICall(method='ReserveHotel', parameters={ place_name: Bahia Resort Hotel, check_in_date: 2024-11-08, stay_length: 3, location: San Diego, number_of_rooms: 1 })
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-11-08'}]
+End Search Results
+System: Okay, your reservation has been made for one room at Bahia Resort Hotel in San Diego, checking in on November 8th, 2024, for a 3-night stay. The price is $225 per night. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

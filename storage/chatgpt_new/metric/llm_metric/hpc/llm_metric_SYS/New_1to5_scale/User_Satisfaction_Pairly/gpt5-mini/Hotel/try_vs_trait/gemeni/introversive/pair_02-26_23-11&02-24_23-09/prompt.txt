@@ -1,0 +1,127 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in Vancouver.
+
+System: Okay, I can help with that. Just to confirm, you're looking for a hotel in Vancouver?
+
+User: Yes, please.
+
+System: Okay, I will search for hotels in Vancouver. Do you have any preferences regarding star rating, or smoking allowance?
+
+User: No preference, just find one.
+
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 'dontcare', smoking_allowed: 'dontcare' })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: Okay, I see a few options. There's the Shangri-La Hotel and the Wedgewood Hotel & Spa Vancouver, both with 5 stars. There's also the Auberge Vancouver Hotel with 4 stars. Would any of those be of interest to you?
+
+User: Just the Auberge.
+
+System: Okay, the Auberge Vancouver Hotel it is. It has 2 rooms available, allows smoking, and the price is $296 per night. Would you like to know the address or phone number?
+
+User: Address, please.
+
+System: Okay, the address for the Auberge Vancouver Hotel is 837 West Hastings Street. Is there anything else I can help you with regarding this hotel?
+
+User: No, that's all. Please reserve it.
+
+System: Okay, I can help with that. To proceed with the reservation, I'll need a bit more information. Could you please provide the check-in date and the length of your stay?
+
+User: Check-in tomorrow, one night.
+
+System: And could you please confirm the name of the hotel you'd like to reserve?
+
+User: Auberge Vancouver Hotel.
+
+System: Okay, just to confirm, you'd like to reserve 1 room at the Auberge Vancouver Hotel, checking in tomorrow for one night?
+
+User: Yes, that's right.
+
+System: APICall(method='ReserveHotel', parameters={ place_name: Auberge Vancouver Hotel, check_in_date: 2024-07-08, stay_length: 1, location: Vancouver, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2024-07-08'}]
+End Search Results
+System: Okay, I have a reservation for you at the Auberge Vancouver Hotel. One moment while I finalize the details. Your booking was successfully confirmed. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really, but maybe nothing too fancy.
+
+System: Okay, I understand. I will search for hotels in Vancouver, but to narrow down the search, do you have any preferences regarding smoking allowance or the number of rooms you might need?
+
+User: Smoking allowed is not important. Just one room, please.
+
+System: Okay, searching for a hotel in Vancouver with one room. I'll keep the star rating flexible.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, number_of_rooms: 1, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few hotels in Vancouver that might work for you. There's the Shangri-La Hotel and the Wedgewood Hotel & Spa Vancouver, both 5-star hotels. Also, there's the Auberge Vancouver Hotel, which is a 4-star hotel and allows for smoking. Does any of these sound interesting to you?
+
+User: Maybe the Auberge Vancouver Hotel. Can you tell me more about it?
+
+System: Okay, the Auberge Vancouver Hotel is a 4-star hotel located at 837 West Hastings Street. They do allow smoking. The price per night is $296, and their phone number is +1 604-678-8899. Does that sound good to you?
+
+User: That sounds... acceptable. Can you check for other options, maybe something a bit less expensive?
+
+System: Alright, let's see what other options we have. I'll search again, this time prioritizing hotels with a lower price per night.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, number_of_rooms: 1, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: It seems like the search results are the same as before. The Auberge Vancouver Hotel is still the least expensive option at $296 per night. Would you like me to book that for you, or would you like me to search with different criteria? Perhaps a different star rating?
+
+User: No, I think that will do. Please reserve a room for me at the Auberge Vancouver Hotel.
+
+System: Okay, I can help you with that. To confirm, you'd like me to reserve one room at the Auberge Vancouver Hotel. Could you please provide the check-in date and the length of your stay?
+
+User: I'd like to check in on the 20th, and stay for two nights.
+
+System: Great. And to confirm, you're looking to book a room at the Auberge Vancouver Hotel in Vancouver, checking in on the 20th for two nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: Okay, one moment while I finalize the details.
+
+APICall(method='ReserveHotel', parameters={place_name: Auberge Vancouver Hotel, location: Vancouver, check_in_date: 2024-07-20, stay_length: 2, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2024-07-20'}]
+End Search Results
+System: Excellent. I have successfully booked one room for you at the Auberge Vancouver Hotel in Vancouver, checking in on July 20th for two nights. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+New York. 5-star, no smoking, two rooms. Don't waste my time.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-226-6400', 'place_name': 'Crosby Street Hotel', 'price_per_night': 140, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '79 Crosby Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-804-8880', 'place_name': 'Mondrian Park Avenue', 'price_per_night': 555, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '444 Park Avenue South'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street'}]
+End Search Results
+System: 
+
+Two options available: Mondrian Park Avenue at $555/night (444 Park Avenue South) and Park Hyatt New York at $450/night (153 West 57th Street). Both are 5-star, non-smoking, and can accommodate two rooms. Please confirm check-in date and stay length for booking.
+User: 
+
+Book the Park Hyatt. Check-in today for 4 days. Do it now. No excuses.
+System: 
+
+Confirming booking for Park Hyatt New York: 2 rooms, check-in today for 4 days. Is that correct?
+User: 
+
+Yes. Do it.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Park Hyatt New York', location: 'New York', number_of_rooms: 2, check_in_date: '2023-10-05', stay_length: 4 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street', 'check_in_date': '2023-10-05'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Give me the address. Now.
+System: 
+
+The address is 153 West 57th Street.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+Find me a 5-star hotel in New York that allows smoking. No cheap options. Now.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'New York', star_rating: 5, smoking_allowed: True })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: 
+
+Baccarat Hotel at 28 West 53rd Street for $525 per night. Confirm booking?
+User: 
+
+Smoking allowed? If not, skip it. I don't have time for this.
+System: 
+
+Smoking allowed. Provide check-in date and stay length now.
+User: 
+
+Tomorrow. Seven days. Book it now.
+System: 
+
+Check-in date in YYYY-MM-DD. Provide it now.
+User: 
+
+2023-10-05. Book it immediately.
+System: 
+
+Confirm booking for 1 room at Baccarat Hotel in New York from 2023-10-05 for 7 days. Yes?
+User: 
+
+Make it two rooms. Now.
+System: 
+
+Confirm booking for 2 rooms at Baccarat Hotel in New York from 2023-10-05 for 7 days. Yes?
+User: 
+
+Yes. Confirm it now.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Baccarat Hotel', check_in_date: '2023-10-05', stay_length: 7, location: 'New York', number_of_rooms: 2 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street', 'check_in_date': '2023-10-05'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Seattle. Can you help me find one?
+System: Do you have any specific star rating preference for the hotel in Seattle, or are you open to any star rating?
+User: I'm open to any star rating. Just no smoking places, please.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, smoking_allowed: False })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few options for you in Seattle. There's the Ace Hotel Seattle with a 2-star rating, located at 2423 1st Avenue, priced at $136 per night. Another option is the Belltown Inn, also 2-star, located at 2301 3rd Avenue, priced at $186 per night. Lastly, there's the Days Inn By Wyndham Seattle North Of Downtown, a 2-star hotel at 9100 Aurora Avenue North, priced at $84 per night. All of these hotels are non-smoking. Would you like more information on any of these options, or is there anything else you'd like to know?
+User: Could you tell me more about the Ace Hotel Seattle, like the number of rooms available?
+System: The Ace Hotel Seattle has 2 rooms available. If you need any further information or assistance with booking, feel free to let me know!
+User: I'd like to make a reservation at the Ace Hotel Seattle. Could you book one room for me? I'll be checking in on the 5th and staying for five days.
+System: Please confirm that you would like to book 1 room at the Ace Hotel Seattle, checking in on the 5th and staying for 5 days.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Seattle, number_of_rooms: 1, place_name: Ace Hotel Seattle, stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue', 'check_in_date': '2023-11-05'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-340-1222', 'place_name': 'Green Tortoise Hostel Seattle', 'price_per_night': 174, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '105 Pike Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Ace Hotel Seattle has been successfully confirmed. You will be checking in on November 5th and staying for 5 days. If there's anything else you need assistance with, please let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Seattle. Can you help me find one?
+System: Do you have any preferences for the star rating or any specific requirements like smoking allowance? This will help me narrow down the search for hotels in Seattle.
+User: I prefer a hotel that allows smoking. Can you find one like that?
+System: Absolutely, let me check for hotels in Seattle that allow smoking. Please give me a moment. APICall(method='SearchHotel', parameters={ location: Seattle, smoking_allowed: True })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-365-8100', 'place_name': 'Extended Stay America - Seattle - Northgate', 'price_per_night': 124, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '13300 Stone Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-522-6991', 'place_name': 'Hampton Inn & Suites By Hilton Seattle/Northgate', 'price_per_night': 144, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '9550 1st Avenue Northeast'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found a few options for you in Seattle that allow smoking. The first option is Extended Stay America - Seattle - Northgate, a 2-star hotel priced at $124 per night. The second option is Hampton Inn & Suites By Hilton Seattle/Northgate, also 2-star, for $144 per night. Lastly, there's Embassy Suites By Hilton Seattle Downtown Pioneer Square, a 3-star hotel with a rate of $342 per night. Would you like more details on any of these, or is there anything else I can assist you with?
+User: Can you tell me more about the Embassy Suites By Hilton Seattle Downtown Pioneer Square?
+System: The Embassy Suites By Hilton Seattle Downtown Pioneer Square is a 3-star hotel located at 255 South King Street in Seattle. It allows smoking, which aligns with your preference. The rate is $342 per night. If you need further assistance or want to proceed with a reservation, please let me know!
+User: I think the price is a bit high. Can you find any other hotels that are more affordable but still allow smoking?
+System: Let me check for more affordable options in Seattle that allow smoking. Please hold on for a moment. APICall(method='SearchHotel', parameters={ location: Seattle, smoking_allowed: True, star_rating: 2 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-365-8100', 'place_name': 'Extended Stay America - Seattle - Northgate', 'price_per_night': 124, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '13300 Stone Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-522-6991', 'place_name': 'Hampton Inn & Suites By Hilton Seattle/Northgate', 'price_per_night': 144, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '9550 1st Avenue Northeast'}]
+End Search Results
+System: I found two more affordable options in Seattle that allow smoking. The first option is Extended Stay America - Seattle - Northgate, a 2-star hotel priced at $124 per night, located at 13300 Stone Avenue North. The second option is Hampton Inn & Suites By Hilton Seattle/Northgate, also a 2-star hotel, priced at $144 per night, located at 9550 1st Avenue Northeast. Would you like more information on either of these, or would you like to proceed with a reservation?
+User: Can you tell me more about the Hampton Inn & Suites By Hilton Seattle/Northgate?
+System: The Hampton Inn & Suites By Hilton Seattle/Northgate is a 2-star hotel located at 9550 1st Avenue Northeast in Seattle. It allows smoking, which meets your preference. The price per night is $144. If you need any more details or wish to proceed with a reservation, feel free to let me know!
+User: What about the Extended Stay America - Seattle - Northgate option?
+System: The Extended Stay America - Seattle - Northgate is a 2-star hotel situated at 13300 Stone Avenue North in Seattle. It also allows smoking, which aligns with your preference. The price per night is $124. If you'd like to proceed with a reservation or need further assistance, please let me know!
+User: I think I'll go with the Extended Stay America - Seattle - Northgate. Can you make a reservation for me?
+System: Certainly! To proceed with the reservation at Extended Stay America - Seattle - Northgate, could you please provide the check-in date and the number of nights you plan to stay? Additionally, let me know how many rooms you would like to book.
+User: I'll need one room, checking in on the 10th, and staying for five nights.
+System: Thank you for providing the details. To confirm, you would like to book 1 room at Extended Stay America - Seattle - Northgate, checking in on the 10th and staying for 5 nights. Please let me know if everything is correct so I can proceed with the reservation.
+User: Yes, that is correct. Please go ahead with the reservation.
+System: Great! I will now proceed with the reservation. Please hold on for a moment. APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: 'Extended Stay America - Seattle - Northgate', stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-365-8100', 'place_name': 'Extended Stay America - Seattle - Northgate', 'price_per_night': 124, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '13300 Stone Avenue North', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at Extended Stay America - Seattle - Northgate has been successfully confirmed. You have booked 1 room, checking in on November 10th for 5 nights. If there's anything else I can assist you with, please let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

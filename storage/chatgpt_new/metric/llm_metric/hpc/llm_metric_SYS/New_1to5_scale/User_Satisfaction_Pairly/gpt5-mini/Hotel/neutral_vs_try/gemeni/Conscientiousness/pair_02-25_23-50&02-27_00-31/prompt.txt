@@ -1,0 +1,119 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to book a hotel in Toronto, please. I want to make sure I choose a suitable place.
+
+System: Okay, I can help with that. What star rating are you looking for?
+
+User: I'd prefer a hotel with a 4 or 5-star rating, to ensure a certain level of quality and service.
+
+System: Okay, I will search for hotels in Toronto with a 4 or 5-star rating. How many rooms do you need?
+
+User: I need one room. Also, could you confirm that the hotel has a non-smoking policy? I want to be absolutely sure about that.
+
+System: Okay, just to confirm, you're looking for a hotel in Toronto with a 4 or 5-star rating, you need one room, and you want to make sure that smoking is not allowed. Is that correct?
+
+User: Yes, that is correct. Before proceeding, could you also provide information on the price range for these hotels? I need to make sure it aligns with my budget.
+
+System: ```text
+SYSTEM: APICall(method='SearchHotel', parameters={ location: Toronto, number_of_rooms: 1, smoking_allowed: False, star_rating: [4, 5] })
+```
+<Failed Dialog>
+
+Dialogue B:
+  User: I need to book a hotel in Berlin. I'm looking for something reliable and comfortable.
+
+System: Okay, I can help with that. To ensure I find the perfect hotel for you, could you please specify the check-in date and the length of your stay?
+
+User: I'd like to check in on October 26th and stay for 4 nights.
+
+System: Great. Could you also tell me the name of the hotel you'd like to book?
+
+User: Before I specify the hotel, could you provide a list of hotels available in Berlin with their star ratings? I'd like to ensure I'm making an informed decision.
+
+System: Okay, I understand. I can provide a list of hotels available in Berlin.
+
+APICall(method='SearchHotel', parameters={ location: Berlin })
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+System: Okay, I have a few options for you in Berlin. There's the Adina Apartment Hotel Berlin Mitte, the Ameron Hotel Abion Spreebogen Waterside, and the Arcotel John F Berlin, all of which are 4-star hotels. Would you like to know more about any of these?
+
+User: Yes, please provide more details about the Adina Apartment Hotel Berlin Mitte. I'd like to know the price per night and if they have smoking rooms available.
+
+System: Okay, regarding the Adina Apartment Hotel Berlin Mitte, the price per night is $160, and smoking is allowed. Does this sound suitable for your needs?
+
+User: Smoking is allowed? That's unexpected. Could you double-check that information? I'd prefer a non-smoking hotel, and I want to be absolutely certain before proceeding.
+
+System: Okay, let me double-check the smoking allowance for the Adina Apartment Hotel Berlin Mitte.
+
+APICall(method='SearchHotel', parameters={ place_name: 'Adina Apartment Hotel Berlin Mitte', location: Berlin })
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}]
+End Search Results
+System: You are absolutely right to double-check, and I apologize for the error. My information indicates that smoking is indeed allowed at the Adina Apartment Hotel Berlin Mitte.
+
+Given your preference for a non-smoking hotel, would you like me to provide details on the other hotels I mentioned earlier, the Ameron Hotel Abion Spreebogen Waterside and the Arcotel John F Berlin, both of which are 4-star hotels? Or perhaps you'd like me to search specifically for non-smoking hotels in Berlin?
+
+User: Please search specifically for non-smoking hotels in Berlin with a 4-star rating. I'd also like to know the price per night for each option.
+
+System:  System: Okay, searching for 4-star, non-smoking hotels in Berlin and their prices per night.
+
+APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 4, smoking_allowed: False })
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: Okay, I found three 4-star, non-smoking hotels in Berlin: the Ameron Hotel Abion Spreebogen Waterside at $360 per night, the Holiday Inn Berlin City East-Landsberger at $432 per night, and the Hotel Novotel Berlin Mitte at $280 per night. Would you like more information on any of these options?
+
+User: Yes, please. Could you provide additional information about the Hotel Novotel Berlin Mitte? Specifically, I'd like to know the street address and the number of rooms available.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={place_name: 'Hotel Novotel Berlin Mitte', location: Berlin})
+```
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: The Hotel Novotel Berlin Mitte is located at Fischerinsel 12, 10179 Berlin, and has 2 rooms available. Does that sound right for you?
+
+User: Yes, that sounds like a good option. Considering the location and price, I'd like to reserve two rooms there for October 26th for four nights. Can you confirm the details and proceed with the booking?
+
+System:  System: Okay, just to confirm, you'd like to reserve two rooms at the Hotel Novotel Berlin Mitte, located at Fischerinsel 12, 10179 Berlin, for four nights starting on October 26th?
+
+User: Yes, please confirm the details and proceed with the booking. I want to make sure everything is accurate before finalizing the reservation.
+
+System:  System: ```tool_code
+APICall(method='ReserveHotel', parameters={place_name: 'Hotel Novotel Berlin Mitte', location: Berlin, check_in_date: 2024-10-26, stay_length: 4, number_of_rooms: 2})
+```
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179', 'check_in_date': '2024-10-26'}]
+End Search Results
+System: Okay, I've confirmed your reservation for two rooms at the Hotel Novotel Berlin Mitte for four nights, starting on October 26th.
+
+Would you like any further information regarding your booking?
+
+User: No, I think that's all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

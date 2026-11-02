@@ -1,0 +1,148 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences regarding the star rating of the hotel?
+
+User: Not really. Just something quiet.
+
+System: Okay, I understand. I will search for hotels in Vancouver.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 5 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel, Vancouver', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: I found a 5-star hotel named Shangri-La Hotel, Vancouver. Would you like to know more about it?
+
+User: Maybe. What's the price per night?
+
+System: The price per night at Shangri-La Hotel, Vancouver is $300.
+
+User: Okay. Are there any other options?
+
+System: Okay. Another option is Wedgewood Hotel & Spa Vancouver, a 5-star hotel with a price of $510 per night. Would you like more details on this one?
+
+User: No, that's alright. Are there any hotels with a lower price?
+
+System: Okay. Let me check for hotels with a lower price in Vancouver. I will try a different star rating.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 3})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: Okay. I found a 3-star hotel named Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. with a price of $72 per night. Would you like to know more?
+
+User: Okay. Tell me about it.
+
+System: Okay. It has 1 room, the phone number is +1 604-669-7070, and the address is 1100 Granville Street.
+
+User: Okay, sounds… acceptable. Can you check if smoking is allowed?
+
+System: Smoking is not allowed at Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.
+
+User: Okay. Can you find out if there are any other hotels that allow smoking?
+
+System: Okay. Let me search for hotels in Vancouver that allow smoking.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, smoking_allowed: True})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-563-4693', 'place_name': 'Exchange Hotel Vancouver', 'price_per_night': 304, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '475 Howe Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-9888', 'place_name': 'Gec Granville Suites Hotel', 'price_per_night': 63, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '718 Drake Street'}]
+End Search Results
+System: Okay. I found a 3-star hotel named Gec Granville Suites Hotel that allows smoking. The price per night is $63. Would you like to know more about it?
+
+User: Okay. Tell me the address.
+
+System: The address is 718 Drake Street.
+
+User: Okay. Can you book one room for me at the Gec Granville Suites Hotel? I'll be checking in tomorrow and staying for three nights.
+
+System: Okay. Please confirm the check-in date, including the year, so I can make the reservation.
+
+User: 2024.
+
+System: Okay. So, you'd like to book one room at the Gec Granville Suites Hotel, checking in tomorrow, November 6, 2024, and staying for three nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-11-06, location: Vancouver, number_of_rooms: 1, place_name: Gec Granville Suites Hotel, stay_length: 3})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-669-9888', 'place_name': 'Gec Granville Suites Hotel', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '718 Drake Street', 'check_in_date': '2024-11-06', 'stay_length': '3'}]
+End Search Results
+System: Okay. Your booking is confirmed at Gec Granville Suites Hotel for one room, checking in on November 6, 2024, for a stay of three nights. The price per night is $63. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: No smoking, please.
+
+System: Okay, I will search for hotels in Vancouver with no smoking allowed. Do you have any preferences for the star rating?
+
+User: Maybe a three-star hotel is okay.
+
+System: Okay, I will search for a three-star hotel in Vancouver with no smoking allowed. How many rooms do you need?
+
+User: Just one room.
+
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False, star_rating: 3, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found three hotels that match your criteria: Atrium Inn Vancouver, Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., and Best Western Plus Sands. Would you like to know more about any of these?
+
+User: Perhaps the Atrium Inn Vancouver.
+
+System: Okay, the Atrium Inn Vancouver has rooms available. It's located at 2889 East Hastings Street, and the phone number is +1 604-254-1000. The price per night is $228. Would you like to reserve a room there?
+
+User: Yes, please. I'd like to book a room.
+
+System: Okay, let me check the availability. What date would you like to check in, and how many days will you be staying?
+
+User: I would like to check in on the 27th and stay for two nights.
+
+System: What year would you like to check in?
+
+User: This year.
+
+System: Okay, so you want to book one room at the Atrium Inn Vancouver, checking in on October 27, 2024, for two nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ place_name: Atrium Inn Vancouver, location: Vancouver, check_in_date: 2024-10-27, stay_length: 2, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Okay, great. I have reserved one room for you at the Atrium Inn Vancouver, checking in on October 27, 2024, for two nights. The phone number is +1 604-254-1000. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

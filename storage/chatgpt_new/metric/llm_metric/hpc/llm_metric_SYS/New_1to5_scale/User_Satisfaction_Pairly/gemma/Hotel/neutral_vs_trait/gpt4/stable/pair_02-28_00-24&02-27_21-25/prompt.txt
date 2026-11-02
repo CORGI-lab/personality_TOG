@@ -1,0 +1,78 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Vancouver, please.
+System: Do you have any specific requirements for the star rating or smoking preference for the hotel in Vancouver?
+User: I don't have any specific requirements for smoking, but I would prefer a hotel with at least a 4-star rating.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4, smoking_allowed: dontcare })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}]
+End Search Results
+System: I found a few 4-star hotels in Vancouver. The Auberge Vancouver Hotel allows smoking and is priced at $296 per night. Another option is the Coast Coal Harbour Vancouver Hotel By Apa, which is non-smoking and costs $108 per night. Lastly, the Delta Hotels By Marriott Vancouver Downtown Suites is also non-smoking, and the rate is $324 per night. Would you like more information on any of these hotels or assistance with a reservation?
+User: Could you tell me more about the Delta Hotels By Marriott Vancouver Downtown Suites, please?
+System: The Delta Hotels By Marriott Vancouver Downtown Suites is a 4-star hotel located at 550 West Hastings Street in Vancouver. It is a non-smoking hotel, and the price per night is $324. If you need more details or would like assistance with making a reservation, feel free to let me know!
+User: I appreciate the information. Could you please check if there are any other 4-star options that are non-smoking with a slightly lower rate?
+System: The Coast Coal Harbour Vancouver Hotel By Apa is another 4-star, non-smoking option available in Vancouver, priced at $108 per night. Would you like to proceed with this option, or need further assistance?
+User: Could you please provide more details about the Coast Coal Harbour Vancouver Hotel By Apa?
+System: The Coast Coal Harbour Vancouver Hotel By Apa is a 4-star, non-smoking hotel located at 1180 West Hastings Street in Vancouver. The price per night is $108. If you need more details or would like assistance with making a reservation, please let me know!
+User: Thank you for the details. I would like to make a reservation at the Coast Coal Harbour Vancouver Hotel By Apa. Could you please book a room for me? I plan to check in on the 15th of next month and stay for five nights.
+System: Please confirm to book 1 room for 5 nights at the Coast Coal Harbour Vancouver Hotel By Apa starting from the 15th of next month in Vancouver.
+User: Yes, I confirm the booking. Thank you for your assistance.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Coast Coal Harbour Vancouver Hotel By Apa has been successfully confirmed for 1 room from November 15th for 5 nights. If there's anything else you need, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to book a hotel in Vancouver. Could you help me find a nice one?
+System: Could you let me know how many rooms you need and for how long you'd like to stay? Also, do you have any preference for the check-in date or the star rating of the hotel?
+User: I would like one room for a stay of five days, starting on the 15th of next month. A hotel with at least a 3-star rating would be ideal.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a few options for you in Vancouver. There's the Atrium Inn Vancouver with a price of $228 per night, located at 2889 East Hastings Street. Another option is the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., priced at $72 per night, situated at 1100 Granville Street. Lastly, there's the Best Western Plus Sands at 1755 Davie Street for $222 per night. All these hotels have a 3-star rating and do not allow smoking. Would you like to proceed with booking any of these?
+User: Could you tell me more about the amenities offered by these hotels? I'm especially interested in options that provide some relaxation facilities like a fitness center or a pool.
+System: The search results did not include specific information about the amenities such as a fitness center or a pool. Would you like me to proceed with booking one of these hotels, or would you like to adjust your preferences to potentially find different options?
+User: Let's adjust the preferences to see if we can find hotels with relaxation facilities like a fitness center or a pool. Could you search again with these amenities in mind?
+System: The current search results do not provide specific information about amenities like a fitness center or a pool. To explore options that might include these facilities, we can try adjusting the star rating or location. Would you like to proceed with a different star rating or modify any other preferences to enhance our search?
+User: Let's try looking for hotels with a higher star rating to increase the chances of finding relaxation facilities. Could you search for hotels with a 4-star rating or higher?
+System: Certainly! I'll search for hotels in Vancouver with a 4-star rating or higher. Let's see if we can find options that might include relaxation facilities. APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}]
+End Search Results
+System: I found some 4-star hotel options in Vancouver for you. The Auberge Vancouver Hotel offers rooms at $296 per night and is located at 837 West Hastings Street. It allows smoking. The Coast Coal Harbour Vancouver Hotel By Apa charges $108 per night and is situated at 1180 West Hastings Street, with no smoking allowed. Lastly, Delta Hotels By Marriott Vancouver Downtown Suites is priced at $324 per night, located at 550 West Hastings Street, with no smoking allowed. Would you like to proceed with booking any of these hotels?
+User: Could you let me know if any of these hotels have a fitness center or a pool? I'm particularly interested in those amenities to enhance my stay.
+System: The search results do not include specific details about amenities such as a fitness center or a pool. To proceed, would you like to book one of these hotels based on their star rating and location, or should we try a different approach to find more options?
+User: Let's proceed with booking the Delta Hotels By Marriott Vancouver Downtown Suites. It seems like a good choice with its 4-star rating and central location. Could you make the reservation for one room starting on the 15th of next month for five days?
+System: Please confirm your reservation for one room at the Delta Hotels By Marriott Vancouver Downtown Suites, starting from the 15th of next month for a duration of five days. Once confirmed, I will proceed with the booking.
+User: Yes, I confirm the reservation for one room at the Delta Hotels By Marriott Vancouver Downtown Suites, starting on the 15th of next month for five days. Please proceed with the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Delta Hotels By Marriott Vancouver Downtown Suites, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation for one room at the Delta Hotels By Marriott Vancouver Downtown Suites has been successfully confirmed. Your stay will begin on the 15th of next month for a duration of five days. If there is anything else you need or would like to know, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

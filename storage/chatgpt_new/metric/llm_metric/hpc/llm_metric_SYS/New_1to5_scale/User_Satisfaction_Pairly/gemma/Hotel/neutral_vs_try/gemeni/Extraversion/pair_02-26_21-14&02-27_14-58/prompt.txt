@@ -1,0 +1,155 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! Super excited to find a hotel. Let's look in New York City – gotta love that vibrant energy!
+
+System: Okay, great! To start, do you have any preferences for the star rating of the hotel?
+
+User: Oh, absolutely! Let's go big or go home! I'm thinking 4 or 5 stars, somewhere swanky. Gotta have a bit of luxury, right? What options are shining bright in NYC?
+
+System: APICall(method='SearchHotel', parameters={ location: New York City, star_rating: 4 })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}]
+End Search Results
+System: I found three 4-star hotels in New York. The first is 1 Hotel Brooklyn Bridge, the second is 6 Columbus Hotel, and the third is Ac Hotel New York Times Square.
+
+User: Ooh, Times Square sounds like the place to be! Tell me more about the AC Hotel – what's the vibe like? And does it have a happening bar scene? That's a must for me!
+
+System: The AC Hotel New York Times Square is located at 260 West 40th Street. It has 2 rooms available and the price per night is $176. Smoking is not allowed. I don't have information about a bar scene. Is there anything else I can help you with?
+
+User: Okay, $176 sounds pretty reasonable for Times Square! Two rooms? Hmm, is that all they have available, or just what you're showing me? I might need a couple more if my friends decide to tag along last minute. Oh, and could you double-check about the bar situation? A good hotel bar is seriously important!
+
+System: I am only showing you the information I have. I don't have information about the bar scene for AC Hotel New York Times Square. Would you like me to check if they have more than 2 rooms available?
+
+User: Yes, please check if they have more rooms available. And while you're at it, are there any other 4 or 5-star hotels in Times Square with a lively bar scene that you can find info on? Gotta keep my options open!
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: New York City, star_rating: 5})
+```
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I found three 5-star hotels in New York. The first is 1 Hotel Central Park, the second is Baccarat Hotel and the third is 1 Hotel Brooklyn Bridge. I don't have the information about the bar scene. Would you like me to check if AC Hotel New York Times Square has more than 2 rooms available?
+
+User: Yes, please check the room availability at the AC Hotel. But also, could you see if any of those 5-star places—especially the Baccarat Hotel—have a killer bar scene? And what's the price range like at the Baccarat? Gotta know if it's worth the splurge!
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={place_name: AC Hotel New York Times Square, location: New York City})
+```
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-764-5700', 'place_name': 'Aka Times Square', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '123 West 44th Street'}]
+End Search Results
+System: I am seeing that AC Hotel New York Times Square only has 2 rooms available. The Baccarat Hotel costs $525 per night. I do not have information about the bar scene at either hotel. Would you like me to search for hotels with a bar scene?
+
+User: Okay, $525 is definitely a splurge! But hey, you only live once, right? Let's do this – could you check if the Baccarat Hotel has more than two rooms available? And PLEASE try to find any info on that bar scene! If it's as fancy as the hotel itself, it might just be worth it! If not, let's circle back to the AC Hotel and those two rooms – maybe we can make it work.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={place_name: Baccarat Hotel, location: New York City})
+```
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}]
+End Search Results
+System: I am seeing that Baccarat Hotel only has 2 rooms available. I still do not have information about the bar scene. Would you like to proceed with booking either of these hotels?
+
+User: Alright, two rooms at the Baccarat might be tight. Forget the bar scene info for now - let's just book those two rooms at the Baccarat! It sounds amazing and I'm ready for a luxurious experience! Can you book them for me? I'll be arriving on the 20th and staying for 3 nights.
+
+System: Okay, I can help you book two rooms at the Baccarat Hotel in New York City, arriving on the 20th for a 3-night stay. Could you please specify the year?
+
+User: Oh, sorry! This is for January 2024. Let's get those rooms booked!
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={place_name: Baccarat Hotel, location: New York City, check_in_date: 2024-01-20, stay_length: 3, number_of_rooms: 2})
+```
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street', 'check_in_date': '2024-01-20'}]
+End Search Results
+System: Okay, great! I have confirmed your reservation for 2 rooms at the Baccarat Hotel in New York City, checking in on January 20, 2024, for a 3-night stay.
+
+User: Woohoo! Perfect! Now, just to be super sure, could you send me the confirmation details, like the phone number and address of the Baccarat? Also, what's the cancellation policy, just in case my plans change last minute?
+
+System: I do not have information about the cancellation policy. The phone number for the Baccarat Hotel is +1 866-957-5139, and the address is 28 West 53rd Street, New York. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm looking for a hotel in San Diego. Got any recommendations for a fun and lively place?
+
+System: Okay, I can help with that! To make sure I find the perfect spot for you, do you have any preferences on the star rating of the hotel?
+
+User: Oh, definitely! I'm thinking something with a bit of pizzazz, so let's aim for a 4 or 5-star place. The more the merrier, right?
+
+System: Great! To make sure I find the perfect hotel in San Diego, do you have any preferences on whether smoking is allowed in the hotel?
+
+User: Oh, absolutely no smoking! I like my air fresh and my lungs happy! 😉 What are my options?
+
+System: Okay, I understand! I will search for 4 or 5-star hotels in San Diego that do not allow smoking.
+
+APICall(method='SearchHotel', parameters={location: San Diego, star_rating: 4, smoking_allowed: False})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-488-1081', 'place_name': 'Catamaran Resort Hotel And Spa', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '3999 Mission Boulevard'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 855-430-7503', 'place_name': 'Estancia La Jolla Hotel & Spa', 'price_per_night': 248, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '9700 North Torrey Pines Road, La Jolla, California 92037, United States'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 888-828-5498', 'place_name': 'Grande Colonial La Jolla', 'price_per_night': 248, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '910 Prospect Street, La Jolla, CA 92037, USA'}]
+End Search Results
+System: Alright, I've found a few great options for you in San Diego!
+
+*   **Catamaran Resort Hotel And Spa**: This 4-star hotel is located at 3999 Mission Boulevard. The price per night is $136, and their phone number is +1 858-488-1081.
+*   **Estancia La Jolla Hotel & Spa**: Another 4-star option at 9700 North Torrey Pines Road, La Jolla. It's priced at $248 per night, and you can reach them at +1 855-430-7503.
+*   **Grande Colonial La Jolla**: Also a 4-star hotel, located at 910 Prospect Street, La Jolla. The price per night is $248, and their phone number is +1 888-828-5498.
+
+All of these hotels are non-smoking. Which one sounds the most fun and lively to you?
+
+User: Ooh, they all sound lovely! But tell me, which one is closest to the action? I want to be where the buzz is! And does any of them have a fantastic pool scene or a happening bar? That would be a major plus! 🍹
+
+System: I understand that you are looking for a hotel that is close to the action with a fantastic pool scene or a happening bar.
+
+Based on the information I have, I don't have details about the pool scene or bar for each hotel. However, I can tell you that:
+
+*   **Catamaran Resort Hotel And Spa** is located on Mission Bay, which is a lively area with lots of activities.
+
+Would you like me to search for more information about the pool scene or bar at the Catamaran Resort Hotel And Spa? Or would you like to consider the other options?
+
+User: Yes, please dig a little deeper into the Catamaran Resort Hotel And Spa! I'm really curious about that pool scene and the bar situation. If it's got a great vibe, I might just be sold! 🎉
+
+System: I don't have the information about the pool scene or the bar. However, I can tell you that Catamaran Resort Hotel And Spa is located on Mission Bay, which is a lively area with lots of activities. The hotel is located at 3999 Mission Boulevard. The price per night is $136, and their phone number is +1 858-488-1081.
+
+Would you like to reserve a room at the Catamaran Resort Hotel And Spa? If so, for what date and how many nights?
+
+User: Okay, Mission Bay sounds promising! And honestly, for that price, I'm willing to take a little gamble on the vibe. Let's lock it in! I'd like to reserve a room at the Catamaran Resort Hotel And Spa for, let's say, October 27th for three nights. I'm so excited!
+
+System: Great! Before I finalize the reservation, could you please confirm how many rooms you'd like to book for your stay at the Catamaran Resort Hotel And Spa from October 27th for three nights?
+
+User: Just one room for me, please! I'm rolling solo on this adventure. 😉 Can't wait!
+
+System: Perfect! Just to confirm, you'd like to reserve one room at the Catamaran Resort Hotel And Spa in San Diego, checking in on October 27th for a three-night stay. Is that correct?
+
+User: You got it! Let's make it official! Book that room for me! I'm already picturing myself soaking up the sun! 🌞
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-10-27, location: San Diego, number_of_rooms: 1, place_name: Catamaran Resort Hotel And Spa, stay_length: 3})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-488-1081', 'place_name': 'Catamaran Resort Hotel And Spa', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '3999 Mission Boulevard', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Excellent! I've successfully booked one room for you at the Catamaran Resort Hotel And Spa in San Diego, checking in on October 27th for three nights. Get ready to soak up that Mission Bay sun! Is there anything else I can help you with today?
+
+User: Woohoo! That's fantastic news! No, nothing else at the moment. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

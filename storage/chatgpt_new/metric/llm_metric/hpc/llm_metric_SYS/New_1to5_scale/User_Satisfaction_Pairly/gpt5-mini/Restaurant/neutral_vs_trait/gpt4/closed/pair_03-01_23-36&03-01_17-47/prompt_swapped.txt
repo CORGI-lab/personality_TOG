@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Fremont.
+System: Do you have a particular type of cuisine in mind, or would you like me to suggest something for you?
+User: I prefer something simple, maybe American food.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems there are no results for American cuisine in Fremont. Would you like to try a different cuisine or perhaps a nearby city?
+User: Is there a place in Fremont that serves Italian food?
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant called Massimo's in Fremont. It is located at 5200 Mowry Avenue Ste M. The restaurant is in the expensive price range and does not serve alcohol or have live music. Would you like any additional information about this restaurant?
+User: No, that's enough information. I'd like to make a reservation there.
+System: For what time and date would you like to make the reservation at Massimo's, and how many people will be attending?
+User: Make it for two people, tomorrow at 7 PM.
+System: Can you please confirm that you want to book a table for 2 at Massimo's in Fremont for tomorrow at 7 PM?
+User: Yes, please confirm the booking.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: "Massimo's", city: Fremont, date: 2023-10-20, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for 2 people at Massimo's in Fremont on 2023-10-20 at 7 PM has been successfully confirmed. If you need to contact the restaurant, you can call them at 510-792-2000. If there's anything else you need, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in Concord.
+System: What type of cuisine are you interested in for the restaurant in Concord?
+User: American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Concord, cuisine: American})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-265-2120', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '1975 Diamond Boulevard Ste. C 160'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-309-7774', 'price_range': 'moderate', 'restaurant_name': 'Lima', 'serves_alcohol': True, 'street_address': '2151 Salvio Street Suite I'}]
+End Search Results
+System: I found a few American cuisine restaurants in Concord. One option is Claim Jumper Restaurants, located at 1981 Diamond Boulevard. It has a moderate price range and serves alcohol. Would you like more information about this restaurant, or would you prefer to hear about another option?
+User: Can you tell me if Claim Jumper Restaurants has live music?
+System: Claim Jumper Restaurants does not have live music. Would you like more information about another restaurant, or is there anything else you would like to know?
+User: No, I don't need more information. I would like to make a reservation at Claim Jumper Restaurants.
+System: For what date and time would you like to make the reservation at Claim Jumper Restaurants? Additionally, could you let me know the party size for the reservation?
+User: I would like to reserve a table for two at 6:00 pm for tomorrow.
+System: To confirm, you would like to reserve a table for two at Claim Jumper Restaurants in Concord at 6:00 pm tomorrow. Is that correct?
+User: Yes, that is correct.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Claim Jumper Restaurants', city: 'Concord', time: '18:00', date: '2023-10-29', party_size: 2})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard', 'date': '2023-10-29', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Your reservation at Claim Jumper Restaurants in Concord for two people at 6:00 pm on October 29th has been successfully made. If you have any other questions or need further assistance, please let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

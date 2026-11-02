@@ -1,0 +1,117 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. I'm open to suggestions, but I'd prefer something not too fancy.
+
+System: Okay, I can help with that! Since you're open to suggestions and prefer something not too fancy, how about we start with a cuisine type? Do you have any cuisines you particularly enjoy, or any you'd like to avoid?
+
+User: I'm easygoing. Anything but seafood is fine. Let's see what you've got.
+
+System: Okay, since you're easygoing and prefer to avoid seafood, I'll look for some other options in San Francisco. How about American or Italian cuisine?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Given the search results, I see a few American restaurants in San Francisco. 1760, 25 Lusk, and 3rd Cousin are a couple of them. They are all in the expensive price range. Would you be interested in any of these, or would you prefer a different cuisine or price range?
+
+User: Expensive is alright, as long as the food is good. Tell me more about 1760. What kind of food do they serve?
+
+System:  System: 1760 is an American restaurant located at 1760 Polk Street in San Francisco. Their phone number is 415-359-1212. Is there anything else you'd like to know about 1760, or would you like to explore other options?
+
+User: That sounds promising. Are they open for dinner, and do they serve alcohol?
+
+System: Okay, let me check if 1760 serves alcohol and if they are open for dinner.
+
+APICall (method='FindRestaurants', parameters= {restaurant_name: 1760, city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street', 'date': '2019-03-01', 'party_size': 1, 'time': '18:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street', 'date': '2019-03-01', 'party_size': 2, 'time': '17:00'}]
+End Search Results
+System: Okay, I've checked the details for 1760. They do not serve alcohol, but they are open for dinner. I see a couple of entries with times of 5 PM and 6 PM. Would you like to make a reservation for dinner at 1760? If so, what time and how many people?
+
+User: That's great! I appreciate the information. Since they're open for dinner, let's go ahead and make a reservation. How about for tomorrow evening at 7:00 PM for a party of two?
+
+System:  System: Alright, I can help with that. Just to confirm, you'd like to make a reservation at 1760 for tomorrow, March 2nd, at 7:00 PM for a party of two?
+
+User: Yes, that's correct. Please proceed with the reservation.
+
+System:  System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: 1760, city: San Francisco, cuisine: American, date: 2019-03-02, time: 19:00, party_size: 2})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Excellent! I've made the reservation for you. You are all set for 1760 on March 2nd at 7:00 PM for a party of two. The restaurant is located at 1760 Polk Street, San Francisco, and their phone number is 415-359-1212. Is there anything else I can assist you with?
+
+User: Perfect. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Palo Alto. I'm open to suggestions, but I'd prefer something not too expensive.
+
+System: Since you're open to suggestions and prefer a moderate price range in Palo Alto, I'll look for a restaurant with those criteria. How does Italian sound?
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian, price_range: moderate})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-326-1626', 'price_range': 'moderate', 'restaurant_name': 'Cafe Pro Bono', 'serves_alcohol': False, 'street_address': '2437 Birch Street'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-324-8033', 'price_range': 'moderate', 'restaurant_name': 'La Strada Ristorante Italiano', 'serves_alcohol': False, 'street_address': '335 University Avenue'}]
+End Search Results
+System: Buca Di Beppo Italian Restaurant, Cafe Pro Bono, and La Strada Ristorante Italiano all fit your criteria. Would you like to know more about any of them?
+
+User: Those all sound fine. Could you tell me more about Cafe Pro Bono?
+
+System: Okay, Cafe Pro Bono is located at 2437 Birch Street in Palo Alto. Their phone number is 650-326-1626. It's an Italian restaurant with a moderate price range, but they do not serve alcohol. Would you like to know anything else?
+
+User: That sounds alright. Could you find me a place that serves alcohol, perhaps still in Palo Alto?
+
+System: I can certainly look for another option. Sticking with Italian cuisine and a moderate price range in Palo Alto, but this time ensuring they serve alcohol, how does that sound?
+
+User: Yes, that sounds good.
+
+System: APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian, price_range: moderate, serves_alcohol: True})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}]
+End Search Results
+System: Alright, I found one restaurant that fits the bill: Buca Di Beppo Italian Restaurant. It's located at 643 Emerson Street in Palo Alto, has a moderate price range, serves alcohol, and is an Italian restaurant. Their phone number is 650-329-0665. Does this sound like a good option for you?
+
+User: Yes, that seems suitable. Could you book a table for me there? I'll need it for tomorrow evening.
+
+System: Certainly. What time tomorrow evening would you like to book a table, and for how many people?
+
+User: I think 7:00 PM would be a good time, and we'll need a table for four.
+
+System: Okay, so you'd like to book a table at Buca Di Beppo Italian Restaurant in Palo Alto for tomorrow at 7:00 PM for a party of four. Is that correct?
+
+User: Yes, that's all correct. Please proceed with the booking.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Buca Di Beppo Italian Restaurant, city: Palo Alto, date: 2019-03-02, time: 19:00, party_size: 4})
+```
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Excellent. I've booked a table for four at Buca Di Beppo Italian Restaurant in Palo Alto for tomorrow, March 2nd, at 7:00 PM. Is there anything else I can assist you with?
+
+User: No, that will be all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

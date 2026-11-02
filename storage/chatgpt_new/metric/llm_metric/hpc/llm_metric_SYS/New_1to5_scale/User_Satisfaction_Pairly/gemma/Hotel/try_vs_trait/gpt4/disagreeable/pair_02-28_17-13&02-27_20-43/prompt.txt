@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a hotel in Las Vegas. Make it quick, I've got no time to waste.
+System: Could you please let me know if you have any specific preferences for the hotel's star rating or if smoking is allowed? If you don't have any particular preferences, I can start searching for available hotels in Las Vegas right away.
+User: I don't really care about star ratings, but smoking better be allowed. And I want the best rate possible. Don't try to sell me anything expensive.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: True, star_rating: 3 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found a 3-star hotel named Hampton Inn Las Vegas/Summerlin that allows smoking, with a rate of $279 per night. Would you like more information about this hotel, or should I proceed with booking a room for you?
+User: Is that seriously the best rate you can find? I need something cheaper. Keep looking.
+System: Certainly, let me try to find a more budget-friendly option for you in Las Vegas. I'll search for another hotel that allows smoking. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: True, star_rating: 1 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-380-6902', 'place_name': 'Hostel Cat', 'price_per_night': 24, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '1236 South Las Vegas Boulevard'}]
+End Search Results
+System: I found two budget-friendly options in Las Vegas that allow smoking. The first is Budget Suites Of America, a 1-star hotel with a rate of $44 per night, located at 2219 North Rancho Drive. The second option is Hostel Cat, also a 1-star hotel, with a rate of $24 per night, located at 1236 South Las Vegas Boulevard. Would you like more details on either of these, or should I proceed with booking a room for you?
+User: Hostel Cat sounds like a steal. Go ahead and reserve a room for me.
+System: Can you please confirm the duration of your stay and the check-in date for your reservation at Hostel Cat in Las Vegas?
+User: I'm checking in on the 3rd of the month and staying for 5 days. Make sure to get me a room where I can smoke without any hassle.
+System: Please confirm that you would like to book 1 room at Hostel Cat in Las Vegas, checking in on the 3rd of the month for a 5-day stay, with smoking allowed.
+User: Yeah, that's right. Just make sure everything is set up properly.
+System: APICall(method='ReserveHotel', parameters={ location: Las Vegas, place_name: Hostel Cat, check_in_date: 2023-11-03, stay_length: 5, number_of_rooms: 1 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-380-6902', 'place_name': 'Hostel Cat', 'price_per_night': 24, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '1236 South Las Vegas Boulevard', 'check_in_date': '2023-11-03'}]
+End Search Results
+System: Your reservation at Hostel Cat in Las Vegas has been successfully confirmed. You'll be checking in on the 3rd of the month for a 5-day stay. If you need anything else or have further questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in New York. Find me something that stands out from the rest.
+System: Do you have any specific preferences like star rating or whether smoking is allowed, or should I just find something random for you in New York?
+User: I don't care about smoking, but it better have at least four stars. I refuse to stay in anything mediocre.
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}]
+End Search Results
+System: I found some hotels in New York that might meet your exclusive standards. The 1 Hotel Brooklyn Bridge and 6 Columbus Hotel both have a 4-star rating and allow smoking, with prices per night at $216 and $396 respectively. Alternatively, the Ac Hotel New York Times Square also has a 4-star rating and is priced at $176 per night, although smoking is not permitted there. Which one are you interested in?
+User: Obviously, I'll take the 6 Columbus Hotel. More expensive means better, right? Book it for me.
+System: How many rooms would you like to reserve at the 6 Columbus Hotel, and what are your check-in date and the length of your stay?
+User: I need just one room, and I'll be checking in on the 15th for a week. Make sure everything is set up properly.
+System: Please confirm that you want to reserve 1 room at the 6 Columbus Hotel in New York, checking in on the 15th for a stay of 7 days. Once confirmed, I'll proceed with the reservation.
+User: Yes, confirm it. Don't mess this up.
+System: APICall(method='ReserveHotel', parameters={check_in_date: '2023-11-15', location: 'New York', number_of_rooms: 1, place_name: '6 Columbus Hotel', stay_length: 7})
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the 6 Columbus Hotel in New York has been successfully confirmed. You have one room booked from November 15th for a 7-day stay. If there's anything else you need, let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

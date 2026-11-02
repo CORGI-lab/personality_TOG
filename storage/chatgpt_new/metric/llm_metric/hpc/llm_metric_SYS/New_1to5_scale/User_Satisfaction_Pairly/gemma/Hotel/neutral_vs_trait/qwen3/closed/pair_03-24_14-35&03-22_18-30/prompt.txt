@@ -1,0 +1,134 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need a hotel in Philadelphia.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Philadelphia })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-521-6500', 'place_name': "Hilton Philadelphia At Penn'S Landing", 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '201 South Christopher Columbus Boulevard'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 855-295-2355', 'place_name': 'Kimpton Hotel Monaco Philadelphia', 'price_per_night': 160, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '433 Chestnut Street'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-422-8200', 'place_name': 'Le MeRidien Philadelphia', 'price_per_night': 384, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1421 Arch Street'}]
+End Search Results
+System: 
+
+I found a 4-star hotel named Hilton Philadelphia At Penn's Landing for $264 per night. Would you like to book this one, or should I show you other options?
+User: 
+
+Yes, please reserve this hotel.
+System: 
+
+Sure! To proceed with the reservation for the Hilton Philadelphia At Penn's Landing, could you please provide the check-in date and the number of days you plan to stay?
+User: 
+
+Today for two days.
+System: 
+
+Confirming your reservation for 1 room at Hilton Philadelphia At Penn's Landing in Philadelphia. Check-in today for 2 days. Is that correct?
+User: 
+
+Yes.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: '2023-10-05', location: 'Philadelphia', place_name: 'Hilton Philadelphia At Penn\'s Landing', stay_length: 2, number_of_rooms: 1 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-521-6500', 'place_name': "Hilton Philadelphia At Penn'S Landing", 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '201 South Christopher Columbus Boulevard', 'check_in_date': '2023-10-05'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I need a hotel.
+System: 
+
+Please specify the city where you'd like to search for a hotel.
+User: 
+
+Philadelphia.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Philadelphia })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-521-6500', 'place_name': "Hilton Philadelphia At Penn'S Landing", 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '201 South Christopher Columbus Boulevard'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 855-295-2355', 'place_name': 'Kimpton Hotel Monaco Philadelphia', 'price_per_night': 160, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '433 Chestnut Street'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-422-8200', 'place_name': 'Le MeRidien Philadelphia', 'price_per_night': 384, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1421 Arch Street'}]
+End Search Results
+System: 
+
+I found the Hilton Philadelphia At Penn's Landing, a 4-star hotel at $264 per night. Would you like to book this one?
+User: 
+
+Is smoking allowed?
+System: 
+
+Smoking is not allowed at the Hilton Philadelphia At Penn's Landing. Would you like to proceed with booking this hotel?
+User: 
+
+No, search for something else.
+System: 
+
+Another option is the Kimpton Hotel Monaco, a 4-star hotel for $160 per night. Smoking is not allowed. Would you like to book this?
+User: 
+
+Yes, I need it.
+System: 
+
+Please provide the check-in date and the number of days you plan to stay.
+User: 
+
+Today for two days.
+System: 
+
+Please provide the check-in date in YYYY-MM-DD format. Example: 2023-10-05.
+User: 
+
+2023-10-05
+System: 
+
+Confirming 1 room at Kimpton Hotel Monaco Philadelphia from 2023-10-05 for 2 days. Please confirm.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-05, location: Philadelphia, number_of_rooms: 1, place_name: Kimpton Hotel Monaco Philadelphia, stay_length: 2 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 855-295-2355', 'place_name': 'Kimpton Hotel Monaco Philadelphia', 'price_per_night': 160, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '433 Chestnut Street', 'check_in_date': '2023-10-05'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Get me the address of that hotel for my reference.
+System: 
+
+The address is 433 Chestnut Street.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,106 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm planning a trip to San Francisco and I'd like to book a hotel. Can you help me find a suitable one?
+
+System: Okay, I can help you with that. First, what star rating are you looking for?
+
+User: I'd prefer something with a solid 3-star rating. Nothing too fancy, just comfortable and reliable.
+
+System: Okay, I will search for a 3-star hotel in San Francisco. Do you have any preferences regarding smoking allowance or the number of rooms you need?
+
+User: Non-smoking would be ideal, and just one room, please.
+
+System: APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 3, smoking_allowed: False, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-421-3154', 'place_name': 'Cornell Hotel De France', 'price_per_night': 306, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '715 Bush Street'}]
+End Search Results
+System: I found three 3-star hotels in San Francisco that do not allow smoking and have at least one room available. They are Beresford Arms Hotel, Chancellor Hotel On Union Square, and Cornell Hotel De France. Would you like to know more about any of them?
+
+User: Cornell Hotel De France sounds interesting. Can you tell me more about it?
+
+System: Okay, regarding the Cornell Hotel De France, it is located in San Francisco at 715 Bush Street. They do not allow smoking. It has 3 rooms available and the price per night is $306. The phone number is +1 415-421-3154. Does that sound good?
+
+User: Yes, that sounds reasonable. What's the check-in date and how long can I book it for?
+
+System: Okay, please provide the check-in date (YYYY-MM-DD) and the number of nights you'd like to stay.
+
+User: I'd like to check in on 2024-03-15 and stay for three nights.
+
+System: Okay, so you want to book a non-smoking room at the Cornell Hotel De France, located at 715 Bush Street in San Francisco, for three nights starting on 2024-03-15. Is that correct?
+
+User: Yes, that's correct. Please proceed with the reservation.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-15, location: San Francisco, number_of_rooms: 1, place_name: Cornell Hotel De France, stay_length: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-421-3154', 'place_name': 'Cornell Hotel De France', 'price_per_night': 306, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '715 Bush Street', 'check_in_date': '2024-03-15'}]
+End Search Results
+System: OK. I have a room for you at the Cornell Hotel De France.
+SYSTEM: Your reservation has been confirmed for a 3-night stay, starting on 2024-03-15. The hotel is located at 715 Bush Street in San Francisco. The phone number is +1 415-421-3154. Is there anything else I can help you with?
+
+User: No, everything is fine. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Diego, please.
+
+System: Okay, I can help you with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not particularly. Something reasonable, maybe a three or four star. What options are available?
+
+System: Okay, let me check what's available for you in San Diego.
+
+APICall(method='SearchHotel', parameters={location: San Diego, star_rating: 4})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-488-1081', 'place_name': 'Catamaran Resort Hotel And Spa', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '3999 Mission Boulevard'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 855-430-7503', 'place_name': 'Estancia La Jolla Hotel & Spa', 'price_per_night': 248, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '9700 North Torrey Pines Road, La Jolla, California 92037, United States'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 888-828-5498', 'place_name': 'Grande Colonial La Jolla', 'price_per_night': 248, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '910 Prospect Street, La Jolla, CA 92037, USA'}]
+End Search Results
+System: I found three 4-star hotels in San Diego: Catamaran Resort Hotel And Spa, Estancia La Jolla Hotel & Spa, and Grande Colonial La Jolla. Do any of these sound appealing to you?
+
+User: Catamaran Resort Hotel And Spa sounds fine. Can you tell me a bit more about it?
+
+System: Certainly. Catamaran Resort Hotel And Spa is located at 3999 Mission Boulevard in San Diego. They can be reached at +1 858-488-1081. The price per night is $136, and smoking is not allowed. Does this information suffice, or would you like to know more?
+
+User: That sounds reasonable. I'd like to go ahead and reserve a room there. I'll be arriving on the 15th and staying for three nights.
+
+System: Okay, I can help you with that. To confirm, you'd like to reserve a room at the Catamaran Resort Hotel And Spa in San Diego, arriving on the 15th for a three-night stay. Could you please specify the month and year for your check-in date?
+
+User: It will be June 15th, 2024.
+
+System: Okay, June 15th, 2024. And how many rooms would you like to reserve?
+
+User: One room will be sufficient.
+
+System: Okay, let me confirm the details before I finalize the reservation. You wish to reserve one room at the Catamaran Resort Hotel And Spa in San Diego, with check-in on June 15th, 2024, for a stay of three nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Catamaran Resort Hotel And Spa, check_in_date: 2024-06-15, stay_length: 3, location: San Diego, number_of_rooms: 1})
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-488-1081', 'place_name': 'Catamaran Resort Hotel And Spa', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '3999 Mission Boulevard', 'check_in_date': '2024-06-15'}]
+End Search Results
+System: Okay, the reservation has been made for one room at the Catamaran Resort Hotel And Spa in San Diego, checking in on June 15th, 2024, for a three-night stay. The nightly rate is $136. Is there anything else I can assist you with?
+
+User: No, everything is fine. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

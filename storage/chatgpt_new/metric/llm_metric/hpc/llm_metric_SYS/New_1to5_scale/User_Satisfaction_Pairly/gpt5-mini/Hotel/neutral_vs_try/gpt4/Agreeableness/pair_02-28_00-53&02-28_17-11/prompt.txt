@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hello! I hope you're having a wonderful day. Could you please help me find a hotel in Vancouver?
+System: Certainly! I'll help you with that. Do you have any specific preferences regarding the star rating of the hotel in Vancouver, or are you open to any options?
+User: Thank you so much! I would prefer a hotel with a good star rating, maybe 4 stars or higher. I trust your judgment on finding a nice place.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few great options for you in Vancouver. The Shangri-La Hotel is a 5-star hotel located at 1128 West Georgia Street, with a nightly rate of $300. If you're interested in something more luxurious, there's the Wedgewood Hotel & Spa Vancouver, also 5-star, at 845 Hornby Street, priced at $510 per night. For a 4-star option, the Auberge Vancouver Hotel offers accommodations at 837 West Hastings Street for $296 per night, and they do allow smoking. Would you like more details on any of these options, or is there one you'd like to proceed with?
+User: All those options sound wonderful, thank you for finding them! The Auberge Vancouver Hotel seems like a great choice since they allow smoking. Could you please go ahead and make a reservation for that one?
+System: To make the reservation at the Auberge Vancouver Hotel, could you please let me know the check-in date and how many nights you plan to stay? Additionally, please confirm the number of rooms you would like to book.
+User: Of course! I would like to check in on the 10th of next month and stay for five nights. One room should be sufficient for my stay. Thank you so much for your help!
+System: Please confirm to book 1 room for 5 nights at the Auberge Vancouver Hotel starting from the 10th of next month in Vancouver.
+User: Yes, I confirm the booking. Thank you for taking care of this for me!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Auberge Vancouver Hotel has been successfully confirmed for 1 room, starting from November 10th for 5 nights. The hotel's address is 837 West Hastings Street, and you can reach them at +1 604-678-8899. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hello! I hope you're doing well. I'm looking for a hotel in Vancouver. Could you help me find one that is cozy and welcoming?
+System: Could you please let me know if you have any preference for the star rating or if you need any specific amenities like smoking allowance? This will help me narrow down the search for you in Vancouver.
+User: I appreciate your help! A hotel with a higher star rating would be wonderful, and I prefer a non-smoking environment. If there are any options that are known for their warm hospitality, that would be great too. Thank you!
+System: Thank you for the details. I'll search for hotels in Vancouver that have higher star ratings and are non-smoking. Please hold on for a moment while I find the best options for you. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 5, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: I found two 5-star hotels in Vancouver that meet your preferences for a non-smoking environment. The first option is the Shangri-La Hotel, located at 1128 West Georgia Street, with a price of $300 per night. The second option is the Wedgewood Hotel & Spa Vancouver, located at 845 Hornby Street, with a price of $510 per night. Both hotels are known for their excellent hospitality. Would you like more details about any of these hotels, or is there something else I can assist you with?
+User: Thank you for finding those options for me! Could you please provide more details about the Shangri-La Hotel? I would love to know about the amenities and any special features they offer.
+System: I'm glad you found the options helpful! Unfortunately, the specific amenities and special features of the Shangri-La Hotel are not available in the information I retrieved. However, I can confirm that it is a 5-star, non-smoking hotel located at 1128 West Georgia Street, Vancouver, with a nightly rate of $300. If there's anything else you'd like to know or if you wish to proceed with a reservation, please let me know!
+User: The Shangri-La Hotel sounds wonderful, and I appreciate your efforts in helping me find this option. Could we go ahead and make a reservation there? I would like to check in on the 10th of this month and stay for five nights. Thank you so much for your assistance!
+System: To proceed with the reservation at the Shangri-La Hotel, could you please confirm the number of rooms you would like to book for your stay? Once I have that information, I can finalize the reservation for you.
+User: Of course! I would like to book one room for my stay. Thank you for taking care of this for me!
+System: Please confirm the reservation details: booking 1 room at the Shangri-La Hotel in Vancouver, checking in on the 10th of this month, and staying for 5 nights. Once confirmed, I will proceed with the reservation.
+User: Yes, I confirm those details. Please go ahead with the reservation. Thank you for your help!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Shangri-La Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: The reservation at the Shangri-La Hotel in Vancouver has been successfully confirmed for 1 room, checking in on November 10th, and staying for 5 nights. If there's anything else you need or any other assistance I can provide, please let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

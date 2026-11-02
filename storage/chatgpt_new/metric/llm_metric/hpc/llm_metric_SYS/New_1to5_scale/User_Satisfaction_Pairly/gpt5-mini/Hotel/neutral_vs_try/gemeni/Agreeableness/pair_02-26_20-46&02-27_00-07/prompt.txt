@@ -1,0 +1,131 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hello! I'm looking to book a hotel. I'd really appreciate your help finding a good one. I was thinking maybe somewhere in Seattle?
+
+System: Okay, I can help with that! To start, do you have any preferences on the star rating for the hotel in Seattle?
+
+User: Oh, that's very kind of you to ask! I'm not too picky about the star rating, as long as it's clean and comfortable. Maybe something around a 3 or 4 star? But honestly, I'm open to suggestions! What do you think is a good option?
+
+System: Given your openness, I'd be happy to look at what's available.
+
+```tool_code
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: dontcare})
+```
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: Alright! I found a few options in Seattle. There's the Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown, all with a 2-star rating. Would you like to know more about any of these?
+
+User: Oh, thank you so much for finding those! I truly appreciate it. Could you perhaps tell me a little more about the Belltown Inn? It sounds quite charming.
+
+System: Okay, let me tell you a bit more about the Belltown Inn. It's located at 2301 3rd Avenue in Seattle. They have rooms available and the price per night is $186. Their phone number is +1 866-525-4704. Also, smoking is not allowed. Does this sound like it might be a good fit for you?
+
+User: That sounds lovely! Thank you for providing those details. Before I make a decision, I was wondering if you could tell me if they offer free breakfast? It's not a deal-breaker, but it's always a nice little bonus!
+
+System: I'm sorry, but information about whether they offer free breakfast is not available in the search results. However, I can confirm that the Belltown Inn is located at 2301 3rd Avenue, offers rooms for $186 per night, and can be reached at +1 866-525-4704. Smoking is not allowed. Would you like me to proceed with a reservation, or would you like to explore other options?
+
+User: Oh, that's perfectly alright! No worries about the breakfast. It sounds like a very nice place, and I truly appreciate you finding it for me. I think I'd like to go ahead and book a room there, if that's alright with you.
+
+System: Great! I'm happy to help. To make the reservation at Belltown Inn, I'll need a few more details. Could you please provide the check-in date and the length of your stay? Also, how many rooms will you need?
+
+User: Of course, I'm happy to provide those details! I'd like to check in on July 10th, and I'll be staying for 3 nights. Just one room, please. Thank you so much for your help with this!
+
+System: Okay, just to confirm, you'd like to book one room at the Belltown Inn in Seattle, checking in on July 10th for a 3-night stay. Is that correct?
+
+User: Yes, that is absolutely correct! Thank you so much for being so thorough and patient with me.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={place_name: Belltown Inn, location: Seattle, check_in_date: 2024-07-10, stay_length: 3, number_of_rooms: 1})
+```
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue', 'check_in_date': '2024-07-10'}]
+End Search Results
+System: Perfect! I have confirmed your reservation at the Belltown Inn for one room, checking in on July 10th for 3 nights.
+
+User: Wonderful! Thank you so much for your help. I really appreciate it.
+
+System:  System: You're very welcome! I'm happy I could assist you. Is there anything else I can help you with today regarding your reservation, or are you all set?
+
+User: Oh, I think that covers everything perfectly! Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hello! I'm hoping to find a nice hotel in San Francisco. Could you possibly help me with that?
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Oh, I'm not too picky about the star rating, anything that's clean and comfortable would be just lovely. Perhaps somewhere with a good reputation for treating its guests well?
+
+System: Since you don't have a preference for the star rating, I can search for hotels in San Francisco. How many rooms do you need?
+
+User: Just one room, please. And thank you so much for your help, I really appreciate it!
+
+System: Okay, just to confirm, you need one room in a hotel in San Francisco. Is there anything else I should consider in my search, such as whether you'd prefer a smoking or non-smoking room?
+
+User: Oh, definitely non-smoking, please. And if it's not too much trouble, perhaps a hotel that's known for being quiet and peaceful? I truly appreciate your patience and assistance!
+
+System: APICall(method='SearchHotel', parameters={ location: San Francisco, number_of_rooms: 1, smoking_allowed: False })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found three hotels in San Francisco that meet your criteria: Amsterdam Hostel San Francisco (1 star), Beck'S Motor Lodge (2 stars), and Argonaut Hotel (4 stars). Would you like to know more about any of these options?
+
+User: Oh, my! That's quite a range of options. Could you perhaps tell me a little more about the Argonaut Hotel? The four-star rating sounds promising, and I'm curious to hear about what makes it so special. Thank you so much!
+
+System: The Argonaut Hotel is a 4-star hotel located at 495 Jefferson Street. It has rooms available and the price per night is $408. The phone number is +1 415-563-0800. Would you like to know more?
+
+User: Oh, that sounds lovely! And thank you for being so thorough. Could you please tell me if the Argonaut Hotel is known for being a quiet and peaceful place? I'd really appreciate knowing that before I make any decisions.
+
+System: I do not have information about whether the Argonaut Hotel is known for being quiet and peaceful. However, I can provide other details, such as the phone number and street address. Would you like to know anything else about the Argonaut Hotel?
+
+User: Oh, that's alright! Perhaps, instead of focusing on the quietness, could you tell me if they are known for treating their guests kindly or providing excellent service? That would be just as helpful, if you have that information.
+
+System: I do not have information about the hotel's reputation for treating its guests kindly or providing excellent service. However, I can confirm the hotel's location, the number of rooms, phone number, place name, price per night, smoking allowance, star rating and street address. Would you like to know anything else about the Argonaut Hotel?
+
+User: Oh, that's quite alright! In that case, would you mind awfully telling me a bit more about Beck'S Motor Lodge? The two-star rating sounds perfectly adequate, and I'm sure it has its own special charm. I'd be ever so grateful to hear more about it!
+
+System: Beck'S Motor Lodge is a 2-star hotel located at 2222 Market Street in San Francisco. It has rooms available and the price per night is $60. The phone number is +1 415-621-8212. Would you like to know more?
+
+User: Oh, that sounds very reasonable. Thank you for the information! Could you perhaps tell me if Beck's Motor Lodge has a reputation for being clean and well-maintained? That would be most helpful in making my decision.
+
+System: I do not have information about the hotel's reputation for being clean and well-maintained. However, I can confirm the hotel's location, the number of rooms, phone number, place name, price per night, smoking allowance, star rating and street address. Would you like to know anything else about Beck'S Motor Lodge?
+
+User: Oh, that's perfectly fine! In that case, given the information you've provided, and knowing it's non-smoking, I think Beck's Motor Lodge sounds lovely. Could you please go ahead and make a reservation for me there? I'd be so grateful!
+
+System: How many days will you be staying and what date would you like to check in?
+
+User: Oh, thank you so much! I'll be staying for 3 nights, and I'd like to check in on July 8th.
+
+System: Okay, let me confirm the details. You'd like to reserve a room at Beck'S Motor Lodge in San Francisco for 3 nights, checking in on July 8th. Is that correct?
+
+User: Yes, that's absolutely correct! And thank you so much for your help in arranging this; I truly appreciate it!
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-08, location: San Francisco, number_of_rooms: 1, place_name: "Beck'S Motor Lodge", stay_length: 3 })
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-07-08'}]
+End Search Results
+System: Great, your reservation at Beck'S Motor Lodge has been confirmed for 3 nights, starting on July 8th. The hotel is located at 2222 Market Street, and their phone number is +1 415-621-8212. Is there anything else I can help you with today?
+
+User: That's just perfect! Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

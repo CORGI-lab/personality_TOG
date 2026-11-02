@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Berkeley. Can you help me find something that suits my needs?
+System: Sure, I can help with that. Is there a specific type of cuisine you're interested in, or are you open to suggestions? If you're open, I can recommend something based on your preferences.
+User: I guess I'm open to trying something new, but I'm a bit nervous about making the wrong choice. Maybe something Italian? It feels like a safe bet.
+System: Great choice! Italian cuisine is comforting and familiar. Let me take a moment to find some Italian restaurants in Berkeley for you. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I've found a few Italian restaurants in Berkeley that you might enjoy. One option is Cugini Restaurant, located at 1556 Solano Avenue. It has a moderate price range and does not serve alcohol. If you're looking for something else, Donato & Co. on 2635 Ashby Avenue also offers a similar dining experience. Does either of these sound like a good fit, or would you like more information on another option?
+User: I'm not sure about the whole no alcohol thing at Cugini, and Donato & Co. sounds okay, but I'm still on the fence. Can you tell me more about Donato & Co.? Like, do they have live music or anything interesting?
+System: Donato & Co. does not feature live music, but it offers a cozy atmosphere that could be a comforting choice. If you'd like, I can provide more information about another option, such as Filippo's Berkeley Elmwood, which does serve alcohol. Let me know if there's anything else you'd like to know!
+User: I don't know, I'm feeling really anxious now. Can you just go ahead and book a reservation at Filippo's Berkeley Elmwood for me? I'm worried I'm taking too long to decide. I think it might be best to go with a place that serves alcohol just in case. Can you make it for dinner, maybe around 7:00 pm, for two people?
+System: To finalize your reservation at Filippo's Berkeley Elmwood for dinner, I'll need just a moment. Can you please confirm the date you'd like to book for? Once I have that, I'll proceed with the reservation for 7:00 pm for two people.
+User: Tomorrow, if that's possible. I hope it's not too late to get a reservation.
+System: Thank you for confirming the date. I will now proceed to make the reservation at Filippo's Berkeley Elmwood for tomorrow at 7:00 pm for two people. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={city: Berkeley, restaurant_name: "Filippo's Berkeley Elmwood", time: '19:00', date: '2023-10-15', party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': '2023-10-15', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Filippo's Berkeley Elmwood has been successfully made for tomorrow at 7:00 pm for two people. The restaurant is located at 2930 College Avenue, and they do serve alcohol, which might help you unwind and enjoy your evening. If you need anything else or have more questions, feel free to ask. Enjoy your dinner!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. Can you help me find one? I'm feeling a bit overwhelmed, so I'd appreciate a recommendation that has a calming atmosphere, maybe with some live music or something relaxing. I just want to find a place for now.
+System: Is there a specific type of cuisine you're in the mood for, or are you open to any kind of food?
+User: I think I'd prefer something like Italian or maybe Mediterranean. I just hope it won't be too crowded or noisy.
+System: I'll look for restaurants in San Francisco that serve Italian or Mediterranean cuisine and offer a calming atmosphere with live music. Please give me a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found a couple of Italian restaurants in San Francisco that offer a calming atmosphere with live music. One option is "Fior D'italia" located at 2237 Mason Street, and the other is Zingari Ristorante + Jazz Bar at 501 Post Street. Both restaurants serve alcohol. Would you like more information on either of these options?
+User: I guess Zingari Ristorante + Jazz Bar sounds promising, but I'm just worried if it'll be too loud with the jazz. Can you tell me more about the ambiance at Fior D'italia? I'm really hoping for something more soothing.
+System: Fior D'italia is known for its classic Italian charm and elegant ambiance, which could provide the soothing atmosphere you're looking for. The presence of live music typically enhances the experience without overwhelming the dining area, making it a relaxing choice. Would you like the contact information or any additional details about Fior D'italia?
+User: I think Fior D'italia sounds like it might be a better fit for what I'm looking for. But I'm still a bit anxious about how busy it might get. Could you please tell me about the usual crowd size or if they have quieter times?
+System: I understand your concern. Unfortunately, the specific details about crowd size or quieter times aren't available in the current information. However, Fior D'italia typically maintains a calm and elegant atmosphere, which might help ease your worries. I recommend calling them at 415-986-1886 to inquire directly about their peak hours or to make a reservation. If you need assistance with anything else, feel free to ask!
+User: I'm feeling a bit uncertain about calling them myself. Could you help me make a reservation instead? That would really ease my mind.
+System: Sure, I can help with that. Could you please let me know the date, time, and the number of people for the reservation at Fior D'italia in San Francisco?
+User: I'd like to make the reservation for this Saturday at 7:00 pm for two people, please. I hope that's not too much trouble.
+System: Not a problem at all! Let me confirm the details: you'd like to reserve a table for two at Fior D'italia in San Francisco this Saturday at 7:00 pm. Is that correct before I proceed with the reservation?
+User: Yes, that's correct. I hope everything goes smoothly with the reservation.
+System: Great! I'll go ahead and make the reservation for you. APICall (method='ReserveRestaurant', parameters={restaurant_name: "Fior D'italia", city: San Francisco, date: [this Saturday's date], time: 19:00, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street', 'date': "[this Saturday's date]", 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation has been successfully made for two people at Fior D'italia in San Francisco this Saturday at 7:00 pm. If you have any more questions or need further assistance, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

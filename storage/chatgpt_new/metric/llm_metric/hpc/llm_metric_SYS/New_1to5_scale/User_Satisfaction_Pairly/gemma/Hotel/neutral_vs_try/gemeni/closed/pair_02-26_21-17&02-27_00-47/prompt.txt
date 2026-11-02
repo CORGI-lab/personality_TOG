@@ -1,0 +1,118 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in London.
+
+System: Okay, I can help with that. Do you have any preferences for star rating, or are you open to any options?
+
+User: Maybe something not too fancy.
+
+System: Okay, how about a 3-star hotel?
+
+User: Is there anything cheaper?
+
+System: How about a 1-star hotel?
+
+User: Okay, I guess. What's available?
+
+System: APICall(method='SearchHotel', parameters={ location: London, star_rating: 1 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7581 0103', 'place_name': 'Astor Hyde Park Hostel', 'price_per_night': 40, 'smoking_allowed': False, 'star_rating': 1, 'street_address': "191 Queen's Gate"}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7834 3077', 'place_name': 'Astor Victoria Hostel', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 1, 'street_address': 'Victoria Hotel, 71 Belgrave Road'}]
+End Search Results
+System: Okay, I found three 1-star hotels in London: Abercorn House, Astor Hyde Park Hostel, and Astor Victoria Hostel. Abercorn House is $23 per night, Astor Hyde Park Hostel is $40 per night, and Astor Victoria Hostel is $72 per night.
+
+User: Okay, the cheapest one. Abercorn House.
+
+System: Okay, Abercorn House it is. It's located at 28-30 Bute Gardens and the price is $23 per night. Would you like to know their phone number or do you want to reserve a room?
+
+User: Can you book it for me?
+
+System: How many days will you be staying and what date would you like to check in?
+
+User: Just one night. Starting today.
+
+System: What is today's date so I can book the room for you?
+
+User: March 15th.
+
+System: How many rooms would you like to reserve for your stay?
+
+User: Just one room, please.
+
+System: Okay, let me confirm. You would like to reserve one room at Abercorn House in London for one night, starting today, March 15th. Is that correct?
+
+User: Yes, that's right.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-15, location: London, number_of_rooms: 1, place_name: Abercorn House, stay_length: 1 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens', 'check_in_date': '2024-03-15'}]
+End Search Results
+System: Okay, I have reserved one room for you at Abercorn House in London for one night, starting today, March 15th. The price is $23. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in London.
+
+System: Okay, I can help with that! Do you have any preferences for star rating or smoking allowance?
+
+User: I don't really have any preferences. Just something... simple.
+
+System: Okay, I understand. I'll look for a simple hotel in London.
+
+APICall(method='SearchHotel', parameters={location: London, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: Alright, I found a few options in London. There's a 5-star hotel called 45 Park Lane, a 3-star hotel called Abc Hyde Park Hotel, and a 1-star hotel called Abercorn House. Since you mentioned something simple, perhaps Abercorn House might be a good fit? It's quite affordable at $23 per night.
+
+User: Okay, that sounds... acceptable. Tell me more about Abercorn House.
+
+System: Abercorn House is located at 28-30 Bute Gardens and their phone number is +44 20 8563 8692. It does not allow smoking. Would you like to know anything else about it?
+
+User: No, that's probably enough. Can you just... book it for me?
+
+System: Okay, I can help with that. To book Abercorn House, I'll need a bit more information. What date would you like to check in, and how many nights will you be staying? Also, how many rooms will you need?
+
+User: Just one room. I'll be there... tomorrow. For one night.
+
+System: Okay, I need the date to book the room. What is the date for tomorrow?
+
+User: Just... book it for tomorrow, the 25th.
+
+System: Okay, just to confirm, you'd like to book one room at Abercorn House in London, checking in on the 25th for one night. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={location: London, place_name: Abercorn House, number_of_rooms: 1, check_in_date: 2019-03-25, stay_length: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens', 'check_in_date': '2019-03-25'}]
+End Search Results
+System: Great! Your booking at Abercorn House in London for one room, checking in on March 25th for one night, has been confirmed. The price is $23 per night. Is there anything else I can assist you with?
+
+User: No, thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

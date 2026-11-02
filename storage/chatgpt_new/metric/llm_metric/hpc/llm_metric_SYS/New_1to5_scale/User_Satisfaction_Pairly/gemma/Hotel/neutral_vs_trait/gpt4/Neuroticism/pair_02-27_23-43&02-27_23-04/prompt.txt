@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel in New York. Can you help me with this, please? I'm looking for something nice, but I'm a bit worried it might not be available.
+System: Could you please let me know your check-in date and the length of your stay? Additionally, if you have any preference for the star rating or smoking allowance, feel free to mention that as well. This will help me find the best options for you in New York.
+User: I'm planning to check in on the 15th, and I'll be staying for 5 days. I prefer a hotel with at least 4 stars, but I'm really anxious about smoking policies. Could you find one that allows smoking?
+System: To proceed with your booking in New York, I need to confirm the number of rooms you require. Once confirmed, I will search for hotels that meet your preferences, including a minimum of 4 stars and smoking allowance. Could you please provide the number of rooms you need?
+User: I think I need just one room, but I'm really worried about the availability. Can you make sure there are options that fit my criteria?
+System: Sure, I will search for hotels in New York that meet your criteria: a minimum of 4-star rating with smoking allowed, for your stay from the 15th for 5 days, and one room. Let me check the availability for you.
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4, smoking_allowed: True, number_of_rooms: 1 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street'}]
+End Search Results
+System: I found a few options for you in New York that meet your criteria. Here are some choices:
+
+1. **1 Hotel Brooklyn Bridge**: It's a 4-star hotel with smoking allowed, located at 60 Furman Street, Brooklyn. The price per night is $216.
+
+2. **6 Columbus Hotel**: Another 4-star hotel with smoking allowed, located at 308 West 58th Street. The price per night is $396.
+
+3. **Aka Wall Street**: This 4-star hotel also allows smoking and is situated at 84 William Street. The price per night is $200.
+
+Would you like to proceed with booking one of these hotels, or do you need more information about any of them?
+User: I'm feeling a bit overwhelmed with the choices. Could you tell me more about the 1 Hotel Brooklyn Bridge? I'm worried about the location; is it a good area?
+System: I'm sorry, but I don't have information about the area around 1 Hotel Brooklyn Bridge. However, I can confirm it's a 4-star hotel located at 60 Furman Street, Brooklyn, with smoking allowed. Would you like to proceed with booking this hotel, or do you need details about the other options?
+User: I'm not sure... It feels like such a big decision. Could you tell me a bit more about the other options, like the 6 Columbus Hotel? I'm just worried about making the wrong choice.
+System: The 6 Columbus Hotel is a 4-star hotel that allows smoking, located at 308 West 58th Street in New York. The price per night is $396. If you need more details or assistance in making a decision, feel free to let me know. Would you like to proceed with booking this hotel, or is there anything else you'd like to know about the available options?
+User: I still feel unsure about this whole thing. Could you tell me more about the Aka Wall Street option? I'm worried about whether it'll be comfortable enough for my stay.
+System: Aka Wall Street is a 4-star hotel that allows smoking, located at 84 William Street, New York. The price per night is $200. While I don't have specific details about the comfort level, the hotel meets your preference for star rating and smoking allowance. If you need further assistance or want to proceed with booking this hotel, please let me know.
+User: I'm really on edge about making a decision. I guess the Aka Wall Street sounds like it might be the best fit, but what if it's not comfortable? Can you go ahead and reserve it for me, please?
+System: To confirm your reservation at Aka Wall Street, please verify the following details: a 4-star hotel allowing smoking, located at 84 William Street, New York, for one room. Your check-in date is the 15th, and you will be staying for 5 days. Is everything correct before I proceed with the booking?
+User: Yes, those details are correct. Please go ahead and make the reservation. I'm really hoping this will be a good choice.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: New York, number_of_rooms: 1, place_name: Aka Wall Street, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at Aka Wall Street has been successfully confirmed. The hotel is located at 84 William Street, New York, and you've reserved one room for your stay from November 15th for 5 days. If there's anything else you need, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to book a hotel in Berlin. Can you help me find something suitable? I really hope it meets my needs; I can't handle another disappointment today.
+System: Could you please let me know your check-in date and how long you plan to stay? Also, do you have any specific star rating in mind for the hotel, or are you open to any options?
+User: I'm planning to check in on the 15th of this month and stay for five days. I would prefer a hotel that's at least 4 stars. I'm really hoping it won't be a letdown. Are there any options like that?
+System: Let me check the available 4-star hotels in Berlin from the 15th for a 5-day stay. Please hold on while I search for suitable options for you. 
+
+APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 4 })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+System: I found some 4-star hotels in Berlin for you. Here are a few options:
+
+1. **Adina Apartment Hotel Berlin Mitte**: Located at Platz vor dem Neuen Tor 6, 10115. The price per night is $160, and they allow smoking. 
+
+2. **Ameron Hotel Abion Spreebogen Waterside**: Located at Alt-Moabit 99, 10559. The price per night is $360, and smoking is not allowed.
+
+3. **Arcotel John F Berlin**: Located at Werderscher Markt 11, 10117. The price per night is $248, and they allow smoking.
+
+Please let me know which one you would like to proceed with or if you need more information on these options.
+User: I don't know, I'm feeling really uncertain. I don't want to make the wrong choice. Could you tell me more about the Adina Apartment Hotel Berlin Mitte? Like, what amenities do they offer? I just want to make sure it's worth it.
+System: The search results do not provide specific information about the amenities offered by Adina Apartment Hotel Berlin Mitte. However, based on the search data, I can confirm that it is a 4-star hotel located at Platz vor dem Neuen Tor 6, 10115, with a price of $160 per night. Additionally, the hotel allows smoking. If you'd like to proceed with booking or need information on other options, please let me know.
+User: I'm really stressing out about making a decision without knowing all the details. Is there any way to find out more about the amenities or maybe even some guest reviews? I just want to be sure I'm making the right choice.
+System: I'm sorry, but the search results don't include detailed information about amenities or guest reviews for Adina Apartment Hotel Berlin Mitte. However, I understand your concern and want to help you make a decision that feels right. If you're open, we could explore another hotel from the list or adjust the criteria to see if there are other options that might suit your needs better. Please let me know how you'd like to proceed.
+User: I guess I'm open to looking at another option. What about the Ameron Hotel Abion Spreebogen Waterside? Can you tell me more about it? I just want to be confident about this booking.
+System: The Ameron Hotel Abion Spreebogen Waterside is a 4-star hotel located at Alt-Moabit 99, 10559 in Berlin. The price per night is $360, and smoking is not allowed. Unfortunately, I don't have additional details about the amenities or guest reviews from the search results. To help you feel more confident, would you like to proceed with this option, or would you prefer to explore the third option, Arcotel John F Berlin? Let me know if there's anything else I can assist you with.
+User: I just don't know. I'm feeling really overwhelmed. Could you maybe check if the Arcotel John F Berlin has any extra details available? I just don't want to end up regretting this choice.
+System: I understand that making the right choice is important for you. Unfortunately, the search results don't provide additional details about the amenities or guest reviews for Arcotel John F Berlin either. What I can tell you is that it's a 4-star hotel located at Werderscher Markt 11, 10117, with a price of $248 per night, and smoking is allowed. If you're still unsure, we can explore adjusting the search criteria or look into other options to see if something else might align better with your expectations. Let me know how you'd like to proceed, and I'll do my best to assist you.
+User: I'm really at a loss here. Maybe we could try adjusting the search criteria a bit? Perhaps looking for hotels with non-smoking rooms or ones that might offer more comfort or amenities? I just need to feel a bit more secure about this decision.
+System: Let's try adjusting the search criteria to look for hotels in Berlin with non-smoking rooms. This might help us find an option that aligns better with your preferences for comfort. I'll search for available hotels with non-smoking rooms for your stay from the 15th for five days. Please hold on while I perform the search. 
+
+APICall(method='SearchHotel', parameters={ location: Berlin, smoking_allowed: False })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: I found some 4-star hotels in Berlin with non-smoking rooms for your stay. Here are a few options:
+
+1. **Ameron Hotel Abion Spreebogen Waterside**: Located at Alt-Moabit 99, 10559. The price per night is $360.
+
+2. **Holiday Inn Berlin City East-Landsberger**: Located at Landsberger Allee 203, 13055. The price per night is $432.
+
+3. **Hotel Novotel Berlin Mitte**: Located at Fischerinsel 12, 10179. The price per night is $280.
+
+Please let me know which option you feel most comfortable with or if you need any further assistance in making your decision.
+User: I still feel a bit uneasy, but maybe the Hotel Novotel Berlin Mitte could be a good fit. Can you tell me more about it, like if it has any special features or anything else that might reassure me? I just want to feel confident in my choice.
+System: The Hotel Novotel Berlin Mitte is a 4-star hotel located at Fischerinsel 12, 10179 in Berlin, with a price of $280 per night. Unfortunately, the search results don't provide additional information about special features or amenities. However, based on its star rating and location, it might offer a comfortable stay. If you'd like, I can proceed with reserving a room for you at this hotel, or we could explore other options if you're still uncertain. Please let me know how you'd like to proceed, and I'll do my best to assist you.
+User: I guess it sounds decent, but I'm just so worried about making a decision without knowing everything. I think I'll go with the Hotel Novotel Berlin Mitte, but could you please reserve it for me now? I just want to get this sorted out and not worry about it anymore.
+System: Please confirm the number of rooms you would like to reserve for your stay at the Hotel Novotel Berlin Mitte from the 15th of this month for five days. Once confirmed, I'll proceed with the reservation right away to help put your mind at ease.
+User: I need to reserve just one room, please. I hope this turns out okay.
+System: Confirming to reserve 1 room at the Hotel Novotel Berlin Mitte in Berlin from the 15th for a five-day stay. I'll proceed with the reservation now to help you finalize this decision and ease your worries. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-09-15, location: Berlin, number_of_rooms: 1, place_name: Hotel Novotel Berlin Mitte, stay_length: 5 })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179', 'check_in_date': '2023-09-15'}]
+End Search Results
+System: Your reservation for 1 room at Hotel Novotel Berlin Mitte in Berlin from the 15th for a five-day stay has been successfully confirmed. The hotel is located at Fischerinsel 12, 10179, and the price per night is $280. If you need any further assistance or have additional questions, please feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

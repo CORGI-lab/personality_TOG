@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel in Vancouver. Can you assist me with that?
+System: Do you have a specific check-in date and the duration of your stay in mind?
+User: I plan to check in on the 15th and stay for five days.
+System: Please confirm whether you'd like to reserve a specific number of rooms for your stay in Vancouver.
+User: I need just one room, please.
+System: Please confirm if you have any preference regarding the star rating or smoking allowance for your hotel in Vancouver.
+User: No smoking, and a 3-star rating will do.
+System: APICall(method='ReserveHotel', parameters={ location: Vancouver, check_in_date: 2023-11-15, stay_length: 5, number_of_rooms: 1, place_name: dontcare })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-697-0202', 'place_name': 'dontcare', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-15', 'stay_length': '5'}]
+End Search Results
+System: The search has returned a hotel option with a 4-star rating, located at 1180 West Hastings Street in Vancouver. It is a non-smoking hotel, and the price per night is $108. Would you like to proceed with this booking?
+User: Is there anything else available with a 3-star rating?
+System: Unfortunately, the search did not return any 3-star hotels matching your criteria in Vancouver. Would you like to try a different star rating or adjust your smoking preference to find other available options?
+User: No, I'll stick with the options I have. Please go ahead and book the 4-star hotel for me.
+System: Please confirm that you would like to book 1 room for 5 days starting from November 15, 2023, at the 4-star hotel located at 1180 West Hastings Street in Vancouver.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ location: Vancouver, check_in_date: 2023-11-15, stay_length: 5, number_of_rooms: 1, place_name: 'dontcare', star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 800-663-1155', 'place_name': 'dontcare', 'price_per_night': 108, 'smoking_allowed': 'False', 'star_rating': '4', 'street_address': '773 Beatty Street', 'check_in_date': '2023-11-15', 'stay_length': '5'}]
+End Search Results
+System: Your reservation has been successfully confirmed at a 4-star hotel located at 773 Beatty Street in Vancouver. The stay is for 5 days, starting from November 15, 2023, with a non-smoking allowance. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in Vancouver, please.
+System: Could you please specify the star rating you prefer for the hotel in Vancouver?
+User: I prefer a 3-star hotel.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I've found several options for 3-star hotels in Vancouver. One option is the Atrium Inn Vancouver, located at 2889 East Hastings Street, with a price of $228 per night. Another option is the Best Western Plus Chateau Granville Hotel & Suites & Conference Center at 1100 Granville Street, with a price of $72 per night. Lastly, there's the Best Western Plus Sands, located at 1755 Davie Street, with a price of $222 per night. Would you like more information on any of these, or would you prefer to proceed with a reservation?
+User: Can you tell me if smoking is allowed in any of these hotels?
+System: Based on the search results, smoking is not allowed in any of these 3-star hotels in Vancouver. Would you like to proceed with a reservation at one of these hotels, or would you like to explore different options?
+User: Are there any other 3-star hotels available where smoking is allowed?
+System: Currently, there are no 3-star hotels in Vancouver that allow smoking based on the search results. Would you like to consider a different star rating or any other preference to find a hotel that meets your needs?
+User: I'm not interested in changing the star rating. Could you search for a 3-star hotel in Vancouver that offers a non-smoking room instead?
+System: To confirm, you would like me to proceed with a reservation for a non-smoking room in one of the 3-star hotels in Vancouver. Could you please specify which hotel you would prefer to reserve: Atrium Inn Vancouver, Best Western Plus Chateau Granville Hotel & Suites & Conference Center, or Best Western Plus Sands? Additionally, please provide your check-in date and the length of your stay.
+User: I'd like to reserve a non-smoking room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Center. I'll need the room starting from the 10th for a stay of five days.
+System: Please confirm to reserve a non-smoking room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Center from the 10th for a stay of five days in Vancouver.
+User: Yes, I confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ location: Vancouver, place_name: 'Best Western Plus Chateau Granville Hotel & Suites & Conference Center', check_in_date: 2023-11-10, stay_length: 5, number_of_rooms: 1 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Best Western Plus Chateau Granville Hotel & Suites & Conference Center has been successfully confirmed. You will be staying in a non-smoking room starting from November 10th for five days. If you need anything else or have further questions, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

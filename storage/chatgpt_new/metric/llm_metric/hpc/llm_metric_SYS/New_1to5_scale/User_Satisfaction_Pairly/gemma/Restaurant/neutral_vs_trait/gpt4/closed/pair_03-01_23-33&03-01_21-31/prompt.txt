@@ -1,0 +1,90 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Concord. Can you help me with that?
+System: What type of cuisine are you interested in, such as Italian, Mexican, or something else?
+User: I prefer something simple like American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Concord, cuisine: American})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-265-2120', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '1975 Diamond Boulevard Ste. C 160'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-309-7774', 'price_range': 'moderate', 'restaurant_name': 'Lima', 'serves_alcohol': True, 'street_address': '2151 Salvio Street Suite I'}]
+End Search Results
+System: I found a few American cuisine restaurants in Concord. One option is Claim Jumper Restaurants, located at 1981 Diamond Boulevard. Would you like more information about this restaurant or any of the others, such as Eureka! or Lima?
+User: I'm interested in more information about Eureka!.
+System: Eureka! is located at 1975 Diamond Boulevard Ste. C 160 in Concord. They serve alcohol and have a moderate price range. If you have any other questions or need further information, feel free to ask!
+User: Can you tell me if Eureka! has live music?
+System: Unfortunately, Eureka! does not have live music. If you have any other inquiries or need further assistance, please let me know!
+User: Do they have any other American restaurants with live music in Concord?
+System: Let me check for American restaurants in Concord that offer live music. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Concord, cuisine: American, has_live_music: True})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '925-680-7267', 'price_range': 'inexpensive', 'restaurant_name': "Mcdonald's", 'serves_alcohol': False, 'street_address': '1691 Monument Boulevard'}]
+End Search Results
+System: I found an American restaurant in Concord that offers live music. It's McDonald's, located at 1691 Monument Boulevard. They have an inexpensive price range, but they do not serve alcohol. If there's anything else you'd like to know or if you need further assistance, feel free to ask!
+User: I'm not really interested in McDonald's. Can you find another American restaurant in Concord that might be more suitable?
+System: I understand. Let's see if there are other American restaurants in Concord that might be more suitable for you. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: Concord, cuisine: American})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-265-2120', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '1975 Diamond Boulevard Ste. C 160'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-309-7774', 'price_range': 'moderate', 'restaurant_name': 'Lima', 'serves_alcohol': True, 'street_address': '2151 Salvio Street Suite I'}]
+End Search Results
+System: Based on the information I have, Claim Jumper Restaurants is another American restaurant in Concord that you might find appealing. It is located at 1981 Diamond Boulevard, has a moderate price range, and serves alcohol. If you need further details or have any other preferences, please let me know!
+User: I think Claim Jumper Restaurants sounds suitable. Can you make a reservation for me?
+System: For making a reservation at Claim Jumper Restaurants, could you please provide the date, time, and the number of people for your reservation?
+User: I would like to reserve a table for two on Saturday at 7:00 PM.
+System: To confirm your reservation at Claim Jumper Restaurants, I have the following details: a table for two on Saturday at 7:00 PM. Please confirm if everything is correct, and I'll proceed with the reservation.
+User: Yes, please go ahead with the reservation.
+System: Great! I will proceed with the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Claim Jumper Restaurants", city: Concord, time: "19:00", date: "2023-10-21", party_size: 2})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard', 'date': '2023-10-21', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Claim Jumper Restaurants has been successfully made for two people on Saturday, October 21st, at 7:00 PM. If you need any further assistance or have any other questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in Cupertino.
+System: What type of cuisine are you interested in, or would you like me to suggest one for you?
+User: I'm looking for something simple, maybe American or Italian.
+System: APICall(method='FindRestaurants', parameters={city: Cupertino, cuisine: American})
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130'}, {'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-359-4690', 'price_range': 'moderate', 'restaurant_name': 'Lazy Dog Restaurant & Bar', 'serves_alcohol': True, 'street_address': '19359 Stevens Creek Boulevard'}]
+End Search Results
+System: I found a couple of American cuisine options in Cupertino. Would you like to know more about Eureka! located at 19369 Stevens Creek Boulevard Suite 130, or Lazy Dog Restaurant & Bar at 19359 Stevens Creek Boulevard? Both restaurants offer a moderate price range and serve alcohol.
+User: Tell me more about Eureka!
+System: Eureka! is an American cuisine restaurant located at 19369 Stevens Creek Boulevard Suite 130 in Cupertino. It has a moderate price range and serves alcohol. Unfortunately, it does not feature live music. If there's anything else you'd like to know, feel free to ask!
+User: Is there another option that features live music?
+System: Currently, I don't have information about any American cuisine restaurants in Cupertino that feature live music. Would you like me to search for another type of cuisine or a different location?
+User: No, that's okay. Can I make a reservation at Eureka!?
+System: For what date and time would you like to make the reservation at Eureka!? Additionally, how many people will be in your party?
+User: I would like to make the reservation for tomorrow at 7:00 pm for 2 people.
+System: Can you please confirm that you want to book a table for 2 at 7:00 pm tomorrow at Eureka! in Cupertino?
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveRestaurant', parameters={restaurant_name: 'Eureka!', city: 'Cupertino', time: '19:00', date: '2023-10-09', party_size: 2})
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130', 'date': '2023-10-09', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Eureka! in Cupertino has been successfully made for 2 people at 7:00 pm on October 9, 2023. If you need the phone number, you can reach them at 669-266-6752. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

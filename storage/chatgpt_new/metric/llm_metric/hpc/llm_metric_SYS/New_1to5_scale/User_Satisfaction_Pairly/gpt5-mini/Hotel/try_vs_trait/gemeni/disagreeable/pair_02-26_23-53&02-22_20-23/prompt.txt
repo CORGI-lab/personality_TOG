@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in Las Vegas. Don't try to give me some dump.
+
+System: Alright, let's cut to the chase. What star rating are you aiming for in Las Vegas? I need to know what you consider acceptable before I waste my time searching.
+
+User: Five stars, obviously. And it better not be some run-down garbage heap disguised as luxury.
+
+System: Given your high standards, let's not muck around. How many rooms will you require, and when are you planning to check in and for how long? I need exact dates and the number of nights.
+
+User: I don't need you to waste my time with options. Just get me two rooms for the 27th for five nights. And make damn sure they're non-smoking.
+
+System: APICall(method='ReserveHotel', parameters={location: Las Vegas, number_of_rooms: 2, check_in_date: 2024-09-27, stay_length: 5, smoking_allowed: False, star_rating: 5})
+
+<Failed Dialog>
+
+Dialogue B:
+  User: I need a hotel in New York. Don't try to give me some dump; I want something decent.
+
+System: Given your preference for quality, could you please specify the star rating you're looking for in New York?
+
+User: 5 stars. And make sure they don't try to sneak in any hidden fees.
+
+System: Okay, I understand. Just to confirm, you are looking for a 5-star hotel in New York with no hidden fees. I will do my best to find you a suitable option.
+
+APICall(method='SearchHotel', parameters={location: New York, star_rating: 5})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: Alright, I've found three 5-star hotels in New York that might meet your standards. The first is "1 Hotel Central Park" at 1414 6th Avenue, with a price of $330 per night. The second is "Baccarat Hotel" at 28 West 53rd Street, priced at $525 per night. And the third is "1 Hotel Brooklyn Bridge" at 60 Furman Street, Brooklyn, for $465 a night. All three allow smoking. Which one sounds the most promising to you?
+
+User: Smoking allowed in a 5-star hotel? That's disgusting. Give me the Baccarat, but I want a discount. $525 is highway robbery.
+
+System: I understand your concern about smoking in a 5-star hotel. I will make sure to note your feedback. As for the Baccarat Hotel, I cannot offer any discounts as I am only an AI assistant.
+
+Before proceeding with a possible reservation, could you please confirm if you'd like to proceed with the Baccarat Hotel, and also let me know the dates you're planning to check in and the length of your stay?
+
+User: Fine, Baccarat it is. Check-in tomorrow, and I'll stay for one night. Don't screw this up.
+
+System: Okay, I will proceed with the Baccarat Hotel for your stay. To finalize the booking, I need the exact date for tomorrow's check-in. Please provide the full date (YYYY-MM-DD).
+
+User: 2024-03-16. And make damn sure there are no bed bugs. I'll be checking.
+
+System:  System: I understand your concerns. I've noted your check-in date as 2024-03-16 for one night at the Baccarat Hotel. I cannot guarantee that there will be no bed bugs, but I can assure you that it is a reputable 5-star hotel.
+
+APICall(method='ReserveHotel', parameters={check_in_date: 2024-03-16, location: New York, number_of_rooms: 1, place_name: Baccarat Hotel, stay_length: 1})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street', 'check_in_date': '2024-03-16'}]
+End Search Results
+System: Okay, your reservation at the Baccarat Hotel for one night on 2024-03-16 has been processed. The price is $525, and the address is 28 West 53rd Street, New York. The phone number for the hotel is +1 866-957-5139. Is there anything else I can assist you with?
+
+User: System: Is there anything else I can assist you with?
+
+User: Just send me the confirmation number. And don't even THINK about charging me extra for anything.
+
+System: I don't have access to confirmation numbers. However, I can provide you with the hotel's phone number, +1 866-957-5139, so you can confirm directly with them and address any concerns about extra charges. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

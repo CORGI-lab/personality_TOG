@@ -1,0 +1,106 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in London. Just a regular one, nothing fancy.
+
+System: Okay, I can help with that. Are there any preferences you have for the hotel, such as star rating or smoking allowance?
+
+User: Um... maybe a three-star hotel? Non-smoking, please.
+
+System: Okay, I will search for a 3-star, non-smoking hotel in London.
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 3, smoking_allowed: False })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7403 4299', 'place_name': 'Accommodation London Bridge', 'price_per_night': 204, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '58 Great Dover Street'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7373 1075', 'place_name': 'Ambassadors Hotel', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '16 Collingham Road'}]
+End Search Results
+System: I found three 3-star, non-smoking hotels in London: Abc Hyde Park Hotel, Accommodation London Bridge, and Ambassadors Hotel.
+
+User: Abc Hyde Park Hotel... that sounds okay. Can you book it for me?
+
+System: How many rooms would you like to reserve, for what dates, and for how many nights?
+
+User: Just one room. Check-in... um, tomorrow, for one night.
+
+System: Okay, let me confirm. You want to reserve one room at the Abc Hyde Park Hotel in London, checking in tomorrow for one night. Could you please provide the exact date for check-in?
+
+User: Just... confirm the booking. Tomorrow, for one night.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-04-03, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 1 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-04-03'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-04-03'}]
+End Search Results
+System: There seems to be an issue with the search results. The 'Ascot Hyde Park Hotel' was not part of the initial search, and the user specifically asked to book the 'Abc Hyde Park Hotel'. I will proceed with the reservation for the correct hotel.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-04-03, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 1 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-04-03'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-04-03'}]
+End Search Results
+System: It seems there's still an issue with the search results including 'Ascot Hyde Park Hotel'. However, I'll proceed with confirming your reservation for the Abc Hyde Park Hotel.
+
+Your booking at Abc Hyde Park Hotel for one room on 2024-04-03 for one night is confirmed. The phone number for the hotel is +44 20 7706 4660 and the address is 121 Sussex Gardens. Is that correct?
+
+User: Yes, that is correct.
+
+System: Great! Is there anything else I can help you with regarding your reservation, or would you like to know anything else about the Abc Hyde Park Hotel?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Philadelphia.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Just a normal hotel, I guess. Three stars is fine.
+
+System: Okay, searching for a 3-star hotel in Philadelphia.
+
+APICall(method='SearchHotel', parameters={location: Philadelphia, star_rating: 3})
+
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-372-9000', 'place_name': 'Aka University City', 'price_per_night': 138, 'smoking_allowed': True, 'star_rating': 3, 'street_address': 'Cira Centre South, 2929 Walnut Street'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 267-298-1700', 'place_name': 'Aloft Philadelphia Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4301 Island Avenue'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-607-2020', 'place_name': 'Aloft Philadelphia Downtown', 'price_per_night': 297, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '101 North Broad Street'}]
+End Search Results
+System: Okay, I found three 3-star hotels in Philadelphia: Aka University City, Aloft Philadelphia Airport, and Aloft Philadelphia Downtown. Aka University City allows smoking and costs $138 per night. Aloft Philadelphia Airport and Aloft Philadelphia Downtown do not allow smoking and cost $216 and $297 per night, respectively. Which one sounds best to you?
+
+User: Aka University City sounds… acceptable.
+
+System: Alright, Aka University City it is. Just to confirm, you're interested in Aka University City in Philadelphia. How many rooms will you need, what date would you like to check in, and how long will you be staying?
+
+User: Just one room. Check in... the 27th. For three nights.
+
+System: Okay, so one room at Aka University City, checking in on the 27th for three nights. Could you please confirm the year for the check-in date?
+
+User: This year, I guess.
+
+System: Okay, so checking in on 2024-07-27. Just want to make sure I have everything right before I book.
+APICall(method='ReserveHotel', parameters={place_name: Aka University City, location: Philadelphia, check_in_date: 2024-07-27, stay_length: 3, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-372-9000', 'place_name': 'Aka University City', 'price_per_night': 138, 'smoking_allowed': True, 'star_rating': 3, 'street_address': 'Cira Centre South, 2929 Walnut Street', 'check_in_date': '2024-07-27'}]
+End Search Results
+System: Great! I've reserved one room for you at Aka University City in Philadelphia, checking in on 2024-07-27 for a 3-night stay. If you need anything else, feel free to ask.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

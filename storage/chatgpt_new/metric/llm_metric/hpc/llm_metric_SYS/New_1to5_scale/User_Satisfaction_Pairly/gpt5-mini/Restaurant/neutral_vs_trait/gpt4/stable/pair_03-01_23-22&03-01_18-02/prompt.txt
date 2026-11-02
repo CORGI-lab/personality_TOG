@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. Could you help me find one?
+System: What type of cuisine are you interested in? For example, do you have a preference for Italian, Mexican, or something else?
+User: I enjoy Italian cuisine. Could you find some Italian restaurants in San Francisco for me?
+System: Sure, let me find some Italian restaurants for you in San Francisco. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco for you. One of them is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They serve alcohol, and their price range is moderate. Would you like more information on this or any other restaurant from the list?
+User: I'm interested in 54 Mint Ristorante Italiano. Could you make a reservation for two people for tomorrow at 7:00 PM?
+System: Could you please confirm the date for the reservation at 54 Mint Ristorante Italiano in San Francisco?
+User: Tomorrow, please.
+System: Could you please confirm that you would like to reserve a table for two people at 7:00 PM tomorrow at 54 Mint Ristorante Italiano in San Francisco?
+User: Yes, that sounds perfect. Please go ahead and make the reservation.
+System: Thank you for confirming. I'll proceed with the reservation. APICall (method='ReserveRestaurant', parameters={restaurant_name: '54 Mint Ristorante Italiano', city: 'San Francisco', date: '2023-10-26', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2023-10-26', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at 54 Mint Ristorante Italiano in San Francisco for two people at 7:00 PM on October 26th has been successfully made. If you need to contact the restaurant, you can reach them at 415-543-5100. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a place to eat in Palo Alto. Could you help me find a restaurant?
+System: Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: I'm open to suggestions, but I generally enjoy Italian and Mediterranean cuisines.
+System: Let's explore a Mediterranean restaurant for a start. Give me a moment while I find some options for you in Palo Alto. 
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Mediterranean})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '650-853-9700', 'price_range': 'moderate', 'restaurant_name': 'Anatolian Kitchen', 'serves_alcohol': False, 'street_address': '2323 Birch Street'}, {'city': 'Palo Alto', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '650-326-0983', 'price_range': 'expensive', 'restaurant_name': 'Evvia Estiatorio', 'serves_alcohol': False, 'street_address': '420 Emerson Street'}, {'city': 'Palo Alto', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '650-321-4422', 'price_range': 'moderate', 'restaurant_name': 'Restaurant Soleil', 'serves_alcohol': False, 'street_address': '675 El Camino Real'}]
+End Search Results
+System: I found a few Mediterranean restaurants in Palo Alto that you might like. How about trying Anatolian Kitchen, which offers a moderate price range and is located at 2323 Birch Street? If you'd like more options, there's also Evvia Estiatorio, which is a bit more on the expensive side, or Restaurant Soleil, also moderate, at 675 El Camino Real. Let me know if any of these sound appealing to you!
+User: Anatolian Kitchen sounds nice. Could you please make a reservation for two people there?
+System: What time would you like the reservation to be at Anatolian Kitchen?
+User: Around 7:00 pm would be perfect.
+System: Please confirm that you'd like to reserve a table for 2 at Anatolian Kitchen in Palo Alto at 7:00 pm today. Once confirmed, I'll proceed with the reservation.
+User: Yes, that sounds great. Please go ahead and make the reservation.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: Anatolian Kitchen, city: Palo Alto, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Mediterranean', 'has_live_music': False, 'phone_number': '650-853-9700', 'price_range': 'moderate', 'restaurant_name': 'Anatolian Kitchen', 'serves_alcohol': False, 'street_address': '2323 Birch Street', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Anatolian Kitchen in Palo Alto for 2 people at 7:00 pm has been successfully made. If you need the address, it's located at 2323 Birch Street. Enjoy your dining experience! If there's anything else I can assist you with, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

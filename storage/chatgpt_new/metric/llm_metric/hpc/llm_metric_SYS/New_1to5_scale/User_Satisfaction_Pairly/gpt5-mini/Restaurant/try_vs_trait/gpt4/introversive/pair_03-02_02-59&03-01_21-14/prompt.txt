@@ -1,0 +1,114 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Berkeley.
+System: Do you have a preference for a specific type of cuisine, or are you open to any suggestions?
+User: I'm open to suggestions.
+System: Let's explore an option that might suit your preference. How about trying some Vietnamese cuisine? I'll look for Vietnamese restaurants in Berkeley for you. Please give me a moment. 
+
+APICall(method='FindRestaurants', parameters={city: Berkeley, cuisine: Vietnamese})
+Search Results
+
+End Search Results
+System: It seems there were no results for Vietnamese cuisine in Berkeley. Would you like to try a different type of cuisine, or should I search for Vietnamese restaurants in a nearby city?
+User: I don't mind trying a different type of cuisine.
+System: Let's explore another option. Would you be interested in trying Italian cuisine? I'll search for Italian restaurants in Berkeley for you. Please give me a moment. 
+
+APICall(method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: There are a few Italian restaurants in Berkeley you might consider. One option is Cugini Restaurant located at 1556 Solano Avenue. Would you like more information about this restaurant or details on another option?
+User: I would like more information about Cugini Restaurant, please.
+System: Cugini Restaurant is located at 1556 Solano Avenue in Berkeley. It offers a moderate price range and does not serve alcohol. If there's anything else you'd like to know or if you wish to explore another option, feel free to let me know.
+User: Do they have live music at Cugini Restaurant?
+System: Cugini Restaurant does not feature live music. If there's anything else you would like to know or if you want information on another restaurant, please let me know.
+User: Is there another Italian restaurant in Berkeley you could tell me about?
+System: Certainly. Another Italian restaurant you might consider is Donato & Co., located at 2635 Ashby Avenue in Berkeley. It also offers a moderate price range and does not serve alcohol. If you have any other questions or need more information, feel free to ask.
+User: Can you tell me if Donato & Co. features live music?
+System: Donato & Co. does not feature live music. If you'd like more information or wish to explore another restaurant, please let me know.
+User: Could you suggest a different type of cuisine in Berkeley, perhaps something with live music?
+System: Certainly. Let's explore a different cuisine that features live music. How about trying a Mexican restaurant? I'll search for Mexican restaurants in Berkeley with live music for you. Please give me a moment.
+
+APICall(method='FindRestaurants', parameters={city: Berkeley, cuisine: Mexican, has_live_music: True})
+Search Results
+
+End Search Results
+System: It appears there are no Mexican restaurants in Berkeley that feature live music. Would you like to try a different type of cuisine or explore Mexican restaurants without live music in Berkeley?
+User: Could you suggest a different type of cuisine in Berkeley that might have live music?
+System: Let's explore another option. How about trying an American restaurant? I'll search for American restaurants in Berkeley that feature live music for you. Please give me a moment.
+
+APICall(method='FindRestaurants', parameters={city: Berkeley, cuisine: American, has_live_music: True})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-843-8277', 'price_range': 'moderate', 'restaurant_name': 'Jupiter', 'serves_alcohol': True, 'street_address': '2181 Shattuck Avenue'}]
+End Search Results
+System: I found an American restaurant in Berkeley that features live music. It's called Jupiter, located at 2181 Shattuck Avenue. It has a moderate price range and serves alcohol. If you'd like more details or have any other questions, feel free to ask.
+User: Could you provide more details about Jupiter, please?
+System: Jupiter is an American restaurant located at 2181 Shattuck Avenue in Berkeley. It features live music, offers a moderate price range, and serves alcohol. If there's anything else you would like to know or if you want to explore another option, just let me know.
+User: Is it possible to make a reservation at Jupiter?
+System: Could you please let me know the party size, date, and time you'd like to book a table at Jupiter? Once I have these details, I can proceed with making the reservation for you.
+User: For a party of two, I would like a reservation for tomorrow at 7:00 PM.
+System: Thank you for providing the details. I will proceed with making the reservation for a party of two at Jupiter in Berkeley for tomorrow at 7:00 PM. Please give me a moment.
+
+APICall(method='ReserveRestaurant', parameters={restaurant_name: Jupiter, city: Berkeley, time: 19:00, date: YYYY-MM-DD, party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-843-8277', 'price_range': 'moderate', 'restaurant_name': 'Jupiter', 'serves_alcohol': True, 'street_address': '2181 Shattuck Avenue', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for a party of two at Jupiter in Berkeley has been successfully made for tomorrow at 7:00 PM. If there's anything else you need or any further questions you have, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Berkeley. Can you help me find one?
+System: Certainly! Do you have a preference for a specific type of cuisine, like Italian, Sushi, or something else? Or are you open to suggestions?
+User: I'm open to suggestions.
+System: Great! Since you're open to suggestions, how about trying something adventurous like Ethiopian cuisine? It's a unique dining experience with rich flavors. Let me know if that sounds good, or I can suggest something else.
+User: I think I'd prefer something more traditional, maybe Italian or American.
+System: Italian and American are both excellent choices. Do you have a preference for a price range, such as moderate, inexpensive, or something else? This will help me narrow down the options for you in Berkeley.
+User: Moderate would be fine.
+System: Thank you for providing that information. Let me find some Italian or American restaurants in Berkeley that fit a moderate price range for you. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Berkeley that fit a moderate price range for you. Here are some options:
+
+1. **Cugini Restaurant**: Located at 1556 Solano Avenue. They do not serve alcohol.
+2. **Donato & Co.**: Located at 2635 Ashby Avenue. Alcohol is not served here either.
+3. **Filippo's Berkeley Elmwood**: Located at 2930 College Avenue. They do serve alcohol.
+
+Do any of these sound like a place you'd like to try, or would you like more information on any of them?
+User: Filippo's Berkeley Elmwood sounds interesting. Can you make a reservation for me there?
+System: Certainly! To make a reservation at Filippo's Berkeley Elmwood, I just need to confirm a few details. For how many people should I book the table, and what date and time would you prefer for your reservation?
+User: A table for two on Friday at 7:00 pm would be nice.
+System: Great, let me confirm this. You want to book a table for two at Filippo's Berkeley Elmwood on Friday at 7:00 pm. Is that correct?
+User: Yes, that's correct.
+System: Perfect! I'll proceed with making the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Filippo's Berkeley Elmwood", city: Berkeley, time: 19:00, date: 2023-10-20, party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Filippo's Berkeley Elmwood in Berkeley is confirmed for a table for two on Friday, October 20th at 7:00 pm. If you need any further assistance or details, feel free to let me know. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

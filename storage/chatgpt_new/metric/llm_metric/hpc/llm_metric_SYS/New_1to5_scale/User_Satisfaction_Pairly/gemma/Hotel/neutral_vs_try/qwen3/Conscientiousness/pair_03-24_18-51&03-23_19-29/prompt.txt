@@ -1,0 +1,162 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need to book a hotel. Can you help me find options?
+System: 
+
+Sure! Could you please tell me the city or location where you'd like to book a hotel?
+User: 
+
+Yes, London. Please search there.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: 
+
+I found a 5-star hotel named 45 Park Lane for £330 per night. Would you like to book this one, or would you like to see other options?
+User: 
+
+Yes, please show me other options.
+System: 
+
+Another option is Abc Hyde Park Hotel with a 3-star rating for £102 per night. Would you like to book this one or see more options?
+User: 
+
+No, I need at least a 4-star hotel. Can you show me other options with 4 or 5 stars?
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 4 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 800 330 8523', 'place_name': 'Amba Hotel Marble Arch', 'price_per_night': 444, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Bryanston Street'}]
+End Search Results
+System: 
+
+I found three 4-star hotels in London: Ace Hotel London for £176 per night, Amba Hotel Charing Cross for £312, and Amba Hotel Marble Arch for £444. There's also the 5-star 45 Park Lane at £330 per night. Would you like to proceed with any of these options?
+User: 
+
+Please provide the street addresses for each hotel and confirm if smoking is allowed.
+System: 
+
+The street addresses and smoking policies are:  
+- 45 Park Lane: 45 Park Lane, smoking not allowed  
+- Ace Hotel London: 100 Shoreditch High Street, smoking not allowed  
+- Amba Hotel Charing Cross: Strand, smoking not allowed  
+- Amba Hotel Marble Arch: Bryanston Street, smoking not allowed
+User: 
+
+Could you confirm the nearest tube stations for each hotel's address?
+System: 
+
+I don't have information about the nearest tube stations for these hotels. The available details include street address, price per night, star rating, and smoking policy. Would you like to proceed with booking one of the hotels?
+User: 
+
+Yes, please reserve 45 Park Lane.
+System: 
+
+Sure! Could you please provide the check-in date and the number of nights you'd like to stay?
+User: 
+
+Check-in on October 15th for five nights.
+System: 
+
+How many rooms would you like to book for your stay at 45 Park Lane? The default is 1 room.
+User: 
+
+Two rooms, please.
+System: 
+
+Could you please specify the year for your check-in date of October 15th? For example, 2023.
+User: 
+
+2023.
+System: 
+
+Please confirm to book 2 rooms at 45 Park Lane in London from October 15, 2023 for 5 nights.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: London, number_of_rooms: 2, place_name: 45 Park Lane, stay_length: 5 })
+Search Results
+[{'location': 'London', 'number_of_rooms': '2', 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': '4', 'street_address': '45 Park Lane', 'check_in_date': '2023-10-15', 'stay_length': '5'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+Please search for a 4-star hotel in London that doesn't allow smoking.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 800 330 8523', 'place_name': 'Amba Hotel Marble Arch', 'price_per_night': 444, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Bryanston Street'}]
+End Search Results
+System: 
+
+I found three 4-star non-smoking hotels in London: Ace Hotel London (£176/night, 100 Shoreditch High Street), Amba Hotel Charing Cross (£312/night, Strand), and Amba Hotel Marble Arch (£444/night, Bryanston Street). Which one would you like to book?
+User: 
+
+Could you tell me the nearest Underground stations for each of these hotels?
+System: 
+
+I'm sorry, but our system doesn't include information about nearby Underground stations. Would you like to proceed with booking one of the hotels we found earlier?
+User: 
+
+I'll book the Amba Hotel Charing Cross on Strand.
+System: 
+
+Great! To proceed with your reservation, could you please provide the check-in date and the number of days you'll be staying?
+User: 
+
+I'll check in on October 15th and stay for five days.
+System: 
+
+Please confirm to book 1 room for 5 days at Amba Hotel Charing Cross in London, check-in on October 15th. Is that correct?
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Amba Hotel Charing Cross', check_in_date: '2023-10-15', stay_length: 5, location: 'London', number_of_rooms: 1 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your reservation at Amba Hotel Charing Cross has been successfully confirmed. Is there anything else I can help with?
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

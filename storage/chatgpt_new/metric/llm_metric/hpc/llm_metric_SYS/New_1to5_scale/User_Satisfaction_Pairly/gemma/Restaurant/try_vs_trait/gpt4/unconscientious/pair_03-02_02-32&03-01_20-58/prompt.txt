@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm kinda looking for a place to eat but I'm not sure where. Maybe somewhere in San Francisco?
+System: Do you have a particular type of cuisine in mind, or are you open to suggestions? If you're not sure, I can help you choose from a variety of options!
+User: I guess I'm open to whatever. Maybe something with live music could be fun?
+System: How about exploring some options for Italian cuisine in San Francisco with live music? Let me check for restaurants that fit this description. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found a couple of Italian restaurants in San Francisco that offer live music. One option is "Fior D'italia," located at 2237 Mason Street, and the other is "Zingari Ristorante + Jazz Bar" at 501 Post Street. Both places serve alcohol and are considered to be in the expensive price range. Do any of these sound appealing to you, or would you like more information about them?
+User: Uh, I dunno. I guess Zingari Ristorante + Jazz Bar sounds kinda cool. Can you book a table for me there? Maybe for, like, tonight?
+System: Sure! To make a reservation at Zingari Ristorante + Jazz Bar for tonight, could you please let me know what time you'd like the reservation and for how many people?
+User: Oh, right, um, let's go with 7:30 pm and for, like, four people. That should work, I think.
+System: Great! Just to confirm, you'd like to reserve a table for four people at 7:30 pm tonight at Zingari Ristorante + Jazz Bar in San Francisco. Is that correct?
+User: Yeah, sounds about right. Let's do that.
+System: Perfect! I'll make the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Zingari Ristorante + Jazz Bar", city: San Francisco, time: 19:30, date: 2023-10-25, party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-25', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Your reservation at Zingari Ristorante + Jazz Bar for four people at 7:30 pm tonight has been successfully made. Enjoy the live music and have a great evening! If you need any more assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm, like, super hungry right now and thinking of grabbing a bite in San Francisco. Can you find a place for me to eat?
+System: Do you have a particular type of cuisine in mind, or should I pick something for you? If you're open to suggestions, I can choose a cuisine at random for you.
+User: Uh, I don't know, maybe something with pizza or burgers? I'm not too picky. Just something easy and quick, I guess.
+System: Great! Let's go with a classic choice that's both easy and quick. How about American cuisine? It covers both burgers and a variety of other options. I'll find some places in San Francisco for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: American})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Here are a few American cuisine options for you in San Francisco. You could try 1760 located at 1760 Polk Street, or if you'd like a place that serves alcohol, 25 Lusk at 25 Lusk Street might be a good fit. Would you like more details, or shall I assist you with something else?
+User: Hmm, can you just book a table for me at 25 Lusk? Maybe around 7:00 pm or something like that? It's just me, so it shouldn't be too hard, right?
+System: Sure, I can help with that. Let me confirm the details: You want to reserve a table for 1 at 25 Lusk in San Francisco at 7:00 pm today. Is that correct?
+User: Yeah, I guess that sounds about right. Just make sure it's all set, please.
+System: Great, I'll proceed with the reservation for you. One moment, please. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 25 Lusk, city: San Francisco, time: 19:00, party_size: 1})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Your reservation at 25 Lusk in San Francisco for 1 person at 7:00 pm is confirmed. If you need to reach them, their phone number is 415-495-5875. Enjoy your meal!
+User: Cool, thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

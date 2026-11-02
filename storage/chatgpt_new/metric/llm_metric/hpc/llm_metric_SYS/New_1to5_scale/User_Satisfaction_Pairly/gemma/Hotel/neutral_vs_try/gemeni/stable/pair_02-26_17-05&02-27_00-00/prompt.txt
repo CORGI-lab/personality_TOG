@@ -1,0 +1,135 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in San Diego, please.
+
+System: Okay, I can help you with that. How many rooms do you need?
+
+User: Just one room will be fine.
+
+System: Okay, and do you have any preferences for the star rating of the hotel?
+
+User: Not particularly. I'm mainly looking for something clean and comfortable. What are the options available?
+
+System: Okay, I will search for hotels in San Diego with one room. Since you don't have a preference for the star rating, I will look for all options.
+
+APICall(method='SearchHotel', parameters={ location: San Diego, number_of_rooms: 1, star_rating: dontcare })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found three hotels in San Diego that have one room available. Bahia Resort Hotel and Best Western Plus Hacienda Hotel Old Town don't allow smoking, while Best Western Plus Bayside Inn allows smoking. All three hotels have a 3-star rating.
+
+User: Okay, thank you. Could you tell me the price per night for each of those hotels, please? I appreciate having all the information to make a decision.
+
+System: Okay, the Bahia Resort Hotel is $225 per night, Best Western Plus Bayside Inn is $234 per night and Best Western Plus Hacienda Hotel Old Town is $198 per night.
+
+User: Okay, thank you. Considering those prices, I think I'd prefer the Best Western Plus Hacienda Hotel Old Town. It seems like a reasonable choice. Could you tell me a little more about it, perhaps the address?
+
+System: Okay, the address for the Best Western Plus Hacienda Hotel Old Town is 4041 Harney Street.
+
+User: That sounds perfectly acceptable. I think I'm ready to reserve a room there. I will be arriving on the 14th of May and I'll need the room for four nights.
+
+System: Okay, let me confirm. You would like to reserve 1 room at the Best Western Plus Hacienda Hotel Old Town in San Diego, starting on May 14th for four nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-05-14, location: San Diego, number_of_rooms: 1, place_name: Best Western Plus Hacienda Hotel Old Town, stay_length: 4 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street', 'check_in_date': '2024-05-14'}]
+End Search Results
+System: Okay, your reservation has been confirmed. You have one room at the Best Western Plus Hacienda Hotel Old Town in San Diego from May 14th for four nights. Is there anything else I can help you with?
+
+User: That's perfect, thank you. I appreciate the confirmation.
+
+System: You're welcome! The phone number for the Best Western Plus Hacienda Hotel Old Town is +1 619-298-4707. Can I help you with anything else?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel, or if smoking is allowed?
+
+User: I'm generally okay with most things. Perhaps a 3-star or 4-star hotel would be suitable. Non-smoking, please.
+
+System: Okay, I'll search for a 3 or 4-star, non-smoking hotel in San Francisco.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: dontcare, smoking_allowed: False})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I found a few non-smoking hotels in San Francisco. There's the Argonaut Hotel, a 4-star hotel, with rooms available for $408 per night. Does that sound interesting, or would you like to explore other options?
+
+User: That sounds reasonable. Are there any other 3 or 4-star non-smoking hotels available? I'm happy to consider a few options before deciding.
+
+System: Okay, besides the Argonaut Hotel, I also found the Amsterdam Hostel San Francisco, which is a 1-star hotel, and Beck'S Motor Lodge, which is a 2-star hotel.
+
+Would you like to consider these options, or should I focus on finding other 4-star hotels for you?
+
+User: Perhaps let's stick with the 4-star options for now. What's the price range for the Argonaut?
+
+System: Okay, the Argonaut Hotel, a 4-star hotel, has rooms available for $408 per night. Would you like to know more about this hotel, or perhaps explore other 4-star options in San Francisco, if there are any?
+
+User: Knowing the price, are there any other 4-star hotels? I'm not in a rush, so let's see what else is available.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 4, smoking_allowed: False})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-348-1111', 'place_name': 'Hotel Zelos San Francisco', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '12 4th Street'}]
+End Search Results
+System: Okay, I found a few more 4-star, non-smoking hotels in San Francisco. Besides the Argonaut Hotel at $408 per night, there's also Hotel Spero at $80 per night and Hotel Zelos San Francisco at $96 per night. Would you like to hear more about any of these?
+
+User: Hotel Spero at $80 sounds quite reasonable. Tell me more about Hotel Spero.
+
+System: Okay, Hotel Spero is a 4-star hotel located at 405 Taylor Street in San Francisco. Their phone number is +1 415-885-2500, and the price is $80 per night. They have 1 room available and do not allow smoking. Does this sound like a good option for you?
+
+User: Yes, that sounds perfectly fine. I'd like to book a room at Hotel Spero. I'll be arriving on the 15th and staying for three nights.
+
+System: Okay, I can help you with that. To confirm, you'd like to reserve a room at Hotel Spero in San Francisco, arriving on the 15th for a three-night stay. Could you please specify the month you'd like to book the room for?
+
+User: I'd like to book it for July.
+
+System: Okay, so you'd like to reserve a room at Hotel Spero in San Francisco for three nights, starting on July 15th. Could you also let me know how many rooms you'll need?
+
+User: Just one room, please.
+
+System: Okay, just to confirm, you'd like to reserve one room at Hotel Spero in San Francisco, starting on July 15th for a three-night stay. Is that correct?
+
+User: Yes, that's correct. Please go ahead and make the reservation.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={place_name: Hotel Spero, location: San Francisco, check_in_date: 2024-07-15, stay_length: 3, number_of_rooms: 1})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street', 'check_in_date': '2024-07-15'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Okay, I've made the reservation for you at Hotel Spero in San Francisco. Just to double-check, you're booked for one room, arriving on July 15th for a three-night stay. The confirmation details are as follows: Hotel Spero, located at 405 Taylor Street, phone number +1 415-885-2500. The price is $80 per night.
+
+Is there anything else I can assist you with today?
+
+User: No, that sounds perfect. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

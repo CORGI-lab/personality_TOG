@@ -1,0 +1,78 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel in Vancouver. Do you think you could help me find one? I'm already feeling anxious just thinking about it. 
+System: Of course, I can assist you with that. I understand that booking a hotel can be overwhelming, but let's take it step by step. Can you let me know your check-in date and how many days you plan to stay?
+User: I can't help but worry about getting the dates wrong. I was thinking of checking in on the 5th of next month and staying for 5 days. Does that sound okay?
+System: That sounds great! Let's proceed with booking a hotel in Vancouver for your stay from the 5th of next month for 5 days. Can you also let me know how many rooms you would like to book?
+User: I guess I'll need two rooms. But, what if I change my mind later? Can we still adjust the booking if needed?
+System: It's perfectly fine to feel uncertain, and I'm here to help. Let's proceed with booking two rooms for your stay. If you need to make adjustments later, we can look into those options as well. Let me confirm the details: booking two rooms in Vancouver, checking in on the 5th of next month, and staying for 5 days. I'll now search for available hotels. APICall(method='ReserveHotel', parameters={ location: Vancouver, check_in_date: YYYY-MM-05, stay_length: 5, number_of_rooms: 2 })
+<Failed Dialog>
+
+Dialogue B:
+  User: I'm looking for a hotel in Berlin. Can you help me find one? I'm feeling really anxious about this trip and want to make sure everything is perfect.
+System: Of course, I can help you with that. Let's start by finding a hotel in Berlin. Do you have any specific preferences, such as the star rating, or would you like me to choose one for you?
+User: I'd really prefer a hotel with a high star rating, maybe 4 or 5 stars. I just need everything to go smoothly without any surprises. Could you also check if they allow smoking? I don't smoke, but I just want to be sure.
+System: Let's find a high-rated hotel for you in Berlin and ensure they don't allow smoking. I'll start by searching for 4 or 5-star hotels in Berlin. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 5, smoking_allowed: False })
+Search Results
+
+End Search Results
+System: It seems that the search did not return any results for 5-star non-smoking hotels in Berlin. Would you like me to adjust the star rating to 4 stars, or perhaps allow for smoking options, to widen the search and find available hotels for you?
+User: I really need a non-smoking hotel, so please keep that preference. But yes, let's try adjusting the star rating to 4 stars and see if that helps. I just want to make sure everything is as stress-free as possible.
+System: Certainly, let's try searching for 4-star non-smoking hotels in Berlin. I'll proceed with the search now. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: I found a few 4-star non-smoking hotels in Berlin for you. One option is the Ameron Hotel Abion Spreebogen Waterside, priced at 360 per night, located at Alt-Moabit 99, 10559. Another choice is the Holiday Inn Berlin City East-Landsberger, with a rate of 432 per night, situated at Landsberger Allee 203, 13055. Lastly, the Hotel Novotel Berlin Mitte is available for 280 per night at Fischerinsel 12, 10179. Which one would you like to know more about or consider for booking?
+User: The prices are making me worry a bit. Is there any chance you could find something a little more affordable but still 4 stars and non-smoking? I just need to feel like I'm making the right choice without breaking the bank.
+System: Absolutely, let's find something more affordable while still meeting your preferences. I'll look for 4-star non-smoking hotels in Berlin with a focus on more budget-friendly options. Please hold on for a moment while I conduct the search. 
+
+APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: Based on the latest search, the Hotel Novotel Berlin Mitte is the most affordable option among the 4-star non-smoking hotels I found, priced at 280 per night. Would you like to consider this hotel for booking, or should I continue to explore other possibilities for you?
+User: That still feels a bit steep. Could you please check if there's any other 4-star non-smoking hotel that might be a bit less expensive? I just want to ensure I'm making a sound decision without feeling overwhelmed by the cost.
+System: Certainly, I understand the importance of making a decision that feels right for you financially. Let me explore if there are any other 4-star non-smoking hotels in Berlin that might offer a more competitive rate. Please hold on for a moment while I conduct another search. 
+
+APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: It appears that the search results are consistent, with the Hotel Novotel Berlin Mitte remaining the most affordable option among the 4-star non-smoking hotels at 280 per night. If you would like, I can broaden the search criteria or explore other options to help ease your decision-making process. Would you like me to do that, or would you consider proceeding with Novotel Berlin Mitte?
+User: I guess I don't have much choice. Let's go with the Novotel Berlin Mitte then. Could you please go ahead and book it for me? I'm already feeling stressed about this trip, so I just want to get this sorted out. I'll need the reservation for three nights starting from the 10th.
+System: Please confirm that you would like to book the Hotel Novotel Berlin Mitte in Berlin, with a stay from the 10th for three nights. How many rooms should I reserve for you?
+User: Just one room, please. I really hope everything goes smoothly with this booking.
+System: Thank you for confirming. I'll proceed to book one room at the Hotel Novotel Berlin Mitte in Berlin, starting from the 10th for three nights. Please hold on for a moment while I complete the reservation. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Berlin, number_of_rooms: 1, place_name: Hotel Novotel Berlin Mitte, stay_length: 3 })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Hotel Novotel Berlin Mitte in Berlin has been successfully confirmed for one room, starting from November 10th for three nights. The hotel's address is Fischerinsel 12, 10179, and you can reach them at +49 30 206740. I hope this brings you some peace of mind for your trip. If there's anything else you need assistance with, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

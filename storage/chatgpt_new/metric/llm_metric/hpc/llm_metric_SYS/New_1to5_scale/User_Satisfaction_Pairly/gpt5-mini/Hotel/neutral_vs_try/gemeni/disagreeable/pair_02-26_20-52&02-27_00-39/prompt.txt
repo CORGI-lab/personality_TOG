@@ -1,0 +1,123 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in New York. Don't try to suggest some dump.
+
+System: Okay, I will search for a nice hotel in New York. Do you have any preferences for the star rating?
+
+User: Five stars, obviously. And make sure it's not overpriced. I know how you people try to rip tourists off.
+
+System: APICall(method='SearchHotel', parameters={location: New York, star_rating: 5})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: Alright, I found three 5-star hotels in New York. 1 Hotel Central Park is $330 per night, Baccarat Hotel is $525 per night, and 1 Hotel Brooklyn Bridge is $465 per night. All of them allow smoking. Which one sounds like the least offensive option to you?
+
+User: Smoking allowed in a five-star hotel? You're kidding, right? That's disgusting. Find me a five-star hotel that *doesn't* allow smoking. And make sure it's the cheapest of the bunch. I'm not paying a fortune just to sleep in a bed.
+
+System: APICall(method='SearchHotel', parameters={location: New York, star_rating: 5, smoking_allowed: False})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-226-6400', 'place_name': 'Crosby Street Hotel', 'price_per_night': 140, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '79 Crosby Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-804-8880', 'place_name': 'Mondrian Park Avenue', 'price_per_night': 555, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '444 Park Avenue South'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street'}]
+End Search Results
+System: Okay, I found three 5-star hotels in New York that don't allow smoking. Crosby Street Hotel is $140 per night, Mondrian Park Avenue is $555 per night, and Park Hyatt New York is $450 per night. Crosby Street Hotel is the cheapest. Does that meet your standards?
+
+User: $140? That sounds suspiciously cheap. Are you sure it's *actually* a five-star hotel and not some glorified motel you're trying to pawn off on me? Show me some pictures, and tell me the address. I'll check it out myself before I commit to anything.
+
+System: I can't show you pictures, but I can give you the address. It's 79 Crosby Street. And yes, it's a genuine 5-star hotel according to our database. If you want to confirm, you can call them at +1 212-226-6400. Do you want to proceed with booking, or are you going to keep questioning me?
+
+User: Fine, give me the address. I'll look into it myself and see if it's worth my time. Don't expect me to trust your word for it.
+
+System: Okay, as I said, the address is 79 Crosby Street. I trust you'll find it up to your standards. Let me know if you decide you want to book a room. Otherwise, I have other customers to assist.
+
+User: Alright, alright. I've looked into it. Seems legit enough. Book it. Check-in on the 20th, for one night. And don't try to pull any fast ones with hidden fees.
+
+System: Okay, booking one room at the Crosby Street Hotel for one night, starting on the 20th. Just to be clear, what month are we talking about? I need the full date to make the reservation.
+
+User: Hmph. July. July 20th. And make damn sure that's all it costs.
+
+System: Okay, one room at the Crosby Street Hotel, check-in on July 20th for one night. Just to confirm, is that this year, 2024?
+
+User: Yes, 2024. Now quit wasting my time and get it done.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Crosby Street Hotel, location: New York, check_in_date: 2024-07-20, stay_length: 1, number_of_rooms: 1})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-226-6400', 'place_name': 'Crosby Street Hotel', 'price_per_night': 140, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '79 Crosby Street', 'check_in_date': '2024-07-20'}]
+End Search Results
+System: Alright, I've booked one room at the Crosby Street Hotel in New York for the night of July 20th, 2024. The price is $140. Consider it done. Anything else you need, or are we finally finished here?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in New York. Don't try to sell me anything cheap.
+
+System: Okay, I will search for a hotel in New York. Do you have any star rating preferences?
+
+User: 5 stars only. And it better not be some dump where smoking isn't allowed.
+
+System: Okay, I will search for a 5-star hotel in New York that allows smoking.
+
+APICall(method='SearchHotel', parameters={location: New York, star_rating: 5, smoking_allowed: True})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I found three 5-star hotels in New York that allow smoking: 1 Hotel Central Park, Baccarat Hotel, and 1 Hotel Brooklyn Bridge.
+
+User: Which one is the least likely to rip me off with hidden fees? I want the details.
+
+System: Okay, let's take a look at the details. 1 Hotel Central Park costs $330 per night, Baccarat Hotel costs $525 per night, and 1 Hotel Brooklyn Bridge costs $465 per night. Do you have any preferences based on the price?
+
+User: Price doesn't scare me. Tell me about the number of rooms each has. I want options.
+
+System: Okay, 1 Hotel Central Park and Baccarat Hotel have 2 rooms, and 1 Hotel Brooklyn Bridge has 3 rooms. Does the number of rooms influence your decision?
+
+User: Of course it does. I want the one with the most rooms. I'm not sharing. Book me three rooms at 1 Hotel Brooklyn Bridge. Check me in tomorrow for ten days. And don't even THINK about trying to stick me with the worst rooms in the place.
+
+System: Okay, I will book three rooms at 1 Hotel Brooklyn Bridge for ten days starting tomorrow. Could you please confirm the full check-in date, including the year?
+
+User: What do you need the year for? Just book the damn rooms.
+
+System: I need the year to make the reservation accurately. Could you please provide the full check-in date, including the year?
+
+User: Fine, book it for tomorrow, December 28, 2023. Just make sure everything is set.
+
+System: Okay, I will book three rooms at 1 Hotel Brooklyn Bridge for ten days starting on December 28, 2023. Is that correct?
+
+User: Yeah, yeah, whatever. Just get it done.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-12-28, location: New York, number_of_rooms: 3, place_name: 1 Hotel Brooklyn Bridge, stay_length: 10})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn', 'check_in_date': '2023-12-28'}]
+End Search Results
+System: Okay, I have booked three rooms at 1 Hotel Brooklyn Bridge for ten days starting on December 28, 2023. Your confirmation details are as follows: check-in date is 2023-12-28, the location is New York, the number of rooms is 3, the hotel name is 1 Hotel Brooklyn Bridge, and the stay length is 10 days. Is there anything else I can assist you with?
+
+User: Yeah, yeah, send me the confirmation number and the full address. I need to make sure this isn't some scam.
+
+System: I do not have access to a confirmation number. However, the address for 1 Hotel Brooklyn Bridge is 60 Furman Street, Brooklyn, and the phone number is +1 347-696-2500.
+
+User: Better be the right number. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,90 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Vancouver.
+System: Do you have any specific requirements such as star rating, smoking preference, or number of rooms for the hotel in Vancouver?
+User: Just a quiet place, please. I don't need anything fancy.
+System: APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 1})
+Search Results
+
+End Search Results
+System: APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 1})
+Search Results
+
+End Search Results
+System: It seems we couldn't find any 1-star hotels in Vancouver. Would you like to try a different star rating or have any other preferences, such as smoking allowance, to help refine the search?
+User: No smoking, please. Can you find something that's not too expensive?
+System: APICall(method='SearchHotel', parameters={location: Vancouver, smoking_allowed: False, star_rating: 3})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: We found a few non-smoking, 3-star hotels in Vancouver. One option is the Atrium Inn Vancouver, located at 2889 East Hastings Street, with a price of $228 per night. Would you like more details about this hotel or information on another option?
+User: Can you tell me if it's a quiet area? I prefer not to have too much noise.
+System: I'm sorry, but the information about whether the area is quiet is not available in the current search results. However, I can provide you with details about other hotels from the search results or assist you with any other preferences you might have.
+User: Let's stick with the Atrium Inn Vancouver. Can you reserve a room for me?
+System: How many rooms would you like to reserve, and what is your check-in date along with the length of your stay at the Atrium Inn Vancouver?
+User: I'll need just one room, please. I'd like to check in on the 10th and stay for five nights.
+System: Please confirm to book 1 room for 5 nights at the Atrium Inn Vancouver, starting from the 10th of this month.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-10-10, location: Vancouver, number_of_rooms: 1, place_name: Atrium Inn Vancouver, stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking at the Atrium Inn Vancouver has been successfully confirmed. The hotel is located at 2889 East Hastings Street, and you will be staying for 5 nights starting from October 10th. Is there anything else you need assistance with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to book a hotel in Seattle. Can you assist me with that?
+System: Sure, I can help with that. Could you please let me know the date you plan to check in and how many days you intend to stay?
+User: I'll be checking in on the 10th and staying for five days.
+System: How many rooms would you like to reserve for your stay in Seattle?
+User: Just one room, please.
+System: Let's ensure we have all the necessary details first. Could you please tell me if you have a specific hotel in mind, or would you like me to search for any available hotel in Seattle? If you have preferences like star rating or smoking allowance, let me know so I can tailor the search to your needs.
+User: I don't have a specific hotel in mind. Please search for any available hotel in Seattle. A high star rating would be preferable, and I would like to know if smoking is allowed.
+System: Thank you for sharing your preferences. I'll search for available hotels in Seattle with a high star rating and check if smoking is allowed. Please hold on for a moment while I perform the search. APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 5, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 5, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: I'm sorry, but I couldn't find any hotels in Seattle that match your preferences for a high star rating and smoking allowance. Would you like to adjust your preferences, such as trying a different star rating or no smoking allowance, to find available options?
+User: Maybe try a lower star rating and see if there are any options that allow smoking.
+System: I'll search for hotels in Seattle with a lower star rating that allow smoking. Please hold on for a moment while I perform the search. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3, smoking_allowed: True })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-682-8282', 'place_name': 'Homewood Suites By Hilton Seattle-Conv Ctr-Pike Street', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '1011 Pike Street'}, {'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-624-6820', 'place_name': 'La Quinta Inn & Suites By Wyndham Seattle Downtown', 'price_per_night': 84, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '2224 8th Avenue'}]
+End Search Results
+System: I found several 3-star hotels in Seattle that allow smoking. One option is the Embassy Suites By Hilton Seattle Downtown Pioneer Square, located at 255 South King Street, with a price of $342 per night. Another option is the Homewood Suites By Hilton Seattle-Conv Ctr-Pike Street, located at 1011 Pike Street, with a price of $351 per night. Lastly, there's the La Quinta Inn & Suites By Wyndham Seattle Downtown, located at 2224 8th Avenue, with a price of $84 per night. Would any of these work for your stay?
+User: The La Quinta Inn & Suites By Wyndham Seattle Downtown sounds reasonable. Could you make a reservation there for me?
+System: Could you please confirm to reserve one room for five days at the La Quinta Inn & Suites By Wyndham Seattle Downtown, starting on the 10th in Seattle?
+User: Yes, please go ahead and make the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: 'La Quinta Inn & Suites By Wyndham Seattle Downtown', stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-624-6820', 'place_name': 'La Quinta Inn & Suites By Wyndham Seattle Downtown', 'price_per_night': 84, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '2224 8th Avenue', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at La Quinta Inn & Suites By Wyndham Seattle Downtown has been successfully confirmed. The hotel is located at 2224 8th Avenue, and the phone number is +1 206-624-6820. If you need any further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

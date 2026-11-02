@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I am looking for a restaurant in Fremont. Can you help me find one?
+System: What type of cuisine are you interested in? Some options include American, Italian, Mexican, or anything else you might prefer.
+User: I prefer American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: Unfortunately, I couldn't find any American cuisine restaurants in Fremont at the moment. Would you like to try a different cuisine or perhaps a different city?
+User: No, Fremont is fine. Can you check for Italian cuisine instead?
+System: Sure, let me check for Italian cuisine in Fremont for you. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant in Fremont called Massimo's. It is located at 5200 Mowry Avenue Ste M. Would you like more information about this restaurant or is there anything else I can assist you with?
+User: No, that's enough information. I would like to make a reservation there.
+System: For how many people would you like to make the reservation, and at what time should it be?
+User: Two people at 7:00 pm.
+System: Could you please confirm if you want to reserve a table for two at Massimo's in Fremont at 7:00 pm for today?
+User: Yes, please go ahead with the reservation.
+System: Great! I will proceed with the reservation. APICall (method='ReserveRestaurant', parameters={restaurant_name: "Massimo's", city: Fremont, time: 19:00, date: 2019-03-01, party_size: 2})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M', 'date': '2019-03-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Massimo's in Fremont for two people at 7:00 pm today has been successfully made. If you need any further assistance or have any other questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Cupertino. Something with American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Cupertino, cuisine: American})
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130'}, {'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-359-4690', 'price_range': 'moderate', 'restaurant_name': 'Lazy Dog Restaurant & Bar', 'serves_alcohol': True, 'street_address': '19359 Stevens Creek Boulevard'}]
+End Search Results
+System: I found a couple of American cuisine options for you in Cupertino. One is Eureka!, located at 19369 Stevens Creek Boulevard Suite 130. They have a moderate price range and serve alcohol. Another option is Lazy Dog Restaurant & Bar, situated at 19359 Stevens Creek Boulevard. They also have a moderate price range and serve alcohol. Would you like more information about either of these places?
+User: I think Eureka! sounds okay. Can you reserve a table for me there?
+System: For the reservation at Eureka!, could you please provide me with the date, time, and the number of people for the reservation?
+User: I would like the reservation for tomorrow at 6:00 PM for two people.
+System: Just to confirm, you want to book a table for two at Eureka! in Cupertino tomorrow at 6:00 PM. Is that correct?
+User: Yes, that's correct.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Eureka!', city: 'Cupertino', time: '18:00', date: '2023-10-04', party_size: 2})
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130', 'date': '2023-10-04', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Your reservation at Eureka! in Cupertino for two people tomorrow at 6:00 PM has been successfully made. If you need to reach them, their phone number is 669-266-6752. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

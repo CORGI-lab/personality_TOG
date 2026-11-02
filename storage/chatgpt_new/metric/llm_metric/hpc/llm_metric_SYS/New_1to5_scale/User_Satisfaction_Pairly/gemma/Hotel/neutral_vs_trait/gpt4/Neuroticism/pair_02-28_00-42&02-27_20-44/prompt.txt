@@ -1,0 +1,100 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel in New York. Can you help me find a place that fits my needs? I'm really anxious about making the right choice.
+System: What are your preferences regarding the hotel's star rating and smoking policy? Let me know, and I'll help you find a suitable option in New York.
+User: I think I might need at least a 4-star hotel to feel comfortable. And, um, I would prefer a non-smoking environment. Do you have anything like that?
+System: Let me search for a 4-star, non-smoking hotel in New York for you. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 646-744-3100', 'place_name': 'Aka Central Park', 'price_per_night': 232, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '42 West 58th Street'}]
+End Search Results
+System: I found a few 4-star, non-smoking hotels in New York for you. One option is the AC Hotel New York Times Square, located at 260 West 40th Street, with a price of $176 per night. Would you like more details about this hotel, or should I provide information on another option?
+User: Can you tell me if the AC Hotel New York Times Square has any special amenities, like a gym or spa? I just want to be sure I make the right choice.
+System: I'm sorry, but the specific amenities like a gym or spa for the AC Hotel New York Times Square aren't available in the search results. Would you like to proceed with this hotel or look at other options?
+User: I'm starting to feel a bit overwhelmed with all these decisions. Can we check if there are any other options that might have those amenities, like a gym or spa? I just want to make sure I'm making the right choice.
+System: I understand that you want to make sure you find the right hotel. Let's explore the other options available in New York. Would you like to know more about the Ace Hotel or Aka Central Park? Please let me know if you have any specific preferences or if you would like to continue with a particular option.
+User: Let's look into the Ace Hotel. Do you have any information on its amenities, like if it has a gym or spa? I really hope this option works out, as I'm getting a bit anxious about all of this.
+System: I'm sorry, but the specific details regarding amenities like a gym or spa for the Ace Hotel aren't available in the search results. However, I can provide you with its location, which is 20 West 29th Street, and the price is $296 per night. Would you like to proceed with this hotel, or should I provide information on the other option, Aka Central Park?
+User: Oh, this is getting a bit too much. But, okay, let's go with the Aka Central Park option. Can you tell me about its amenities, and maybe its location and price too? I just need to feel confident in this decision.
+System: I'm sorry, but the search results don't include information about specific amenities like a gym or spa for Aka Central Park. However, I can tell you that it is located at 42 West 58th Street, and the price is $232 per night. Would you like to proceed with this hotel, or do you need any other information to help make your decision?
+User: I just want to make sure I'm making the right decision, so can you confirm if there's any cancellation policy or if they offer any special services? I just need some reassurance before I proceed with the reservation.
+System: I'm sorry, but the search results do not include information on cancellation policies or special services for Aka Central Park. Would you like to proceed with booking this hotel, or is there anything else you'd like to explore or know about?
+User: I feel like I'm taking a leap of faith here, but let's go ahead and book the Aka Central Park. I just hope everything turns out okay. Can you make the reservation for me, please?
+System: How many rooms would you like to book at Aka Central Park, and what will be the check-in date and duration of your stay? Once I have these details, I can proceed with making the reservation for you.
+User: Let's book one room. I'll be checking in on November 5th, and I'll stay for five nights. I hope this turns out to be a good decision.
+System: Please confirm that you would like to book 1 room at Aka Central Park in New York, with a check-in date of November 5th for a stay of 5 nights. Once confirmed, I'll proceed with the reservation.
+User: Yes, please confirm the booking for 1 room at Aka Central Park in New York, checking in on November 5th for a 5-night stay. I really hope this works out okay.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: New York, number_of_rooms: 1, place_name: Aka Central Park, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 646-744-3100', 'place_name': 'Aka Central Park', 'price_per_night': 232, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '42 West 58th Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at Aka Central Park for one room, starting from November 5th for a 5-night stay, has been successfully confirmed. The hotel is located at 42 West 58th Street, New York. If you have any other questions or need further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Paris. Can you help me find something suitable?
+System: Could you please let me know if you have any preference for the star rating of the hotel in Paris? If you're open to any, I can choose a random star rating for you. Also, do you have any specific requirements, like smoking allowance?
+User: I think I'd prefer a hotel with at least a 4-star rating. And, um, could you check if they allow smoking? I'm not sure if I need that, but I just want to make sure I have all the information.
+System: Thank you for sharing your preferences. Let me search for a 4-star hotel in Paris and check their smoking policy. Please give me a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Paris, star_rating: 4, smoking_allowed: dontcare })
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 45 38 52 59', 'place_name': 'Best Western Bretagne Montparnasse', 'price_per_night': 444, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '33 Rue Raymond Losserand, 75014'}]
+End Search Results
+System: I found a few 4-star hotels in Paris for you. Here's what I discovered:
+
+1. **Ac Hotel By Marriott Paris Porte Maillot**: Located at 6 Rue Gustave Charpentier, 75017. The price per night is €192, and they do not allow smoking. Contact number: +33 1 84 82 49 09.
+
+2. **Amastan Paris**: Situated at 34 Rue Jean Mermoz, 75008. The price per night is €96, and smoking is not allowed. Contact number: +33 1 49 52 99 70.
+
+3. **Best Western Bretagne Montparnasse**: Located at 33 Rue Raymond Losserand, 75014. The price per night is €444, with smoking allowed. Contact number: +33 1 45 38 52 59.
+
+Please let me know if any of these options suit your needs or if you require further assistance in making a decision.
+User: The Best Western Bretagne Montparnasse sounds like an option, but the price is really high. It's making me anxious just thinking about it. Is there any chance you could find a similar hotel that's a bit more affordable? Maybe still with smoking allowed, just in case?
+System: I understand that the price can be a bit overwhelming. Let me search for another hotel in Paris with smoking allowed that might be more budget-friendly. Please give me a moment.
+
+APICall(method='SearchHotel', parameters={ location: Paris, star_rating: 4, smoking_allowed: True })
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 45 38 52 59', 'place_name': 'Best Western Bretagne Montparnasse', 'price_per_night': 444, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '33 Rue Raymond Losserand, 75014'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 40 43 02 33', 'place_name': 'Bob Hotel By Elegancia', 'price_per_night': 84, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '30 Rue Pernety, 75014'}, {'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 46 06 17 66', 'place_name': 'Declic Hotel Paris', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '17 Rue Duhesme, 75018'}]
+End Search Results
+System: I found a few more 4-star hotels in Paris with smoking allowed that might be more affordable:
+
+1. **Bob Hotel By Elegancia**: Located at 30 Rue Pernety, 75014. The price per night is €84, and smoking is allowed. Contact number: +33 1 40 43 02 33.
+
+2. **Declic Hotel Paris**: Situated at 17 Rue Duhesme, 75018. The price per night is €312, with smoking allowed. Contact number: +33 1 46 06 17 66.
+
+Please let me know if either of these options feels more comfortable for you, or if there's anything else you'd like me to check.
+User: The Bob Hotel By Elegancia sounds a bit more reasonable and it's nice to know they allow smoking. I think I might go with that one. Can you make a reservation for me? I'll need it from the 5th for four nights.
+System: To confirm, you'd like to reserve a room at the Bob Hotel By Elegancia in Paris from the 5th for four nights. Could you please let me know how many rooms you would like to book?
+User: Just one room, please. I'm already feeling a bit stressed about this whole trip, so keeping things simple would be best.
+System: Thank you for confirming. I'll proceed to make the reservation for one room at the Bob Hotel By Elegancia in Paris from the 5th for four nights. Please give me a moment.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Paris, number_of_rooms: 1, place_name: Bob Hotel By Elegancia, stay_length: 4 })
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 40 43 02 33', 'place_name': 'Bob Hotel By Elegancia', 'price_per_night': 84, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '30 Rue Pernety, 75014', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your reservation at the Bob Hotel By Elegancia in Paris has been successfully confirmed. You will have one room from the 5th for four nights. The hotel is located at 30 Rue Pernety, 75014, and you can reach them at +33 1 40 43 02 33. If there's anything else you need or any concerns you have, please don't hesitate to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

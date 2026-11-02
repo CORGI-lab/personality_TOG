@@ -1,0 +1,131 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel in Berlin, and I want to make sure it's a good one. Can you help me find a well-regarded hotel?
+
+System: Okay, I can help with that. To find a well-regarded hotel, are you open to hotels of a specific star rating?
+
+User: Yes, I'd prefer a 4 or 5-star hotel to ensure a certain level of quality and service. Also, please check if they offer free Wi-Fi and have on-site parking. I'll be driving, so parking is essential.
+
+System: Given the available slots, I can search for hotels based on star rating but not for specific amenities like free Wi-Fi or on-site parking. Would you like me to search for 4 or 5-star hotels in Berlin?
+
+User: Yes, let's proceed with searching for 4 or 5-star hotels in Berlin. Once you have a few options, I can check their websites or call to confirm the Wi-Fi and parking situation myself. It's best to be thorough.
+
+System: APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 4})
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+System: Okay, I found three 4-star hotels in Berlin: Adina Apartment Hotel Berlin Mitte, Ameron Hotel Abion Spreebogen Waterside, and Arcotel John F Berlin. Would you like to know more about any of these, or should I proceed with searching for 5-star hotels as well?
+
+User: Let's start with the Adina Apartment Hotel Berlin Mitte. Can you provide more details about its location, specifically the street address? I want to map it out and see how convenient it is for my planned activities. I want to be sure it's situated in a safe and accessible area.
+
+System: Okay, the Adina Apartment Hotel Berlin Mitte is located at Platz vor dem Neuen Tor 6, 10115 Berlin. Is there anything else I can help you with regarding this hotel?
+
+User: Thank you. Before I make a decision, can you also check the star rating and street address for the Ameron Hotel Abion Spreebogen Waterside? I want to compare their locations and ratings to ensure I'm making the best choice.
+
+System: Alright, the Ameron Hotel Abion Spreebogen Waterside is a 4-star hotel located at Alt-Moabit 99, 10559 Berlin. Comparing it to the Adina Apartment Hotel, do you have a preference based on location or any other details I've provided so far?
+
+User: Thank you. And the street address for Arcotel John F Berlin, please? I want to have all the information available before making a decision.
+
+System: Alright, the Arcotel John F Berlin is located at Werderscher Markt 11, 10117 Berlin. Now that I've provided the street addresses for all three 4-star hotels, do you have a preference or need any other details to help you decide?
+
+User: Okay, thank you for providing all the addresses. Based on the locations, the Arcotel John F Berlin seems most suitable for my needs. Before I make a reservation, can you please confirm it is indeed a non-smoking hotel? I want to be absolutely certain.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: Berlin, place_name: Arcotel John F Berlin})
+```
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+System: It seems there was a misunderstanding. The information I have indicates that smoking is allowed at Arcotel John F Berlin. Are you sure you want to proceed with this hotel, or would you prefer to consider one of the other options or perhaps a hotel where smoking is not allowed?
+
+User: Smoking is allowed? No, that won't work for me. Please search for other 4 or 5-star hotels in Berlin where smoking is not allowed. It's a critical requirement for me.
+
+System: ```system
+APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 4, smoking_allowed: False})
+```
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: Okay, I found three 4-star hotels in Berlin where smoking is not allowed: Ameron Hotel Abion Spreebogen Waterside, Holiday Inn Berlin City East-Landsberger, and Hotel Novotel Berlin Mitte. Would you like to know more about any of these hotels?
+
+User: Yes, please provide the street address for the Ameron Hotel Abion Spreebogen Waterside again, and also the address for the Hotel Novotel Berlin Mitte. I want to double-check their locations against my plans, now that smoking is not an issue.
+
+System: Okay, the Ameron Hotel Abion Spreebogen Waterside is located at Alt-Moabit 99, 10559 Berlin, and the Hotel Novotel Berlin Mitte is located at Fischerinsel 12, 10179 Berlin. With these addresses, do either of these hotels seem more suitable for your needs?
+
+User: Thank you. Given those two options, the Hotel Novotel Berlin Mitte seems like a better fit location-wise. Before I commit, could you confirm the price per night for a standard room? I need to ensure it aligns with my budget.
+
+System: Okay, the price per night for a standard room at the Hotel Novotel Berlin Mitte is $280. Does this price align with your budget, or would you like me to explore other options?
+
+User: That's acceptable. Please proceed with booking a standard room for five nights, starting on October 26th, at the Hotel Novotel Berlin Mitte.
+
+System: Alright, I can proceed with booking at the Hotel Novotel Berlin Mitte, but first, I need a couple of more details. Could you please specify how many rooms you'd like to reserve?
+
+User: Just one room, please. And to be absolutely clear, the check-in date is October 26th for five nights at the Hotel Novotel Berlin Mitte.
+
+System: Okay, just to confirm all the details before I finalize the booking: You'd like to reserve 1 room at the Hotel Novotel Berlin Mitte, with check-in on October 26th for a stay of 5 nights. Is that correct?
+
+User: Yes, that is correct. Please proceed to make the reservation.
+
+System: ```system
+APICall(method='ReserveHotel', parameters={place_name: Hotel Novotel Berlin Mitte, location: Berlin, check_in_date: 2024-10-26, stay_length: 5, number_of_rooms: 1})
+```
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179', 'check_in_date': '2024-10-26'}]
+End Search Results
+System: Excellent! Your reservation at the Hotel Novotel Berlin Mitte has been successfully confirmed.
+
+User: Could you please send me the confirmation number for my records? I like to keep everything organized.
+
+System: I am sorry, I do not have access to confirmation numbers. Is there anything else I can help you with?
+
+User: No, that's everything I need to know. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in New York, please. I want to make sure I book something reliable.
+
+System: Okay, I understand. To ensure we find a reliable hotel in New York that meets your standards, let's start with a search.
+
+APICall(method='SearchHotel', parameters={ location: New York })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: Alright, I see a few options here in New York. To ensure we find the best fit for you, let's consider a well-regarded choice.
+
+I found three hotels.
+
+1.  **11 Howard:** This hotel has 3 rooms, allows smoking, and has a 3-star rating. The price per night is $270. The phone number is +1 212-235-1111, and the address is 11 Howard Street.
+2.  **Adria Hotel & Conference Center:** This hotel has 2 rooms, allows smoking, and has a 3-star rating. The price per night is $234. The phone number is +1 718-631-5900, and the address is 221-17 Northern Boulevard, Bayside.
+3.  **Aloft Harlem:** This hotel has 3 rooms, does not allow smoking, and has a 3-star rating. The price per night is $243. The phone number is +1 212-749-4000, and the address is 2
+User: Before I decide, can we narrow down the search a bit? I'd strongly prefer a 4 or 5-star hotel to ensure a certain level of quality and service. Also, is smoking allowed at all of those? I'd prefer a non-smoking environment.
+
+System: Okay, I understand your preferences for a 4 or 5-star hotel with a non-smoking environment to ensure a high level of quality and comfort. Let's refine our search accordingly.
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: [4, 5], smoking_allowed: False })
+
+<Failed Dialog>
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

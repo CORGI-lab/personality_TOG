@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in Vancouver.
+System: Do you have any specific star rating or smoking preference for the hotel in Vancouver?
+User: No, I don't have any specific preferences for star rating or smoking. Just looking for a basic, comfortable place to stay.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few options for you in Vancouver. The Shangri-La Hotel offers a 5-star experience with rooms priced at $300 per night, and it's located at 1128 West Georgia Street. There's also the Wedgewood Hotel & Spa Vancouver, another 5-star hotel, priced at $510 per night, located at 845 Hornby Street. If you're considering a 4-star option that allows smoking, the Auberge Vancouver Hotel might suit you with rooms at $296 per night, located at 837 West Hastings Street. Would you like more information or assistance with any of these options?
+User: Can you provide more details about the Auberge Vancouver Hotel?
+System: The Auberge Vancouver Hotel is a 4-star hotel located at 837 West Hastings Street in Vancouver. It allows smoking and offers rooms at a price of $296 per night. If you need any further assistance or would like to proceed with a reservation, please let me know!
+User: Please make a reservation at the Auberge Vancouver Hotel for three nights starting from the 15th.
+System: To proceed with your reservation, could you please confirm the number of rooms you would like to book at the Auberge Vancouver Hotel for your stay?
+User: One room, please.
+System: Please confirm to book 1 room for 3 nights at the Auberge Vancouver Hotel starting from 2023-10-15 in Vancouver.
+User: Yes, that is confirmed.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Auberge Vancouver Hotel for 1 room from October 15th for 3 nights has been successfully confirmed. If you need any further assistance or have any other requests, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to search for a hotel in Washington D.C.
+System: Do you have a preferred star rating for the hotel in Washington D.C., or should I find one for you?
+User: Something simple and affordable is fine.
+System: I'll look for a hotel with a 1-star rating in Washington D.C. for you. Let me search for available options. 
+
+APICall(method='SearchHotel', parameters={ location: Washington D.C., star_rating: 1 })
+Search Results
+
+End Search Results
+System: It seems there are no available 1-star hotels in Washington D.C. at the moment. Would you like me to search for hotels with a different star rating or check if smoking is allowed to find available options?
+User: No need for smoking options. Just look for a 2-star hotel, please.
+System: APICall(method='SearchHotel', parameters={ location: Washington D.C., star_rating: 2 })
+Search Results
+[{'location': 'Washington D.C.', 'number_of_rooms': 3, 'phone_number': '+1 202-682-5300', 'place_name': 'Comfort Inn Downtown Dc/Convention Center', 'price_per_night': 174, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '1201 13th Street Northwest, Washington, District of Columbia 20005, United States'}, {'location': 'Washington D.C.', 'number_of_rooms': 3, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Washington Dc/Connecticut Avenue', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '4400 Connecticut Avenue Northwest, Washington, District of Columbia 20008, United States'}]
+End Search Results
+System: I found two 2-star hotels in Washington D.C. The first one is the Comfort Inn Downtown Dc/Convention Center, located at 1201 13th Street Northwest, with a price of $174 per night. The second option is the Days Inn By Wyndham Washington Dc/Connecticut Avenue, located at 4400 Connecticut Avenue Northwest, priced at $180 per night. Would you like more information on either of these, or should I assist you with something else?
+User: Can you tell me if the Comfort Inn Downtown has any available rooms for my preferred dates?
+System: Could you please provide your check-in date and the length of your stay, so I can check the availability for you at the Comfort Inn Downtown Dc/Convention Center?
+User: Check-in on the 15th for five days.
+System: Please confirm if you would like to book 1 room at the Comfort Inn Downtown Dc/Convention Center from the 15th for 5 days.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Washington D.C., number_of_rooms: 1, place_name: Comfort Inn Downtown Dc/Convention Center, stay_length: 5 })
+Search Results
+[{'location': 'Washington D.C.', 'number_of_rooms': 3, 'phone_number': '+1 202-682-5300', 'place_name': 'Comfort Inn Downtown Dc/Convention Center', 'price_per_night': 174, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '1201 13th Street Northwest, Washington, District of Columbia 20005, United States', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Comfort Inn Downtown Dc/Convention Center has been successfully confirmed. If you need any further assistance or additional information, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

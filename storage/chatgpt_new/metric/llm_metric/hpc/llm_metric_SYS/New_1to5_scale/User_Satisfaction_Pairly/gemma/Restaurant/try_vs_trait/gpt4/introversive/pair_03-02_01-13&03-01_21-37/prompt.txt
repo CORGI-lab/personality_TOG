@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Berkeley. Can you help me find one?
+System: Do you have a specific type of cuisine in mind, or are you open to any suggestions?
+User: I'm open to suggestions.
+System: Let's explore some options! How about trying Japanese cuisine? It's a delightful choice with a variety of flavors. Would you like to go with that, or do you have something else in mind?
+User: Japanese sounds fine.
+System: Great choice! I'll find some Japanese restaurants in Berkeley for you. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Japanese})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '510-845-8100', 'price_range': 'expensive', 'restaurant_name': 'Iyasare', 'serves_alcohol': True, 'street_address': '1830 Fourth Street'}, {'city': 'Berkeley', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '510-848-5260', 'price_range': 'moderate', 'restaurant_name': 'Joshu-ya Brasserie', 'serves_alcohol': True, 'street_address': '2441 Dwight Way'}, {'city': 'Berkeley', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '510-540-5000', 'price_range': 'moderate', 'restaurant_name': 'Kamado Sushi', 'serves_alcohol': False, 'street_address': '1400 Shattuck Avenue'}]
+End Search Results
+System: I found a few Japanese restaurants in Berkeley for you. One option is Iyasare, located at 1830 Fourth Street, and it's on the expensive side. If you're looking for something more moderate in price, you might consider Joshu-ya Brasserie at 2441 Dwight Way or Kamado Sushi at 1400 Shattuck Avenue. Both Joshu-ya Brasserie and Kamado Sushi offer a moderate price range, with Joshu-ya serving alcohol while Kamado Sushi does not. Let me know if you need more information or if you'd like to proceed with any of these options!
+User: I think I'd like to try Joshu-ya Brasserie. Could you make a reservation for me?
+System: Certainly! To make a reservation at Joshu-ya Brasserie, could you please let me know the date, time, and the number of people for the reservation?
+User: I'd like to make a reservation for two people on Friday at 7:00 PM.
+System: Thank you for providing the details. Just to confirm, you would like to reserve a table for two people at Joshu-ya Brasserie in Berkeley for this coming Friday at 7:00 PM. Is that correct?
+User: Yes, that's correct.
+System: Perfect! I'll proceed with making the reservation for you. Please give me a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Joshu-ya Brasserie', city: 'Berkeley', time: '19:00', date: '2023-10-13', party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '510-848-5260', 'price_range': 'moderate', 'restaurant_name': 'Joshu-ya Brasserie', 'serves_alcohol': True, 'street_address': '2441 Dwight Way', 'date': '2023-10-13', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Joshu-ya Brasserie for two people on Friday, October 13th at 7:00 PM has been successfully made. If you need to contact the restaurant, their phone number is 510-848-5260. Enjoy your dining experience! If you have any more questions or need further assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Berkeley.
+System: What type of cuisine are you interested in? If you don't have a preference, I can suggest a type for you.
+User: Something quiet, maybe Italian.
+System: Thank you for sharing your preference. Let me find a quiet Italian restaurant in Berkeley for you. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Berkeley that might suit your preference for a quiet place. One option is Cugini Restaurant located at 1556 Solano Avenue, and another is Donato & Co. at 2635 Ashby Avenue. Both have a moderate price range and do not have live music. If you're interested in a restaurant that serves alcohol, Filippo's Berkeley Elmwood at 2930 College Avenue is a good choice. Would you like more information on any of these options?
+User: Could you tell me more about Donato & Co.?
+System: Donato & Co. is an Italian restaurant located at 2635 Ashby Avenue in Berkeley. It offers a moderate price range and provides a quiet dining experience as it does not feature live music. Additionally, this restaurant does not serve alcohol. If you have any other questions or need further assistance, feel free to let me know.
+User: Is there any other Italian restaurant that serves alcohol?
+System: Filippo's Berkeley Elmwood is an Italian restaurant located at 2930 College Avenue in Berkeley. It offers a moderate price range and serves alcohol. The restaurant provides a quiet dining experience as it does not feature live music. Would you like more information or assistance with this option?
+User: Can you make a reservation for Filippo's Berkeley Elmwood? I'd like it for two people.
+System: For which date and time would you like the reservation at Filippo's Berkeley Elmwood?
+User: Tomorrow evening at 7:00 pm, please.
+System: To confirm, you would like to reserve a table for two at Filippo's Berkeley Elmwood in Berkeley tomorrow evening at 7:00 pm. Is that correct?
+User: Yes, that's correct.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: "Filippo's Berkeley Elmwood", city: Berkeley, time: 19:00, date: 2023-10-25, party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': '2023-10-25', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Filippo's Berkeley Elmwood has been successfully made for two people tomorrow evening at 7:00 pm. If you need any further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

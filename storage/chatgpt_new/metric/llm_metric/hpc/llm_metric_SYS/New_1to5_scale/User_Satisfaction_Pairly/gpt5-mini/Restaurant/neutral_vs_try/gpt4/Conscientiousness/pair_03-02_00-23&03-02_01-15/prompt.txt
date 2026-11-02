@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Palo Alto. Can you help me with that?
+System: Sure, I can help with that. What type of cuisine are you interested in, or are you open to any type?
+User: I'm interested in Italian cuisine. Could you find some options for me?
+System: Great! I'll look for Italian restaurants in Palo Alto for you. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: Here are some Italian restaurant options in Palo Alto: 
+
+1. Italico Restaurant, located at 341 California Avenue. 
+2. Osteria Toscana, located at 247 Hamilton Avenue. 
+3. Vina Enoteca, located at 700 Welch Road.
+
+Let me know if you would like more information about any of these restaurants!
+User: Could you provide me with more details about Italico Restaurant, such as their price range and whether they offer any special features like live music or serve alcohol?
+System: Italico Restaurant has an expensive price range. Unfortunately, they do not offer live music or serve alcohol. If you need more information or would like to explore other options, feel free to ask!
+User: Could you provide information about Osteria Toscana, specifically their price range and whether they offer live music or serve alcohol?
+System: Osteria Toscana also has an expensive price range. Like Italico Restaurant, they do not offer live music and do not serve alcohol. If there's anything else you'd like to know or if you'd like to consider other restaurant options, just let me know!
+User: Could you tell me about Vina Enoteca's price range and if they offer live music or serve alcohol?
+System: Vina Enoteca has an expensive price range. They do not offer live music, but they do serve alcohol. If you have any more questions or need further assistance, feel free to ask!
+User: I would like to make a reservation at Vina Enoteca. Can you please book a table for me? I plan to go on Friday with a party of four at 7:00 pm.
+System: To confirm your reservation at Vina Enoteca, can you please specify which Friday you are planning to visit, including the date?
+User: The Friday I am planning to visit is the 10th. Please go ahead and make the reservation for four people at 7:00 pm.
+System: Thank you for confirming the date. I'll proceed with making your reservation. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 'Vina Enoteca', city: 'Palo Alto', cuisine: 'Italian', date: '2023-11-10', time: '19:00', party_size: 4})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road', 'date': '2023-11-10', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Vina Enoteca for a party of four on November 10th at 7:00 pm has been successfully made. If you need the contact details, you can reach them at 650-646-3477, and the restaurant is located at 700 Welch Road. If you have any further questions or need more assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in San Francisco that serves Italian cuisine. Can you help with that?
+System: Certainly! I'll find some Italian restaurants in San Francisco for you. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco for you. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. It has a moderate price range and serves alcohol. Would you like more information about this restaurant or explore another option, such as A16 or Allegro Romano?
+User: Could you provide me with more details about A16, such as its address, price range, and whether it serves alcohol?
+System: A16 is located at 2355 Chestnut Street in San Francisco. It has a moderate price range and does serve alcohol. If you need any more information or have other questions, feel free to ask!
+User: Could you tell me if A16 offers live music, and do they have any availability for a reservation tomorrow evening for a party of four around 7:00 pm?
+System: Unfortunately, A16 does not offer live music. Let me check if there is availability for a reservation tomorrow evening for a party of four at 7:00 pm. Could you please confirm if this would be for the date YYYY-MM-DD?
+User: Yes, I would like to confirm a reservation for tomorrow evening for a party of four at 7:00 pm.
+System: Thank you for confirming. I'll now check the availability for your reservation at A16. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: A16, city: San Francisco, time: 19:00, date: YYYY-MM-DD, party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': 'YYYY-MM-DD', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 for tomorrow evening at 7:00 pm for a party of four has been successfully confirmed. If you have any other questions or need further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

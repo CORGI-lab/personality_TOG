@@ -1,0 +1,126 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Seattle.
+
+System: Okay, I can help you with that.
+
+Do you have any preferences for the star rating of the hotel?
+
+User: Not really, but maybe something not too fancy. Three stars, perhaps?
+
+System: Okay, searching for a 3-star hotel in Seattle.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3 })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: Okay, I found three 3-star hotels in Seattle: Best Western Plus Pioneer Square Hotel Downtown, Courtyard By Marriott Seattle Downtown/Lake Union, and Embassy Suites By Hilton Seattle Downtown Pioneer Square. Would you like to know more about any of these?
+
+User: Maybe the Best Western Plus Pioneer Square Hotel Downtown. What's the price per night?
+
+System: The price per night at the Best Western Plus Pioneer Square Hotel Downtown is $63. Would you like to know anything else about this hotel?
+
+User: Is smoking allowed?
+
+System: Smoking is not allowed at the Best Western Plus Pioneer Square Hotel Downtown. Would you like to know anything else?
+
+User: No, that's fine. Can you book it for me? I'll be arriving on the 10th and staying for 4 nights.
+
+System: How many rooms will you need?
+
+User: Just one room, please.
+
+System: Okay, to confirm, you would like me to book one room at the Best Western Plus Pioneer Square Hotel Downtown in Seattle, arriving on the 10th for a 4-night stay?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-10, location: Seattle, number_of_rooms: 1, place_name: Best Western Plus Pioneer Square Hotel Downtown, stay_length: 4 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2024-07-10'}]
+End Search Results
+System: Okay, I have booked one room at the Best Western Plus Pioneer Square Hotel Downtown in Seattle for you. Your check-in date is July 10th, and you will be staying for 4 nights. Can I help you with anything else?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for the hotel's star rating?
+
+User: Not really. Maybe something quiet.
+
+System: Okay. I will look for something in Vancouver.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 5})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel, Vancouver', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: I found two 5-star hotels in Vancouver: Shangri-La Hotel and Wedgewood Hotel & Spa. Would you prefer to know more about either of these?
+
+User: Shangri-La Hotel sounds...okay.
+
+System: The Shangri-La Hotel has 2 rooms available, does not allow smoking, and the price is $300 per night. Would you like the street address or phone number?
+
+User: Just the price is fine.
+
+System: Okay. Is there anything else I can help you with regarding the Shangri-La Hotel, or are you ready to consider other options?
+
+User: Are there any hotels with fewer stars?
+
+System: APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 3})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: Okay, I found three 3-star hotels in Vancouver: Atrium Inn Vancouver, Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., and Best Western Plus Sands. Would you like me to provide more details on any of these options?
+
+User: Perhaps tell me about Atrium Inn Vancouver.
+
+System: Atrium Inn Vancouver has 2 rooms available, does not allow smoking, and the price is $228 per night. Would you like to know the street address or phone number?
+
+User: No, that should be enough. Can you book it for me?
+
+System: Okay. To book the Atrium Inn Vancouver, I will need the check-in date and the length of your stay. Could you please provide those?
+
+User: I'd like to book it for five nights, starting tomorrow.
+
+System: Okay. And what is today's date? I need the full date to book your room correctly.
+
+User: Today is October 28, 2024.
+
+System: Okay, so you want to book 2 rooms at the Atrium Inn Vancouver, starting tomorrow, October 29, 2024, for five nights. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Atrium Inn Vancouver, location: Vancouver, check_in_date: 2024-10-29, stay_length: 5, number_of_rooms: 2})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street', 'check_in_date': '2024-10-29'}]
+End Search Results
+System: Okay, I have confirmed your request. I have booked two rooms at the Atrium Inn Vancouver, starting tomorrow, October 29, 2024, for five nights. The phone number for the hotel is +1 604-254-1000 and the street address is 2889 East Hastings Street. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

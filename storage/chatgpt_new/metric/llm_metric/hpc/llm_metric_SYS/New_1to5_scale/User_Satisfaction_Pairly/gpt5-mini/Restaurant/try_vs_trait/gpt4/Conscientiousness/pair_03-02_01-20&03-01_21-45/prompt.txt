@@ -1,0 +1,86 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in San Francisco that serves Italian cuisine. Could you help me with that?
+System: Sure, I can help with that. Let me find some Italian restaurants in San Francisco for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that you might like. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. It has a moderate price range and serves alcohol. Would you like more information about this restaurant or any of the others?
+User: Could you provide details about another Italian restaurant option in San Francisco? I'd like to compare a few before making a decision.
+System: Certainly! Another option is A16, located at 2355 Chestnut Street. It also offers a moderate price range and serves alcohol. Would you like more information about A16 or any other restaurants?
+User: Could you tell me if A16 offers live music? Also, are there any other Italian restaurants with a similar price range that have live music?
+System: A16 does not offer live music. Unfortunately, none of the Italian restaurants in San Francisco from our search results offer live music. Would you like to explore other features or options for these restaurants?
+User: Could you provide information about their availability for a reservation? I would like to plan ahead and make sure we can secure a table.
+System: To check the availability for a reservation at A16 or any other Italian restaurant, I will need to know your preferred date, time, and the size of your party. Could you please provide these details so I can assist you further?
+User: I would like to make a reservation for four people at A16 on Friday, October 20th, at 7:00 PM. Could you check if they have availability for that time and date?
+System: Thank you for providing the details. I'll check the reservation availability for A16 for four people on Friday, October 20th, at 7:00 PM. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, restaurant_name: A16, date: 2023-10-20, time: 19:00, party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-20', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Great news! Your reservation for four people at A16 on Friday, October 20th, at 7:00 PM has been successfully made. If you need any further information, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find and reserve a restaurant in San Francisco. Could you assist me with that, please?
+System: Certainly! To assist you with the reservation, could you please let me know what type of cuisine you are interested in? If you're open to any cuisine, I can suggest one for you.
+User: I am interested in Italian cuisine. Could you help me find a suitable restaurant in San Francisco?
+System: Thank you for providing that information. Before proceeding to make a reservation, could you please let me know the date, time, and the number of people for your reservation?
+User: I would like to make a reservation for 4 people on the 15th of this month at 7:00 pm.
+System: Thank you for providing the details. I will now search for an Italian restaurant in San Francisco that can accommodate your reservation for 4 people on the 15th of this month at 7:00 pm. Please hold on for a moment while I find the best option for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that match your preferences. One option is "54 Mint Ristorante Italiano," located at 16 Mint Plaza, which offers a moderate price range and serves alcohol. Would you like to proceed with a reservation at this restaurant, or would you prefer to hear about another option?
+User: Could you please tell me if 54 Mint Ristorante Italiano features live music? I'd like to consider that before making a decision.
+System: 54 Mint Ristorante Italiano does not feature live music. Would you still like to proceed with a reservation at this restaurant, or would you prefer to hear about another option?
+User: Could you suggest another Italian restaurant in San Francisco that features live music? I'd like to explore more options before making a decision.
+System: I couldn't find any Italian restaurants in San Francisco with live music from the initial search results. Would you like me to explore other nearby options, or possibly consider another cuisine that might offer live music?
+User: Let's explore other nearby Italian restaurants in San Francisco, even if they don't feature live music. Could you provide me with more options?
+System: Certainly! Here are a couple of other Italian restaurants in San Francisco from the initial search results. "A16," located at 2355 Chestnut Street, offers a moderate price range and serves alcohol. Another option is "Allegro Romano," situated at 1701 Jones Street, which also has a moderate price range but does not serve alcohol. Would you like more details about either of these restaurants, or would you like to proceed with a reservation at one of them?
+User: Could you please provide more details about A16, like whether they accept reservations and if they have any unique features?
+System: Based on the information I have, A16 does not feature live music, but it does serve alcohol and is situated in a moderate price range. Unfortunately, I don't have specific details about their reservation policy or any unique features they might offer. Would you like to proceed with a reservation at A16, or would you prefer to consider another option?
+User: Could you check if A16 accepts reservations and confirm their reservation policy? I'd like to ensure everything is in order before proceeding.
+System: I'll verify if A16 accepts reservations and confirm their reservation policy for you. Please hold on for a moment while I gather this information.
+User: Thank you, I'll wait for your confirmation on A16's reservation policy.
+System: I apologize for the inconvenience, but I don't have access to specific reservation policies for individual restaurants. However, I recommend contacting A16 directly at 415-771-2216 to confirm their reservation policy. Once you have this information, please let me know if you'd like to proceed with a reservation, and I'll assist with the other details.
+User: I'll contact A16 directly to confirm their reservation policy. Once I have the information, I'll decide on the reservation. Thank you for your assistance so far.
+System: You're welcome! Once you've confirmed A16's reservation policy, feel free to share the details with me, and I'll be here to assist you with finalizing the reservation. If you have any other questions or need further assistance, just let me know.
+User: Thank you! I will get back to you once I have confirmed their reservation policy. Have a great day!
+System: You're welcome! I'll be here whenever you're ready to proceed with the reservation or if you have any other questions. Have a wonderful day!
+User: Hello again! I've confirmed that A16 does accept reservations. Could you please proceed with booking a table for 4 people on the 15th of this month at 7:00 pm?
+System: Great to hear back from you! I'll proceed with booking a table for 4 people at A16 on the 15th of this month at 7:00 pm. Please hold on for a moment while I finalize the reservation details for you. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: A16, city: San Francisco, date: 2023-10-15, time: 19:00, party_size: 4, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-15', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 has been successfully made for 4 people on the 15th of this month at 7:00 pm. The restaurant is located at 2355 Chestnut Street, San Francisco, and you can contact them at 415-771-2216 if you need any further assistance. If there's anything else you need help with, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

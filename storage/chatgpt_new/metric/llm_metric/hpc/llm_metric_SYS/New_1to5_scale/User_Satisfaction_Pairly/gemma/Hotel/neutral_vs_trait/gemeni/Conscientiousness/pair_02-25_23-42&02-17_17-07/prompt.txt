@@ -1,0 +1,115 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel in London, can you help me with that?
+
+System: Okay, I can help you with that. How many rooms do you need?
+
+User: I will need one room, please. And I'd like to ensure it's a reputable establishment – preferably a four or five-star hotel.
+
+System: Okay, I will search for a 4 or 5 star hotel in London.
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 4 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 800 330 8523', 'place_name': 'Amba Hotel Marble Arch', 'price_per_night': 444, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Bryanston Street'}]
+End Search Results
+System: I found three 4-star hotels in London: Ace Hotel London, Amba Hotel Charing Cross, and Amba Hotel Marble Arch. Would you like to know more about any of them?
+
+User: Yes, please. Could you provide more details, starting with the Ace Hotel London? I'd like to know the price per night and whether smoking is allowed. Also, what is the street address?
+
+System: The Ace Hotel London costs $176 per night, smoking is not allowed, and the street address is 100 Shoreditch High Street.
+
+User: Okay, that sounds promising. Before I commit, could you also tell me the star rating and street address for the Amba Hotel Charing Cross and the Amba Hotel Marble Arch, as well as their price per night and smoking policy? I want to make a well-informed decision.
+
+System: Okay, let me get that information for you.
+
+For Amba Hotel Charing Cross: The star rating is 4, the price per night is $312, smoking is not allowed, and the street address is Strand.
+
+For Amba Hotel Marble Arch: The star rating is 4, the price per night is $444, smoking is not allowed, and the street address is Bryanston Street.
+
+User: Thank you. Considering the price and the initial information, I think the Ace Hotel London seems like the best option for my budget. Could you please check the availability for a stay of 7 nights, starting on October 27th?
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={'location': 'London', 'place_name': 'Ace Hotel London', 'check_in_date': '2023-10-27', 'stay_length': 7, 'number_of_rooms': 1})
+```
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street', 'check_in_date': '2023-10-27'}]
+End Search Results
+System: Great, I have checked the availability for Ace Hotel London. I can book 1 room for 7 nights, starting on October 27th. Do you want to proceed with the booking?
+
+User: Yes, please proceed with the booking. Before finalizing, can you please confirm the total estimated cost, including any taxes or additional fees? I want to be absolutely sure about the expenses.
+
+System: Okay, I have confirmed the booking details with the Ace Hotel London for 1 room, starting on October 27th for 7 nights. The price per night is $176. I don't have the information on taxes or additional fees, so the total estimated cost will be $1232. Would you like me to proceed with the booking?
+
+User: Yes, please proceed with the booking. Since the total cost is an estimate, could you also provide me with the hotel's direct phone number? I'd like to confirm the final price, including all taxes and fees, before my stay to avoid any unexpected charges.
+
+System: Okay, I will proceed with the booking. Here is the phone number for the Ace Hotel London: +44 20 7613 9800.
+```tool_code
+APICall(method='ReserveHotel', parameters={'location': 'London', 'place_name': 'Ace Hotel London', 'check_in_date': '2023-10-27', 'stay_length': 7, 'number_of_rooms': 1})
+```
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street', 'check_in_date': '2023-10-27'}]
+End Search Results
+System: Okay, your booking at Ace Hotel London has been confirmed for 1 room from October 27th for 7 nights. The phone number is +44 20 7613 9800. Is there anything else I can assist you with today?
+
+User: No, that will be all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to book a hotel in San Francisco. I want to make sure it's a good choice, so I'll need some details.
+
+System: Okay, I understand. To ensure I find the best hotel for you in San Francisco, could you please specify your desired check-in date and the length of your stay? Also, how many rooms will you need?
+
+User: Okay, I will be checking in on October 26th, 2024, and will need the room for 3 nights. Just one room, please.
+
+System: Okay, I've noted the check-in date as October 26th, 2024, for a 3-night stay, and you'll require one room. To proceed with the search, may I know the name of the hotel you're interested in?
+
+User: I don't have a specific hotel in mind. Could you please find me a hotel in San Francisco with a high star rating? I prefer a 4 or 5-star hotel, as I want to ensure a comfortable and reliable stay.
+
+System: Okay, I understand. I will search for 4 or 5-star hotels in San Francisco for you.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 4})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street'}]
+End Search Results
+System: I found three 4-star hotels in San Francisco: Argonaut Hotel, Hotel Spero, and Hotel Via. Argonaut Hotel is located at 495 Jefferson Street, Hotel Spero is at 405 Taylor Street, and Hotel Via is at 138 King Street. Would you like to know the price per night for each hotel to help you decide?
+
+User: Yes, please provide the price per night for each hotel, and also confirm if smoking is allowed in any of them. I need to be absolutely certain before making a decision.
+
+System: Certainly. The prices per night are as follows: Argonaut Hotel is $408, Hotel Spero is $80, and Hotel Via is $208. Smoking is allowed at Hotel Via. Does this information help you narrow down your options?
+
+User: Thank you. Considering the price and the ability to smoke, I want to be thorough. Can you confirm again that smoking is *definitely* allowed at Hotel Via? And can you also tell me the star rating for each of the three hotels, just so I'm completely clear?
+
+System: Yes, I can confirm that smoking is allowed at Hotel Via, which has a 4-star rating. To reiterate, all three hotels have a 4-star rating: Argonaut Hotel, Hotel Spero, and Hotel Via. I want to ensure you have all the necessary information to make the best choice for your stay.
+
+User: Okay, thanks for confirming. Given the options and the need for careful consideration, I think Hotel Via seems like the best fit. Please proceed to reserve one room for me at Hotel Via, checking in on October 26th, 2024, for 3 nights. I want to ensure all the details are accurate before finalizing the reservation.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-10-26, location: San Francisco, number_of_rooms: 1, place_name: Hotel Via, stay_length: 3})
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': '1', 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel Via', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': '4', 'street_address': '386 Geary Street', 'check_in_date': '2024-10-26', 'stay_length': '3'}]
+End Search Results
+System: Excellent. I have successfully made the reservation for you at Hotel Via. The details are as follows: one room, check-in on October 26th, 2024, for a 3-night stay. The price per night is $312. Please note the address is 386 Geary Street and phone number is +1 877-828-4478 You can smoke at this hotel. Is there anything else I can assist you with to ensure your stay is perfectly arranged?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

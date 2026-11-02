@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Seattle. Can you help me find one?
+System: Sure! Do you have any specific preferences regarding the star rating, smoking allowance, or number of rooms? Let me know so I can find the best options for you.
+User: I prefer a quiet place, maybe with a 4-star rating. I don't need smoking allowed. Just one room is fine.
+System: Great! Let me look for a 4-star hotel in Seattle that matches your preferences. Please hold on for a moment while I search for the best options. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-448-8600', 'place_name': 'Hotel Andra', 'price_per_night': 372, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2000 4th Avenue'}]
+End Search Results
+System: I found a 4-star hotel in Seattle that matches your preferences: Crowne Plaza Seattle Downtown. It offers a quiet atmosphere with a non-smoking policy, and the price is $120 per night. Would you like more details about this hotel or need information on any other options?
+User: I think that sounds suitable. Can you tell me the address and how long it takes to walk to the nearest coffee shop?
+System: The address of the Crowne Plaza Seattle Downtown is 1113 6th Avenue. Unfortunately, I don't have information on how long it takes to walk to the nearest coffee shop. Would you like me to assist you with anything else, or are you ready to proceed with a reservation?
+User: I'm ready to proceed with a reservation. Please book one room for me at the Crowne Plaza Seattle Downtown. I plan to check in on the 15th and stay for four nights.
+System: Please confirm to book 1 room for 4 nights at the Crowne Plaza Seattle Downtown starting from 2023-11-15 in Seattle.
+User: Yes, that is confirmed.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Seattle, number_of_rooms: 1, place_name: Crowne Plaza Seattle Downtown, stay_length: 4})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Crowne Plaza Seattle Downtown has been successfully confirmed. Is there anything else you would like to know or need assistance with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Seattle. Can you help me with that?
+System: Do you have any specific star rating or preferences regarding smoking allowance for the hotel in Seattle?
+User: I prefer a hotel that doesn't allow smoking. A three-star hotel would be fine.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-596-2302', 'place_name': 'Even Hotel Seattle Downtown - Lake Union', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '527 Fairview Avenue North'}]
+End Search Results
+System: I found a few options for three-star hotels in Seattle that do not allow smoking. The first option is Best Western Plus Pioneer Square Hotel Downtown, located at 77 Yesler Way, with a price of $63 per night. Would you like more information on this hotel or hear about another option?
+User: Can you tell me if there are any other options available?
+System: The second option is Courtyard By Marriott Seattle Downtown/Lake Union, located at 925 Westlake Avenue North, with a price of $168 per night. Would you like more information about this hotel, or would you like to hear about the next option?
+User: Can you tell me about any more options?
+System: The third option is Even Hotel Seattle Downtown - Lake Union, located at 527 Fairview Avenue North, with a price of $216 per night. Would you like more information about this hotel, or do you need assistance with anything else?
+User: Is there anything else available?
+System: I'm sorry, but those are all the available options for three-star hotels in Seattle that do not allow smoking. If you would like, I can search for hotels with a different star rating or with a different smoking allowance.
+User: No, that's okay. Can you reserve a room at Best Western Plus Pioneer Square Hotel Downtown for me?
+System: How many rooms would you like to reserve at Best Western Plus Pioneer Square Hotel Downtown, and what would be the check-in date and length of your stay?
+User: One room, please. I’ll be checking in on the 10th and staying for five days.
+System: Please confirm that you want to book 1 room at Best Western Plus Pioneer Square Hotel Downtown in Seattle, checking in on the 10th for a stay of 5 days.
+User: Yes, that's correct.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: Best Western Plus Pioneer Square Hotel Downtown, stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at Best Western Plus Pioneer Square Hotel Downtown in Seattle has been successfully confirmed for one room, checking in on November 10th for a 5-day stay. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

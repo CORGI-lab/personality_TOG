@@ -1,0 +1,144 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel. Somewhere quiet, if possible. Maybe in San Francisco.
+
+System: Okay, I can help with that. To find a suitable hotel in San Francisco, do you have any preferences for the star rating?
+
+User: Not really. Just... nothing too loud or crowded.
+
+System: Okay, I understand. I will look for a hotel in San Francisco. Since you don't have a preference for the star rating, I will start with a 5-star hotel and see what's available.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 5})
+
+Search Results
+
+End Search Results
+System: Okay, I've searched for 5-star hotels in San Francisco.
+
+```tool_code
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 5})
+```
+Search Results
+
+End Search Results
+System: Okay, I've searched for 5-star hotels in San Francisco, but I'm not seeing any matches right now. Would you be open to considering a 3-star hotel?
+
+User: Perhaps. What are the options?
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 3})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: Okay, I found a few 3-star hotels in San Francisco. One is Bei Hotel San Francisco, another is Beresford Arms Hotel, and the last one is Chancellor Hotel On Union Square. Would you like to know more about any of them?
+
+User: Tell me about Bei Hotel.
+
+System: Okay. Bei Hotel San Francisco has 3 rooms available, and the price per night is $351. They do allow smoking. The phone number is +1 415-626-6103, and the address is 50 8th Street. Would you like to know about the other hotels as well?
+
+User: No, that's enough. Can you book me a room there?
+
+System: Okay. To book a room at Bei Hotel San Francisco, I'll need a bit more information. What date would you like to check in, and how many nights will you be staying? Also, how many rooms will you need?
+
+User: Just one room. Check-in on the 24th, and I'll stay for two nights.
+
+System: Okay, I understand. So, one room at Bei Hotel San Francisco, checking in on the 24th for two nights. Could you please specify the year for the check-in date?
+
+User: This year, please.
+
+System: Okay, so check-in date is 2024-07-24. Just to confirm, you would like to book 1 room at Bei Hotel San Francisco for 2 nights, starting on July 24, 2024. Is that correct?
+
+User: Yes, that is correct.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={'place_name': 'Bei Hotel San Francisco', 'check_in_date': '2024-07-24', 'stay_length': 2, 'location': 'San Francisco', 'number_of_rooms': 1})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street', 'check_in_date': '2024-07-24'}]
+End Search Results
+System: Okay, I have reserved 1 room at Bei Hotel San Francisco for you. The check-in date is July 24, 2024, and the stay length is 2 nights. The hotel's address is 50 8th Street, and their phone number is +1 415-626-6103. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really. Just something quiet.
+
+System: Okay, I will search for a hotel in Vancouver.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: dontcare })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found three hotels in Vancouver. The Shangri-La Hotel and Wedgewood Hotel & Spa Vancouver are both 5-star hotels, and Auberge Vancouver Hotel is a 4-star hotel. Would you like to know more about any of these?
+
+User: Just the 4-star one, please.
+
+System: Okay, the 4-star hotel is Auberge Vancouver Hotel. It has 2 rooms, the phone number is +1 604-678-8899, the price per night is $296, smoking is allowed, and the address is 837 West Hastings Street. Does that sound good?
+
+User: Is it away from the busy street?
+
+System: I do not have the information to confirm if it is away from a busy street. However, the address is 837 West Hastings Street. Would you like to proceed with booking this hotel or explore other options?
+
+User: Let's explore other options.
+
+System: Would you like to consider only non-smoking hotels?
+
+User: Yes, please.
+
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}]
+End Search Results
+System: Okay, I found three non-smoking hotels in Vancouver. The Shangri-La Hotel and Wedgewood Hotel & Spa Vancouver are both 5-star hotels, and Coast Coal Harbour Vancouver Hotel By Apa is a 4-star hotel. Would you like to know more about any of these?
+
+User: Tell me about the 4-star one.
+
+System: Okay, the 4-star hotel is Coast Coal Harbour Vancouver Hotel By Apa. It has 1 room, the phone number is +1 604-697-0202, the price per night is $108, smoking is not allowed, and the address is 1180 West Hastings Street. Does that sound good?
+
+User: Okay, that sounds… acceptable. Can you book it for me?
+
+System: Sure, I can help with that. What date would you like to check in, and how many nights will you be staying?
+
+User: I'd like to check in on the 20th, for two nights.
+
+System: Okay, let me confirm. You'd like to book 1 room at Coast Coal Harbour Vancouver Hotel By Apa in Vancouver, checking in on the 20th for two nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-20, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 2 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2024-07-20'}]
+End Search Results
+System: Okay, your booking is confirmed at Coast Coal Harbour Vancouver Hotel By Apa for 1 room, checking in on 2024-07-20 for 2 nights. The phone number is +1 604-697-0202, and the address is 1180 West Hastings Street. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

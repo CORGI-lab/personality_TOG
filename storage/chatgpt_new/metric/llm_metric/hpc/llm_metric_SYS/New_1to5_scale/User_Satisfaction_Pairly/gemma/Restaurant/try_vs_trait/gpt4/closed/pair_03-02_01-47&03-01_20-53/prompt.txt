@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Fremont.
+System: Do you have a particular type of cuisine in mind, or are you open to suggestions?
+User: American cuisine would be fine.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: Unfortunately, it seems there are no available results for American cuisine in Fremont. Would you like me to search for a different cuisine or perhaps try a nearby city?
+User: Let's try a nearby city. How about Newark?
+System: Sure, let me check for American cuisine options in Newark for you. Please give me a moment. APICall (method='FindRestaurants', parameters={city: Newark, cuisine: American})
+Search Results
+[{'city': 'Newark', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-445-0660', 'price_range': 'moderate', 'restaurant_name': "Chuck E. Cheese's", 'serves_alcohol': True, 'street_address': '39839 Mowry School Road', 'date': '2019-03-07', 'party_size': 2, 'time': '17:30'}]
+End Search Results
+System: I found a restaurant called "Chuck E. Cheese's" in Newark. It offers American cuisine and is located at 39839 Mowry School Road. The restaurant has a moderate price range and serves alcohol, but they do not have live music. Would you like more information or assistance with anything else?
+User: Is there another American restaurant in Newark?
+System: Currently, "Chuck E. Cheese's" is the only American restaurant available in Newark according to the search results. Would you like me to look for a different cuisine or perhaps expand the search to another nearby city?
+User: No, that's alright. Can you make a reservation at Chuck E. Cheese's for tomorrow at 6:00 pm for 2 people?
+System: Sure, let me confirm the details for your reservation. You'd like to reserve a table for 2 people at "Chuck E. Cheese's" in Newark, for tomorrow at 6:00 pm. Is that correct?
+User: Yes, that is correct. Please proceed with the reservation.
+System: Great! I'll make the reservation for you. Please give me a moment. APICall (method='ReserveRestaurant', parameters={restaurant_name: "Chuck E. Cheese's", city: Newark, date: 2019-03-02, time: 18:00, party_size: 2})
+Search Results
+[{'city': 'Newark', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-445-0660', 'price_range': 'moderate', 'restaurant_name': "Chuck E. Cheese's", 'serves_alcohol': True, 'street_address': '39839 Mowry School Road', 'date': '2019-03-02', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Your reservation at "Chuck E. Cheese's" in Newark for tomorrow at 6:00 pm for 2 people has been successfully made. If you need to contact them, their phone number is 510-445-0660. Is there anything else I can assist you with today?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Walnut Creek. Can you help me find one?
+System: Do you have a specific type of cuisine in mind, or would you prefer a suggestion? Keep in mind, I can help find a place that suits your preferences.
+User: I'd prefer something simple, maybe American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Walnut Creek, cuisine: American})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-927-1149', 'price_range': 'moderate', 'restaurant_name': "A'trio", 'serves_alcohol': False, 'street_address': '2355 North Main Street'}, {'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-932-2828', 'price_range': 'moderate', 'restaurant_name': 'Benvenuti Ristorante', 'serves_alcohol': True, 'street_address': '1627 North Broadway'}, {'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-945-6960', 'price_range': 'moderate', 'restaurant_name': 'Broderick Roadhouse', 'serves_alcohol': False, 'street_address': '1548 Bonanza Street'}]
+End Search Results
+System: I found a few American restaurants in Walnut Creek. One option is A'trio, located at 2355 North Main Street. They do not serve alcohol and have a moderate price range. Would you like more details about this or any other restaurant?
+User: No, that's okay. Can you make a reservation for me at A'trio?
+System: What time would you like the reservation to be, and for how many people?
+User: I'd like to make a reservation for 2 people at 6:00 pm.
+System: To confirm, you would like to reserve a table for 2 people at A'trio in Walnut Creek at 6:00 pm today. Let me proceed with the reservation. APICall (method='ReserveRestaurant', parameters={restaurant_name: "A'trio", city: Walnut Creek, time: 18:00, party_size: 2})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-927-1149', 'price_range': 'moderate', 'restaurant_name': "A'trio", 'serves_alcohol': False, 'street_address': '2355 North Main Street', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Your reservation at A'trio in Walnut Creek for 2 people at 6:00 pm has been successfully made. If you need the address again, it's located at 2355 North Main Street. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,90 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in New York. Make it quick and don't waste my time.
+System: Do you have a preferred star rating for the hotel in New York, or should I find options across various ratings?
+User: I want only 5-star hotels. Don't bother me with anything less.
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I found several 5-star hotels in New York. Here are a couple of options:
+
+1. **1 Hotel Central Park**: Located at 1414 6th Avenue, with a price of $330 per night. Smoking is allowed.
+
+2. **Baccarat Hotel**: Located at 28 West 53rd Street, with a price of $525 per night. Smoking is allowed.
+
+Would you like more details on any of these, or is there a specific one you are interested in?
+User: Why is the Baccarat so expensive? I'm not here to waste money. Tell me what makes it worth that price, if anything.
+System: The Baccarat Hotel is known for its luxurious offerings, which include high-end amenities, exceptional service, and a prime location in New York. However, specific details about what exactly makes it more expensive than other options aren't available in the search results. If you're looking for a more budget-friendly 5-star option, the **1 Hotel Central Park** is available at a lower price of $330 per night. Would you like to proceed with more details or a reservation for any of the hotels?
+User: I don't care about their so-called luxury unless it benefits me directly. Just book the 1 Hotel Central Park. I'm not interested in wasting money on unnecessary frills. Make it two rooms starting from the 10th for five nights.
+System: Please confirm the booking for 2 rooms at 1 Hotel Central Park in New York from 2023-11-10 for 5 nights.
+User: Yes, that's correct. Confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: New York, number_of_rooms: 2, place_name: 1 Hotel Central Park, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking for 2 rooms at 1 Hotel Central Park in New York from November 10, 2023, for 5 nights has been successfully confirmed. If you need any more assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Let's see if you can find me something in Las Vegas. I don't want to waste time on anything less than 4 stars.
+System: Could you please confirm if you have any preferences regarding smoking allowance or the number of rooms you need? This will help me narrow down the options for your search.
+User: I don't care about smoking policies, but I need at least 2 rooms. Make sure they're reasonably priced too.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4, number_of_rooms: 2 })
+Search Results
+
+End Search Results
+System: It seems there are no available hotels in Las Vegas that match your criteria of 4 stars with at least 2 rooms. Would you like to consider a different star rating or adjust any of your preferences to explore other options?
+User: That's ridiculous. How can there be nothing available in Las Vegas? Try again, and find me something with at least 3 stars. Don't mess it up this time.
+System: I'll search again for hotels in Las Vegas with at least 3 stars and a minimum of 2 rooms. Please hold on for a moment. APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3, number_of_rooms: 2 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: I found a 3-star hotel in Las Vegas that meets your requirements. The Hampton Inn Las Vegas/Summerlin offers at least 2 rooms, allows smoking, and is priced at $279 per night. Would you like more information about this hotel, or would you like to explore other options?
+User: That price is absurd for just 3 stars. Tell me what else is available. I want something better and cheaper, if that's even possible in this overpriced city.
+System: Another option is the Best Western Plus Las Vegas West, which is also a 3-star hotel. It offers one room at a rate of $117 per night and does not allow smoking. Would you like to consider this option, or should I look for something else?
+User: One room isn't going to cut it. Keep looking. I need at least 2 rooms, and make sure the price is reasonable. Don't make me regret asking you for help.
+System: I understand your requirements, and I will continue searching for options that provide at least 2 rooms at a reasonable price. Let's see if there are hotels with 3 stars or a different star rating that fit your criteria. Please hold on. APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 2, number_of_rooms: 2 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-489-7500', 'place_name': 'Thunderbird Boutique Hotel', 'price_per_night': 56, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '1215 South Las Vegas Boulevard'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-553-2553', 'place_name': 'The Downtowner', 'price_per_night': 100, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '129 North 8th Street'}]
+End Search Results
+System: I found a 2-star hotel called The Downtowner, located in Las Vegas, which offers 2 rooms at a rate of $100 per night and allows smoking. Would you like more information about this hotel, or should I continue looking for other options?
+User: That's still not good enough. I specifically asked for at least 3 stars. Keep searching. There has to be something better than this.
+System: I'll continue searching for hotels in Las Vegas with at least 3 stars and a minimum of 2 rooms. Let's see if we can find something that meets your expectations. Please hold on. APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3, number_of_rooms: 2 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: Unfortunately, it seems the options with at least 3 stars and a minimum of 2 rooms are still limited. The Hampton Inn Las Vegas/Summerlin remains the best option with 3 rooms at $279 per night. If you’re open to reconsidering your criteria or exploring other nearby locations, I’d be glad to assist further. Let me know how you’d like to proceed.
+User: Fine, I'll settle for the Hampton Inn Las Vegas/Summerlin, but this better be worth it. Go ahead and make the reservation for two rooms. I'll deal with the overpriced nonsense later.
+System: Please let me know the check-in date and the duration of your stay so I can proceed with making the reservation for two rooms at the Hampton Inn Las Vegas/Summerlin.
+User: Check me in from the 15th of next month for a week. Don't mess this up.
+System: To confirm, you would like to reserve two rooms at the Hampton Inn Las Vegas/Summerlin, checking in on the 15th of next month for a stay of one week. Is that correct? Once confirmed, I'll proceed with the reservation.
+User: Yes, that's correct. Just get it done.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Las Vegas, number_of_rooms: 2, place_name: 'Hampton Inn Las Vegas/Summerlin', stay_length: 7 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation for two rooms at the Hampton Inn Las Vegas/Summerlin has been successfully made. The check-in date is set for the 15th of next month, and your stay will last for one week. If there's anything else you need, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,110 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in New York. Can you help me find one, please?
+System: Certainly! Do you have any specific preferences for the star rating of the hotel, or are you open to any options available?
+User: I'm really anxious about getting the right place, so I would prefer a hotel with at least a four-star rating. Also, I need to know if smoking is allowed, and I'm hoping for something not too expensive. Can you find something like that?
+System: Sure, I understand your concerns. Let me find some options for you. I'll search for hotels in New York with at least a four-star rating and check their smoking policy. Please give me a moment.
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4, smoking_allowed: dontcare })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}]
+End Search Results
+System: I found a few options for you in New York. The first one is the 1 Hotel Brooklyn Bridge, a 4-star hotel that allows smoking and costs $216 per night. Its address is 60 Furman Street, Brooklyn. Would you like more details about this hotel, or should I provide information on another option?
+User: I don't know... I'm worried $216 might be too much, but I'm also stressed about not finding a good place. Can you show me another option just in case?
+System: Certainly. Another option is the Ac Hotel New York Times Square, which is also a 4-star hotel. It does not allow smoking and costs $176 per night. The address is 260 West 40th Street. Let me know if you would like more information or if you would like to consider this option further.
+User: I'm feeling really unsure if I can handle a nonsmoking place. What if I regret not having that option? But the price is a bit better... Is there anything else, maybe with smoking allowed and still a decent price?
+System: I understand your concerns. Let's take a look at another option. The 6 Columbus Hotel is a 4-star hotel that allows smoking, with a price of $396 per night. It is located at 308 West 58th Street. Though it is a bit higher in price, it does meet your smoking preference. Would this option work for you, or would you like to revisit one of the previous choices?
+User: Oh, $396 per night is really stressing me out. It's so expensive, and I'm really worried about spending that much. I don't know what to do. Can you please check if there's anything else with smoking allowed but at a more reasonable price?
+System: I understand the stress this decision might be causing. Let's see if there's something else that fits your needs. I will search again to see if there are any other 4-star hotels in New York that allow smoking with a more reasonable price range. Please give me a moment.
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4, smoking_allowed: True })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street'}]
+End Search Results
+System: I found another option for you. The Aka Wall Street is a 4-star hotel that allows smoking and is priced at $200 per night. It is located at 84 William Street. This option seems to fit your preference for smoking allowance and is more reasonably priced than the 6 Columbus Hotel. Would you like to consider this option, or should we explore something else?
+User: I'm feeling really anxious about making the wrong choice, but $200 per night seems a bit more manageable. Could you tell me more about this Aka Wall Street hotel? Like, is it in a safe area? And are there any hidden fees I should be worried about?
+System: I understand your concerns and the anxiety about making the right choice. The Aka Wall Street is located at 84 William Street in New York, which is generally considered a safe area. However, I don't have information on hidden fees or specific neighborhood safety details, as they aren't included in the hotel's information. Would you like me to help you with anything else regarding this hotel, or are you considering making a reservation?
+User: I can't shake off the feeling that something might go wrong, but I think I'll go with the Aka Wall Street. Can you please make a reservation for me? I plan to check in on the 10th, and I'll be staying for five nights. Please confirm the booking for me, and let me know if everything is set.
+System: To confirm, you would like to reserve a room at the Aka Wall Street in New York, checking in on the 10th for a stay of five nights. May I know how many rooms you would like to book?
+User: I'll need just one room, please. I really hope nothing goes wrong with this booking. Let me know as soon as everything is confirmed.
+System: Thank you for confirming. I'll proceed with the reservation for one room at the Aka Wall Street in New York, with check-in on the 10th for a stay of five nights. Please hold on for a moment while I complete the booking.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: New York, number_of_rooms: 1, place_name: Aka Wall Street, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Aka Wall Street in New York has been successfully confirmed. You have booked one room, checking in on November 10th for a stay of five nights. If there's anything else you need or if you have any further questions, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Berlin. Can you help me find one? I just hope it's not too expensive or too crowded.
+System: Could you please let me know your preferred star rating for the hotel in Berlin? Additionally, do you have any specific preferences regarding smoking allowance or the number of rooms you need?
+User: I'm not quite sure about the star rating right now; I'm just hoping it's somewhere I can feel comfortable. As for smoking, I prefer a non-smoking environment. And I'll need just one room, please.
+System: Thank you for the information. I will proceed to search for a non-smoking hotel in Berlin with 1 room. Let me perform the search and get back to you with the options. APICall(method='SearchHotel', parameters={ location: Berlin, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: I found several non-smoking hotels in Berlin. Here are a few options:
+
+1. **Ameron Hotel Abion Spreebogen Waterside**: 
+   - Star Rating: 4
+   - Price per night: $360
+   - Address: Alt-Moabit 99, 10559
+   - Phone: +49 30 399200
+
+2. **Holiday Inn Berlin City East-Landsberger**:
+   - Star Rating: 4
+   - Price per night: $432
+   - Address: Landsberger Allee 203, 13055
+   - Phone: +49 30 978080
+
+3. **Hotel Novotel Berlin Mitte**:
+   - Star Rating: 4
+   - Price per night: $280
+   - Address: Fischerinsel 12, 10179
+   - Phone: +49 30 206740
+
+Would you like more information about any of these hotels, or is there something specific you would like to know?
+User: I feel a bit anxious about the prices, especially since I don't want to spend too much. Can you tell me if there's a more affordable option available? Maybe something with a lower star rating that's still non-smoking?
+System: I understand your concern about the prices. I will search for more affordable non-smoking hotel options in Berlin with potentially lower star ratings. Please give me a moment.
+
+APICall(method='SearchHotel', parameters={ location: Berlin, smoking_allowed: False, number_of_rooms: 1, star_rating: 3 })
+Search Results
+
+End Search Results
+System: It appears that there are no available results for a more affordable non-smoking hotel with a lower star rating in Berlin at the moment. Would you like to try a different star rating or perhaps adjust your preferences?
+User: I don't know what to do now. Should I just go with one of the options you gave me earlier, or is there another way to find something more affordable? Maybe I should just pick one and hope for the best.
+System: If you're comfortable with it, you could consider choosing the Hotel Novotel Berlin Mitte. It's one of the more affordable options among the hotels I found earlier, with a price of $280 per night for a 4-star experience. If that works for you, we can proceed with making a reservation. Alternatively, I can search again with different criteria if you have other preferences in mind.
+User: I'm feeling a bit overwhelmed, but maybe going with the Hotel Novotel Berlin Mitte is the best option for now. I just hope it’s not too busy or noisy. Can you please reserve a room for me? I'll need it from the 15th for four nights.
+System: To proceed with the reservation, I'll confirm the details with you: You would like to book one room at the Hotel Novotel Berlin Mitte in Berlin, starting from the 15th for four nights. Is that correct?
+User: Yes, that's correct. Please go ahead with the reservation. I hope everything goes smoothly.
+System: Great, I will proceed with the reservation for you. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Berlin, number_of_rooms: 1, place_name: Hotel Novotel Berlin Mitte, stay_length: 4 })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': '1', 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': '3', 'street_address': '386 Geary Street', 'check_in_date': '2023-11-15', 'stay_length': '4'}]
+End Search Results
+System: Your reservation for one room at the Hotel Novotel Berlin Mitte in Berlin, starting from November 15th for four nights, has been successfully confirmed. If you need any further assistance or have any other requests, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

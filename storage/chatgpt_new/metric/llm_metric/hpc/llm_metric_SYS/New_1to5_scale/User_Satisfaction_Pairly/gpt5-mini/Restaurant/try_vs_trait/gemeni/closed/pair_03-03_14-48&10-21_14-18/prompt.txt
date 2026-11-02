@@ -1,0 +1,96 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a restaurant in San Mateo.
+
+System: Okay, I can help with that. Do you have a particular type of cuisine in mind?
+
+User: No, not really. Just something...normal.
+
+System: Given your openness, how about trying a classic American restaurant in San Mateo?
+
+APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: American})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-212-2643', 'price_range': 'moderate', 'restaurant_name': 'Qube Bar & Grill', 'serves_alcohol': True, 'street_address': '4000 South El Camino Real'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-522-7526', 'price_range': 'expensive', 'restaurant_name': 'Poplar Creek Grill', 'serves_alcohol': True, 'street_address': '1700 Coyote Point Drive'}]
+End Search Results
+System: Alright, I found three American restaurants in San Mateo. Central Park Bistro is moderate in price, doesn't have live music and does not serve alcohol. The phone number is 650-558-8401 and the address is 181 East 4th Avenue. Qube Bar & Grill is also moderate in price and serves alcohol, but does not have live music. The phone number is 650-212-2643 and the address is 4000 South El Camino Real. Poplar Creek Grill is expensive and serves alcohol, but does not have live music. The phone number is 650-522-7526 and the address is 1700 Coyote Point Drive. Which one sounds best to you?
+
+User: Central Park Bistro sounds okay. Can you book it for me?
+
+System: Sure, I can help with that. For what day and time, and how many people?
+
+User: Tomorrow, 6 pm, for two.
+
+System: Okay, let's book Central Park Bistro for tomorrow at 6 pm for a party of two.
+
+APICall (method='ReserveRestaurant', parameters= {city: San Mateo, date: 2019-03-02, party_size: 2, restaurant_name: Central Park Bistro, time: 18:00})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue', 'date': '2019-03-02', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Great! I have booked Central Park Bistro for you for tomorrow, March 2nd, at 6 pm for two people. Is there anything else I can help you with?
+
+User: No, that's all. Thanks.
+
+System:  System: You're welcome! Enjoy your dinner at Central Park Bistro. Have a great day!
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a restaurant in San Mateo.
+
+System: Given your location preference, do you have a particular type of cuisine in mind?
+
+User: No, not really. Anything is fine.
+
+System: Okay, since you're open to anything, how about American cuisine?
+
+APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: American})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-212-2643', 'price_range': 'moderate', 'restaurant_name': 'Qube Bar & Grill', 'serves_alcohol': True, 'street_address': '4000 South El Camino Real'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue', 'date': '2019-03-01', 'party_size': 2, 'time': '18:00'}]
+End Search Results
+System: I see two American restaurants in San Mateo: Central Park Bistro and Qube Bar & Grill. Central Park Bistro is located at 181 East 4th Avenue and Qube Bar & Grill is at 4000 South El Camino Real. Would either of those interest you?
+
+User: Maybe Central Park Bistro. What kind of food do they have?
+
+System: Central Park Bistro serves American cuisine and is in the moderate price range. Does that sound suitable?
+
+User: Okay, maybe. Can you tell me their phone number?
+
+System: The phone number for Central Park Bistro is 650-558-8401.
+
+User: Okay, thanks. I think I'll just go with that one.
+
+System: Would you like me to reserve a table for you at Central Park Bistro? If so, please provide the date and time, and the number of people in your party.
+
+User: I don't need a reservation. Thanks.
+
+System: Is there anything else I can help you with regarding Central Park Bistro?
+
+User: No, that's all. Thanks a lot!
+
+System: You're welcome. If you need anything else, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

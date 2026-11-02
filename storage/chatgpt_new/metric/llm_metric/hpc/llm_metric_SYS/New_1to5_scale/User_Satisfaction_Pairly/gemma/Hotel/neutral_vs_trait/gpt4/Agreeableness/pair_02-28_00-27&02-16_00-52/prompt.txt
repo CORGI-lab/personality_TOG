@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm planning to visit Seattle and would love some help finding a nice hotel to stay at. Could you assist me with this?
+System: Sure, I'd be happy to help you find a hotel in Seattle. Do you have any specific preferences for the star rating, smoking allowance, or number of rooms?
+User: I prefer a non-smoking hotel that's comfortable and clean. A star rating of 3 or above would be great. Also, I'm looking for just one room. Thank you for your help!
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-596-2302', 'place_name': 'Even Hotel Seattle Downtown - Lake Union', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '527 Fairview Avenue North'}]
+End Search Results
+System: I found a 3-star, non-smoking hotel called Best Western Plus Pioneer Square Hotel Downtown in Seattle. It offers one room at a price of $63 per night. Would you like more information on this hotel, or do you want to explore other options?
+User: That sounds like a lovely option! Could you please provide more details about the amenities and location of the Best Western Plus Pioneer Square Hotel Downtown?
+System: I'm sorry, but the specific amenities of Best Western Plus Pioneer Square Hotel Downtown aren't available in the current search results. However, I can confirm that it's a 3-star, non-smoking hotel located at 77 Yesler Way, Seattle. If you need further assistance or have other queries, please let me know!
+User: The location seems convenient! Could you go ahead and make a reservation for one room? I plan to check in on the 15th and stay for five days. Thank you so much for your help!
+System: Please confirm to book 1 room for 5 days at the Best Western Plus Pioneer Square Hotel Downtown from 2023-11-15 in Seattle.
+User: Yes, that's perfect. Please go ahead and confirm the booking. Thank you!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Seattle, number_of_rooms: 1, place_name: Best Western Plus Pioneer Square Hotel Downtown, stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Best Western Plus Pioneer Square Hotel Downtown in Seattle has been successfully confirmed for one room from November 15, 2023, for five days. If there's anything else you need, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would love to find a hotel in Vancouver, please. Could you help me with that?
+System: Could you please tell me if you have any specific preferences for the hotel, such as star rating or any other features? This will help me find the most suitable options for you in Vancouver.
+User: I prefer a hotel with a higher star rating, as it usually ensures better service and comfort. Also, it would be great if the hotel is non-smoking as I am sensitive to smoke. Thank you for your help!
+System: Thank you for sharing your preferences. I will search for a non-smoking hotel with a higher star rating in Vancouver. Please give me a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: dontcare, smoking_allowed: False })
+Search Results
+
+End Search Results
+System: It seems there was an issue retrieving the search results. Let me try that again to ensure we find the best option for you. APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 5, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel, Vancouver', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: I found two wonderful options for you in Vancouver. The first is the Shangri-La Hotel, Vancouver, which is a 5-star, non-smoking hotel. The second option is the Wedgewood Hotel & Spa Vancouver, also 5-star and non-smoking. Would you like more details on either of these hotels, or is there anything else specific you'd like to know?
+User: Both of those options sound wonderful, thank you! Could you please provide more details about the Shangri-La Hotel, Vancouver? I would love to know more about its amenities and price per night.
+System: The Shangri-La Hotel, Vancouver, is a luxurious 5-star, non-smoking hotel located at 1128 West Georgia Street. The price per night is $300. Unfortunately, I don't have specific details about the amenities from the search results. If you'd like, I can assist you with the reservation process or provide more information. Please let me know how you'd like to proceed!
+User: The Shangri-La Hotel sounds fantastic. I would love to make a reservation there. Could you please book a room for me? I plan to check in on the 15th of next month and stay for five nights. Thank you so much for your help!
+System: To ensure a smooth reservation process, could you please confirm how many rooms you would like to book at the Shangri-La Hotel, Vancouver? Once I have that information, I'll proceed with the reservation for your stay from the 15th of next month for five nights.
+User: I would like to book one room, please. Thank you for assisting with this reservation!
+System: Thank you for confirming. I'll proceed with the reservation for one room at the Shangri-La Hotel, Vancouver, from the 15th of next month for five nights. Please allow me a moment. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Shangri-La Hotel, Vancouver, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': '5', 'street_address': '1128 West Georgia Street', 'check_in_date': '2023-11-15', 'stay_length': '5'}]
+End Search Results
+System: Your reservation at the Shangri-La Hotel, Vancouver, has been successfully confirmed for one room from November 15th for a stay of five nights. If there's anything else I can assist you with or if you have any additional questions, please feel free to let me know. Thank you for choosing our service!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

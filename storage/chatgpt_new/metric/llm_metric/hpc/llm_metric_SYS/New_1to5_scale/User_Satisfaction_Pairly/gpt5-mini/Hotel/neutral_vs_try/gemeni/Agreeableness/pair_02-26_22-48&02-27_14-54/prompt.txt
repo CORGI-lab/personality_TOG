@@ -1,0 +1,133 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in London, please. I'm hoping you can help me find something suitable.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating of the hotel?
+
+User: Not particularly, but somewhere clean and relatively quiet would be lovely. I'm open to suggestions.
+
+System: Given that the user is open to suggestions and mentions "clean and relatively quiet," I'll aim for a higher-rated hotel to increase the chances of meeting those criteria. I'll start with a 5-star hotel.
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 5 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7377 4390', 'place_name': "Batty Langley'S Hotel", 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '12 Folgate Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 3327 4142', 'place_name': 'Chelsea Bridge Apartments', 'price_per_night': 390, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '124 Prince Of Wales Drive'}]
+End Search Results
+System: Alright, I found three 5-star hotels in London: 45 Park Lane, Batty Langley'S Hotel, and Chelsea Bridge Apartments. 45 Park Lane has rooms available for $330 per night, Batty Langley'S Hotel for $510, and Chelsea Bridge Apartments for $390. All three are non-smoking. Do any of these sound appealing to you?
+
+User: Those all sound quite nice! Could you perhaps tell me a little more about Batty Langley'S Hotel? The price is a little higher, but I'm sure there's a good reason for that. I'm happy to consider it if it offers a little extra something special.
+
+System: Okay, Batty Langley'S Hotel is located at 12 Folgate Street and their phone number is +44 20 7377 4390. They have 3 rooms available. Is there anything else you'd like to know about it?
+
+User: That sounds promising. Perhaps something a little more budget-friendly would be ideal, though. Are there any other options with a lower price point that are still known for being clean and well-maintained? I'm sure there are plenty of wonderful places to stay in London.
+
+System: Okay, I understand. Let me search for hotels with a lower star rating, perhaps 3 or 4 stars, that might offer a more budget-friendly price while still maintaining a good standard of cleanliness. I will start with 4 star rating.
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 4 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 800 330 8523', 'place_name': 'Amba Hotel Marble Arch', 'price_per_night': 444, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Bryanston Street'}]
+End Search Results
+System: Alright, I found three 4-star hotels in London: Ace Hotel London, Amba Hotel Charing Cross, and Amba Hotel Marble Arch. Ace Hotel London is priced at $176 per night, Amba Hotel Charing Cross at $312, and Amba Hotel Marble Arch at $444. All three are non-smoking. Does any of these hotels meet your expectations?
+
+User: The Ace Hotel London sounds like it could be a good compromise! $176 is much more reasonable. Could you tell me a bit more about it, please? I appreciate you taking the time to find these options for me.
+
+System: Okay, Ace Hotel London is located at 100 Shoreditch High Street, and their phone number is +44 20 7613 9800. They have 2 rooms available. Would you like to know anything else about it?
+
+User: That sounds quite suitable! I trust it's a reputable place. If it's not too much trouble, could you check if they have availability for, say, a 3-night stay, starting next Saturday? I'd be ever so grateful.
+
+System: Certainly! To check the availability, I need to know the exact date next Saturday falls on. Could you please provide the date (YYYY-MM-DD)? Also, what is the place_name you want to book? And how many rooms do you need?
+
+User: Oh, of course! I'm so sorry; I should have included that information. I'd like to book Ace Hotel London, and the date is 2024-03-09. Just one room, please. Thank you so much for your help!
+
+System: Okay, so you'd like to book one room at Ace Hotel London for 3 nights, starting on 2024-03-09. Please confirm the location is London.
+
+APICall(method='ReserveHotel', parameters={ place_name: Ace Hotel London, check_in_date: 2024-03-09, stay_length: 3, number_of_rooms: 1, location: London })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street', 'check_in_date': '2024-03-09'}]
+End Search Results
+System: Excellent! I've confirmed that Ace Hotel London has availability for your requested dates.
+
+```tool_code
+APICall(method='ReserveHotel', parameters={'place_name': 'Ace Hotel London', 'check_in_date': '2024-03-09', 'stay_length': 3, 'number_of_rooms': 1, 'location': 'London'})
+```
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street', 'check_in_date': '2024-03-09'}]
+End Search Results
+System: Okay, I have successfully confirmed your booking at Ace Hotel London for one room, starting on 2024-03-09 for 3 nights. Is there anything else I can help you with regarding your reservation?
+
+User: That's just splendid news! Could you perhaps send me the confirmation details, just so I have them handy? I really appreciate all your time and effort.
+
+System: Okay, the confirmation details for your booking at Ace Hotel London are as follows: One room reserved for 3 nights, starting on 2024-03-09. The hotel is located at 100 Shoreditch High Street, London, and their phone number is +44 20 7613 9800. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in San Francisco, please. Could you help me find one? I'm open to suggestions!
+
+System: Okay, I can help you with that. Do you have any preferences for the star rating of the hotel?
+
+User: Oh, not really! I trust your judgment. Perhaps something mid-range? A 3 or 4-star hotel would be lovely, but honestly, anything that's clean and comfortable would be great. Thank you so much for helping me!
+
+System: Okay, I will search for hotels in San Francisco.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: I found three 3-star hotels in San Francisco: Bei Hotel San Francisco, Beresford Arms Hotel, and Chancellor Hotel On Union Square. Would you like to know more about any of them?
+
+User: Oh, my! Three options already? You're so efficient! Could you perhaps tell me a little bit about the Bei Hotel San Francisco? I'm curious to hear more. And thank you again for your help; I really appreciate it.
+
+System: Okay, sure. Bei Hotel San Francisco has 3 rooms, allows smoking, and the price per night is $351. The phone number is +1 415-626-6103 and the address is 50 8th Street. Is there anything else you'd like to know about this hotel, or would you like information on the other options?
+
+User: Oh, that sounds promising! But $351 is a bit more than I was hoping to spend. Would you mind telling me about the Beresford Arms Hotel, please? I appreciate you being so patient with me!
+
+System: Okay, sure. Beresford Arms Hotel has 2 rooms, does not allow smoking, and the price per night is $132. The phone number is +1 415-673-2600 and the address is 701 Post Street. Would you like to know more?
+
+User: Oh, that sounds much more affordable! And I appreciate that it's non-smoking. Could you tell me, does it have good reviews? I value other people's opinions, and I'd love to make sure it's a pleasant place to stay. Thanks again for all your help!
+
+System: I am sorry, I do not have access to any information regarding reviews. However, the Beresford Arms Hotel has 2 rooms, does not allow smoking, and the price per night is $132. The phone number is +1 415-673-2600 and the address is 701 Post Street. Would you like to reserve a room there?
+
+User: Well, it sounds lovely! If it's not too much trouble, I'd like to go ahead and reserve a room at the Beresford Arms Hotel. I really appreciate you finding such a nice and affordable option for me.
+
+System: Great! Could you please provide the check-in date and the length of your stay?
+
+User: Oh, certainly! I'd like to check in on December 10th and stay for 3 nights, if that's alright. And thank you so much for handling the reservation for me; you're a lifesaver!
+
+System: Please confirm that you want to book a room at the Beresford Arms Hotel in San Francisco for 3 nights starting on December 10th.
+
+User: Yes, that's absolutely correct! Please go ahead and confirm the booking. I really appreciate your help with this.
+
+System: Okay, I will book 1 room at the Beresford Arms Hotel in San Francisco for 3 nights starting on December 10th.
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-12-10, location: San Francisco, number_of_rooms: 1, place_name: Beresford Arms Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street', 'check_in_date': '2023-12-10'}]
+End Search Results
+System: Okay, your booking at the Beresford Arms Hotel in San Francisco has been confirmed for check-in on December 10th for 3 nights.
+User: Perfect! Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

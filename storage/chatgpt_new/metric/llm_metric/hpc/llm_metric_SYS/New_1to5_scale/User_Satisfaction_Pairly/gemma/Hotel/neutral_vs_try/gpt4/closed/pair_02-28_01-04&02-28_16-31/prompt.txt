@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in New York. Can you help me with that?
+System: Do you have any specific preferences for the hotel, such as star rating or smoking allowance, or should I proceed with a general search in New York?
+User: A general search is fine.
+System: APICall(method='SearchHotel', parameters={ location: New York })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: I found a few options for you in New York. One option is the 11 Howard, a 3-star hotel located at 11 Howard Street, which allows smoking and has rooms priced at $270 per night. Would you like more information about this hotel or are you interested in another option?
+User: Can you tell me about another option?
+System: Another option is the Adria Hotel & Conference Center, which is also a 3-star hotel. It is located at 221-17 Northern Boulevard, Bayside, and allows smoking. The rooms are priced at $234 per night. Let me know if you need more information or if you are interested in this hotel.
+User: Are there any hotels with a lower price than these options?
+System: Yes, there is another option with a lower price. The Aloft Harlem is a 3-star hotel located at 2296 Frederick Douglass Boulevard. It does not allow smoking, and the rooms are priced at $243 per night. Would you like more details about this hotel, or are you interested in making a reservation?
+User: Can you find something even cheaper than $243 per night?
+System: I'm sorry, but based on the current search results, there are no hotels available in New York with a price lower than $243 per night. Would you like me to search again with different preferences, such as a different star rating or smoking allowance, to try and find a more budget-friendly option?
+User: No, that's okay. Please go ahead and book a room at the Adria Hotel & Conference Center for me.
+System: How many rooms would you like to book, and what is your intended check-in date and stay length at the Adria Hotel & Conference Center?
+User: I need one room, checking in on the 15th, and I'll stay for five nights.
+System: Please confirm that I should proceed to book 1 room for 5 nights at the Adria Hotel & Conference Center, starting from the 15th in New York.
+User: Yes, please proceed with the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: New York, number_of_rooms: 1, place_name: Adria Hotel & Conference Center, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Adria Hotel & Conference Center in New York has been successfully confirmed for 1 room starting from October 15th for 5 nights. If you need any more assistance or information, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in Vancouver. Can you help me with that?
+System: Sure, I'd be happy to help you find a hotel in Vancouver. Do you have any specific preferences regarding star rating, smoking allowance, or number of rooms?
+User: I prefer non-smoking rooms and a simple place, maybe around 3 stars. Just one room is fine.
+System: Great, thank you for sharing your preferences. I'll search for a hotel in Vancouver with non-smoking rooms and a 3-star rating. Let's see what we can find. APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a few options for you in Vancouver. The Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. offers a non-smoking room for $72 per night. Would you like more information about this hotel or are you interested in knowing about another option?
+User: Can you tell me if there are any other similar options?
+System: Certainly! Another option is the Atrium Inn Vancouver, which offers non-smoking rooms with a 3-star rating. The price per night is $228. Would you like more details about this hotel or perhaps explore other options?
+User: Let's explore other options, please.
+System: Another option is the Best Western Plus Sands, which also has non-smoking rooms and a 3-star rating. The price per night is $222. Would you like more information about this hotel, or is there something specific you're looking for?
+User: Can you find something more affordable?
+System: Certainly! Let me look for a more affordable option within Vancouver that still meets your preference for a non-smoking, 3-star hotel. I will perform another search, considering the price range. Please hold on for a moment.
+User: Thank you. I appreciate it.
+System: You're welcome! Let me find a more budget-friendly option for you. I'll perform a search to locate a 3-star non-smoking hotel in Vancouver with a more affordable price. APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: Based on the search results, the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. remains the most affordable option at $72 per night. Would you like to proceed with this option, or is there anything else you'd like to explore?
+User: Yes, please proceed with the reservation for this option.
+System: Could you please confirm the check-in date and the length of your stay at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver?
+User: I would like to check in on the 10th and stay for five days.
+System: Please confirm that you would like to reserve one non-smoking room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, checking in on 2023-11-10 and staying for five days.
+User: Yes, that is confirmed.
+System: Great! I'll proceed with the reservation. APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver has been successfully confirmed. You will be checking in on 2023-11-10 for a stay of five days. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Vancouver. Can you help me find one?
+System: Do you have any preferences for the star rating or smoking allowance for the hotel in Vancouver?
+User: I'm not particular about the star rating, but I would like a hotel that allows smoking.
+System: Thank you for sharing your preferences. Let me find hotels in Vancouver that allow smoking. I'll search for a variety of star ratings to give you some options. APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: True })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-563-4693', 'place_name': 'Exchange Hotel Vancouver', 'price_per_night': 304, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '475 Howe Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-9888', 'place_name': 'Gec Granville Suites Hotel', 'price_per_night': 63, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '718 Drake Street'}]
+End Search Results
+System: I found a few hotels in Vancouver that allow smoking. Here are some options:
+
+1. Auberge Vancouver Hotel, a 4-star hotel located at 837 West Hastings Street. The price per night is $296.
+
+2. Exchange Hotel Vancouver, also a 4-star hotel, located at 475 Howe Street. The price per night is $304.
+
+3. Gec Granville Suites Hotel, a 3-star hotel located at 718 Drake Street. The price per night is $63.
+
+Please let me know if any of these options are suitable for you or if you need more information.
+User: Can you tell me more about the Gec Granville Suites Hotel, like if they have any special amenities or services?
+System: I'm sorry, but the information regarding special amenities or services for the Gec Granville Suites Hotel is not available in my current dataset. However, I can assist you with the basic details like its location, star rating, or price per night. If you have any other questions or need more assistance, feel free to ask!
+User: What is the cost for staying at the Gec Granville Suites Hotel for a week?
+System: The cost for staying at the Gec Granville Suites Hotel for a week would be 7 days multiplied by the price per night. Given the price per night is $63, the total cost for a week would be $441. Would you like to proceed with a reservation or need any other information?
+User: Yes, please make a reservation for me. I would like to check in on the 15th of this month.
+System: To confirm your reservation at the Gec Granville Suites Hotel in Vancouver, I'll need to know how many rooms you would like to book. Could you please provide that information?
+User: Just one room, please.
+System: Please confirm the details for your reservation: 1 room at the Gec Granville Suites Hotel in Vancouver, with a check-in date of 2023-10-15, for a stay of 7 nights. Once confirmed, I will proceed with the reservation.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Vancouver, number_of_rooms: 1, place_name: Gec Granville Suites Hotel, stay_length: 7 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-9888', 'place_name': 'Gec Granville Suites Hotel', 'price_per_night': 63, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '718 Drake Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Gec Granville Suites Hotel in Vancouver has been successfully confirmed. If you need any further assistance or have any other questions, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Vancouver. Can you help me find one?
+System: Do you have any preferences regarding the star rating, smoking allowance, or number of rooms for the hotel in Vancouver?
+User: No smoking allowed, please. Also, a three-star rating would be fine. I just need one room.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a 3-star hotel in Vancouver that doesn't allow smoking. It's called Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., located at 1100 Granville Street. The price per night is $72. Would you like to know more about this hotel, or should I proceed with a reservation?
+User: Can you tell me more about the hotel, like what amenities it offers?
+System: I'm sorry, but the information about specific amenities offered by Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. is not available in our data. Would you like to proceed with a reservation, or is there anything else you'd like to know?
+User: I'd like to know if there are any other hotel options available that meet my criteria.
+System: Apart from Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., there are two other 3-star hotels in Vancouver that do not allow smoking. One is the Atrium Inn Vancouver, located at 2889 East Hastings Street, with a price per night of $228. The other is Best Western Plus Sands, located at 1755 Davie Street, with a price per night of $222. Would you like more information about these hotels, or should I help you with a reservation?
+User: Are there any options that are more budget-friendly?
+System: The most budget-friendly option available is the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., with a price of $72 per night. Would you like to proceed with a reservation for this hotel, or is there anything else you'd like to know?
+User: Let's go ahead and make a reservation for the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.
+System: How many days are you planning to stay at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., and from what date would you like to start your booking?
+User: I'll be staying for five nights, starting from the 10th of next month.
+System: Please confirm that you would like to book 1 room for 5 nights at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. starting from the 10th of next month in Vancouver.
+User: Yes, that is correct.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking for 1 room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver has been successfully confirmed for 5 nights starting from November 10, 2023. Is there anything else you need assistance with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,104 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay! Do you have any preferences for the star rating of the hotel?
+
+User: Not really. Just something... quiet.
+
+System: Since you don't have a preference for the star rating, I can search for hotels in Vancouver. APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: dontcare})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few hotels in Vancouver. The Shangri-La Hotel and the Wedgewood Hotel & Spa Vancouver are both 5-star hotels, and the Auberge Vancouver Hotel is a 4-star hotel. Do any of these sound appealing to you?
+
+User: The Auberge... does it allow smoking?
+
+System: Yes, the Auberge Vancouver Hotel does allow smoking. Would you like any more information about it?
+
+User: No, that's fine. Can you book it for me?
+
+System: Okay, I can help with that. To book the Auberge Vancouver Hotel, I'll need a little more information. What date would you like to check in, and how many nights will you be staying? Also, how many rooms will you need?
+
+User: I'd like to book it for one night, starting tomorrow. Just one room.
+
+System: Okay, just to confirm, you'd like to book one room at the Auberge Vancouver Hotel for one night, starting tomorrow. Could you please provide the full date for tomorrow's check-in (YYYY-MM-DD)?
+
+User: 2024-03-16.
+
+System: Okay, so you want to book one room at the Auberge Vancouver Hotel for one night, starting on 2024-03-16. APICall(method='ReserveHotel', parameters={place_name: Auberge Vancouver Hotel, location: Vancouver, check_in_date: 2024-03-16, stay_length: 1, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2024-03-16'}]
+End Search Results
+System: Great, I have a room at the Auberge Vancouver Hotel for you for one night, starting on 2024-03-16. Your booking is confirmed.
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences regarding the star rating of the hotel?
+
+User: Not really. Just something… quiet.
+
+System: Okay, I will search for hotels in Seattle.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: Okay, I've started looking for hotels in Seattle. The first search was for a 5-star hotel.
+
+```tool_code
+APICall(method='SearchHotel', parameters={location: Seattle})
+```
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few hotels in Seattle. Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown. All are 2-star hotels. Would you like to know more about one of these?
+
+User: Just tell me about Belltown Inn.
+
+System: Belltown Inn has 2 rooms, the phone number is +1 866-525-4704, the price per night is $186, smoking is not allowed, and the address is 2301 3rd Avenue. Does this information suffice, or would you like additional details?
+
+User: That’s… probably fine. Is it in a busy area?
+
+System: I do not have the data to know how busy the area is. However, I can share the address of the hotel to help you decide. It is located at 2301 3rd Avenue.
+
+User: Okay… Can you check if they have rooms available for the 20th for three nights?
+
+System: Do you have a specific date in mind for when you'd like to check in? I need the year as well.
+
+User: The 20th of May, this year.
+
+System: Okay, so that would be May 20, 2024, for three nights at the Belltown Inn. Is that correct?
+```tool_code
+APICall(method='ReserveHotel', parameters={'place_name': 'Belltown Inn', 'location': 'Seattle', 'check_in_date': '2024-05-20', 'stay_length': 3})
+```
+<Failed Dialog>
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

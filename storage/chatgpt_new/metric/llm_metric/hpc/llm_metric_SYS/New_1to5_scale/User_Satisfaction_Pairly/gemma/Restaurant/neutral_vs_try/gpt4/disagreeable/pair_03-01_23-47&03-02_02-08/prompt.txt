@@ -1,0 +1,104 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Oakland. It better be good and not some run-of-the-mill place. What's out there?
+System: Could you specify the type of cuisine you're interested in, such as Mexican, Italian, or something else? This will help me narrow down the options for you.
+User: Why do I have to specify the cuisine? Just give me the best options you've got.
+System: I understand. Let's start by finding some options for you. Could you please let me know if you have any preferences regarding the price range, whether the place should have live music, or if it should serve alcohol? This will help me tailor the options to your liking.
+User: I don't care about the price, but it better have alcohol. Live music isn't necessary, but it wouldn't hurt. Just find me the best one you can.
+System: Could you please confirm if you are open to trying any specific type of cuisine, or should I select a random one for you? If you're open to suggestions, I can choose a cuisine type for the search.
+User: Go ahead and surprise me with whatever cuisine you think is top-notch, but it better be worth my time.
+System: Great! I'll search for a top-notch restaurant in Oakland that serves alcohol. Let's try the American cuisine for this search. Please give me a moment to find the best options for you. 
+
+SYSTEM: APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: American, serves_alcohol: True})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-834-2467', 'price_range': 'moderate', 'restaurant_name': 'Chop Bar', 'serves_alcohol': True, 'street_address': '247 4th Street'}, {'city': 'Oakland', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-871-3463', 'price_range': 'moderate', 'restaurant_name': 'Duchess Oakland', 'serves_alcohol': True, 'street_address': '5422 College Avenue'}, {'city': 'Oakland', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-268-3200', 'price_range': 'moderate', 'restaurant_name': 'Forge Pizza Oakland', 'serves_alcohol': True, 'street_address': '66 Franklin Street #100'}]
+End Search Results
+System: I found a few great options for you in Oakland. Chop Bar, located at 247 4th Street, is a fantastic choice if you're looking for a place with American cuisine that serves alcohol. Alternatively, Duchess Oakland at 5422 College Avenue offers live music along with your meal. If you're interested in trying some pizza, Forge Pizza Oakland at 66 Franklin Street #100 is also a popular spot. Let me know if you'd like more information or if you'd like to make a reservation!
+User: Chop Bar sounds like it might be decent. Make a reservation for me there. I want a table for four at 7:30 pm tonight.
+System: Could you please confirm the date for your reservation at Chop Bar in Oakland? Once I have that, I can proceed with booking a table for four at 7:30 pm.
+User: Tonight, obviously. Just get it done.
+System: Thank you for confirming. I'll go ahead and make a reservation for four people at Chop Bar in Oakland at 7:30 pm tonight. Please hold on for a moment while I finalize the booking.
+
+SYSTEM: APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Chop Bar', city: 'Oakland', time: '19:30', date: '2023-10-30', party_size: 4})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-834-2467', 'price_range': 'moderate', 'restaurant_name': 'Chop Bar', 'serves_alcohol': True, 'street_address': '247 4th Street', 'date': '2023-10-30', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Your reservation at Chop Bar in Oakland for four people at 7:30 pm tonight has been successfully made. If you need further assistance or have any other questions, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a restaurant in San Francisco. What's the best you've got?
+System: Do you have a preference for any specific type of cuisine, or are you open to suggestions? San Francisco offers a wide variety of options, and knowing your preference will help me find the best match for you.
+User: I don't have time for all that. Just find me a place that serves steak and has live music.
+System: Thank you for letting me know. I'll look for a steakhouse in San Francisco that features live music. Give me a moment to find the best option for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Steakhouse, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': True, 'phone_number': '415-673-8817', 'price_range': 'expensive', 'restaurant_name': "Harris'", 'serves_alcohol': False, 'street_address': '2100 Van Ness Avenue'}]
+End Search Results
+System: I found a great steakhouse in San Francisco that features live music. It's called Harris', and it's located at 2100 Van Ness Avenue. The restaurant is in the expensive price range and, unfortunately, does not serve alcohol. Would you like the phone number to make a reservation, or is there anything else I can assist you with?
+User: No alcohol? You've got to be kidding me. Find another place that serves steak, has live music, and offers alcohol.
+System: I'll look for another steakhouse in San Francisco that serves alcohol and features live music. Please give me a moment to find the best option for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Steakhouse, has_live_music: True, serves_alcohol: True})
+Search Results
+
+End Search Results
+System: It seems there are no restaurants in San Francisco that match all your criteria of serving steak, having live music, and offering alcohol. Would you be open to considering a restaurant that might not have live music or serves a different cuisine but meets your other preferences?
+User: Just keep looking. I'm not settling for less. Find something that checks all the boxes.
+System: I'll continue searching for a steakhouse in San Francisco that meets all your preferences. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Steakhouse, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-989-2539', 'price_range': 'expensive', 'restaurant_name': '5a5 Steak Lounge', 'serves_alcohol': True, 'street_address': '244 Jackson Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-495-1111', 'price_range': 'very expensive', 'restaurant_name': "Alexander's Steakhouse", 'serves_alcohol': True, 'street_address': '448 Brannan Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-397-3003', 'price_range': 'very expensive', 'restaurant_name': 'Bourbon Steak Restaurant', 'serves_alcohol': True, 'street_address': '335 Powell Street'}]
+End Search Results
+System: I found a few steakhouse options in San Francisco that serve alcohol, although they don't feature live music. Here are some choices:
+
+1. 5a5 Steak Lounge at 244 Jackson Street, priced in the expensive range.
+2. Alexander's Steakhouse at 448 Brannan Street, considered very expensive.
+3. Bourbon Steak Restaurant at 335 Powell Street, also in the very expensive category.
+
+Would you like more details on any of these places, or is there anything else I can assist you with?
+User: None of these sound appealing. I told you I want live music. Expand your search to nearby cities if you have to.
+System: Unfortunately, I can only provide options within San Francisco as per your request. I suggest considering dining options that might not have live music but offer the other features you desire. If you'd like to explore these or need further assistance, feel free to let me know!
+User: You're really not getting it, are you? I don't care about your suggestions that don't meet what I asked for. Just find me a place with steak, live music, and alcohol, or stop wasting my time.
+System: I understand your frustration, and I apologize for any inconvenience. I'll make another attempt to find a restaurant that meets all your criteria. Please hold on for a moment while I continue the search. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Steakhouse, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': True, 'phone_number': '415-673-8817', 'price_range': 'expensive', 'restaurant_name': "Harris'", 'serves_alcohol': False, 'street_address': '2100 Van Ness Avenue'}]
+End Search Results
+System: I sincerely apologize for the inconvenience. It appears that Harris' is the only steakhouse in San Francisco that offers live music, but it does not serve alcohol. Unfortunately, there are no other options that meet all your criteria exactly. If there's anything else I can assist with or another preference you might consider, please let me know.
+User: This is ridiculous. Just give me the closest thing you've got to what I asked for, and make it happen.
+System: Based on your preferences, the closest match I found is Harris', a steakhouse in San Francisco that features live music. While it does not serve alcohol, it is located at 2100 Van Ness Avenue and falls within the expensive price range. Would you like the phone number to make a reservation, or is there anything else I can do to assist you?
+User: Fine, whatever. Just make a reservation at Harris' for tomorrow night at 8 PM for two people. Let's get this over with.
+System: Certainly, I will proceed to make a reservation for you at Harris' for tomorrow night at 8 PM for two people. Please hold on for a moment while I confirm the reservation details. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Harris'", city: San Francisco, time: 20:00, date: 2023-10-09, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': True, 'phone_number': '415-673-8817', 'price_range': 'expensive', 'restaurant_name': "Harris'", 'serves_alcohol': False, 'street_address': '2100 Van Ness Avenue', 'date': '2023-10-09', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: Your reservation at Harris' in San Francisco is confirmed for tomorrow night at 8 PM for two people. The restaurant is located at 2100 Van Ness Avenue. If you need the phone number, it's 415-673-8817. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

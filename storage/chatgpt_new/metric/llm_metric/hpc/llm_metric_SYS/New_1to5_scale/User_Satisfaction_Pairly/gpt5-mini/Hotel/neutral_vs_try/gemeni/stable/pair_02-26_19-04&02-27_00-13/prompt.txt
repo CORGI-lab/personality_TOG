@@ -1,0 +1,99 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in San Diego. I'd like to start with that.
+
+System: Okay, I can help you with that.
+
+APICall(method='SearchHotel', parameters={ location: San Diego })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found three hotels in San Diego. Bahia Resort Hotel and Best Western Plus Hacienda Hotel Old Town are both 3-star hotels that do not allow smoking. Best Western Plus Bayside Inn is also a 3-star hotel, but it does allow smoking. Would you like more information on any of these?
+
+User: The Bahia Resort Hotel sounds good. Can you tell me more about it?
+
+System: Okay, the Bahia Resort Hotel is located at 998 West Mission Bay Drive. It's a 3-star hotel with a price of $225 per night. The phone number is +1 858-539-8666 and smoking is not allowed. They have 1 room available. Is there anything else you'd like to know about it?
+
+User: That sounds reasonable. I'd like to book it for, say, five nights, starting next Monday.
+
+System: What date is next Monday and how many rooms will you need?
+
+User: Next Monday is July 8th, and I'll need one room, please.
+
+System: Just to confirm, you would like to book 1 room at the Bahia Resort Hotel for 5 nights starting on July 8th. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-08, location: San Diego, number_of_rooms: 1, place_name: Bahia Resort Hotel, stay_length: 5 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-07-08'}]
+End Search Results
+System: Okay, I have reserved one room for 5 nights at the Bahia Resort Hotel, starting on July 8th. The phone number is +1 858-539-8666 and the address is 998 West Mission Bay Drive. Is there anything else I can help you with?
+
+User: No, that sounds perfect. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in Toronto.
+
+System: Okay! To help me narrow down the search, are you particular about the star rating of the hotel?
+
+User: I'm generally happy with a 3-star hotel. Nothing too fancy, but clean and comfortable would be ideal.
+
+System: APICall(method='SearchHotel', parameters={location: Toronto, star_rating: 3})
+
+Search Results
+[{'location': 'Toronto', 'number_of_rooms': 2, 'phone_number': '+1 416-663-9500', 'place_name': 'Best Western Plus Toronto North York Hotel & Suites', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '50 Norfinch Drive'}, {'location': 'Toronto', 'number_of_rooms': 3, 'phone_number': '+1 416-637-7000', 'place_name': 'Best Western Premier Toronto Airport Carlingview Hotel', 'price_per_night': 351, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '135 Carlingview Drive, Etobicoke, Ontario M9W 5E7, Canada'}, {'location': 'Toronto', 'number_of_rooms': 2, 'phone_number': '+1 800-780-7234', 'place_name': 'Best Western Primrose Hotel Downtown-Toronto', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '111 Carlton Street'}]
+End Search Results
+System: Alright, I found three 3-star hotels in Toronto. They are: Best Western Plus Toronto North York Hotel & Suites, Best Western Premier Toronto Airport Carlingview Hotel, and Best Western Primrose Hotel Downtown-Toronto. Do any of these sound good to you?
+
+User: Best Western Plus Toronto North York Hotel & Suites sounds reasonable. Can you tell me a bit more about it? Perhaps the price per night and if they allow smoking?
+
+System: The Best Western Plus Toronto North York Hotel & Suites charges $228 per night and does not allow smoking. Does that sound good?
+
+User: That sounds perfectly adequate. I'd like to book a room there.
+
+System: Okay, great! To finalize the booking at Best Western Plus Toronto North York Hotel & Suites, I'll need a bit more information. What date would you like to check in, and how many nights will you be staying?
+
+User: I'd like to check in on the 10th of next month, and I'll need the room for 3 nights.
+
+System: And how many rooms will you need for your stay?
+
+User: Just one room will be fine.
+
+System: Okay, so to confirm, you'd like to book one room at the Best Western Plus Toronto North York Hotel & Suites in Toronto, checking in on the 10th of next month for 3 nights?
+
+User: Yes, that's correct. Please go ahead and make the reservation.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={'place_name': 'Best Western Plus Toronto North York Hotel & Suites', 'location': 'Toronto', 'check_in_date': '2024-07-10', 'stay_length': 3, 'number_of_rooms': 1})
+```
+Search Results
+[{'location': 'Toronto', 'number_of_rooms': 2, 'phone_number': '+1 416-663-9500', 'place_name': 'Best Western Plus Toronto North York Hotel & Suites', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '50 Norfinch Drive', 'check_in_date': '2024-07-10'}]
+End Search Results
+System: Excellent! I have reserved one room for you at the Best Western Plus Toronto North York Hotel & Suites in Toronto, checking in on July 10th, 2024, for 3 nights. If you need anything else, feel free to ask!
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

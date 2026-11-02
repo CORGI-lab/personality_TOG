@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in Oakland. I don't really have anything specific in mind, just somewhere casual. Can you help me find something?
+System: Is there a specific type of cuisine you're interested in, or are you open to any type of food? This will help me narrow down the options for you.
+User: I guess I'm open to whatever, as long as it's not too fancy. Just something easy and chill, you know?
+System: Let's try an American cuisine in Oakland for a casual dining experience. I'll check for available options. Just a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: American})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-834-2467', 'price_range': 'moderate', 'restaurant_name': 'Chop Bar', 'serves_alcohol': True, 'street_address': '247 4th Street'}, {'city': 'Oakland', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-871-3463', 'price_range': 'moderate', 'restaurant_name': 'Duchess Oakland', 'serves_alcohol': True, 'street_address': '5422 College Avenue'}, {'city': 'Oakland', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-286-0100', 'price_range': 'expensive', 'restaurant_name': 'Flora', 'serves_alcohol': False, 'street_address': '1900 Telegraph Avenue'}]
+End Search Results
+System: How about trying Chop Bar, located at 247 4th Street in Oakland? It offers American cuisine in a moderate price range and has a casual vibe. Plus, they serve alcohol if you're interested. Would you like more information or another suggestion?
+User: Yeah, that sounds fine. Can you make a reservation for me? Maybe for tonight, around 7 pm, for two people?
+System: Certainly! Let me just confirm the reservation details: You would like to book a table for two at Chop Bar in Oakland for tonight at 7 pm. Is that correct?
+User: Yeah, that's right. Go ahead and book it for me.
+System: Great! I'll proceed with booking a table for two at Chop Bar in Oakland for tonight at 7 pm. Please hold on for a moment while I make the reservation.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Chop Bar', city: 'Oakland', time: '19:00', date: '2023-11-01', party_size: 2})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-834-2467', 'price_range': 'moderate', 'restaurant_name': 'Chop Bar', 'serves_alcohol': True, 'street_address': '247 4th Street', 'date': '2023-11-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Chop Bar in Oakland has been successfully made for tonight at 7 pm for two people. If you need to contact the restaurant, you can reach them at 510-834-2467. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Uh, I'm looking to find a place to eat in Oakland. Can you help with that?
+System: Sure, I'd be happy to help you find a place to eat in Oakland! Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: I'm not really sure what I want. Maybe something like Italian? Or maybe sushi? I don't know. Do you have any good ideas?
+System: Let's start with Italian cuisine and see what options are available in Oakland. If that doesn't seem appealing, we can explore other options like sushi. Let me find some Italian restaurants for you first. APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: Italian})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-768-8003', 'price_range': 'expensive', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '5356 College Avenue'}, {'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-350-7619', 'price_range': 'moderate', 'restaurant_name': 'Belotti Ristorante E Bottega', 'serves_alcohol': True, 'street_address': '5403 College Avenue'}, {'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-918-3205', 'price_range': 'moderate', 'restaurant_name': 'Contrasto', 'serves_alcohol': True, 'street_address': '388 Grand Avenue'}]
+End Search Results
+System: Here are a few Italian restaurant options in Oakland that you might find interesting:
+
+1. **A16**: Located at 5356 College Avenue, this restaurant is on the expensive side and serves alcohol. You can reach them at 510-768-8003.
+
+2. **Belotti Ristorante E Bottega**: Found at 5403 College Avenue, this place offers a moderate price range and also serves alcohol. Their contact number is 510-350-7619.
+
+3. **Contrasto**: This restaurant, situated at 388 Grand Avenue, also offers a moderate price range and serves alcohol. You can call them at 510-918-3205.
+
+If any of these sound appealing or if you'd like to explore other cuisines, feel free to let me know!
+User: I guess Belotti Ristorante E Bottega sounds decent. Can you make a reservation for me there? I’m thinking maybe this weekend, but I don’t really have a specific time in mind. Oh, and it'll be for like two people.
+System: Could you please let me know the specific date and time you'd like to reserve a table for two at Belotti Ristorante E Bottega this weekend? Once I have that information, I can proceed with the reservation.
+User: Uh, I don't know, maybe Saturday evening? Like around 7 PM? That should work, I think.
+System: Great! Just to confirm, you'd like to reserve a table for two at Belotti Ristorante E Bottega in Oakland on Saturday at 7 PM. Let me proceed with that reservation for you. APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Belotti Ristorante E Bottega', city: 'Oakland', time: '19:00', date: '2023-10-28', party_size: 2})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-350-7619', 'price_range': 'moderate', 'restaurant_name': 'Belotti Ristorante E Bottega', 'serves_alcohol': True, 'street_address': '5403 College Avenue', 'date': '2023-10-28', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Belotti Ristorante E Bottega in Oakland for two people on Saturday, October 28th at 7 PM has been successfully confirmed. If you need to contact them, their phone number is 510-350-7619, and the restaurant is located at 5403 College Avenue. Enjoy your meal! If there's anything else you need, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

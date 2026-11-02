@@ -1,0 +1,122 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hello! I'm hoping to find a hotel in Vancouver. Could you possibly help me with that?
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Oh, not particularly! I'm sure anything you find will be lovely. Perhaps something with a good reputation? I trust your judgment.
+
+System: Since the user doesn't have a preference for star rating, I will pick a random star rating from [5, 3, 1, 4, 2]. Let's try 5 stars.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 5 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: We have two 5-star hotels in Vancouver: Shangri-La Hotel and Wedgewood Hotel & Spa Vancouver. Shangri-La Hotel's price per night is $300, and Wedgewood Hotel & Spa Vancouver's is $510. Do either of these sound good?
+
+User: Oh, both sound wonderful! The Shangri-La sounds a bit more budget-friendly, and I wouldn't want to impose on anyone. Could you tell me a little more about it? Perhaps how many rooms it has?
+
+System: The Shangri-La Hotel has 2 rooms available. Is there anything else you'd like to know about it?
+
+User: Oh, that sounds perfect! And I'm sure the staff works very hard to keep everything nice. Could you please go ahead and book one of those rooms for me? I'll be arriving on the 10th and staying for three nights. I really appreciate your help!
+
+System: Okay, I can help you with that. Just to confirm, you'd like me to reserve 1 room at the Shangri-La Hotel in Vancouver, arriving on the 10th for a 3-night stay?
+
+User: Yes, that's absolutely correct! Thank you so much for your patience and assistance.
+
+System: Could you please provide the full date you'd like to check in? I need the year as well to make the reservation.
+
+User: Oh, of course! Silly me. I'd like to check in on October 10th, 2024. Thank you for reminding me!
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-10-10, location: Vancouver, number_of_rooms: 1, place_name: Shangri-La Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2024-10-10'}]
+End Search Results
+System: Okay, one moment while I confirm the reservation.
+
+Your booking at the Shangri-La Hotel in Vancouver has been successfully confirmed for one room, checking in on October 10, 2024, for a 3-night stay. The phone number for the hotel is +1 604-689-1120 and the street address is 1128 West Georgia Street. The price per night is $300. Is there anything else I can assist you with today?
+
+User: Oh, that's just perfect! I really appreciate you taking care of everything. No, I think that's all the information I need.
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in London, please.
+
+System: Okay, I can help with that! To make sure I find the best hotel for you, do you have a star rating preference?
+
+User: Oh, anything would be fine, as long as it's clean and safe! Maybe a 3-star or higher? I trust your judgment.
+
+System: Given your openness, I'm happy to look for hotels in London. How many rooms do you need?
+
+User: Just one room, please. And thank you so much for helping me! I really appreciate it.
+
+System: You're very welcome! I'm happy to help.
+
+APICall(method='SearchHotel', parameters={location: London, number_of_rooms: 1, star_rating: 3})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7403 4299', 'place_name': 'Accommodation London Bridge', 'price_per_night': 204, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '58 Great Dover Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7834 0205', 'place_name': 'Airways Hotel London Victoria', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': "29-31 Saint George's Drive"}]
+End Search Results
+System: I found a few 3-star hotels in London that might be a good fit for you. One is the Abc Hyde Park Hotel, another is Accommodation London Bridge, and the last one is Airways Hotel London Victoria. Would you like to know more about any of them?
+
+User: Oh, thank you so much! Could you tell me a little more about the Abc Hyde Park Hotel, please? It sounds lovely.
+
+System: Okay, sure! The Abc Hyde Park Hotel is located at 121 Sussex Gardens in London. It's a 3-star hotel, and the price per night is $102. Their phone number is +44 20 7706 4660. Would you like to know if smoking is allowed?
+
+User: That sounds perfect, thank you! I don't smoke, so knowing if it's allowed or not isn't a big deal for me. Whatever is easiest for you!
+
+System: Okay, I understand. I'm happy to help in any way I can! According to the information I have, smoking is not allowed at the Abc Hyde Park Hotel. Does this hotel sound good to you, or would you like to explore the other options?
+
+User: Oh, that sounds perfectly fine! If it's not too much trouble, could you check if they have parking available? It would be a great help.
+
+System: I'm happy to look into that for you! Unfortunately, I don't have information about parking availability for the Abc Hyde Park Hotel. I can only share details about the location, number of rooms, phone number, place name, price per night, smoking allowance, star rating, and street address.
+
+Would you like me to proceed with a reservation based on the information I have, or would you prefer to explore other options that might have parking?
+
+User: Oh, that's alright, I understand! It's not a deal-breaker. If it's not too much trouble, could you please just go ahead and make a reservation for me at the Abc Hyde Park Hotel? It really sounds lovely, and I'm sure it will be a pleasant stay.
+
+System: Of course! I'm happy to help with that. To make the reservation, I'll need to know the check-in date and how many days you'll be staying. Could you please provide me with that information?
+
+User: Certainly! I'd like to check in on the 20th and stay for three nights, if that's alright. Thank you so much for your help!
+
+System: You're very welcome! I'm glad I can assist you. Just to confirm, you'd like to reserve one room at the Abc Hyde Park Hotel in London, checking in on the 20th for a three-night stay. Is that correct?
+
+User: Yes, that’s absolutely correct! Thank you so much for confirming.
+
+System: Great! I'm happy to proceed with the reservation.
+
+APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-20, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 3})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-07-20'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-07-20'}]
+End Search Results
+System: Okay, I've made the reservation for you at the Abc Hyde Park Hotel in London. The check-in date is July 20th, and you'll be staying for three nights. The price per night is $102. The hotel is located at 121 Sussex Gardens, and their phone number is +44 20 7706 4660.
+
+I just want to double-check that everything is correct and to your liking. Do you have any questions, or is there anything else I can assist you with? I'm more than happy to help in any way I can!
+
+User: Oh, everything sounds absolutely perfect! You've been so helpful and thorough. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

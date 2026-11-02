@@ -1,0 +1,66 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm planning a trip to Seattle and would like to find a hotel there. Can you help me with that?
+System: Sure, I'd be happy to help you find a hotel in Seattle. Do you have any specific preferences in terms of star rating, smoking allowance, or number of rooms?
+User: I prefer a non-smoking hotel with at least a 4-star rating. Could you find some options for me?
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-448-8600', 'place_name': 'Hotel Andra', 'price_per_night': 372, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2000 4th Avenue'}]
+End Search Results
+System: I found a few non-smoking 4-star hotel options in Seattle for you. The first one is Crowne Plaza Seattle Downtown, located at 1113 6th Avenue, with a price of $120 per night. Another option is the Grand Hyatt Seattle on 721 Pine Street, priced at $456 per night. Lastly, there's Hotel Andra at 2000 4th Avenue, which costs $372 per night. Would you like more details about any of these hotels or proceed with a reservation?
+User: The Crowne Plaza Seattle Downtown sounds like a reasonable option. Could you please make a reservation for me there? I'll need one room starting from the 15th of next month for a stay of five days.
+System: Please confirm that you would like to book 1 room at the Crowne Plaza Seattle Downtown, starting from the 15th of next month, for a stay of 5 days.
+User: Yes, please confirm the reservation. Thank you.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Seattle, number_of_rooms: 1, place_name: Crowne Plaza Seattle Downtown, stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Crowne Plaza Seattle Downtown has been successfully confirmed for 1 room starting from November 15, 2023, for a stay of 5 days. If you need any further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to book a hotel in Vancouver. Could you help me find one?
+System: Certainly! Do you have a specific star rating in mind for the hotel, or are you open to any options?
+User: I'm open to options, but a 3-star or higher would be preferable.
+System: Great! Let's start with a search for hotels in Vancouver. I'll look for options with a star rating of 3 or higher. Please hold on for a moment while I do that. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a few options for you in Vancouver with a 3-star rating. Here's one of them: Atrium Inn Vancouver. Would you like to know more about this option, or should I provide details on another hotel?
+User: Please provide more details about the Atrium Inn Vancouver.
+System: The Atrium Inn Vancouver is a 3-star hotel located at 2889 East Hastings Street. The price per night is $228, and smoking is not allowed in the hotel. If there's anything else you would like to know, feel free to ask!
+User: Could you let me know the number of rooms available and any other amenities they offer?
+System: The Atrium Inn Vancouver currently has 2 rooms available. Unfortunately, I don't have information on other amenities. If you're interested in making a reservation or need more options, please let me know!
+User: I would like to make a reservation at the Atrium Inn Vancouver. Can you book 1 room for me starting from the 15th for a 5-night stay?
+System: Please confirm that you would like to book 1 room at the Atrium Inn Vancouver, starting from the 15th for a 5-night stay.
+User: Yes, please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Atrium Inn Vancouver, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Atrium Inn Vancouver has been successfully confirmed. You have booked 1 room starting from November 15th for a 5-night stay. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

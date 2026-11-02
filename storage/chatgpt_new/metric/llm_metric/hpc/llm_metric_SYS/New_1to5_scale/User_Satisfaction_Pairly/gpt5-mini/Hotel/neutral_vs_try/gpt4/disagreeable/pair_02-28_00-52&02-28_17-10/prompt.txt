@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Let's make this quick. I'm looking for a hotel in New York. Don't waste my time with anything below four stars, and it better allow smoking. What do you have?
+System: Let me confirm: You're looking for a hotel in New York with at least a 4-star rating and smoking allowed. Is that correct? Once you confirm, I'll proceed with the search.
+User: I already told you what I want. Just find me the hotel that matches those criteria.
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4, smoking_allowed: True })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street'}]
+End Search Results
+System: I found several options for you in New York. Here's one: 1 Hotel Brooklyn Bridge, a 4-star hotel that allows smoking. The price per night is $216, and it's located at 60 Furman Street, Brooklyn. Would you like to know more about this hotel or hear about another option?
+User: Tell me about another option. I'm not settling for the first thing you throw at me.
+System: Another option is the 6 Columbus Hotel, also a 4-star hotel that allows smoking. The price per night is $396, located at 308 West 58th Street. Would you like more details on this hotel or perhaps another choice?
+User: What else do you have? There has to be something better than those.
+System: Another option is the Aka Wall Street, a 4-star hotel that permits smoking. The price per night is $200, and it is located at 84 William Street. Please let me know if you'd like further details on this hotel or if you have other preferences.
+User: I've heard enough. Let's go with the Aka Wall Street. Now, make the reservation for me. I need it from the 3rd for six days. And remember, this is in New York.
+System: Please confirm to proceed with booking 2 rooms for 6 days at the Aka Wall Street hotel starting from the 3rd in New York.
+User: Yes, confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-03, location: New York, number_of_rooms: 2, place_name: Aka Wall Street, stay_length: 6 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street', 'check_in_date': '2023-11-03'}]
+End Search Results
+System: Your reservation at Aka Wall Street in New York has been successfully confirmed for 2 rooms from November 3rd for 6 days. If there's anything else you need, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to search for a hotel in New York. Find me something that fits my standards.
+System: Do you have any specific requirements for the hotel in New York, such as star rating or smoking allowance, or are you open to any options?
+User: I don't care about smoking, but it better be at least 4 stars. And don't even think about suggesting something that costs more than it's worth.
+System: I will search for 4-star or higher hotels in New York for you. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}]
+End Search Results
+System: I found a few 4-star hotels in New York for you. The first option is 1 Hotel Brooklyn Bridge, located at 60 Furman Street, Brooklyn, with a price of $216 per night. Would you like more details, or should I check on the next option?
+User: Tell me about the next one. I have a feeling this one isn't going to cut it.
+System: The next option is 6 Columbus Hotel, located at 308 West 58th Street. It also has a 4-star rating, and the price per night is $396. Would you like more details on this hotel, or should I move on to the next option?
+User: Move on to the next option. That one sounds like a rip-off.
+System: The third option is the AC Hotel New York Times Square, located at 260 West 40th Street. It also has a 4-star rating, with a price of $176 per night. Would you like more details on this hotel, or is there something else you'd like to know?
+User: Is there anything cheaper than that? Otherwise, I might as well sleep on the street.
+System: Unfortunately, from the current search results, the AC Hotel New York Times Square is the cheapest option available with a 4-star rating in New York. Would you like to explore hotels with a lower star rating, or perhaps adjust any other preferences to find a more affordable option?
+User: No way I'm downgrading. Just book the AC Hotel New York Times Square for me.
+System: How many rooms would you like to reserve at the AC Hotel New York Times Square, and what will be your check-in date and length of stay?
+User: Book one room for me, starting from the 15th of this month, and I'll be staying for six nights.
+System: Please confirm that you want to reserve 1 room for 6 nights at the AC Hotel New York Times Square, starting from the 15th of this month.
+User: Yes, confirm the reservation. Make sure it's done right.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: New York, number_of_rooms: 1, place_name: AC Hotel New York Times Square, stay_length: 6 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street', 'check_in_date': '2023-11-15'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street', 'check_in_date': '2023-11-15'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-764-5700', 'place_name': 'Aka Times Square', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '123 West 44th Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the AC Hotel New York Times Square has been successfully confirmed. If you need any more assistance or further details about your stay, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

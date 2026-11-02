@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Chicago.
+System: Do you have any preferences regarding the star rating or any other specific requirements for the hotel in Chicago?
+User: A basic hotel with a 3-star rating should be fine.
+System: APICall(method='SearchHotel', parameters={ location: Chicago, star_rating: 3 })
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street'}, {'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-894-0800', 'place_name': 'Acme Hotel Company Chicago', 'price_per_night': 222, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '15 East Ohio Street'}, {'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-661-1000', 'place_name': 'Aloft Chicago Downtown River North', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '515 North Clark Street'}]
+End Search Results
+System: I found a few options for 3-star hotels in Chicago. 
+
+1. **Ac Hotel By Marriott Chicago Downtown** - Located at 630 North Rush Street, the price per night is $342, and smoking is not allowed. 
+
+2. **Acme Hotel Company Chicago** - Located at 15 East Ohio Street, the price per night is $222, and smoking is allowed. 
+
+3. **Aloft Chicago Downtown River North** - Located at 515 North Clark Street, the price per night is $225, and smoking is not allowed.
+
+Would you like more details on any of these or assistance with making a reservation?
+User: I'm interested in the Acme Hotel Company Chicago. Can you reserve a room for me?
+System: How many rooms would you like to reserve, and what will be your check-in date and length of stay at Acme Hotel Company Chicago?
+User: I would like to reserve one room, with a check-in date of the 10th, for a stay of five days.
+System: Please confirm to book 1 room at Acme Hotel Company Chicago, located at 15 East Ohio Street, with a check-in date of 2023-11-10 and a stay length of 5 days.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Chicago, number_of_rooms: 1, place_name: Acme Hotel Company Chicago, stay_length: 5 })
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-894-0800', 'place_name': 'Acme Hotel Company Chicago', 'price_per_night': 222, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '15 East Ohio Street', 'check_in_date': '2023-11-10'}, {'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-894-0800', 'place_name': 'Acme Hotel Company', 'price_per_night': 180, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '15 East Ohio Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at Acme Hotel Company Chicago, located at 15 East Ohio Street, has been successfully confirmed. Is there anything else you need help with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in Vancouver.
+System: Do you have any preferences for the star rating, the number of rooms, or whether smoking is allowed?
+User: I prefer a non-smoking room, and a 3-star rating is fine.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a few non-smoking, 3-star hotels in Vancouver for you:
+
+1. Atrium Inn Vancouver, located at 2889 East Hastings Street, with a price of $228 per night. You can contact them at +1 604-254-1000.
+
+2. Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., located at 1100 Granville Street, with a price of $72 per night. You can contact them at +1 604-669-7070.
+
+3. Best Western Plus Sands, located at 1755 Davie Street, with a price of $222 per night. You can contact them at +1 604-682-1831.
+
+Do any of these options meet your requirements?
+User: The Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. looks fine. Please make a reservation for me.
+System: How many rooms would you like to reserve, and what will be your check-in date and the duration of your stay?
+User: I need one room. I'll check in on the 15th and stay for five days.
+System: Please confirm to book 1 room for 5 days at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. from the 15th in Vancouver.
+User: Yes, please go ahead and confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. has been successfully confirmed. You'll be checking in on November 15th for a 5-day stay. If you need any more assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,52 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I am interested in booking a hotel in Vancouver. Could you assist me with that?
+System: Do you have a specific check-in date and duration for your stay in Vancouver? Additionally, how many rooms would you like to book?
+User: I plan to check in on the 15th of next month and stay for seven nights. I will need one room for this duration.
+System: Please confirm that you want to reserve one room for seven nights at a hotel in Vancouver, starting from the 15th of next month. Once confirmed, I will proceed with the reservation.
+User: Yes, please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, stay_length: 7, place_name: any_available })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-697-0202', 'place_name': 'any_available', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-15', 'stay_length': '7'}]
+End Search Results
+System: Your reservation in Vancouver has been successfully booked at a hotel with a 4-star rating. You will be staying for seven nights starting from November 15th, 2023. The hotel is located at 1180 West Hastings Street. If there's anything else you need assistance with, please let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to book a hotel in Vancouver, please. Can you help me find one with a high star rating and a non-smoking policy?
+System: Could you please let me know your preferred check-in date and how many days you plan to stay? Additionally, how many rooms would you like to book? Once I have this information, I can proceed with finding a suitable hotel for you in Vancouver.
+User: I plan to check in on the 10th of this month and stay for five days. I would like to book one room, please.
+System: Just to confirm, you would like to book a hotel in Vancouver with a high star rating and a non-smoking policy, checking in on the 10th of this month for a stay of five days, with one room. I'll proceed with this information. APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 5, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: I found two hotels in Vancouver that match your preferences. The first option is the Shangri-La Hotel, which is a 5-star hotel with a non-smoking policy, located at 1128 West Georgia Street, and the price per night is $300. The second option is the Wedgewood Hotel & Spa Vancouver, also a 5-star hotel with a non-smoking policy, located at 845 Hornby Street, and the price per night is $510. Which one would you like to book?
+User: I would like to book the Shangri-La Hotel, please. Could you proceed with the reservation for one room from the 10th for five days?
+System: To confirm, you would like to reserve one room at the Shangri-La Hotel in Vancouver, checking in on the 10th of this month for a stay of five days. I'll proceed with finalizing your reservation. APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: 'Shangri-La Hotel', stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Shangri-La Hotel in Vancouver has been successfully confirmed for one room, checking in on the 10th of this month for a stay of five days. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

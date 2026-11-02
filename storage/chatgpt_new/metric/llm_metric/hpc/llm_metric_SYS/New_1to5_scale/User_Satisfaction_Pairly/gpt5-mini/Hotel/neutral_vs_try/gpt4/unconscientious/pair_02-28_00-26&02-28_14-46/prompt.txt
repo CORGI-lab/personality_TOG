@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm thinking of checking out a hotel in Rio de Janeiro. Can you help me find something there? Maybe something with a decent star rating and, uh, smoking allowed would be cool. Let's see what's out there.
+System: Sure, I can help with that. Let me check for available hotels in Rio de Janeiro with those preferences. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Rio de Janeiro, star_rating: dontcare, smoking_allowed: True })
+Search Results
+[{'location': 'Rio de Janeiro', 'number_of_rooms': 3, 'phone_number': '+55 21 2257-1990', 'place_name': 'Clh Suites Copacabana Domingos Ferreira', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': 'Rua Domingos Ferreira, 71 - Copacabana'}, {'location': 'Rio de Janeiro', 'number_of_rooms': 2, 'phone_number': '+55 800 600 0995', 'place_name': 'Everest Rio Hotel', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Rua Prudente de Morais, 1117 - Ipanema'}, {'location': 'Rio de Janeiro', 'number_of_rooms': 1, 'phone_number': '+55 21 2526-6600', 'place_name': 'Granada Hotel', 'price_per_night': 96, 'smoking_allowed': True, 'star_rating': 3, 'street_address': 'Avenida Gomes Freire, 530 - Centro'}]
+End Search Results
+System: I found a few options for you in Rio de Janeiro. There's the Clh Suites Copacabana Domingos Ferreira, a 3-star hotel with smoking allowed, priced at R$342 per night. Another option is the Everest Rio Hotel, which is a 4-star hotel allowing smoking, with a price of R$248 per night. Lastly, the Granada Hotel is another 3-star option with smoking allowed, priced at R$96 per night. Would you like more details on any of these or need help with something else?
+User: Hmm, the Everest Rio Hotel sounds alright. Can you give me more details about it? Like, what's the address, and do they have any cool features or stuff like that?
+System: The Everest Rio Hotel is located at Rua Prudente de Morais, 1117 - Ipanema in Rio de Janeiro. It is a 4-star hotel that allows smoking. Unfortunately, I don't have specific information about additional features or amenities at this hotel. If you have any other questions or need further assistance, feel free to ask!
+User: Oh, Ipanema sounds nice! I think I might just go with it. Can you reserve a room for me there? Maybe for, like, four days or something. I’m not sure. Let's start from tomorrow, I guess.
+System: Sure, I can help with that. Could you please confirm how many rooms you would like to reserve at the Everest Rio Hotel for your stay?
+User: Uh, let's go with just one room. That should be fine.
+System: Great! Just to confirm, you would like to reserve 1 room at the Everest Rio Hotel in Rio de Janeiro, starting from tomorrow for four days. Is that correct?
+User: Yeah, that sounds about right. Go ahead and book it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-27, location: Rio de Janeiro, number_of_rooms: 1, place_name: Everest Rio Hotel, stay_length: 4 })
+Search Results
+[{'location': 'Rio de Janeiro', 'number_of_rooms': 2, 'phone_number': '+55 800 600 0995', 'place_name': 'Everest Rio Hotel', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Rua Prudente de Morais, 1117 - Ipanema', 'check_in_date': '2023-10-27'}]
+End Search Results
+System: Your reservation at the Everest Rio Hotel in Rio de Janeiro has been successfully confirmed. You have booked 1 room starting from October 27th for four days. If you need further assistance or have any other inquiries, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, can you help me find a hotel in New York?
+System: Do you have any preferences for the star rating or smoking policy for the hotel in New York?
+User: Uh, I haven't really thought about that. I guess just find something that's not too expensive. And smoking allowed would be cool, but if not, that's fine too.
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: dontcare, smoking_allowed: dontcare })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: I found a few options for you in New York. The first one is a 3-star hotel named 11 Howard, located at 11 Howard Street, with a price of $270 per night, and they allow smoking. Would you like more details about this hotel or to hear about another option?
+User: Hmm, $270 sounds kinda steep. What else do you have?
+System: Another option is Adria Hotel & Conference Center, also a 3-star hotel. It's located at 221-17 Northern Boulevard, Bayside, with a price of $234 per night, and they also allow smoking. Would you like more information on this hotel or to hear about the next option?
+User: Oh, that sounds a bit better. But I think I'd like to hear about some more options before deciding. 
+System: The next option is Aloft Harlem, a 3-star hotel located at 2296 Frederick Douglass Boulevard. The price per night is $243, but please note that this hotel does not allow smoking. Would you like more information about this hotel, or have you made a decision based on the options I've shared?
+User: I guess $243 isn't terrible, but the no smoking thing is a bummer. Got any more options?
+System: I'm sorry, those are the only options available at the moment. You might want to consider adjusting your star rating or smoking preference to find more hotels. Would you like me to search again with different criteria?
+User: Ugh, I guess I'm not really sure what I want. Maybe just go with the Adria Hotel since it’s cheaper and allows smoking. Can you book that for me?
+System: To proceed with the reservation for Adria Hotel & Conference Center in New York, could you please confirm the check-in date and the number of nights you intend to stay?
+User: Let's go with tomorrow for the check-in, and I'll stay for... hmm, let's say 5 nights.
+System: Please confirm that you would like to book 1 room at Adria Hotel & Conference Center, starting tomorrow for 5 nights in New York.
+User: Yeah, that sounds good. Go ahead and book it. 
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-31, location: New York, number_of_rooms: 1, place_name: Adria Hotel & Conference Center, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside', 'check_in_date': '2023-10-31'}]
+End Search Results
+System: Your booking at Adria Hotel & Conference Center in New York has been successfully confirmed. You have 1 room booked from October 31, 2023, for 5 nights. If you need any further assistance or have additional questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

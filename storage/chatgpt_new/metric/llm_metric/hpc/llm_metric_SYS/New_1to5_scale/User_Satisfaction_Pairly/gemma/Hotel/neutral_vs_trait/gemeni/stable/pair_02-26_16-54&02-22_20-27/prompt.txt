@@ -1,0 +1,139 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to book a hotel in San Diego, please.
+
+System: Okay, I can help with that. What star rating are you looking for?
+
+User: I'm thinking a 3-star hotel would be a good, solid choice. Nothing too fancy, but comfortable.
+
+System: Okay, I will search for a 3-star hotel in San Diego. How many rooms do you need?
+
+User: Just one room is fine.
+
+System: Okay, and for what dates will you be needing the room, and how many nights will you be staying?
+
+User: I'll need it from the 15th of next month for two nights.
+
+System: Okay, I have all the details. To confirm, you need one room in a 3-star hotel in San Diego, starting on the 15th of next month for two nights. Is that correct?
+
+User: Yes, that's correct. Let's see what's available.
+
+System: My apologies, I missed the place\_name. Since this is a reservation, I'll need to search for available hotels first.
+
+APICall(method='SearchHotel', parameters={location: San Diego, star_rating: 3, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found three 3-star hotels in San Diego that have one room available. They are Bahia Resort Hotel, Best Western Plus Bayside Inn, and Best Western Plus Hacienda Hotel Old Town. Do any of those sound good to you?
+
+User: Bahia Resort Hotel sounds... stable. Tell me more about it.
+
+System: Okay, regarding the Bahia Resort Hotel, it is located at 998 West Mission Bay Drive. The price per night is $225, and their phone number is +1 858-539-8666. Smoking is not allowed. Does that sound like a good option for you?
+
+User: That sounds reasonable. Can you check if they have parking available?
+
+System: I do not have information about parking. However, would you like to proceed with the reservation at Bahia Resort Hotel?
+
+User: Yes, let's go ahead and reserve the Bahia Resort Hotel.
+
+System: Okay, I will reserve one room at the Bahia Resort Hotel for you. To confirm, you'd like to book it for two nights, starting on the 15th of next month. Is that correct?
+
+User: Yes, that is correct. Please proceed with the reservation.
+
+System: Okay, I will reserve one room at the Bahia Resort Hotel in San Diego for two nights, starting on the 15th of next month. To finalize the reservation, could you please provide the full check-in date in YYYY-MM-DD format?
+
+User: 2024-07-15. Let's get this booked.
+
+System: Okay, I have all the information.
+APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-15, location: San Diego, number_of_rooms: 1, place_name: Bahia Resort Hotel, stay_length: 2})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': '1', 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': '', 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-07-15', 'stay_length': '2'}]
+End Search Results
+System: Okay, your reservation at the Bahia Resort Hotel has been confirmed for one room, starting on 2024-07-15 for two nights. The hotel is located at 998 West Mission Bay Drive, and their phone number is +1 858-539-8666. The price per night is $225, and smoking is not allowed. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to book a hotel in San Francisco, please.
+
+System: Okay, I can help with that. To start, do you have any preferences for the star rating of the hotel?
+
+User: I'm open to suggestions. Perhaps something in the 3 to 4-star range would be suitable.
+
+System: Given your preference, I'll look for hotels in San Francisco with a 3 or 4-star rating. How many rooms will you need?
+
+User: Just one room, please. I'd like to keep things simple.
+
+System: Okay, searching for a 3 or 4-star hotel with one room in San Francisco.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, number_of_rooms: 1, star_rating: dontcare})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found a few options in San Francisco. Argonaut Hotel is a 4-star hotel with rooms available. Would you like to consider this one, or should I look at other options?
+
+User: Argonaut Hotel sounds reasonable. Can you tell me more about it? Specifically, what's the price per night?
+
+System: Certainly. The Argonaut Hotel is priced at $408 per night. It's located at 495 Jefferson Street, and their phone number is +1 415-563-0800. Does this information suffice, or would you like additional information?
+
+User: That sounds alright. Does it allow smoking?
+
+System: Okay, let me check that for you. According to the information I have, smoking is not allowed at the Argonaut Hotel. Would you still like to proceed with this hotel, or should I look for alternatives that allow smoking?
+
+User: No, I think I'd prefer a hotel where smoking is allowed. It's not a deal-breaker, but it would be a nice convenience. Can you see if there's anything else available?
+
+System: Okay, I understand. I'll search for hotels in San Francisco that allow smoking, keeping in mind you need one room and are open to 3 to 4-star ratings.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, number_of_rooms: 1, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+
+End Search Results
+System: I'm sorry, but I couldn't find any hotels that allow smoking based on your other preferences. Would you like to proceed without the smoking preference, or would you like me to search for something else?
+
+User: Let's proceed without the smoking preference. The Argonaut Hotel sounds fine otherwise.
+
+System: Alright. So, we're back to the Argonaut Hotel. It's a 4-star hotel, one room, located in San Francisco, and the price is $408 per night. Shall I proceed with the reservation? If so, I'll need the check-in date and the length of your stay.
+
+User: Yes, let's proceed with the reservation for the Argonaut Hotel. I'll be checking in on the 15th of next month and staying for three nights.
+
+System: Okay, I have the Argonaut Hotel in San Francisco for one room, checking in on the 15th of next month for three nights. Could you please specify the full check-in date, including the year, to ensure the reservation is accurate?
+
+User: Certainly, the check-in date will be June 15, 2024.
+
+System: Thank you for confirming the date. To finalize the reservation, please confirm that you want to book one room at the Argonaut Hotel in San Francisco, checking in on June 15, 2024, for a three-night stay.
+
+User: Yes, that is correct. Please proceed with the reservation.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Argonaut Hotel, location: San Francisco, check_in_date: 2024-06-15, stay_length: 3, number_of_rooms: 1})
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': '1', 'phone_number': '+1 415-673-3277', 'place_name': 'Argonaut Hotel', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 'dontcare', 'street_address': '749 Taylor Street', 'check_in_date': '2024-06-15', 'stay_length': '3'}]
+End Search Results
+System: Excellent! I've successfully booked one room for you at the Argonaut Hotel in San Francisco, checking in on June 15, 2024, for a three-night stay. The hotel's phone number is +1 415-673-3277 and the address is 749 Taylor Street. The price per night is $24. I hope you enjoy your stay! Is there anything else I can assist you with?
+
+User: No, that's all I need. Thanks a lot!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

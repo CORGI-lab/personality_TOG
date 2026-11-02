@@ -1,0 +1,142 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a restaurant in Palo Alto for dinner tonight. I'd like to make a reservation, if possible.
+
+System: What type of cuisine would you prefer?
+
+User: I'm open to suggestions, but I generally prefer something reliable and well-reviewed. Perhaps American or Italian?
+
+System: Would you like to try American or Italian cuisine?
+
+User: Given your preferences, I found two highly-rated restaurants: "Bird Dog" which offers American cuisine, and "Osteria Toscana" which offers Italian. Both are in Palo Alto. Do either of those sound appealing?
+
+System: Which one would you prefer: Bird Dog or Osteria Toscana?
+
+User: Before I decide, can you tell me the price range for each restaurant? I need to ensure it fits my budget for the evening.
+
+System: APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: American})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street'}]
+End Search Results
+System: APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: Bird Dog is in the moderate price range, while Osteria Toscana is in the expensive price range. Does that help you make a decision?
+
+User: Yes, that does help. Given the price difference, let's proceed with Bird Dog. Can you check its availability for a reservation tonight? I'm thinking for a party of two, ideally around 7:30 PM.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Bird Dog, city: Palo Alto, date: 2019-03-01, party_size: 2, time: 19:30})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-347-5733', 'price_range': 'expensive', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '401 Primrose Road', 'date': '2019-03-01', 'party_size': '2', 'time': '19:30'}]
+End Search Results
+System: OK. I have a reservation for you at Bird Dog in Palo Alto for tonight, March 1, 2019, at 7:30 PM for a party of 2. Is that correct?
+
+User: Yes, that is correct. Before confirming, could you please verify the street address for Bird Dog? I like to be certain of the location beforehand.
+
+System: The street address for Bird Dog is 420 Ramona Street. Would you like me to confirm the reservation?
+
+User: Yes, please confirm the reservation. And just to be absolutely sure, can you double-check if they serve alcohol?
+
+System: There was an error in the previous API call. I am making the API Call again.
+
+APICall (method='FindRestaurants', parameters= {restaurant_name: Bird Dog, city: Palo Alto, cuisine: American})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}]
+End Search Results
+System: They do not serve alcohol at Bird Dog restaurant. Do you still want me to confirm the reservation?
+
+User: Yes, please confirm the reservation. I appreciate you double-checking that for me.
+
+System: OK. I have confirmed your reservation at Bird Dog for tonight, March 1, 2019, at 7:30 PM for a party of 2.
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Palo Alto. I'd like to start by finding one that suits my preferences before making a reservation.
+
+System: Okay, I can help with that. To start, do you have any preferences for the type of cuisine you'd like to have?
+
+User: I'm thinking Italian. And ideally, a place that's not too expensive.
+
+System: Okay, I will search for an Italian restaurant in Palo Alto with a price range that is not too expensive. Would you consider "moderate" as an acceptable price range?
+
+
+User: Yes, moderate would be acceptable. Please proceed with the search.
+
+System: APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian, price_range: moderate})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-326-1626', 'price_range': 'moderate', 'restaurant_name': 'Cafe Pro Bono', 'serves_alcohol': False, 'street_address': '2437 Birch Street'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-324-8033', 'price_range': 'moderate', 'restaurant_name': 'La Strada Ristorante Italiano', 'serves_alcohol': False, 'street_address': '335 University Avenue'}]
+End Search Results
+System: I found three Italian restaurants in Palo Alto with a moderate price range: Buca Di Beppo Italian Restaurant, Cafe Pro Bono, and La Strada Ristorante Italiano. To help narrow it down further, would you like to know if any of them serve alcohol?
+
+User: Yes, please. I would prefer a restaurant that serves alcohol.
+
+System: Okay, I will verify which of these restaurants serve alcohol.
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian, price_range: moderate, serves_alcohol: True})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}]
+End Search Results
+System: Okay, it looks like Buca Di Beppo Italian Restaurant is the only one that serves alcohol. It's located at 643 Emerson Street, Palo Alto, and their phone number is 650-329-0665. Would you like to know anything else about Buca Di Beppo, or would you like to explore other options?
+
+User: Before I decide, could you confirm if Buca Di Beppo Italian Restaurant has a good reputation for food quality and service? I want to make sure it's a reliable choice.
+
+System: I understand that you're looking for a reliable choice. Unfortunately, I do not have access to reviews or reputation information for the restaurants. However, I can share the other details I have about Buca Di Beppo Italian Restaurant, such as its address (643 Emerson Street, Palo Alto), phone number (650-329-0665), and that it serves alcohol and is in the moderate price range. Would you like me to provide those details again, or would you like to consider other options?
+
+User: Please provide those details again, and also let me know if they have a website I can check for myself.
+
+System: I can provide the details I have. Buca Di Beppo Italian Restaurant is located at 643 Emerson Street, Palo Alto, with a phone number of 650-329-0665. It is in the moderate price range and serves alcohol. Unfortunately, I do not have information about their website. Would you like me to search for another restaurant, or would you like to proceed with a reservation at Buca Di Beppo based on the information I have?
+
+User: Given the details, I'll do some research on my own regarding Buca Di Beppo's reputation. In the meantime, could you please check if La Strada Ristorante Italiano has a website available? I'd like to compare both options before making a decision.
+
+System: I understand. I do not have access to the website information. I can provide the details I have for La Strada Ristorante Italiano. It is located at 335 University Avenue, Palo Alto, with a phone number of 650-324-8033. It is in the moderate price range and does not serve alcohol. Would you like me to search for another restaurant, or would you like to proceed with researching both Buca Di Beppo and La Strada Ristorante Italiano?
+
+User: I will proceed with researching both Buca Di Beppo and La Strada Ristorante Italiano. Thank you for the information provided so far.
+
+System: You're welcome. I hope you find the information you need to make a confident choice. If you decide to make a reservation at either restaurant, just let me know.
+
+User: I appreciate your help so far. However, I'd like to expand my options slightly. Could you search for Italian restaurants in Palo Alto that serve alcohol, but without the "moderate" price range restriction this time? I want to see if there are any highly-rated options, even if they are a bit more expensive.
+
+System: Okay, I'll broaden the search to include all price ranges for Italian restaurants in Palo Alto that serve alcohol. This will allow you to see if there are any higher-rated options, regardless of price.
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian, serves_alcohol: True})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}]
+End Search Results
+System: I found two Italian restaurants in Palo Alto that serve alcohol: Vina Enoteca, which is in the expensive price range, and Buca Di Beppo Italian Restaurant, which is in the moderate price range. Vina Enoteca is located at 700 Welch Road and can be reached at 650-646-3477. Buca Di Beppo is located at 643 Emerson Street and their phone number is 650-329-0665. Would you like to know anything else about either of these restaurants?
+
+User: Could you confirm if Vina Enoteca has a website available? I'd like to review their menu and ambiance before making a final decision. Additionally, does Vina Enoteca require reservations well in advance, given its price range?
+
+System: I do not have access to the website information or reservation policies. I can provide the details I have for Vina Enoteca. It is located at 700 Welch Road, Palo Alto, with a phone number of 650-646-3477. It is in the expensive price range and serves alcohol. To get the most accurate information regarding their website and reservation policies, especially given its price range, I would recommend contacting the restaurant directly. Would you like me to search for another restaurant, or would you like to proceed with contacting them directly?
+
+User: I will proceed with contacting them directly to inquire about their website and reservation policies. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

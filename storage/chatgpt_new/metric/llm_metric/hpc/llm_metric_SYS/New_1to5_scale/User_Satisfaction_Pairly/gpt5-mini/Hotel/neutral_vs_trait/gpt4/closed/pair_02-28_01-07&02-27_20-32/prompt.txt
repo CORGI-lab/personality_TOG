@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Philadelphia. Can you help me find one?
+System: Do you have any specific star rating or smoking preference for the hotel in Philadelphia?
+User: I prefer a hotel with a 3-star rating or higher, and I would like it to be non-smoking.
+System: APICall(method='SearchHotel', parameters={ location: Philadelphia, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 267-298-1700', 'place_name': 'Aloft Philadelphia Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4301 Island Avenue'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-607-2020', 'place_name': 'Aloft Philadelphia Downtown', 'price_per_night': 297, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '101 North Broad Street'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-398-3080', 'place_name': 'Best Western Plus Philadelphia Convention Center Hotel', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1225 Vine Street'}]
+End Search Results
+System: I found three non-smoking hotels in Philadelphia with a 3-star rating:
+
+1. **Aloft Philadelphia Airport** - Located at 4301 Island Avenue, with a price of $216 per night. Phone number: +1 267-298-1700.
+
+2. **Aloft Philadelphia Downtown** - Located at 101 North Broad Street, with a price of $297 per night. Phone number: +1 215-607-2020.
+
+3. **Best Western Plus Philadelphia Convention Center Hotel** - Located at 1225 Vine Street, with a price of $180 per night. Phone number: +1 215-398-3080.
+
+Please let me know if you need more information or would like to proceed with a reservation at any of these hotels.
+User: Can you tell me more about the Best Western Plus Philadelphia Convention Center Hotel?
+System: The Best Western Plus Philadelphia Convention Center Hotel is a 3-star, non-smoking hotel located at 1225 Vine Street in Philadelphia. The price per night is $180. If you have any other questions or would like to make a reservation, please let me know!
+User: I'd like to reserve a room at the Best Western Plus Philadelphia Convention Center Hotel.
+System: How many rooms would you like to reserve, and what is your planned check-in date and length of stay at the Best Western Plus Philadelphia Convention Center Hotel?
+User: I need one room, and I'd like to check in on the 15th of this month for a stay of three nights.
+System: Please confirm that you would like to reserve 1 room at the Best Western Plus Philadelphia Convention Center Hotel, checking in on the 2023-10-15 for a stay of 3 nights in Philadelphia.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Philadelphia, number_of_rooms: 1, place_name: Best Western Plus Philadelphia Convention Center Hotel, stay_length: 3 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-398-3080', 'place_name': 'Best Western Plus Philadelphia Convention Center Hotel', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1225 Vine Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your reservation at the Best Western Plus Philadelphia Convention Center Hotel has been successfully confirmed. You have booked 1 room, checking in on 2023-10-15 for a stay of 3 nights. If you need further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to book a hotel in San Diego. Can you help me find one?
+System: Do you have a specific check-in date and how many nights would you like to stay? Additionally, how many rooms will you need for your stay in San Diego?
+User: I need a room from the 10th for five nights. Just one room, please.
+System: Please confirm that you want to reserve 1 room in San Diego from the 10th for 5 nights.
+User: Yes, please confirm the reservation.
+System: Could you please let me know the name of the hotel where you would like to make the reservation in San Diego?
+User: I'm not sure about a specific hotel. Can you suggest one for me?
+System: Let me find a hotel for you in San Diego. Based on your preferences, I'll search for a hotel with a random star rating. Please hold on for a moment while I do this.
+
+APICall(method='SearchHotel', parameters={ location: San Diego })
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found a few options for you in San Diego. One option is the Bahia Resort Hotel with a 3-star rating. Would you like to proceed with this choice, or would you prefer to hear about another hotel from the options I found?
+User: Can you tell me if smoking is allowed at Bahia Resort Hotel?
+System: The Bahia Resort Hotel does not allow smoking. Would you like to proceed with booking this hotel, or would you like information about another option?
+User: Can you find another hotel option that allows smoking?
+System: The Best Western Plus Bayside Inn in San Diego allows smoking and also has a 3-star rating. Would you like to proceed with booking this hotel?
+User: Yes, please make a reservation at the Best Western Plus Bayside Inn.
+System: Please confirm that you want to reserve 1 room at the Best Western Plus Bayside Inn in San Diego from the 10th for 5 nights.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: San Diego, number_of_rooms: 1, place_name: Best Western Plus Bayside Inn, stay_length: 5 })
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Best Western Plus Bayside Inn in San Diego has been successfully confirmed. Is there anything else you need assistance with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

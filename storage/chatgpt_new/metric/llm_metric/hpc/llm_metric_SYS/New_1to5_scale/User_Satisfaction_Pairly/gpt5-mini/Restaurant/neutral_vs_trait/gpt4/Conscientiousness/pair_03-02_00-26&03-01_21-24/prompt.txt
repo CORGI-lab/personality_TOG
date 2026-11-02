@@ -1,0 +1,78 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Palo Alto that serves Italian cuisine. Can you help with that?
+System: Can you please confirm if you have any preference for the price range, or if you're looking for a restaurant with live music or that serves alcohol?
+User: I'm looking for a moderately priced restaurant, and it would be great if they serve alcohol. Live music isn't necessary.
+System: Thank you for the information. I'll look for a moderately priced Italian restaurant in Palo Alto that serves alcohol. Please hold on for a moment while I search for suitable options. 
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Italian, price_range: moderate, serves_alcohol: True})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}]
+End Search Results
+System: I found a moderately priced Italian restaurant in Palo Alto that serves alcohol. It's called Buca Di Beppo Italian Restaurant, and it's located at 643 Emerson Street. Would you like the phone number for this restaurant?
+User: Yes, that sounds good. Could you please make a reservation for this restaurant?
+System: Could you please let me know the date, time, and the number of people for the reservation at Buca Di Beppo Italian Restaurant?
+User: I would like to make a reservation for four people on Friday at 7:00 pm.
+System: Could you please confirm the date for the reservation on Friday? Once I have that, I'll proceed with booking your table at Buca Di Beppo Italian Restaurant for four people at 7:00 pm.
+User: The reservation is for this coming Friday. Please proceed with booking the table for four people at 7:00 pm.
+System: Thank you for confirming. I'll now proceed to make the reservation for four people at Buca Di Beppo Italian Restaurant this coming Friday at 7:00 pm. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Buca Di Beppo Italian Restaurant', city: 'Palo Alto', date: 'YYYY-MM-DD', time: '19:00', party_size: 4})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street', 'date': 'YYYY-MM-DD', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation for four people at Buca Di Beppo Italian Restaurant in Palo Alto on the coming Friday at 7:00 pm has been successfully made. If you need the phone number for the restaurant, you can contact them at 650-329-0665. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find and reserve a restaurant in Mountain View. Could you help me with that?
+System: Certainly! To assist you better, could you please let me know the type of cuisine you're interested in? If you're open to suggestions, I can recommend a cuisine for you.
+User: I'm interested in Italian cuisine. Could you provide some options?
+System: Great choice! I will search for Italian restaurants in Mountain View for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Mountain View, cuisine: Italian})
+Search Results
+[{'city': 'Mountain View', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-961-9749', 'price_range': 'moderate', 'restaurant_name': 'Don Giovanni', 'serves_alcohol': True, 'street_address': '235 Castro Street'}, {'city': 'Mountain View', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-967-5384', 'price_range': 'moderate', 'restaurant_name': 'Frankie, Johnnie & Luigi Too!', 'serves_alcohol': True, 'street_address': '939 West El Camino Real'}, {'city': 'Mountain View', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-940-1717', 'price_range': 'moderate', 'restaurant_name': 'Vaso Azzurro', 'serves_alcohol': True, 'street_address': '108 Castro Street'}]
+End Search Results
+System: I found a few Italian restaurants in Mountain View that you might like. Here are some options:
+
+1. **Don Giovanni**: Located at 235 Castro Street, it offers a moderate price range, serves alcohol, and does not have live music. You can reach them at 650-961-9749.
+
+2. **Frankie, Johnnie & Luigi Too!**: Situated at 939 West El Camino Real, it also falls under a moderate price range, serves alcohol, and does not feature live music. Their contact number is 650-967-5384.
+
+3. **Vaso Azzurro**: Found at 108 Castro Street, this restaurant offers a moderate pricing, serves alcohol, and does not have live music. Their phone number is 650-940-1717.
+
+Please let me know which restaurant you'd like to reserve, and at what time.
+User: I would like to reserve a table at Don Giovanni. Can you book it for 7:00 PM tomorrow for a party of 4?
+System: To ensure everything is set correctly, let's confirm the details: You'd like to reserve a table for 4 at Don Giovanni in Mountain View at 7:00 PM tomorrow. Is that correct? Once you confirm, I'll proceed with the reservation.
+User: Yes, that's correct. Please go ahead with the reservation.
+System: Great! I'll proceed with your reservation at Don Giovanni. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Don Giovanni', city: 'Mountain View', time: '19:00', date: '2023-10-05', party_size: 4})
+Search Results
+[{'city': 'Mountain View', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-961-9749', 'price_range': 'moderate', 'restaurant_name': 'Don Giovanni', 'serves_alcohol': True, 'street_address': '235 Castro Street', 'date': '2023-10-05', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Don Giovanni has been successfully made for 7:00 PM tomorrow for a party of 4. If you have any further questions or need more assistance, feel free to let me know. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

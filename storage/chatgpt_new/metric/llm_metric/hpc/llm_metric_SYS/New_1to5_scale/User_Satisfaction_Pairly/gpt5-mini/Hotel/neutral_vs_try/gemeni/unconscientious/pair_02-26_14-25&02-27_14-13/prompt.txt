@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I need to find a hotel. Somewhere... whatever, just pick a city for me. I don't really care.
+
+System: Okay, I understand. Since you're open to suggestions, how about we start with London? It's a vibrant city with plenty of hotels.
+
+APICall(method='SearchHotel', parameters={location: London})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: Alright, London it is. I see a few options here. There's "45 Park Lane," a 5-star hotel. Also, "Abc Hyde Park Hotel" is available with 3 stars, and "Abercorn House" with 1 star. Any of those strike you as less awful than the others?
+
+User: Ugh, I guess the 3-star one, "Abc Hyde Park Hotel," sounds... okay. Is it, like, super expensive? I haven't really checked my bank account lately...
+
+System: Okay, "Abc Hyde Park Hotel" it is. The price per night is $102. Does that fit within your vague budget?
+
+User: Yeah, I guess that's... fine. Hey, does it matter if it's, like, smokefree or whatever? I don't even remember if I still have my vape...
+
+System: Okay, good question. Let me check if "Abc Hyde Park Hotel" allows smoking. According to the information I have, smoking is not allowed at Abc Hyde Park Hotel. Are you okay with that, or should we look for a hotel that allows smoking?
+
+User: Whatever, smokefree is probably better anyway. Easier, I guess. Okay, so book it? I can never remember what day it is... Let's say... from tomorrow for, uh, 4 days? Is that how it works?
+
+System: Okay, let's get this booked then. Just to confirm, you want to book "Abc Hyde Park Hotel" in London, starting tomorrow for four days? I'll also need to know how many rooms you'll need.
+
+User: Ugh, just one room, I guess. Unless... wait, is it too late to change to that fancier one? The 5-star? Maybe I deserve it... nah, too much effort. Just the one room at the 3-star place. Whatever.
+
+System: Alright, one room at the "Abc Hyde Park Hotel" for four days starting tomorrow. Just to be absolutely clear, which date would you like to book for?
+User: Ugh, whatever the date is tomorrow. Just book it. I can't be bothered to look it up. Just make sure it's four days, like I said.
+
+System: Okay, one room at the "Abc Hyde Park Hotel" for four days starting tomorrow. I will go ahead and book it for you. Could you please confirm the year, so that I can book the hotel?
+
+User: Ugh, is it really necessary? Fine, whatever year it is now. Just hurry up and book it. I have things to not do.
+
+System: Okay, since you insist, I'll book one room at the "Abc Hyde Park Hotel" for four days starting tomorrow, in the current year. Let's get this done, then. One last thing: could you please confirm the full date of your check-in? After this I can proceed with the booking.
+
+User: Ugh, just look it up for me, for god's sake. It's too much to ask to just get the damn room booked? Whatever, fine... just tell me the date you need and I guess I can say it. But hurry.
+
+System: Okay, okay, no need to get worked up. I get it, details are annoying. But I need the exact date to book this right. So, for the check-in date, could you please confirm the month and day?
+
+User: Ugh, is it seriously that hard? Whatever, fine. It's... May, uh... what day is after today? The 9th. May 9th. Just book it already. My brain hurts.
+
+System: Okay, finally! One room at the "Abc Hyde Park Hotel" in London, checking in on May 9th for four days. I really hope this is the last step.
+APICall(method='ReserveHotel', parameters={check_in_date: 2024-05-09, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 4})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-05-09'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-05-09'}]
+End Search Results
+System: Okay, finally! One room at the "Abc Hyde Park Hotel" in London, checking in on May 9th for four days. I really hope this is the last step.
+
+Okay, good news! The booking for one room at Abc Hyde Park Hotel in London, starting tomorrow, May 9th, for four days, is confirmed. If you need anything else, just let me know. Hopefully, this is all done.
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I need to find a hotel somewhere. I haven't really thought about where... uh, surprise me? Maybe... Las Vegas? Yeah, Las Vegas sounds good.
+
+System: Okay, Las Vegas it is! To help me find the perfect hotel for you, do you have any preferences on the star rating, or do you have any other preferences?
+
+User: Star rating... hmm. I guess... anything is fine. Just whatever's cheapest, I guess? And uh... does it matter if they allow smoking? I'll probably forget and light one up anyway.
+
+System: Okay, I will search for a hotel in Las Vegas with any star rating and smoking allowed.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: dontcare, star_rating: dontcare })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found three hotels in Las Vegas that meet your criteria. Budget Suites Of America is a 1-star hotel that allows smoking. Hampton Inn Las Vegas/Summerlin is a 3-star hotel that allows smoking. Best Western Plus Las Vegas West is a 3-star hotel that does not allow smoking. Which one would you prefer?
+
+User: Ugh, decisions. Okay, uh, the 1-star one, Budget Suites of America, sounds... easy. Tell me more about that one. Price? Address? All that jazz.
+
+System: Okay, the Budget Suites Of America is a 1-star hotel. The price per night is $44, and the address is 2219 North Rancho Drive. The phone number is +1 702-638-1800. Would you like to make a reservation?
+
+User: Yeah, sounds good enough. Let's just book it. What do I need to tell you? Oh, right... name, Budget Suites of America, check-in... uh... tomorrow? How long... I dunno, a few days. Three?
+
+System: Okay, to book Budget Suites Of America, I need a check-in date and the length of your stay. You said you want to check in tomorrow and stay for three days. Could you please confirm the exact date you'd like to check in?
+
+User: Uh... sure, tomorrow... let's say, uh... June 8th? For three days, like I said. Just get it done, I guess.
+
+System: Okay, so you want to book 1 room at Budget Suites Of America in Las Vegas, checking in on June 8th, 2024, and staying for three days. Is that correct?
+
+User: Yeah, yeah, that sounds right. June 8th, three days, Budget Suites... just book it already.
+
+System: Okay, I will book 1 room at Budget Suites Of America in Las Vegas, checking in on June 8th, 2024, and staying for three days.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-06-08, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 3 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2024-06-08'}]
+End Search Results
+System: Okay, your booking at Budget Suites Of America has been confirmed for one room, checking in on June 8th, 2024, for a three-day stay. The phone number is +1 702-638-1800. Is there anything else I can help you with?
+
+User: Uh, no, that's probably fine... hope I don't regret this. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

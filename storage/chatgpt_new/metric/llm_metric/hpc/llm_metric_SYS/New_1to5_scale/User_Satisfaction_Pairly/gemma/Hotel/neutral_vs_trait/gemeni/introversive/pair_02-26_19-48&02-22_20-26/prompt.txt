@@ -1,0 +1,145 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel in San Francisco.
+
+System: Okay, I can help you with that. How many rooms do you need?
+
+User: Just one, please.
+
+System: Okay, and for what dates would you like to book the room and how long will you stay?
+
+User: From March 10th for two nights.
+
+System: My apologies, I missed the place_name in the API call. I need to search for a hotel first before making a reservation.
+
+APICall(method='SearchHotel', parameters={location: San Francisco})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I found three hotels in San Francisco: Amsterdam Hostel San Francisco with 1 star, Argonaut Hotel with 4 stars, and Beck'S Motor Lodge with 2 stars. Do any of these sound good to you?
+
+User: Perhaps the Argonaut Hotel. Does it allow smoking?
+
+System: The Argonaut Hotel does not allow smoking. Would you like to proceed with booking a room there?
+
+User: Okay, proceed with the booking at the Argonaut Hotel.
+
+System: Okay, I can help you with that. Just to confirm, you want to book 1 room at the Argonaut Hotel in San Francisco, checking in on March 10th for two nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={'location': 'San Francisco', 'number_of_rooms': 1, 'place_name': 'Argonaut Hotel', 'check_in_date': '2024-03-10', 'stay_length': 2})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': '1', 'phone_number': '+1 415-673-3277', 'place_name': 'Argonaut Hotel', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': '', 'street_address': '749 Taylor Street', 'check_in_date': '2024-03-10', 'stay_length': '2'}]
+End Search Results
+System: I am sorry, there seems to be an error in the search result. The phone number and street address do not match the Argonaut Hotel. The price per night also seems incorrect. Could you please confirm if you would still like to book at the Argonaut Hotel?
+
+User: Perhaps another hotel then. Something quiet.
+
+System: Okay, let me search for hotels with a quiet environment. Unfortunately, I do not have information about the environment of the hotels. I can only see the location, number of rooms, phone number, place name, price per night, smoking allowance, star rating, and street address. Would you like me to search again based on these criteria?
+
+User: Yes, please search again.
+
+System: What star rating would you prefer for the hotel?
+
+User: Anything but 5 stars.
+
+System: Okay, searching for hotels in San Francisco that are not 5-star.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: dontcare})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I found Amsterdam Hostel San Francisco (1 star), Argonaut Hotel (4 stars), and Beck'S Motor Lodge (2 stars). Which one would you prefer?
+
+User: Beck's Motor Lodge, I suppose.
+
+System: Okay, let's proceed with Beck's Motor Lodge. Just to confirm, you'd like to book 1 room at Beck's Motor Lodge in San Francisco, checking in on March 10th for two nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={'location': 'San Francisco', 'number_of_rooms': 1, 'place_name': "Beck'S Motor Lodge", 'check_in_date': '2024-03-10', 'stay_length': 2})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-03-10'}]
+End Search Results
+System: Great! Your booking at Beck's Motor Lodge has been confirmed. The hotel is located at 2222 Market Street and their phone number is +1 415-621-8212. Is there anything else I can help you with?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a hotel in Seattle.
+
+System: Okay, I can help with that. To start, are you looking for hotels with any specific star rating?
+
+User: Not really. Just something quiet.
+
+System: Okay, I understand. I'll search for hotels in Seattle.
+
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: dontcare})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found three hotels in Seattle. They all have a 2-star rating. Would you like to hear about them?
+
+User: Okay.
+
+System: The hotels are: Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown. Do any of those sound suitable?
+
+User: Tell me about Belltown Inn.
+
+System: Belltown Inn is located at 2301 3rd Avenue in Seattle. They have rooms available and the price is $186 per night. Their phone number is +1 866-525-4704. Does this sound like a place you might like to stay?
+
+User: Is it in a busy area?
+
+System: I don't have information about how busy the area is. However, I can tell you that the Belltown Inn is located at 2301 3rd Avenue and their phone number is +1 866-525-4704 if you would like to inquire further. Would you like to know about the other hotels?
+
+User: Yes, please.
+
+System: Ace Hotel Seattle is located at 2423 1st Avenue. The price per night is $136, and their phone number is +1 206-448-4721. Days Inn By Wyndham Seattle North Of Downtown is located at 9100 Aurora Avenue North. Their price per night is $84, and their phone number is +1 800-615-3107. Do either of these seem like a better fit?
+
+User: Days Inn...is it far from the city center?
+
+System: I don't have information about the distance from the city center. However, the address is 9100 Aurora Avenue North, and the phone number is +1 800-615-3107 if you would like to inquire. Would you like to consider booking either the Ace Hotel or the Days Inn?
+
+User: No, I think I'll pass on those. Are there any others? Maybe something with a higher rating?
+
+System: Okay. Let me search again in Seattle.
+
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: dontcare})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I am sorry, but there are no hotels with other star ratings in Seattle. Would you like to book one of the 2-star hotels?
+
+User: No, thank you. That's all.
+
+System: Okay. If you change your mind, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

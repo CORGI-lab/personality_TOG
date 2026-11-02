@@ -1,0 +1,108 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Berkeley.
+System: Do you have a specific type of cuisine in mind, or should I choose one for you?
+User: Something quiet, maybe Italian.
+System: Let me find some Italian restaurants in Berkeley for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Berkeley that might suit your preference for a quiet place. One option is Cugini Restaurant located at 1556 Solano Avenue. Would you like more information, or perhaps details on another restaurant?
+User: Could you tell me if Cugini Restaurant serves alcohol?
+System: Cugini Restaurant does not serve alcohol. Would you like information about another restaurant, or is there anything else you need to know?
+User: I would like information about another restaurant, please.
+System: Another option is Donato & Co., located at 2635 Ashby Avenue. It also doesn't serve alcohol, but it might be a good fit for a quiet dining experience. Would you like more details about this restaurant, or should I provide information on another option?
+User: I think I'd like to know about another option, please.
+System: The third option I found is Filippo's Berkeley Elmwood, located at 2930 College Avenue. This restaurant serves alcohol and might provide a quiet dining experience as well. Would you like more details about this restaurant, or is there anything else you'd like to know?
+User: Is Filippo's Berkeley Elmwood within a moderate price range?
+System: Yes, Filippo's Berkeley Elmwood is within a moderate price range. If there's anything else you'd like to know or if you need further assistance, feel free to let me know.
+User: I'd like to make a reservation at Filippo's Berkeley Elmwood. Can you arrange that for me?
+System: For your reservation at Filippo's Berkeley Elmwood, could you please provide the date, time, and the number of people for the reservation?
+User: For two people, I'd like to reserve a table on Friday evening at 7:00 pm.
+System: Thank you for providing the details. I'll proceed to make a reservation for two people at Filippo's Berkeley Elmwood on Friday evening at 7:00 pm. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Filippo's Berkeley Elmwood", city: Berkeley, date: YYYY-MM-DD, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two at Filippo's Berkeley Elmwood on Friday evening at 7:00 pm has been successfully made. If there's anything else you need, such as the restaurant's contact information or directions, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Palo Alto. Can you help me find something?
+System: What type of cuisine are you interested in, such as American, Italian, or something else?
+User: I'm interested in Italian cuisine.
+System: Great choice! Let me find some Italian restaurants in Palo Alto for you. Please hold on a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Italian})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: I found a few Italian restaurants in Palo Alto for you. How about Italico Restaurant located at 341 California Avenue? It is a bit on the expensive side.
+User: Is there a more budget-friendly option available?
+System: The options I found are all in the expensive range. Would you like me to search for Italian restaurants in Palo Alto with a different price range, or perhaps you are open to trying a different type of cuisine that might be more budget-friendly?
+User: I would prefer to stick with Italian cuisine. Can you check if there's anything less expensive nearby, maybe in a different area?
+System: Sure, I can check for Italian restaurants in a different area with a more budget-friendly price range. Can you please let me know which city or area you would like me to search in?
+User: Maybe try looking in Mountain View instead.
+System: Alright, I'll search for Italian restaurants in Mountain View that are more budget-friendly. Please hold on a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Mountain View, cuisine: Italian, price_range: budget})
+Search Results
+
+End Search Results
+System: Unfortunately, I couldn't find any budget-friendly Italian restaurants in Mountain View based on the current information. Would you like me to search for Italian restaurants in another nearby city, or perhaps try a different cuisine that might offer more budget-friendly options in Mountain View?
+User: Let's try looking in Sunnyvale for Italian restaurants.
+System: Alright, I'll search for Italian restaurants in Sunnyvale that might be more budget-friendly. Please hold on a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Sunnyvale, cuisine: Italian, price_range: budget})
+Search Results
+
+End Search Results
+System: I couldn't find any budget-friendly Italian restaurants in Sunnyvale based on the current information. Would you like me to try searching for Italian restaurants in another nearby city, or are you open to exploring a different type of cuisine that might offer more budget-friendly options in Sunnyvale?
+User: Can you check for Italian restaurants in Santa Clara instead?
+System: Sure, I'll search for Italian restaurants in Santa Clara that might be more budget-friendly. Please hold on a moment.
+
+APICall (method='FindRestaurants', parameters={city: Santa Clara, cuisine: Italian, price_range: budget})
+Search Results
+
+End Search Results
+System: Unfortunately, I wasn't able to find any budget-friendly Italian restaurants in Santa Clara based on the current information. Would you like me to continue searching in another nearby city, or are you open to trying a different type of cuisine that might offer more budget-friendly options in Santa Clara?
+User: Let's try looking for Italian restaurants in Cupertino.
+System: Alright, I'll search for Italian restaurants in Cupertino that might be more budget-friendly. Please hold on a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Cupertino, cuisine: Italian, price_range: budget})
+Search Results
+
+End Search Results
+System: I couldn't find any budget-friendly Italian restaurants in Cupertino based on the current information. Would you like me to try searching in another nearby city, or are you open to exploring a different type of cuisine that might offer more budget-friendly options in Cupertino?
+User: Let's try looking in Fremont for Italian restaurants.
+System: Alright, I'll search for Italian restaurants in Fremont that might be more budget-friendly. Please hold on a moment.
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian, price_range: budget})
+Search Results
+
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

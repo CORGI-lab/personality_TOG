@@ -1,0 +1,115 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in Seattle, please.
+System: Do you have a specific star rating in mind for the hotel in Seattle, or are you open to any rating?
+User: I'm open to any rating, but I prefer a quiet place.
+System: Could you please let me know if you have any preferences regarding smoking allowance in the hotel? This will help me narrow down the options for you.
+User: I prefer non-smoking hotels.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 5, smoking_allowed: False })
+Search Results
+
+End Search Results
+System: It seems there were no results found for a 5-star, non-smoking hotel in Seattle. Would you like me to search for hotels with a different star rating or modify your preferences to find available options?
+User: Could you try searching for 4-star non-smoking hotels in Seattle instead?
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-448-8600', 'place_name': 'Hotel Andra', 'price_per_night': 372, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2000 4th Avenue'}]
+End Search Results
+System: I found a few 4-star, non-smoking hotels in Seattle for you:
+
+1. **Crowne Plaza Seattle Downtown**  
+   - Price per night: $120  
+   - Address: 1113 6th Avenue  
+   - Phone: +1 206-464-1980  
+
+2. **Grand Hyatt Seattle**  
+   - Price per night: $456  
+   - Address: 721 Pine Street  
+   - Phone: +1 206-774-1234  
+
+3. **Hotel Andra**  
+   - Price per night: $372  
+   - Address: 2000 4th Avenue  
+   - Phone: +1 206-448-8600  
+
+Would you like more information about any of these hotels, or is there anything else I can assist you with?
+User: Could you tell me more about the Crowne Plaza Seattle Downtown, please?
+System: The Crowne Plaza Seattle Downtown is a 4-star, non-smoking hotel located at 1113 6th Avenue, Seattle. The price per night is $120, and you can contact them at +1 206-464-1980. If you need further details or wish to proceed with a reservation, please let me know how I can assist you!
+User: I think I'll go with Crowne Plaza Seattle Downtown. Can you make a reservation for one room? I'll check in on the 10th and stay for five nights.
+System: Please confirm that you would like to reserve 1 room at the Crowne Plaza Seattle Downtown, checking in on the 10th and staying for 5 nights in Seattle.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: "Crowne Plaza Seattle Downtown", stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Crowne Plaza Seattle Downtown has been successfully confirmed for 1 room, starting from November 10th for a stay of 5 nights. If there is anything else you need or any other details you require, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Seattle. Can you help me find one?
+System: Certainly! Do you have any preferences for the star rating of the hotel or whether smoking is allowed?
+User: I'm not too concerned about smoking, but a decent star rating would be nice. Maybe something around 3 or 4 stars.
+System: Great! Let me search for hotels in Seattle with a star rating of 3 or 4. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: "3 or 4" })
+Search Results
+
+End Search Results
+System: It seems that the search did not return any results. Would you be open to considering hotels with different star ratings, or should I search for other options in Seattle?
+User: I can consider a 5-star hotel if it's available.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 5 })
+Search Results
+
+End Search Results
+System: Unfortunately, the search did not return any results for 5-star hotels either. Would you like to explore options with a 2-star rating, or perhaps consider changing the location?
+User: I'll stick with Seattle. Can you try finding a 2-star hotel there, please?
+System: Certainly, let me search for 2-star hotels in Seattle for you. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 2 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few options for 2-star hotels in Seattle. Here are some choices:
+
+1. **Ace Hotel Seattle**: Located at 2423 1st Avenue, it offers rooms at $136 per night. Smoking is not allowed. You can contact them at +1 206-448-4721.
+
+2. **Belltown Inn**: Situated at 2301 3rd Avenue, with a rate of $186 per night. Smoking is not permitted. Their phone number is +1 866-525-4704.
+
+3. **Days Inn By Wyndham Seattle North Of Downtown**: Found at 9100 Aurora Avenue North, the price per night is $84. Smoking is not allowed. You can reach them at +1 800-615-3107.
+
+Please let me know if any of these options interest you or if there's anything else you'd like me to do.
+User: Could you tell me a bit more about the Days Inn By Wyndham Seattle North Of Downtown? Like the star rating and any additional amenities they might offer? 
+System: The Days Inn By Wyndham Seattle North Of Downtown is a 2-star hotel located at 9100 Aurora Avenue North. Unfortunately, the search results do not provide additional details about amenities beyond the basic information. If you have any other specific questions or need further assistance, feel free to ask!
+User: Is the Days Inn By Wyndham Seattle North Of Downtown available for a reservation starting on the 10th for a week?
+System: Could you please confirm the number of rooms you would like to reserve at the Days Inn By Wyndham Seattle North Of Downtown, starting on the 10th for a week?
+User: Just one room, please.
+System: Please confirm to book 1 room at the Days Inn By Wyndham Seattle North Of Downtown from the 10th for 7 days in Seattle.
+User: Yes, please go ahead and confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: 'Days Inn By Wyndham Seattle North Of Downtown', stay_length: 7 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation for 1 room at the Days Inn By Wyndham Seattle North Of Downtown from November 10th for 7 days in Seattle has been successfully confirmed. If there's anything else you need assistance with, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

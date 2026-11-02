@@ -1,0 +1,133 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a restaurant in Berkeley.
+
+System: What type of cuisine would you prefer?
+
+User: Maybe something simple, like American food?
+
+System: APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: American})
+
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-647-9329', 'price_range': 'moderate', 'restaurant_name': 'B&b Kitchen & Wine Bar', 'serves_alcohol': True, 'street_address': '2116 Shattuck Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-338-3464', 'price_range': 'moderate', 'restaurant_name': 'Beer Baron Bar & Kitchen', 'serves_alcohol': True, 'street_address': '5900 College Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-809-8282', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '2068 Center Street'}]
+End Search Results
+System: I found three American restaurants in Berkeley: B&b Kitchen & Wine Bar, Beer Baron Bar & Kitchen, and Eureka!. Would you like to know more about any of them?
+
+User: Perhaps Eureka!?
+
+System: Eureka! is located at 2068 Center Street. The phone number is 510-809-8282. It has a moderate price range and serves alcohol. Would you like to make a reservation?
+
+User: No, just looking for options. Do any of them not serve alcohol?
+
+System: Okay, let me check that for you.
+APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: American, serves_alcohol: False})
+
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-280-5920', 'price_range': 'moderate', 'restaurant_name': "Nico's 1508", 'serves_alcohol': False, 'street_address': '1508 Walnut Street B'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-549-9950', 'price_range': 'moderate', 'restaurant_name': 'Revival Bar + Kitchen', 'serves_alcohol': False, 'street_address': '2102 Shattuck Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-644-0444', 'price_range': 'moderate', 'restaurant_name': 'Zut!', 'serves_alcohol': False, 'street_address': '1820 Fourth Street'}]
+End Search Results
+System: I found three American restaurants in Berkeley that do not serve alcohol: Nico's 1508, Revival Bar + Kitchen, and Zut!. Would you like to know more about any of them?
+
+User: Nico's 1508.
+
+System: Nico's 1508 is located at 1508 Walnut Street B. The phone number is 510-280-5920. It has a moderate price range. Would you like to make a reservation?
+
+User: No, thank you. Perhaps another option?
+
+System: Okay, let me give you the details for Revival Bar + Kitchen. It is located at 2102 Shattuck Avenue and the phone number is 510-549-9950. It has a moderate price range. Would you like to make a reservation?
+
+User: No, thank you. Do any of these have live music?
+
+System: ```tool_code
+APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: American, serves_alcohol: False, has_live_music: True})
+```
+Search Results
+
+End Search Results
+System: I am sorry, I cannot fulfill your request as there are no restaurants that match your criteria of having live music, not serving alcohol, and serving American cuisine in Berkeley.
+
+User: Okay. Maybe just find a place with American food and not worry about the alcohol.
+
+System: ```tool_code
+APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: American, has_live_music: True})
+```
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-843-8277', 'price_range': 'moderate', 'restaurant_name': 'Jupiter', 'serves_alcohol': True, 'street_address': '2181 Shattuck Avenue'}]
+End Search Results
+System: Okay, I found one restaurant that fits your criteria. Jupiter has American cuisine and live music. It's located at 2181 Shattuck Avenue and the phone number is 510-843-8277. It has a moderate price range and serves alcohol. Would you like to make a reservation?
+
+User: No, thank you. I think I would prefer a quieter setting.
+
+System: ```tool_code
+APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: American, has_live_music: False})
+```
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-647-9329', 'price_range': 'moderate', 'restaurant_name': 'B&b Kitchen & Wine Bar', 'serves_alcohol': True, 'street_address': '2116 Shattuck Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-338-3464', 'price_range': 'moderate', 'restaurant_name': 'Beer Baron Bar & Kitchen', 'serves_alcohol': True, 'street_address': '5900 College Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-809-8282', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '2068 Center Street'}]
+End Search Results
+System: Okay, I found three American restaurants in Berkeley without live music: B&b Kitchen & Wine Bar, Beer Baron Bar & Kitchen, and Eureka!. Would you like to know more about any of them?
+
+User: B\&b Kitchen & Wine Bar.
+
+System: B&b Kitchen & Wine Bar is located at 2116 Shattuck Avenue. The phone number is 510-647-9329. It has a moderate price range and serves alcohol. Would you like to make a reservation?
+
+User: No, thank you. That's all I need.
+
+Dialogue B:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: Okay, I can help with that. Do you have a particular type of cuisine in mind?
+
+User: Maybe something simple, like American.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Alright! I found 3 American restaurants in San Francisco. 1760 is located at 1760 Polk Street, 25 Lusk is located at 25 Lusk Street and 3rd Cousin is located at 919 Cortland Avenue. All of them are in the expensive price range. Would you like to explore any of these options further?
+
+User: Perhaps 1760. Can you check if they have reservations available?
+
+System: Do you have a specific date and time in mind for your reservation at 1760?
+
+User: I don't like being the center of attention, so could you check for a reservation for just one person? Tomorrow evening, maybe around 7 pm?
+
+System: Okay, let me check for a reservation for you at 1760 in San Francisco for tomorrow, March 2nd, at 7 pm for one person.
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 1760, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 1})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street', 'date': '2019-03-02', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Great. I have a reservation for you at 1760 in San Francisco for tomorrow, March 2nd, at 7 pm for one person. Is that correct?
+
+User: Yes, that's correct.
+
+System: Wonderful. Your reservation at 1760 is confirmed for tomorrow, March 2nd, at 7 pm for one person. Is there anything else I can assist you with?
+
+User: That will be all. Thanks a lot!
+
+System: You're welcome! Enjoy your dinner at 1760. Have a pleasant and peaceful evening!
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

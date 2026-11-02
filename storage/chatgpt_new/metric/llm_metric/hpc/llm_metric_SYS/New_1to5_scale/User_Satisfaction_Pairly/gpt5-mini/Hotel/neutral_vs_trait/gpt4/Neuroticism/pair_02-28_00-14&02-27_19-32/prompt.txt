@@ -1,0 +1,86 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in New York. Can you help me find one? I really hope it's not too expensive, and it should definitely have a good star rating. I don't want to end up in a place that makes me feel more stressed.
+System: To help you find a suitable hotel in New York, could you please let me know if you have any specific star rating in mind, or if you're open to different options? This will help us find a place that meets your expectations and ensures a more comfortable stay.
+User: I'm really anxious about staying somewhere that doesn't meet my expectations, so I'm looking for a 4 or 5-star hotel. Can you please find something like that for me? And please, nothing too costly. I don't want to end up regretting it.
+System: Thank you for sharing your preferences. To find a hotel that will provide you with a comfortable and stress-free experience, I'll search for 4 or 5-star hotels in New York. Let's see if we can find something that balances both quality and cost for you. Please hold on for a moment while I make the search.
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}]
+End Search Results
+System: I've found some 4-star hotels in New York that might suit your needs. One option is the 1 Hotel Brooklyn Bridge, which costs $216 per night and allows smoking. It's located at 60 Furman Street, Brooklyn. Would you like more details about this hotel, or should I check another option for you?
+User: I'm not sure about the smoking part; it makes me a bit uneasy. Can you find a non-smoking option instead? Also, I really hope it doesn't end up being too expensive.
+System: I understand your concern about smoking. Another option is the Ac Hotel New York Times Square, which is a non-smoking hotel. It offers rooms at $176 per night and is located at 260 West 40th Street. Does this sound like a suitable choice for you?
+User: I'm still worried about the price, but I guess $176 per night isn't too bad. Can you tell me more about the amenities or anything else that might help me make a decision? I just want to be sure before I commit.
+System: I understand your need for assurance. Unfortunately, the specific amenities for the Ac Hotel New York Times Square aren't listed in the current search results. However, I can confirm that it's a non-smoking hotel, which should provide a more comfortable environment. If you're comfortable with the price and location, I can proceed with reserving a room for you. Let me know if you have any other questions or if you'd like to go ahead with the booking.
+User: I wish there was more information about what they offer, but I guess I have to take a leap of faith here. Can you go ahead and reserve a room for me? I'll try to keep my fingers crossed that it turns out okay. Oh, and make sure it's for two nights starting from the 15th of this month.
+System: Please confirm that you would like to reserve a room at the Ac Hotel New York Times Square for two nights, starting from the 15th of this month. Once confirmed, I'll proceed with the booking for you.
+User: Yes, please confirm the reservation. I'm really hoping everything goes smoothly.
+System: Thank you for confirming. I'll proceed with the reservation at the Ac Hotel New York Times Square for two nights, starting from the 15th of this month. Please hold on while I make the booking.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: New York, number_of_rooms: 1, place_name: Ac Hotel New York Times Square, stay_length: 2 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street', 'check_in_date': '2023-11-15'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street', 'check_in_date': '2023-11-15'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-764-5700', 'place_name': 'Aka Times Square', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '123 West 44th Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Ac Hotel New York Times Square for two nights starting from the 15th of this month has been successfully confirmed. It's located at 260 West 40th Street, and the contact number is +1 212-398-2700. If you have any other questions or need further assistance, feel free to let me know. I hope your stay is comfortable and stress-free!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm planning to visit New York, and I'm already feeling a bit anxious about finding the right hotel. Can you help me search for one there?
+System: Do you have any specific preferences for the hotel, such as star rating, smoking allowance, or the number of rooms needed?
+User: I would prefer a hotel that's not too fancy, maybe around 3 stars, but definitely smoke-free. Also, I need two rooms because I'm traveling with someone else. Can you find something like that?
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 3, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-433-9305', 'place_name': 'Aloft Long Island City-Manhattan View', 'price_per_night': 234, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '27-45 Jackson Avenue, Long Island City'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-513-0003', 'place_name': 'Aloft Manhattan Downtown - Financial District', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '49-53 Ann Street'}]
+End Search Results
+System: I found a 3-star hotel in New York called Aloft Long Island City-Manhattan View, which is smoke-free and offers two rooms. The price per night is $234, and the address is 27-45 Jackson Avenue, Long Island City. Would you like more information about this hotel, or should I go ahead and make a reservation for you?
+User: Can you check if there are any other similar options? I'm just feeling a bit uncertain and want to make sure I'm making the right choice.
+System: Another option is Aloft Harlem, a 3-star, smoke-free hotel in New York. It has three rooms available, and the price per night is $243. The hotel is located at 2296 Frederick Douglass Boulevard. Would you like to know more about this hotel or proceed with a reservation?
+User: I'm feeling a bit overwhelmed with the choices. Can you tell me more about the amenities or any guest reviews for Aloft Harlem? I want to be sure it's a comfortable place to stay.
+System: I'm sorry, but I do not have access to information about specific amenities or guest reviews for Aloft Harlem. The available details include its 3-star rating, smoke-free environment, price of $243 per night, and location at 2296 Frederick Douglass Boulevard. If you need further assistance or would like to proceed with making a reservation, please let me know.
+User: I'm not sure what to do. I just want to make sure I choose the right place. Can you reassure me that this hotel is a good choice, or check if there are any other options? I just can't shake the feeling that I might be making a mistake.
+System: I understand it can be difficult to make a decision with so many options. Let's take a step back and focus on what's most important to you. So far, Aloft Harlem is a 3-star hotel, smoke-free, and fits your requirement of having two rooms, with its location at 2296 Frederick Douglass Boulevard and a nightly rate of $243. If you prefer, I can check for more options or make a reservation for you at this hotel. Let me know how you'd like to proceed!
+User: I guess I just keep second-guessing myself. Could you maybe check for one more option? I know I'm being indecisive, but I really want to feel certain about my choice.
+System: Of course, I understand the importance of feeling confident in your choice. Let me check for one more option that fits your criteria of a 3-star, smoke-free hotel with two rooms in New York. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 3, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-433-9305', 'place_name': 'Aloft Long Island City-Manhattan View', 'price_per_night': 234, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '27-45 Jackson Avenue, Long Island City'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-513-0003', 'place_name': 'Aloft Manhattan Downtown - Financial District', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '49-53 Ann Street'}]
+End Search Results
+System: Based on your criteria, another option available is the Aloft Manhattan Downtown - Financial District. It's a 3-star, smoke-free hotel in New York, with one room available. The price per night is $63, and it is located at 49-53 Ann Street. Please let me know if you'd like to proceed with this option or if you have any other preferences.
+User: Oh no, only one room available? That won't work since I need two rooms. I feel like I'm running out of options, and it's stressing me out. Could you go back and check if Aloft Long Island City-Manhattan View is still available? Maybe I should just go with that one.
+System: Certainly! Aloft Long Island City-Manhattan View is still available. It's a 3-star, smoke-free hotel in New York, offering two rooms at a rate of $234 per night. The hotel is located at 27-45 Jackson Avenue, Long Island City. Shall I proceed with making a reservation for you at this hotel?
+User: Yes, please go ahead and make the reservation for me. I'm feeling really anxious about this, so I just want to get it done. Can you confirm the details with me?
+System: Certainly! To confirm, I will proceed with booking two rooms at Aloft Long Island City-Manhattan View in New York. It's a 3-star, smoke-free hotel with a nightly rate of $234. The address is 27-45 Jackson Avenue, Long Island City. Could you please provide the check-in date and the number of nights you'll be staying so I can finalize the reservation?
+User: Alright, let's get this over with. I'll be checking in on the 5th, and I'll be staying for five nights. I just hope everything goes smoothly.
+System: Thank you for providing the details. To confirm, I will book two rooms at Aloft Long Island City-Manhattan View in New York, with your check-in date on the 5th and a stay length of five nights. Let me proceed with the reservation. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: New York, number_of_rooms: 2, place_name: 'Aloft Long Island City-Manhattan View', stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-433-9305', 'place_name': 'Aloft Long Island City-Manhattan View', 'price_per_night': 234, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '27-45 Jackson Avenue, Long Island City', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your reservation at Aloft Long Island City-Manhattan View in New York has been successfully confirmed. You'll have two rooms reserved, with a check-in date of November 5th, for a stay of five nights. The hotel is located at 27-45 Jackson Avenue, Long Island City. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

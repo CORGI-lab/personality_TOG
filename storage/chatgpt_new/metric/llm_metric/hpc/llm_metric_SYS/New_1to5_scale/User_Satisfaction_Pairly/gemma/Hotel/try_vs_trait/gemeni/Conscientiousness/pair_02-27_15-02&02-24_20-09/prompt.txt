@@ -1,0 +1,182 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel in Berlin. I'd like to start by searching for hotels with at least a 4-star rating.
+
+System: Okay, I can help you with that.
+
+APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 4})
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+System: I found three 4-star hotels in Berlin: Adina Apartment Hotel Berlin Mitte, Ameron Hotel Abion Spreebogen Waterside, and Arcotel John F Berlin. Would you like to know more about any of them?
+
+User: Yes, please. Could you provide more details about the Adina Apartment Hotel Berlin Mitte? I'm particularly interested in knowing if they have non-smoking rooms and the price per night.
+
+System: Okay, regarding the Adina Apartment Hotel Berlin Mitte: it has a price per night of $160. Smoking is allowed. Would you like to know the address or phone number?
+
+User: Smoking is allowed? Hmm, that's not ideal. Could you tell me about the Ameron Hotel Abion Spreebogen Waterside instead? Specifically, I'd like to know if smoking is allowed there and what the price per night is.
+
+System: The Ameron Hotel Abion Spreebogen Waterside does not allow smoking and the price per night is $360. Would you like to know the address or phone number?
+
+User: That sounds better. Before I make a decision, could you also confirm the star rating for the Ameron Hotel Abion Spreebogen Waterside to be absolutely certain?
+
+System: Yes, I can confirm that the Ameron Hotel Abion Spreebogen Waterside has a 4-star rating.
+
+User: Alright, that's reassuring. Given the non-smoking policy and the 4-star rating, I'm leaning towards the Ameron Hotel Abion Spreebogen Waterside. Before I commit, though, could you tell me how many rooms they have available? I want to be sure they can accommodate my needs when I make the reservation.
+
+System: Based on the search results, the Ameron Hotel Abion Spreebogen Waterside has 2 rooms available. Is there anything else I can help you with?
+
+User: Okay, two rooms available. That's a bit tight. Before I decide, can you check if there are any other 4-star hotels in Berlin that *don't* allow smoking? I want to be absolutely sure I've considered all my options before booking.
+
+System:  System: Certainly! Let me check for other 4-star hotels in Berlin that do not allow smoking.
+
+APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 4, smoking_allowed: False})
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: Okay, I found three 4-star hotels in Berlin that do not allow smoking: Ameron Hotel Abion Spreebogen Waterside, Holiday Inn Berlin City East-Landsberger, and Hotel Novotel Berlin Mitte. Would you like to know more about any of them?
+
+User: Yes, please provide the price per night and number of rooms available for both the Holiday Inn Berlin City East-Landsberger and the Hotel Novotel Berlin Mitte. I want to make a careful comparison before deciding.
+
+System: Okay, for the Holiday Inn Berlin City East-Landsberger, the price per night is $432 and there are 2 rooms available. For the Hotel Novotel Berlin Mitte, the price per night is $280 and there are also 2 rooms available.
+
+User: Thank you. Given that all three hotels only have two rooms available, could you search specifically for hotels with at least *three* rooms available, that are 4-star, and non-smoking? I'd like to make absolutely sure I'm not limited by room availability before making my choice.
+
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 4, smoking_allowed: False, number_of_rooms: 3})
+```
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: I checked for 4-star, non-smoking hotels in Berlin with at least three rooms available, but unfortunately, I couldn't find any that meet that specific requirement. The Ameron Hotel Abion Spreebogen Waterside, Holiday Inn Berlin City East-Landsberger, and Hotel Novotel Berlin Mitte all have 4 stars, do not allow smoking, but only have 2 rooms available. Would you like me to proceed with one of these options, or would you like to broaden your search criteria?
+
+User: Let's proceed with the Hotel Novotel Berlin Mitte. I'd like to reserve a room there, please.
+
+System: Okay, I can help you with that. To make a reservation at the Hotel Novotel Berlin Mitte, I'll need a bit more information. Could you please tell me the date you'd like to check in and the length of your stay?
+
+User: I'd like to check in on December 28th and stay for 5 nights. Could you confirm the total price for the stay before I finalize the reservation?
+
+System: Okay, I can help you with that. Let me confirm the details: You want to book at the Hotel Novotel Berlin Mitte, checking in on December 28th for a 5-night stay. Just to be clear, could you confirm the year for your check-in date?
+
+User: Yes, the year is 2024. Also, please confirm the total price, including any taxes or fees, for the entire 5-night stay before proceeding with the reservation. I want to ensure I have an accurate understanding of the costs involved.
+
+System:  System:  Understood. Let me calculate the total price for a 5-night stay at the Hotel Novotel Berlin Mitte, checking in on December 28, 2024.
+
+APICall(method='ReserveHotel', parameters={place_name: 'Hotel Novotel Berlin Mitte', location: Berlin, check_in_date: 2024-12-28, stay_length: 5})
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179', 'check_in_date': '2024-12-28'}]
+End Search Results
+System: Okay, I have the information for your stay at the Hotel Novotel Berlin Mitte. The price per night is $280. Since you're staying for 5 nights, the total cost would be $1400. Does that sound right to you?
+
+User: Yes, that sounds right. Please proceed with the reservation.
+
+System: Okay, I will proceed with the reservation for the Hotel Novotel Berlin Mitte, checking in on December 28, 2024, for 5 nights, at a total cost of $1400. Can you confirm how many rooms you'd like to reserve?
+
+User: Just one room, please.
+
+System: Okay, just to confirm, you would like me to reserve one room at the Hotel Novotel Berlin Mitte, with check-in on December 28, 2024, for a 5-night stay, totaling $1400. Is that correct?
+
+User: Yes, that is correct. Please finalize the reservation.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={place_name: 'Hotel Novotel Berlin Mitte', location: Berlin, check_in_date: 2024-12-28, stay_length: 5, number_of_rooms: 1})
+```
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179', 'check_in_date': '2024-12-28'}]
+End Search Results
+System:  Okay, I have successfully reserved one room for you at the Hotel Novotel Berlin Mitte, checking in on December 28, 2024, for a 5-night stay. The total cost is $1400. Is there anything else I can help you with today?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to book a hotel room in Toronto. I'd like to start by seeing what's available.
+
+System: Okay, I can help with that. To ensure I find the most suitable options for you, could you please confirm the dates you're planning to check in and how long you intend to stay?
+
+User: I'm planning to check in on October 27th and I'll need the room for 3 nights. I'd also like to know what the star ratings are for the available hotels. I typically prefer something with a higher rating, but I'm open to considering all options.
+
+System: Certainly, I can assist you with that. To proceed effectively, could you please specify the year for your check-in date? This will ensure that I can accurately search for available hotels for you.
+
+User: My check-in date is October 27th, 2024. Before proceeding, could you clarify what "available" means? Does it mean hotels that have rooms available, or hotels that meet a certain quality standard? To be efficient, I want to make sure we're both on the same page.
+
+System: Thank you for the clarification. When I say "available," I mean hotels that have rooms available for booking based on your check-in date and length of stay. I will search for hotels in Toronto with check-in on 2024-10-27 for 3 nights.
+
+APICall(method='SearchHotel', parameters={location: Toronto})
+
+Search Results
+[{'location': 'Toronto', 'number_of_rooms': 1, 'phone_number': '+1 416-963-6300', 'place_name': 'The Hazelton Hotel', 'price_per_night': 125, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '118 Yorkville Avenue'}, {'location': 'Toronto', 'number_of_rooms': 1, 'phone_number': '+1 416-585-2500', 'place_name': 'The Ritz-Carlton, Toronto', 'price_per_night': 175, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '181 Wellington Street West'}, {'location': 'Toronto', 'number_of_rooms': 2, 'phone_number': '+1 416-663-9500', 'place_name': 'Best Western Plus Toronto North York Hotel & Suites', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '50 Norfinch Drive'}]
+End Search Results
+System: I have found a few hotels in Toronto that match your criteria. The Hazelton Hotel and The Ritz-Carlton, Toronto are both 5-star hotels. Additionally, there's the Best Western Plus Toronto North York Hotel & Suites, which is a 3-star hotel. Would you like to know more about any of these options to help you decide?
+
+User: Yes, please. Could you provide more details, specifically the price per night and street address for each of these hotels? I want to ensure they are conveniently located and within a reasonable budget.
+
+System: Certainly, I can provide those details for you.
+
+*   **The Hazelton Hotel:** Price per night is $125, and the street address is 118 Yorkville Avenue.
+*   **The Ritz-Carlton, Toronto:** Price per night is $175, and the street address is 181 Wellington Street West.
+*   **Best Western Plus Toronto North York Hotel & Suites:** Price per night is $228, and the street address is 50 Norfinch Drive.
+
+Do any of these options seem like a good fit for your needs, or would you like additional information to help you make a decision?
+
+User: Thank you for providing the details. Based on the information, The Hazelton Hotel at $125 per night seems like a reasonable option. Before I make a decision, could you confirm whether the listed prices include all taxes and fees, or if there are additional costs I should be aware of? I want to ensure there are no surprises when booking.
+
+System: I understand your concern about potential additional costs. While I don't have access to real-time pricing that includes all taxes and fees, the listed price is the base price per night. It would be best to confirm directly with the hotel about any additional taxes or fees.
+
+If you're satisfied with the Hazelton Hotel, would you like me to proceed with checking availability for your dates (October 27th, 2024 for 3 nights) and potentially reserving a room for you? To proceed, I would need the number of rooms you'd like to reserve, and the place name.
+
+User: Yes, I am satisfied with The Hazelton Hotel. Please proceed with checking availability and reserving one room for me for three nights, starting October 27th, 2024. The place name is The Hazelton Hotel.
+
+System: Okay, I will proceed with checking the availability and reserving one room at The Hazelton Hotel in Toronto for you. Just to confirm, the check-in date is October 27th, 2024, for a stay of three nights.
+
+APICall(method='ReserveHotel', parameters={place_name: 'The Hazelton Hotel', check_in_date: '2024-10-27', stay_length: 3, location: 'Toronto', number_of_rooms: 1})
+
+Search Results
+[{'location': 'Toronto', 'number_of_rooms': 1, 'phone_number': '+1 416-963-6300', 'place_name': 'The Hazelton Hotel', 'price_per_night': 125, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '118 Yorkville Avenue', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Great. I have confirmed your reservation for one room at The Hazelton Hotel in Toronto, checking in on October 27th, 2024, for a duration of three nights.
+
+The Hazelton Hotel is located at 118 Yorkville Avenue.
+
+Is there anything else I can assist you with regarding your reservation or any other inquiries you may have?
+
+User: Before we finalize, could you please double-check the reservation dates and duration to ensure they are accurately recorded? I'd also appreciate it if you could provide a confirmation number or reference for my records.
+
+System: I understand the importance of confirming all details.
+
+I have re-confirmed your reservation details as following:
+* Hotel Name: The Hazelton Hotel
+* Location: Toronto
+* Check-in Date: October 27th, 2024
+* Duration of Stay: 3 nights
+* Number of Rooms: 1
+
+Please note that I am unable to provide a confirmation number. For a confirmation number and any additional details regarding your reservation, such as information on hotel policies or amenities, I recommend contacting The Hazelton Hotel directly at +1 416-963-6300.
+
+Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

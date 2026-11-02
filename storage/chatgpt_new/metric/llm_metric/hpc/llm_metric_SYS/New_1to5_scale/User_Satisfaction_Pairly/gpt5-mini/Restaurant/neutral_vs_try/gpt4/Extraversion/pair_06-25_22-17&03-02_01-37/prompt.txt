@@ -1,0 +1,53 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm on the hunt for an exciting place to eat with some friends! Let's make it in San Francisco. Could you help me find a spot with a fun vibe? Maybe something with live music and a great atmosphere? I'm thinking something like Italian or maybe a cool fusion cuisine.
+System: That sounds like a fun outing! Let me find some options in San Francisco that offer Italian or fusion cuisine with live music. I'll get back to you shortly with some exciting spots. APICall(method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found some exciting spots in San Francisco that match your vibe! You might enjoy Fior D'italia, located at 2237 Mason Street, or Zingari Ristorante + Jazz Bar at 501 Post Street. Both are Italian restaurants with live music and a great atmosphere. Plus, they serve alcohol for a complete dining experience. Let me know if you'd like more details or to make a reservation!
+User: Oh, Zingari Ristorante + Jazz Bar sounds perfect! Could you make a reservation for us there? We're a party of four, and we'd love to dine at 7:30 PM tomorrow. Thanks so much!
+System: Could you please confirm the date for the reservation? Once confirmed, I'll proceed to make the reservation for a party of four at Zingari Ristorante + Jazz Bar at 7:30 PM.
+User: The reservation is for tomorrow. Please go ahead and book it!
+System: Great! I'll make the reservation for a party of four at Zingari Ristorante + Jazz Bar at 7:30 PM for tomorrow. Just give me a moment. APICall(method='ReserveRestaurant', parameters={city: San Francisco, cuisine: Italian, restaurant_name: 'Zingari Ristorante + Jazz Bar', time: '19:30', date: 'YYYY-MM-DD', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': 'YYYY-MM-DD', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: The reservation for a party of four at Zingari Ristorante + Jazz Bar in San Francisco has been successfully made for tomorrow at 7:30 PM. If you need the phone number for any further inquiries, you can reach them at 415-885-8850. Enjoy your evening with live music and great company!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm feeling adventurous and excited to try out a new restaurant today. I'm thinking of checking out something in San Francisco. Can you help me find a place with a lively atmosphere, maybe with live music or a bar? I'd love to make a reservation too, since I plan on going with a group of friends. Let's say around 7 pm.
+System: Could you please let me know the type of cuisine you'd like to try in San Francisco? Additionally, how many people will be in your party? This will help me find a suitable place for your group.
+User: Oh, I'm open to all sorts of cuisines, but let's go with something fun and flavorful like Mexican or Italian! And there will be about six of us, so make sure it's a spot that can handle a lively group. Can't wait to see what you come up with!
+System: Great choice! To proceed, could you please confirm if you have a preference for either Mexican or Italian cuisine, or are you okay with either? Also, is there a specific date for the reservation, or should I assume it's for today? Let me know so I can find the best spot for your group in San Francisco.
+User: Honestly, both Mexican and Italian sound amazing, so I'm open to either! As for the date, let's make it for this coming Saturday. I'm so excited to gather with friends and enjoy some great food and music!
+System: Thank you for your patience. I'll now proceed with finding a Mexican or Italian restaurant in San Francisco that offers a lively atmosphere with live music or a bar and can accommodate a group of six this coming Saturday at 7 pm. Please hold on for a moment while I search for the best spot for you.
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, cuisine: Mexican, time: 19:00, date: [this coming Saturday's date], party_size: 6, has_live_music: True, serves_alcohol: True, restaurant_name: [random selection]})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': 'True', 'phone_number': '415-384-9365', 'price_range': 'moderate', 'restaurant_name': '[random selection]', 'serves_alcohol': 'True', 'street_address': '39 Fell Street', 'date': "[this coming Saturday's date]", 'party_size': '6', 'time': '19:00'}]
+End Search Results
+System: I've found a suitable spot for you and your friends! You have a reservation at a lively Mexican restaurant in San Francisco with live music and a bar. The reservation is for 6 people this coming Saturday at 7 pm. The restaurant is located at 39 Fell Street, and you can contact them at 415-384-9365 if needed. Enjoy your dining experience and have fun with your friends! Take care and have a lovely evening!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,106 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in San Mateo.
+
+System: What type of cuisine would you prefer?
+
+User: Anything is fine.
+
+System: Okay, I will pick a cuisine for you. How about American?
+APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: American})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-212-2643', 'price_range': 'moderate', 'restaurant_name': 'Qube Bar & Grill', 'serves_alcohol': True, 'street_address': '4000 South El Camino Real'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-522-7526', 'price_range': 'expensive', 'restaurant_name': 'Poplar Creek Grill', 'serves_alcohol': True, 'street_address': '1700 Coyote Point Drive'}]
+End Search Results
+System: Okay, I found three American restaurants in San Mateo: Central Park Bistro, Qube Bar & Grill, and Poplar Creek Grill. Central Park Bistro does not serve alcohol. Qube Bar & Grill and Poplar Creek Grill both serve alcohol. Would you like to know more about any of them?
+
+User: No, that's okay.
+
+System: Is there anything else I can help you with?
+
+User: Can you just pick one?
+
+System: Okay, how about Qube Bar & Grill?
+
+User: Okay.
+
+System: Would you like me to book a table for you at Qube Bar & Grill?
+
+User: Yes, please.
+
+System: Okay, I can help with that. What date and time would you like to reserve a table for, and how many people will be in your party?
+
+User: Tomorrow, at 7 pm, for two people.
+
+System: Just to confirm, you want to book a table for 2 at Qube Bar & Grill in San Mateo for tomorrow at 7 pm?
+
+User: Yes.
+
+System: ```system
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Qube Bar & Grill, city: San Mateo, date: 2024-07-02, time: 19:00, party_size: 2})
+```
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-212-2643', 'price_range': 'moderate', 'restaurant_name': 'Qube Bar & Grill', 'serves_alcohol': True, 'street_address': '4000 South El Camino Real', 'date': '2024-07-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Okay, I have booked a table for 2 at Qube Bar & Grill in San Mateo for tomorrow, July 2nd, at 7 pm. Is there anything else I can assist you with?
+
+User: No, that's all. Thanks a lot!
+
+System: You're welcome! Enjoy your dinner at Qube Bar & Grill. If you need anything else in the future, feel free to ask.
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a place to eat in San Mateo.
+
+System: Okay, I can help with that! Are you in the mood for a particular type of cuisine?
+
+User: Um, maybe just American food?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: American})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-212-2643', 'price_range': 'moderate', 'restaurant_name': 'Qube Bar & Grill', 'serves_alcohol': True, 'street_address': '4000 South El Camino Real'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-522-7526', 'price_range': 'expensive', 'restaurant_name': 'Poplar Creek Grill', 'serves_alcohol': True, 'street_address': '1700 Coyote Point Drive'}]
+End Search Results
+System: I see three American restaurants in San Mateo. Central Park Bistro is moderate price, doesn't have live music and doesn't serve alcohol. Qube Bar & Grill is moderate price and serves alcohol, but doesn't have live music. Poplar Creek Grill is expensive and serves alcohol, but doesn't have live music. Which one sounds best?
+
+User: Maybe Central Park Bistro is okay.
+
+System: Okay, so Central Park Bistro it is. It's located at 181 East 4th Avenue. Would you like to make a reservation?
+
+User: I guess so. Can you book it for me?
+
+System: What time and for how many people?
+
+User: Just two people, please. And, uh, maybe around 7 pm?
+
+System: APICall (method='ReserveRestaurant', parameters= {city: San Mateo, date: 2019-03-01, party_size: 2, restaurant_name: Central Park Bistro, time: 19:00})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue', 'date': '2019-03-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Alright, I've booked a table for two at Central Park Bistro for 7 pm on March 1, 2019. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

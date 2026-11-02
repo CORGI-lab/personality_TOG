@@ -1,0 +1,64 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Walnut Creek. Can you help me find one?
+System: Do you have a preference for any particular type of cuisine, such as Italian, Mexican, or something else? Or are you open to suggestions?
+User: I'm looking for something simple, maybe American cuisine.
+System: Great, I'll look for American cuisine options in Walnut Creek for you. Please give me a moment. APICall (method='FindRestaurants', parameters={city: Walnut Creek, cuisine: American})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-927-1149', 'price_range': 'moderate', 'restaurant_name': "A'trio", 'serves_alcohol': False, 'street_address': '2355 North Main Street'}, {'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-932-2828', 'price_range': 'moderate', 'restaurant_name': 'Benvenuti Ristorante', 'serves_alcohol': True, 'street_address': '1627 North Broadway'}, {'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-945-6960', 'price_range': 'moderate', 'restaurant_name': 'Broderick Roadhouse', 'serves_alcohol': False, 'street_address': '1548 Bonanza Street'}]
+End Search Results
+System: I found a few American cuisine options in Walnut Creek for you. A'trio is one option located at 2355 North Main Street. Would you like more details about this restaurant, or would you prefer to hear about another option?
+User: Could you tell me more about A'trio, like if they serve alcohol and their price range?
+System: A'trio in Walnut Creek offers a moderate price range, and they do not serve alcohol. If you need more information or want to hear about another restaurant, feel free to let me know!
+User: Do you have another restaurant suggestion that serves alcohol?
+System: The restaurant "Benvenuti Ristorante" in Walnut Creek might be a great option for you. It serves American cuisine, has a moderate price range, and does serve alcohol. It's located at 1627 North Broadway. Let me know if you need more information or if you'd like to explore this option further!
+User: That sounds fine. I'd like to make a reservation at Benvenuti Ristorante. Can you arrange that for me?
+System: Certainly! To make a reservation at Benvenuti Ristorante, could you please provide me with the date, time, and the number of people for the reservation?
+User: The reservation is for two people on this Friday at 7:00 PM.
+System: Thank you for providing the details. I'll make a reservation for two people at Benvenuti Ristorante in Walnut Creek this Friday at 7:00 PM. Please give me a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Benvenuti Ristorante', city: 'Walnut Creek', date: '2023-10-13', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-932-2828', 'price_range': 'moderate', 'restaurant_name': 'Benvenuti Ristorante', 'serves_alcohol': True, 'street_address': '1627 North Broadway', 'date': '2023-10-13', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Benvenuti Ristorante in Walnut Creek has been successfully made for two people this Friday at 7:00 PM. If you need any further assistance or have more questions, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a restaurant in Fremont.
+System: Do you have a specific type of cuisine in mind, or would you like me to choose one for you?
+User: Something simple like American food is fine.
+System: APICall (method='FindRestaurants', parameters= {city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: I'm sorry, it seems there are no available American cuisine restaurants in Fremont at the moment. Would you like me to search for an alternative cuisine type, or is there another city you’d prefer to consider?
+User: Just look for a different cuisine in Fremont, please.
+System: Let's try searching for Italian cuisine in Fremont. I'll check for available options. APICall (method='FindRestaurants', parameters= {city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant in Fremont called Massimo's. It's located at 5200 Mowry Avenue Ste M, and it has a price range that is considered expensive. The restaurant does not have live music and does not serve alcohol. Would you like any more information or assistance with something else?
+User: No, that's fine. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

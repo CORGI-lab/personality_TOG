@@ -1,0 +1,90 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, so I'm looking for a place to eat in Berkeley. Can you help me find something? I don't really have any specific cuisine in mind, just whatever is good and available.
+System: Let's find you a nice place to eat in Berkeley. How about trying some Ethiopian cuisine? It's quite unique and flavorful. Let me find some options for you. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Ethiopian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Ethiopian', 'has_live_music': False, 'phone_number': '510-653-3456', 'price_range': 'moderate', 'restaurant_name': 'Addis Restaurant', 'serves_alcohol': False, 'street_address': '6100 Telegraph Avenue'}, {'city': 'Berkeley', 'cuisine': 'Ethiopian', 'has_live_music': False, 'phone_number': '510-923-6181', 'price_range': 'moderate', 'restaurant_name': 'Barcote | Ethiopian Restaurant', 'serves_alcohol': False, 'street_address': '6430 Telegraph Avenue'}, {'city': 'Berkeley', 'cuisine': 'Ethiopian', 'has_live_music': False, 'phone_number': '510-843-1992', 'price_range': 'inexpensive', 'restaurant_name': 'Ethiopia Restaurant', 'serves_alcohol': False, 'street_address': '2955 Telegraph Avenue'}]
+End Search Results
+System: Here are a few Ethiopian restaurants you might want to try in Berkeley. Addis Restaurant is located at 6100 Telegraph Avenue. Would you like more information about this place, or should I tell you about another option?
+User: Um, I don't know. Maybe another option? I'm just looking for something that sounds interesting, you know?
+System: How about Barcote | Ethiopian Restaurant? It's also in Berkeley and is located at 6430 Telegraph Avenue. Would you like more information about this place, or should I look for something else?
+User: I'm not sure. Can you tell me if they have live music or something fun like that?
+System: Unfortunately, Barcote | Ethiopian Restaurant does not have live music. If you're looking for a fun atmosphere, perhaps I can help you find another type of restaurant with those features. Would you like to explore a different cuisine or a different type of restaurant in Berkeley?
+User: Maybe something with a lively vibe and music would be cool. What else do you have in Berkeley?
+System: I apologize for that. Let's try again. How about we look for a Japanese restaurant with live music in Berkeley? Let me find some options for you.
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Japanese, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems there are no Japanese restaurants with live music available in Berkeley at the moment. Would you be open to exploring another cuisine, or perhaps a restaurant that serves alcohol for a lively vibe? Let me know what you think, and I'll find more options for you.
+User: Yeah, sure, a place with some good drinks sounds like a plan. What do you have for that in Berkeley?
+System: Let's look for a place in Berkeley that serves alcohol and might have a lively atmosphere. How about trying a Mexican restaurant? Let me find some options for you. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Mexican, serves_alcohol: True})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue', 'date': '2019-03-13', 'party_size': 4, 'time': '11:30'}, {'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-548-2222', 'price_range': 'moderate', 'restaurant_name': 'El Patio', 'serves_alcohol': True, 'street_address': '2056 San Pablo Avenue'}]
+End Search Results
+System: I've found a couple of Mexican restaurants in Berkeley that serve alcohol. Comal is located at 2020 Shattuck Avenue, and El Patio is at 2056 San Pablo Avenue. Both have a moderate price range. Would you like to know more about either of these places, or should I keep looking for other options?
+User: Hmm, Comal sounds alright. Can you tell me more about it? Like, do they have any live music or something fun going on?
+System: Unfortunately, Comal does not have live music. However, it does have a lively atmosphere, and they serve alcohol, which might add to the fun vibe you're looking for. If you'd like to explore more about Comal or need details like their contact number, just let me know!
+User: Ah, no live music, huh? That's a bummer. But, hey, if the atmosphere is lively with drinks, that works for me. Can you go ahead and make a reservation for me? Like, maybe for tonight around 8 pm? I'm not sure how many people, but let's say for 4, just in case.
+System: To make sure everything is set, could you please confirm that you want to make a reservation for 4 people at 8 pm tonight at Comal, located at 2020 Shattuck Avenue in Berkeley?
+User: Yeah, sure, that sounds good! Go ahead and book it for me, thanks!
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: Comal, city: Berkeley, time: 20:00, date: 2023-10-31, party_size: 4})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-926-6300', 'price_range': 'moderate', 'restaurant_name': 'Comal', 'serves_alcohol': True, 'street_address': '2020 Shattuck Avenue', 'date': '2023-10-31', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Your reservation at Comal for 4 people at 8 pm tonight has been successfully made. The restaurant is located at 2020 Shattuck Avenue in Berkeley. If you need to contact them, their phone number is 510-926-6300. Enjoy your evening with a lively atmosphere and some great drinks!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm kind of hungry and thinking about eating out. Can you help me find a place to eat in San Francisco?
+System: What type of cuisine are you interested in? For example, American, Italian, or something else?
+User: Uh, I'm not really sure. Maybe something like Italian? Or maybe not. But yeah, Italian sounds good for now.
+System: Great! Let me find some Italian restaurants for you in San Francisco. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a couple of Italian restaurants in San Francisco for you. How about trying 54 Mint Ristorante Italiano located at 16 Mint Plaza? They serve alcohol but don't have live music. Would you like more details or another suggestion?
+User: Hmm, I don't know. Maybe another suggestion if you have one?
+System: Certainly! How about A16, which is located at 2355 Chestnut Street? They also serve alcohol and have a moderate price range, but they don't have live music. Would you like more details about this restaurant or another suggestion?
+User: Uh, I guess more details about A16 would be okay. Like, do they have some kind of cool vibe or something?
+System: I'm glad you're interested in A16. While I don't have specific information about the restaurant's vibe, I can tell you that it's an Italian restaurant located at 2355 Chestnut Street in San Francisco. They serve alcohol and have a moderate price range, but they don't feature live music. If there's anything else you'd like to know or if you're ready to make a reservation, just let me know!
+User: Yeah, um, let's just go ahead and make a reservation there. I don't really know what time though. Maybe like 7:00 PM? And, uh, let's say for 4 people.
+System: To confirm, you would like to make a reservation at A16 in San Francisco for 4 people at 7:00 PM. Could you please let me know the date you have in mind for this reservation?
+User: Uh, let's just do it for tonight. That should be fine, right?
+System: Great! Just to confirm, you would like to make a reservation at A16 in San Francisco for 4 people at 7:00 PM tonight. Please hold on for a moment while I make the reservation for you. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: A16, city: San Francisco, time: 19:00, party_size: 4, date: 2023-10-24})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-24', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 for 4 people at 7:00 PM tonight has been successfully made. The restaurant is located at 2355 Chestnut Street, San Francisco. If you need to contact them, their phone number is 415-771-2216. Enjoy your meal!
+User: Cool, thanks. That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

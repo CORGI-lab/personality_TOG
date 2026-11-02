@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in New York, please.
+System: Do you have any preferences regarding the star rating for the hotel in New York, or should I search for a random option?
+User: Please find hotels with a 3-star rating.
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 3 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: I found a few 3-star hotels in New York. One option is 11 Howard, located at 11 Howard Street, with a price of $270 per night, and smoking is allowed. Would you like more information on this hotel, or should I provide details about another option?
+User: Can you provide details about another option, please?
+System: Another option is the Adria Hotel & Conference Center, located at 221-17 Northern Boulevard, Bayside, with a price of $234 per night. Smoking is allowed at this hotel. Would you like to book a room here, or would you like to know about another hotel?
+User: Can you tell me about another hotel option, please?
+System: Certainly. The third option is Aloft Harlem, located at 2296 Frederick Douglass Boulevard. The price is $243 per night, and please note that smoking is not allowed at this hotel. Would you like to proceed with booking a room here or need more information on this hotel?
+User: I would prefer a hotel where smoking is allowed. Can you find another option where smoking is permitted?
+System: I have already provided you with two hotels where smoking is allowed: 11 Howard and Adria Hotel & Conference Center. Would you like to proceed with booking a room at one of these, or do you need more information about them?
+User: I would like to book a room at the Adria Hotel & Conference Center, please.
+System: How many rooms would you like to book at the Adria Hotel & Conference Center, and what is your check-in date and length of stay?
+User: I need to book one room starting from the 15th for a week, please.
+System: Please confirm that you would like to book 1 room at the Adria Hotel & Conference Center in New York, starting from the 15th for a 7-night stay.
+User: Yes, that's correct. Please go ahead and make the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: New York, number_of_rooms: 1, place_name: 'Adria Hotel & Conference Center', stay_length: 7 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your reservation at the Adria Hotel & Conference Center in New York has been successfully confirmed. Enjoy your stay! Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in Los Angeles. Can you help me with that?
+System: Could you please tell me if you have any preferences for the star rating or smoking allowance in the hotel? This will help me narrow down the search for you in Los Angeles.
+User: I prefer a non-smoking hotel. As for the star rating, something around 3 stars would be fine.
+System: APICall(method='SearchHotel', parameters={ location: Los Angeles, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 818-765-2900', 'place_name': 'Best Western Burbank Airport Inn', 'price_per_night': 156, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '7615 Lankershim Boulevard, North Hollywood, California 91605, United States'}, {'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 310-514-1414', 'place_name': 'Best Western Plus San Pedro Hotel & Suites', 'price_per_night': 69, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '111 South Gaffey Street, San Pedro, California 90731, United States'}, {'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 310-556-2777', 'place_name': 'Courtyard By Marriott Los Angeles Century City/Beverly Hills', 'price_per_night': 78, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '10320 West Olympic Boulevard'}]
+End Search Results
+System: I found a few non-smoking 3-star hotels in Los Angeles for you. The Best Western Burbank Airport Inn offers rooms at $156 per night and is located at 7615 Lankershim Boulevard, North Hollywood. Another option is the Best Western Plus San Pedro Hotel & Suites, with a rate of $69 per night, located at 111 South Gaffey Street, San Pedro. Lastly, there's the Courtyard By Marriott Los Angeles Century City/Beverly Hills, priced at $78 per night, located at 10320 West Olympic Boulevard. Do any of these hotels interest you?
+User: I'm interested in the Best Western Plus San Pedro Hotel & Suites. Could you reserve a room for me?
+System: Could you please let me know your check-in date and the length of your stay at the Best Western Plus San Pedro Hotel & Suites in Los Angeles? Additionally, confirm whether you need one or more rooms for your reservation.
+User: I need one room, and the check-in date will be the 5th. I'll be staying for five days.
+System: Please confirm that you would like to reserve 1 room at the Best Western Plus San Pedro Hotel & Suites in Los Angeles, checking in on the 5th and staying for 5 days.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Los Angeles, number_of_rooms: 1, place_name: Best Western Plus San Pedro Hotel & Suites, stay_length: 5 })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 310-514-1414', 'place_name': 'Best Western Plus San Pedro Hotel & Suites', 'price_per_night': 69, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '111 South Gaffey Street, San Pedro, California 90731, United States', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your reservation at the Best Western Plus San Pedro Hotel & Suites in Los Angeles has been successfully confirmed. You will be checking in on November 5th and staying for 5 days. If you need any further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

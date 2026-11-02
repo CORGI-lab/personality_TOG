@@ -1,0 +1,107 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in Chicago, please. Somewhere decent, nothing too extravagant.
+
+System: Okay, I can help with that. Do you have any preferences on the star rating of the hotel?
+
+User: Something with a solid rating, perhaps a 3 or 4 star hotel would be suitable.
+System: Okay
+User: , searching for 3 or 4 star hotels in Chicago.
+```text
+APICall(method='SearchHotel', parameters={ location: Chicago, star_rating: [3, 4] })
+```
+```text
+service_result_1: [{ location: Chicago, number_of_rooms: 1, phone_number: +1 312-321-8750, place_name: The Hotel Blake, price_per_night: 180, smoking_allowed: False, star_rating: 4, street_address: 500 S Dearborn St }, { location: Chicago, number_of_rooms: 2, phone_number: +1 312-799-1000, place_name: Hotel Lincoln, price_per_night: 220, smoking_allowed: True, star_rating: 4, street_address: 1816 N Clark St }, { location: Chicago, number_of_rooms: 1, phone_number: +1 312-440-1500, place_name: Kin
+System: zie Hotel, price_per_night: 150, smoking_allowed: False, star_rating: 4, street_address: 20 W Kinzie St }, { location: Chicago, number_of_rooms: 3, phone_number: +1 312-943-5000, place_name: The Talbott Hotel, price_per_night: 250, smoking_allowed: False, star_rating: 4, street_address: 20 E Delaware Pl }, { location: Chicago, number_of_rooms: 2, phone_number: +1 312-787-4980, place_name: River Hotel, price_per_night: 190, smoking_allowed: False, star_rating: 3, street_address: 75 E Wacker Dr }]
+```
+I found 5 hotels for you. The Hotel Blake, Hotel Lincoln, Kinzie Hotel, and The Talbott Hotel are all 4-star hotels. River Hotel is a 3-star hotel. Do any of these sound good to you?
+
+User: The Hotel Blake sounds reasonable. Can you tell me more about it? Specifically, what is the price per night and does it allow smoking?
+
+System: The Hotel Blake costs $180 per night and smoking is not allowed.
+
+User: That sounds agreeable. If it's available, I'd like to reserve a room there. I'll be arriving on the 15th, and I'll need it for three nights.
+
+System: How many rooms will you need?
+
+User: Just one room, please.
+
+System: Okay, let me confirm. You would like to reserve one room at The Hotel Blake in Chicago, arriving on the 15th for a three-night stay. Is that correct?
+
+User: Yes, that's correct. Please proceed with the reservation.
+
+System: ```text
+APICall(method='ReserveHotel', parameters={ place_name: The Hotel Blake, location: Chicago, check_in_date: 2024-02-15, stay_length: 3, number_of_rooms: 1 })
+```
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': '1', 'phone_number': '+1 312-764-1919', 'place_name': 'The Hotel Blake', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': '', 'street_address': '311 North Morgan Street', 'check_in_date': '2024-02-15', 'stay_length': '3'}]
+End Search Results
+System: Okay, your reservation has been made. The Hotel Blake, located at 311 North Morgan Street in Chicago, will be ready for you on February 15th for a three-night stay. The phone number is +1 312-764-1919. Is there anything else I can help you with?
+
+User: Great. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Diego, please. I'm looking for a comfortable stay.
+
+System: Okay, I can help with that.
+
+SYSTEM: Do you have any preferences for star rating or smoking allowance?
+
+User: I'm generally fine with either smoking or non-smoking, and the star rating isn't a huge deal, but I'd prefer something at least 3 stars if possible.
+
+System: APICall(method='SearchHotel', parameters={location: San Diego, star_rating: 3, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: Okay, I found three hotels in San Diego that are at least 3 stars. Bahia Resort Hotel, Best Western Plus Bayside Inn, and Best Western Plus Hacienda Hotel Old Town. Would you like to know more about any of them?
+
+User: Yes, please. Tell me a bit more about the Bahia Resort Hotel.
+
+System: Okay, the Bahia Resort Hotel is a 3-star hotel located at 998 West Mission Bay Drive in San Diego. The phone number is +1 858-539-8666. They do not allow smoking, and the price per night is $225. They have one room available. Does this sound like a good option for you?
+
+User: That sounds reasonable. What about the Best Western Plus Bayside Inn? Let's compare a little before I decide.
+
+System: The Best Western Plus Bayside Inn is also a 3-star hotel, located at 555 West Ash Street in San Diego. Their phone number is +1 619-233-7500. Smoking is allowed there, and the price per night is $234. They also have one room available. How does this compare to your needs?
+
+User: The Bahia Resort Hotel sounds a bit better, mainly because of the price. Let's keep things simple. Could you book me a room there?
+
+System: Okay, I can help with that. To book a room at the Bahia Resort Hotel, I'll need a few more details. What date would you like to check in, and how many nights will you be staying?
+
+User: Let's book it for the 14th of December for three nights.
+
+System: Alright, just to confirm, you'd like to book one room at the Bahia Resort Hotel in San Diego, checking in on December 14th for a stay of three nights. Is that correct?
+
+User: That's correct.
+
+System: Okay, I'm now preparing to make the reservation.
+APICall(method='ReserveHotel', parameters={location: San Diego, place_name: Bahia Resort Hotel, check_in_date: 2024-12-14, stay_length: 3, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-12-14'}]
+End Search Results
+System: Great! Your booking at the Bahia Resort Hotel in San Diego, checking in on December 14th for three nights, has been successfully confirmed.
+
+User: Perfect. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

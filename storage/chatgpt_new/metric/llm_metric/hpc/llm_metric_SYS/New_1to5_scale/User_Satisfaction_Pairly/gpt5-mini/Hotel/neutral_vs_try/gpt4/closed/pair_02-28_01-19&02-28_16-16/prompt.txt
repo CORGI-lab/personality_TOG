@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Los Angeles. Can you help me with that?
+System: Could you please tell me if you have any preferences for the star rating or smoking allowance in the hotel? This will help me narrow down the search for you in Los Angeles.
+User: I prefer a non-smoking hotel. As for the star rating, something around 3 stars would be fine.
+System: APICall(method='SearchHotel', parameters={ location: Los Angeles, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 818-765-2900', 'place_name': 'Best Western Burbank Airport Inn', 'price_per_night': 156, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '7615 Lankershim Boulevard, North Hollywood, California 91605, United States'}, {'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 310-514-1414', 'place_name': 'Best Western Plus San Pedro Hotel & Suites', 'price_per_night': 69, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '111 South Gaffey Street, San Pedro, California 90731, United States'}, {'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 310-556-2777', 'place_name': 'Courtyard By Marriott Los Angeles Century City/Beverly Hills', 'price_per_night': 78, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '10320 West Olympic Boulevard'}]
+End Search Results
+System: I found a few non-smoking 3-star hotels in Los Angeles for you. The Best Western Burbank Airport Inn offers rooms at $156 per night and is located at 7615 Lankershim Boulevard, North Hollywood. Another option is the Best Western Plus San Pedro Hotel & Suites, with a rate of $69 per night, located at 111 South Gaffey Street, San Pedro. Lastly, there's the Courtyard By Marriott Los Angeles Century City/Beverly Hills, priced at $78 per night, located at 10320 West Olympic Boulevard. Do any of these hotels interest you?
+User: I'm interested in the Best Western Plus San Pedro Hotel & Suites. Could you reserve a room for me?
+System: Could you please let me know your check-in date and the length of your stay at the Best Western Plus San Pedro Hotel & Suites in Los Angeles? Additionally, confirm whether you need one or more rooms for your reservation.
+User: I need one room, and the check-in date will be the 5th. I'll be staying for five days.
+System: Please confirm that you would like to reserve 1 room at the Best Western Plus San Pedro Hotel & Suites in Los Angeles, checking in on the 5th and staying for 5 days.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Los Angeles, number_of_rooms: 1, place_name: Best Western Plus San Pedro Hotel & Suites, stay_length: 5 })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 310-514-1414', 'place_name': 'Best Western Plus San Pedro Hotel & Suites', 'price_per_night': 69, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '111 South Gaffey Street, San Pedro, California 90731, United States', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your reservation at the Best Western Plus San Pedro Hotel & Suites in Los Angeles has been successfully confirmed. You will be checking in on November 5th and staying for 5 days. If you need any further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Vancouver. Can you help me find one?
+System: Do you have any preferences for the star rating or smoking allowance in the hotel?
+User: I prefer a non-smoking hotel with a 3-star rating.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found some 3-star, non-smoking hotels in Vancouver for you. Here are a couple of options:
+
+1. Atrium Inn Vancouver, located at 2889 East Hastings Street, with a price of $228 per night. You can contact them at +1 604-254-1000.
+
+2. Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., located at 1100 Granville Street, with a price of $72 per night. Their phone number is +1 604-669-7070.
+
+Would you like more information on any of these hotels or assistance with making a reservation?
+User: Can you tell me more about the Best Western Plus Chateau Granville Hotel, like if it's in a quiet area?
+System: I'm sorry, but the specific information about whether the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. is in a quiet area isn't available. Would you like to proceed with a reservation for this hotel, or is there anything else you'd like to know about the available options?
+User: I think I'll go with the Best Western Plus Chateau Granville Hotel. Can you make a reservation for me?
+System: Sure, I can help with that. Could you please let me know the check-in date and the duration of your stay, as well as how many rooms you would like to reserve at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.?
+User: Check-in on the 10th for five days, and I need one room.
+System: Please confirm to book 1 room at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, with a check-in date of 2023-11-10 for a duration of 5 days.
+User: Yes, I confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver has been successfully confirmed for one room. The check-in date is 2023-11-10, and you will be staying for five days. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

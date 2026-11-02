@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Vancouver. Can you help me find one?
+System: Do you have any specific star rating or amenities in mind, such as smoking allowance? Or should I look for a variety of options?
+User: I prefer a hotel with a high star rating. Smoking allowance isn't important to me.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 5, smoking_allowed: dontcare })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: I found two 5-star hotels in Vancouver for you. The first option is the Shangri-La Hotel, located at 1128 West Georgia Street, with a price of $300 per night. The second option is the Wedgewood Hotel & Spa Vancouver, located at 845 Hornby Street, with a price of $510 per night. Would you like more details on any of these hotels, or is there anything else I can assist you with?
+User: Can you tell me more about the Shangri-La Hotel?
+System: The Shangri-La Hotel in Vancouver is a 5-star hotel located at 1128 West Georgia Street. The price per night is $300. Unfortunately, smoking is not allowed in this hotel. Would you like to proceed with a reservation, or do you need any more information?
+User: I think I'd like to reserve a room at the Shangri-La Hotel. Could you help me with that? I'll need the booking from the 10th for a week, please.
+System: To reserve a room at the Shangri-La Hotel in Vancouver for a week starting from the 10th, I'll need to confirm a few details. How many rooms would you like to book?
+User: One room, please.
+System: Please confirm to book 1 room at the Shangri-La Hotel in Vancouver from the 10th for a duration of 7 days.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Shangri-La Hotel, stay_length: 7 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Shangri-La Hotel in Vancouver has been successfully confirmed. You have booked 1 room starting from November 10th for a duration of 7 days. If you need any further assistance or have any questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in Seattle. Can you help with that?
+System: Could you please let me know if you have any preferences for the star rating or if there's anything specific you're looking for in a hotel?
+User: I'm looking for a quiet place, maybe with a higher star rating. No need for anything too extravagant.
+System: Thank you for sharing your preferences. I'll go ahead and search for a hotel in Seattle that has a higher star rating but isn't too extravagant. Please hold on for a moment while I find some options for you. 
+
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: 4})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-448-8600', 'place_name': 'Hotel Andra', 'price_per_night': 372, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2000 4th Avenue'}]
+End Search Results
+System: I found a few options for you in Seattle with a higher star rating that aren't too extravagant. One option is the Crowne Plaza Seattle Downtown, priced at $120 per night. Would you like more details about this hotel, or is there something specific you would like to know about this or another option?
+User: Are there any other options available? I prefer to have a few choices before deciding.
+System: Another option available is the Grand Hyatt Seattle, which is also a 4-star hotel. The price per night is $456. Would you like more details about this hotel, or would you prefer to know about a different option?
+User: Could you tell me more about the Crowne Plaza Seattle Downtown? It seems more in line with what I'm looking for.
+System: The Crowne Plaza Seattle Downtown is located at 1113 6th Avenue in Seattle. It features a 4-star rating and offers a quiet atmosphere that might align well with your preferences. The price is $120 per night, and it does not allow smoking. If you need more information or would like to proceed with a reservation, please let me know.
+User: Could you please reserve a room at the Crowne Plaza Seattle Downtown? I would like to check in on the 10th and stay for five nights.
+System: To reserve a room at the Crowne Plaza Seattle Downtown, could you please confirm the number of rooms you wish to book?
+User: One room, please.
+System: Thank you for confirming. I will proceed with the reservation for one room at the Crowne Plaza Seattle Downtown, checking in on the 10th and staying for five nights. Please hold on for a moment. 
+
+APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: Crowne Plaza Seattle Downtown, stay_length: 5})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Crowne Plaza Seattle Downtown has been successfully confirmed. You will be staying for five nights starting from the 10th of November. The hotel is located at 1113 6th Avenue in Seattle. If there's anything else you need, please feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I'd like to book a hotel. Could you help me find one?
+System: 
+
+Sure! What city are you looking to book a hotel in?
+User: 
+
+Vancouver, please.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: 
+
+Found a 5-star hotel named Shangri-La Hotel in Vancouver for $300 per night. Would you like to proceed with this one, or should I show you more options?
+User: 
+
+Does this hotel allow smoking? And what's the street address?
+System: 
+
+The Shangri-La Hotel does not permit smoking. The street address is 1128 West Georgia Street.
+User: 
+
+Yes, please reserve two rooms starting June 15th for three nights.
+System: 
+
+Please confirm to book 2 rooms at Shangri-La Hotel in Vancouver from June 15th for 3 nights.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: '2024-06-15', location: 'Vancouver', number_of_rooms: 2, place_name: 'Shangri-La Hotel', stay_length: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2024-06-15'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I'd like to search for a hotel in San Diego. Could you assist me?
+System: 
+
+APICall(method='SearchHotel', parameters={ location: San Diego })
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: 
+
+I found three hotels in San Diego for you: Bahia Resort Hotel at $225 per night (no smoking), Best Western Plus Bayside Inn at $234 (smoking allowed), and Best Western Plus Hacienda Hotel Old Town at $198 (no smoking). Would you like to proceed with any of these, or do you have specific preferences like smoking policy or price range?
+User: 
+
+The Best Western Plus Hacienda Hotel Old Town at $198 sounds good. Could you provide the street address and star rating?
+System: 
+
+The Best Western Plus Hacienda Hotel Old Town has a star rating of 3 and is located at 4041 Harney Street. Would you like to proceed with booking this hotel?
+User: 
+
+Yes, please reserve it.
+System: 
+
+To proceed with your reservation for the Best Western Plus Hacienda Hotel Old Town, could you please share your check-in date and the number of nights you plan to stay? This will help me finalize the booking details for you.
+User: 
+
+June 15th for three nights.
+System: 
+
+To ensure everything is accurate, could you please confirm the year for your June 15th check-in date? Also, how many rooms would you like to reserve? The default is 1 room.
+User: 
+
+The year is 2024 and I need one room.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: "Best Western Plus Hacienda Hotel Old Town", check_in_date: "2024-06-15", stay_length: 3, location: "San Diego", number_of_rooms: 1 })
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street', 'check_in_date': '2024-06-15'}]
+End Search Results
+System: 
+
+Your reservation for Best Western Plus Hacienda Hotel Old Town in San Diego is confirmed. Check-in on June 15, 2024, for 3 nights in 1 room. The address is 4041 Harney Street. Is there anything else I can assist you with?
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

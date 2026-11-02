@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Can you find me a hotel in Las Vegas?
+System: Do you have any preferences for the star rating, smoking allowance, or number of rooms?
+User: Uh, I don't really care about the star rating or any of that stuff. Just find something that's not too expensive and maybe allows smoking.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: True })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court'}]
+End Search Results
+System: I found a few options for you in Las Vegas that allow smoking. The first one is Budget Suites Of America with a 1-star rating, priced at $44 per night, located at 2219 North Rancho Drive. Another option is La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, with a 2-star rating, priced at $72 per night, located at 7101 Cascade Valley Court. Would you like more information about any of these options or make a reservation?
+User: Do you have anything cheaper than those options? I don't want to spend too much.
+System: The Budget Suites Of America is currently the most affordable option at $44 per night. If you're looking for a lower price, you might want to consider adjusting your preferences, such as looking for non-smoking options. Would you like to proceed with Budget Suites Of America or explore different options?
+User: I guess I'll just go with Budget Suites Of America then. Can you book it for me?
+System: How many rooms would you like to book at Budget Suites Of America, and what is your desired check-in date and length of stay?
+User: Uh, let's do one room. I'll check in on the 15th and maybe stay for, like, three days?
+System: Please confirm to book 1 room for 3 days at Budget Suites Of America from the 15th in Las Vegas.
+User: Yeah, sure, go ahead and book it. 
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 3 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at Budget Suites Of America in Las Vegas has been successfully confirmed for one room, starting from November 15th for a duration of three days. If you need any more assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm thinking about finding a hotel in Los Angeles. Can you help me with that?
+System: Do you have any specific preferences, like the star rating or whether smoking is allowed, for the hotel in Los Angeles?
+User: Um, I guess it doesn't really matter. Maybe just find something that's not too expensive?
+System: Great! Let's start by searching for some hotels in Los Angeles that are not too expensive. I'll find options for you. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Los Angeles, star_rating: dontcare, smoking_allowed: dontcare })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 323-852-7000', 'place_name': 'Ac Hotel By Marriott Beverly Hills', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '6399 Wilshire Boulevard'}, {'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 800-224-7835', 'place_name': 'Airtel Plaza Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7277 Valjean Avenue, Van Nuys, California 91406, United States'}, {'location': 'Los Angeles', 'number_of_rooms': 3, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow - Hollywood Hostel', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, CA 90028, USA'}]
+End Search Results
+System: I found a few options for you in Los Angeles. The Ac Hotel By Marriott Beverly Hills is a 2-star hotel with a price of $120 per night, located at 6399 Wilshire Boulevard. It does not allow smoking. Would you like more information about this option or explore others?
+User: Hmm, $120 per night sounds a bit much. Do you have anything cheaper, maybe with a lower star rating?
+System: Certainly! The Banana Bungalow - Hollywood Hostel is a 1-star option at $72 per night. It's located at 5920 Hollywood Boulevard and allows smoking. Would you like more details on this hotel, or should I check for other options?
+User: $72 per night sounds pretty good, and I like that they allow smoking. Can you go ahead and book it for me?
+System: How many rooms would you like to book, and what would be your check-in date and stay length for the Banana Bungalow - Hollywood Hostel in Los Angeles?
+User: Let's make it two rooms, and I'll check in on the 5th for like a week or so.
+System: Please confirm that you'd like to book 2 rooms at the Banana Bungalow - Hollywood Hostel in Los Angeles for a 7-day stay starting from the 5th.
+User: Yeah, that sounds fine. Go ahead and book it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Los Angeles, number_of_rooms: 2, place_name: Banana Bungalow - Hollywood Hostel, stay_length: 7 })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 3, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow - Hollywood Hostel', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, CA 90028, USA', 'check_in_date': '2023-11-05'}, {'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow Hollywood', 'price_per_night': 21, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, California 90028, United States', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking for 2 rooms at the Banana Bungalow - Hollywood Hostel in Los Angeles has been successfully confirmed for a 7-day stay starting from November 5th. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

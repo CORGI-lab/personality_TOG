@@ -1,0 +1,152 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need to search for a hotel in Chicago. Could you please assist me with that?
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Chicago })
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street'}, {'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street'}, {'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-894-0800', 'place_name': 'Acme Hotel Company Chicago', 'price_per_night': 222, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '15 East Ohio Street'}]
+End Search Results
+System: 
+
+I found three hotels in Chicago: Ac Hotel By Marriott (3 stars, $342), Ace Hotel Chicago (4 stars, $132), and Acme Hotel Company (3 stars, $222 with smoking allowed). Would you like more details about any of these, or do you have specific preferences like star rating or smoking policy?
+User: 
+
+Please confirm the smoking policy and street address for the Ac Hotel By Marriott and Ace Hotel Chicago. I prefer non-smoking rooms and need to know the exact location to assess convenience.
+System: 
+
+Ac Hotel By Marriott Chicago Downtown does not allow smoking and is located at 630 North Rush Street. Ace Hotel Chicago also does not allow smoking and is located at 311 North Morgan Street. Would you like to proceed with booking either of these hotels?
+User: 
+
+Could you please confirm the price per night for both the Ac Hotel By Marriott and Ace Hotel Chicago?
+System: 
+
+Ac Hotel By Marriott Chicago Downtown is $342 per night, and Ace Hotel Chicago is $132 per night. Would you like to proceed with booking either of these hotels?
+User: 
+
+Yes, I'd like to reserve Ace Hotel Chicago.
+System: 
+
+To reserve Ace Hotel Chicago, I'll need your check-in date and the number of days you plan to stay. Could you please provide those details?
+User: 
+
+Check-in on October 15th for four days.
+System: 
+
+Please confirm to book 1 room for 4 days at Ace Hotel Chicago starting October 15th in Chicago. Is that correct?
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Chicago, number_of_rooms: 1, place_name: Ace Hotel Chicago, stay_length: 4 })
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Get me the address of that hotel for my reference.
+System: 
+
+The address of Ace Hotel Chicago is 311 North Morgan Street.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I need to book a hotel in London with a 4-star rating or higher, non-smoking, and a price under £200 per night.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London, smoking_allowed: False })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: 
+
+Upon searching, I found no hotels in London that meet all your criteria (4-star or higher, non-smoking, and under £200 per night). The closest options are:  
+- **45 Park Lane** (5-star, £330 per night) — meets star rating but exceeds budget.  
+- **Abc Hyde Park Hotel** (3-star, £102 per night) — within budget but below your star requirement.  
+
+Would you like to adjust your budget or star rating preference to proceed?
+User: 
+
+Could you provide the exact address, amenities, and check-in time for the 45 Park Lane hotel? Also, are there any additional fees or taxes not included in the £330 per night?
+System: 
+
+The street address for 45 Park Lane is 45 Park Lane. Unfortunately, details regarding amenities, check-in time, and additional fees are not available in the search results. Would you like to proceed with this option based on the available information, or would you prefer to adjust your search criteria for other hotels?
+User: 
+
+Could you search for 4-star or higher hotels in London with a budget of up to £250 per night? Please include details on any additional fees or taxes.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: 
+
+I've searched for 4-star or higher hotels in London within a £250 per night budget. No results meet both criteria. The closest option is 45 Park Lane (5-star, £330/night), which exceeds your budget. Details on additional fees or taxes are not available in the dataset. Would you like to adjust your budget or star rating to explore other options?
+User: 
+
+Please confirm the total cost including all taxes and fees for 45 Park Lane, along with check-in time and available amenities. If all details are acceptable, I'd like to reserve two rooms for seven nights starting October 15th.
+System: 
+
+Details on taxes, fees, check-in time, and amenities are not available. The base nightly rate for 45 Park Lane is £330. To reserve two rooms for seven nights starting October 15th, please provide the check-in date in YYYY-MM-DD format.
+User: 
+
+2023-10-15
+System: 
+
+Thank you for confirming the check-in date. Here are the reservation details for your review:  
+- Hotel: 45 Park Lane (5-star)  
+- Location: London  
+- Check-in date: 2023-10-15  
+- Stay length: 7 nights  
+- Number of rooms: 2  
+- Base nightly rate: £330 (total base cost: £2,310)  
+- Note: Additional fees or taxes may apply but are not included in the available data.  
+Please confirm if you'd like to proceed with this reservation.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 45 Park Lane, check_in_date: 2023-10-15, stay_length: 7, location: London, number_of_rooms: 2 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

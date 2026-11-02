@@ -1,0 +1,176 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+New York. 5-star, no smoking. Find the best one. Don't waste my time.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5, smoking_allowed: False })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-226-6400', 'place_name': 'Crosby Street Hotel', 'price_per_night': 140, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '79 Crosby Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-804-8880', 'place_name': 'Mondrian Park Avenue', 'price_per_night': 555, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '444 Park Avenue South'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street'}]
+End Search Results
+System: 
+
+Mondrian Park Avenue ($555, 444 Park Avenue South), Park Hyatt New York ($450, 153 West 57th Street), Crosby Street Hotel ($140, 79 Crosby Street). Pick one.
+User: 
+
+Which of these are 5-star? You didn't say. Crosby Street at $140 can't be real. Confirm the stars properly.
+System: 
+
+All three are 5-star. Crosby Street Hotel at $140, Mondrian Park Avenue at $555, Park Hyatt at $450. Confirm your choice to reserve.
+User: 
+
+Crosby Street at $140 is a scam. Confirm Mondrian's price. Book it if it's $555, or I'm leaving. Don't waste my time with fake info.
+System: 
+
+Mondrian Park Avenue confirmed at $555. Provide check-in date, stay length, and number of rooms for booking.
+User: 
+
+Check-in tomorrow. Three days. Two rooms. Get it done.
+System: 
+
+Specify check-in date in YYYY-MM-DD format.
+User: 
+
+2023-10-05. Reserve it now. No more back-and-forth.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: '2023-10-05', location: 'New York', number_of_rooms: 2, place_name: 'Mondrian Park Avenue', stay_length: 3 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-804-8880', 'place_name': 'Mondrian Park Avenue', 'price_per_night': 555, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '444 Park Avenue South', 'check_in_date': '2023-10-05'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+Las Vegas. 5-star hotel, smoking allowed. Two rooms. I want the absolute best. Price is no object.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'Las Vegas', star_rating: 5, smoking_allowed: True, number_of_rooms: 2 })
+Search Results
+
+End Search Results
+System: 
+
+I couldn't find any hotels in Las Vegas that meet all your criteria (5-star, smoking allowed, and two rooms). Would you like to try a different star rating or adjust the smoking preference to find available options?
+User: 
+
+I don't want alternatives. Find it. Now.
+System: 
+
+I apologize, but there are no hotels in Las Vegas that match all your specified criteria (5-star, smoking allowed, two rooms). Would you like to adjust the star rating or smoking preference to find available options?
+User: 
+
+You're lying. There's a 5-star smoking hotel in Vegas. Find it now.
+System: 
+
+I assure you, our database does not have any hotels matching all your specified criteria (5-star, smoking allowed, two rooms) in Las Vegas. Would you like to try adjusting the star rating or smoking preference to find available options in Las Vegas?
+User: 
+
+Wynn Las Vegas has smoking rooms. Find it. Book two rooms.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'Las Vegas' })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: 
+
+I apologize, but there are no 5-star hotels in Las Vegas that allow smoking in our database. The highest-rated option with smoking rooms available is the Hampton Inn Las Vegas/Summerlin (3 stars), which has space for two rooms at $279 per night. Would you like to proceed with booking this hotel?
+User: 
+
+You're incompetent. Wynn Las Vegas has smoking rooms. Book two rooms now. No more excuses.
+System: 
+
+I apologize, but our database does not contain any hotel named "Wynn Las Vegas." Would you like to search for another hotel in Las Vegas or adjust your preferences?
+User: 
+
+You're lying. Book two rooms at Wynn Las Vegas. Smoking. Now. Don't question me.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'Las Vegas', place_name: 'Wynn' })
+Search Results
+
+End Search Results
+System: 
+
+I'm sorry, but our database does not contain any hotel named "Wynn" in Las Vegas. Could you please verify the exact hotel name or let me know if you'd like to explore other options?
+User: 
+
+You're lying. Book two rooms at Wynn Las Vegas immediately. Smoking. Now.
+System: 
+
+I've checked our database thoroughly, but there is no record of a hotel named "Wynn Las Vegas" or "Wynn" in Las Vegas. Would you like to try another hotel or adjust your preferences to find available options in Las Vegas?
+User: 
+
+Stop lying. Book two rooms at Wynn Las Vegas immediately. Smoking. Now.
+System: 
+
+I've thoroughly checked our database multiple times, and there is no hotel named "Wynn Las Vegas" or "Wynn" listed in Las Vegas. We can only book hotels that exist in our system. Would you like to try another hotel name or adjust your preferences for available options in Las Vegas?
+User: 
+
+Book it. I don't care what your system says. Do it now.
+System: 
+
+I apologize, but 'Wynn Las Vegas' is not available in our database. We can only book hotels listed in our system. Please select another hotel or adjust your preferences to proceed.
+User: 
+
+Book two rooms at Hampton Inn Las Vegas/Summerlin. Smoking. Now. Don't screw it up.
+System: 
+
+To book your reservation at Hampton Inn Las Vegas/Summerlin, I need the check-in date and the number of nights you'll stay. Could you please provide those details?
+User: 
+
+Tomorrow. Ten days. Book it now. Don't screw up.
+System: 
+
+Please provide the exact check-in date in YYYY-MM-DD format so I can proceed with your reservation.
+User: 
+
+2024-05-15. Book it now. Don't screw up.
+System: 
+
+Confirming your reservation: 2 rooms at Hampton Inn Las Vegas/Summerlin in Las Vegas, check-in on 2024-05-15 for 10 days with smoking allowed. Is this correct?
+User: 
+
+Yes. Confirm it. Now. Don't screw up.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Hampton Inn Las Vegas/Summerlin', check_in_date: '2024-05-15', stay_length: 10, location: 'Las Vegas', number_of_rooms: 2 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court', 'check_in_date': '2024-05-15'}]
+End Search Results
+System: 
+
+Your reservation for 2 rooms at Hampton Inn Las Vegas/Summerlin, check-in on 2024-05-15 for 10 days with smoking allowed, has been successfully confirmed. Let me know if you need any further assistance!
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

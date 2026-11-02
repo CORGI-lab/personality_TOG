@@ -1,0 +1,161 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel. In London, please.
+
+System: Okay, I can help you with that.
+
+APICall(method='SearchHotel', parameters={ location: London })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: I found three hotels in London. 45 Park Lane is a 5-star hotel, Abc Hyde Park Hotel is a 3-star hotel, and Abercorn House is a 1-star hotel. Do you have a preference?
+
+User: Just the Abc Hyde Park Hotel, please. What's the price?
+
+System: The price per night at the Abc Hyde Park Hotel is $102. Would you like to proceed with booking a room there?
+
+User: Okay. Is smoking allowed?
+
+System: No, smoking is not allowed at Abc Hyde Park Hotel. Would you still like to book a room?
+
+User: I suppose... How many rooms are available?
+
+System: There is 1 room available at the Abc Hyde Park Hotel. Would you like to book it?
+
+User: Yes, please. I'd like to book it.
+
+System: Okay, great. I'll need a few more details to make the reservation. What date would you like to check in, and how many nights will you be staying?
+
+User: The first of the month, for one night.
+
+System: Okay, I need to confirm the year and then I can make the reservation. What year are you planning to check in?
+
+User: This year.
+
+System: Okay, so you want to book 1 room at the Abc Hyde Park Hotel in London, checking in on 2024-03-01 for 1 night. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-01, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 1 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-03-01'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-03-01'}]
+End Search Results
+System: Okay, I have two Hotels with 1 room in London for that date. Abc Hyde Park Hotel is available for $102. Ascot Hyde Park Hotel is also available for $210. Which one do you prefer?
+
+User: Abc Hyde Park Hotel.
+
+System: Okay, I have booked 1 room at the Abc Hyde Park Hotel in London, checking in on 2024-03-01 for 1 night. The price per night is $102. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-01, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 1 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-03-01'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-03-01'}]
+End Search Results
+System: Okay, your booking at Abc Hyde Park Hotel is confirmed. The check-in date is 2024-03-01 for 1 night. The price per night is $102. Can I help you with anything else?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel. Somewhere... safe.
+
+System: Okay, I can help with that. Could you please tell me the location where you'd like to search for a hotel?
+
+User: Philadelphia, I guess.
+
+System: Okay, I'll search for hotels in Philadelphia. Do you have any preferences for the star rating of the hotel?
+
+User: Not really. Just... something decent.
+
+System: Okay, I understand. I'll look for decent hotels in Philadelphia.
+
+APICall(method='SearchHotel', parameters={location: Philadelphia, star_rating: dontcare})
+
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-521-6500', 'place_name': "Hilton Philadelphia At Penn'S Landing", 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '201 South Christopher Columbus Boulevard'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 855-295-2355', 'place_name': 'Kimpton Hotel Monaco Philadelphia', 'price_per_night': 160, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '433 Chestnut Street'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-422-8200', 'place_name': 'Le MeRidien Philadelphia', 'price_per_night': 384, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1421 Arch Street'}]
+End Search Results
+System: I found three 4-star hotels in Philadelphia: Hilton Philadelphia At Penn'S Landing, Kimpton Hotel Monaco Philadelphia, and Le MeRidien Philadelphia. Do any of these sound like a good option for you?
+
+User: Um... Hilton, maybe?
+
+System: Okay, the Hilton Philadelphia At Penn'S Landing. It has 2 rooms, the phone number is +1 215-521-6500, the price per night is $264, smoking is not allowed, and the street address is 201 South Christopher Columbus Boulevard. Would you like to reserve a room there?
+
+User: Is it... clean?
+
+System: I do not have information about the cleanliness of the hotels. However, the Hilton Philadelphia At Penn'S Landing is a 4-star hotel, which generally indicates a higher standard of quality and service. Would you like to proceed with a reservation, or would you like me to look at other options?
+
+User: Maybe... other options.
+
+System: Okay, I understand. Let me check if there are any other hotels with different star ratings. Would you prefer a higher or lower star rating, or should I just look for something different?
+
+User: Just... different.
+
+System: Okay, I will search again, this time prioritizing hotels that might feel a bit more secure or private, in addition to being clean.
+
+APICall(method='SearchHotel', parameters={location: Philadelphia, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-521-6500', 'place_name': "Hilton Philadelphia At Penn'S Landing", 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '201 South Christopher Columbus Boulevard'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 855-295-2355', 'place_name': 'Kimpton Hotel Monaco Philadelphia', 'price_per_night': 160, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '433 Chestnut Street'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-422-8200', 'place_name': 'Le MeRidien Philadelphia', 'price_per_night': 384, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1421 Arch Street'}]
+End Search Results
+System: It seems the search results are the same as before. Perhaps specifying a different star rating or other preferences might help us find something that better suits your needs. Would you like to try a different star rating, or perhaps indicate whether you need smoking to be allowed or not?
+
+User: No smoking. Please.
+
+System: Okay, I understand. Let's refine the search to only include non-smoking hotels.
+
+APICall(method='SearchHotel', parameters={location: Philadelphia, smoking_allowed: False})
+
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-521-6500', 'place_name': "Hilton Philadelphia At Penn'S Landing", 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '201 South Christopher Columbus Boulevard'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 855-295-2355', 'place_name': 'Kimpton Hotel Monaco Philadelphia', 'price_per_night': 160, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '433 Chestnut Street'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-422-8200', 'place_name': 'Le MeRidien Philadelphia', 'price_per_night': 384, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1421 Arch Street'}]
+End Search Results
+System: The search results are still the same. To ensure you feel safe and comfortable, perhaps we could explore hotels with slightly higher prices, as they often correlate with enhanced security and better amenities. Would you be open to considering hotels with a higher price range? Alternatively, I can search for hotels with a specific star rating if you have one in mind.
+
+User: No, thank you. Just... stick with the Hilton.
+
+System: Okay, let's stick with the Hilton Philadelphia At Penn'S Landing. To finalize the reservation, could you please let me know the check-in date and how many nights you plan to stay?
+
+User: Just one night. Starting... tomorrow?
+
+System:  System: Alright, one night, starting tomorrow. And what date would that be exactly? Also, how many rooms will you need?
+
+User: Just one room. And... November 9th.
+
+System:  System: Okay, one room for one night, starting on November 9th. Just to confirm, that's one room at the Hilton Philadelphia At Penn'S Landing, checking in on November 9th for one night. Is that correct?
+
+User: Yes, that's correct.
+
+System:  Okay, I will reserve one room for you at the Hilton Philadelphia At Penn'S Landing for one night, starting on November 9th.
+
+APICall(method='ReserveHotel', parameters={place_name: "Hilton Philadelphia At Penn'S Landing", check_in_date: 2024-11-09, stay_length: 1, location: Philadelphia, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-521-6500', 'place_name': "Hilton Philadelphia At Penn'S Landing", 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '201 South Christopher Columbus Boulevard', 'check_in_date': '2024-11-09'}]
+End Search Results
+System: Okay, I have reserved one room for you at the Hilton Philadelphia At Penn'S Landing for one night, checking in on November 9th. The address is 201 South Christopher Columbus Boulevard, and their phone number is +1 215-521-6500 if you need to contact them. Is there anything else I can assist you with today?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

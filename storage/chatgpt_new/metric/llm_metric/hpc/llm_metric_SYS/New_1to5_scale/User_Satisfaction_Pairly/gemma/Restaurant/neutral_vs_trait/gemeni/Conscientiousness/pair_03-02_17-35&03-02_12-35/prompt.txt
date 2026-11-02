@@ -1,0 +1,128 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to find a restaurant in Palo Alto. I'd like to check its availability before committing to a reservation.
+
+System: Okay, I can help with that. Is there a particular type of cuisine you're interested in?
+
+User: I'd prefer American cuisine, please. And could you also confirm whether they serve alcohol?
+
+System: Okay, I will find an American restaurant in Palo Alto and check if they serve alcohol.
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: American, serves_alcohol: dontcare})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street'}]
+End Search Results
+System: I found three American restaurants in Palo Alto. Bazille serves alcohol, while Bird Dog and Bistro Elan do not. Would you like to make a reservation at any of these restaurants?
+
+User: Before deciding, could you please provide the price range for each of those restaurants? I want to ensure it aligns with my budget and preferences.
+
+System: Okay, I can help you with that.
+
+Bazille has a moderate price range.
+Bird Dog has a moderate price range.
+Bistro Elan has a moderate price range.
+
+Would you like to make a reservation at any of these restaurants?
+
+User: Given that the price ranges are all moderate, I think Bazille sounds like a good option since it serves alcohol. Before proceeding with a reservation, could you confirm its exact street address? I like to plan my route in advance.
+
+System: Okay, I can help you with that. The street address for Bazille is 550 Stanford Shopping Center. Would you like to make a reservation at Bazille?
+
+User: Yes, please. I'd like to reserve a table for two at Bazille on Tuesday at 7:00 PM.
+
+System: Alright, let me make a reservation for you. Just to confirm, you want a table for two at Bazille in Palo Alto on Tuesday, 2024-03-05 at 7:00 PM?
+
+User: Yes, that is correct. Please proceed with the reservation.
+
+System: ```system
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Bazille, city: Palo Alto, date: 2024-03-05, party_size: 2, time: 19:00 })
+```
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center', 'date': '2024-03-05', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Excellent, your reservation has been made. You are all set for Bazille, located at 550 Stanford Shopping Center in Palo Alto, for Tuesday, 2024-03-05 at 7:00 PM for a party of two.
+
+User: Could you provide the phone number for Bazille, just in case I need to contact them to confirm or make any adjustments closer to the date?
+
+System: Certainly! The phone number for Bazille is 650-688-2614. Is there anything else I can assist you with regarding your reservation?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a restaurant in Palo Alto. I want to make a reservation once I've chosen a place.
+
+System: Okay, I can help with that. To ensure I find the right restaurant for you in Palo Alto, do you have any cuisine preferences?
+
+User: I'm open to suggestions, but I generally prefer something reliable and well-reviewed. Perhaps American or Italian?
+
+System: Given your preference for reliability, let's start with American cuisine. I'll check for restaurants in Palo Alto.
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: American})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street'}]
+End Search Results
+System: I found three American restaurants in Palo Alto: Bazille, Bird Dog, and Bistro Elan. Bazille is located at 550 Stanford Shopping Center, Bird Dog is at 420 Ramona Street, and Bistro Elan is at 2363 Birch Street. All are in the moderate price range. Would you like to know more about any of them to help you decide?
+
+User: Could you provide details on the customer reviews and ratings for Bird Dog and Bistro Elan? I'd like to compare them before making a decision.
+
+System: I do not have access to customer reviews and ratings. However, I can provide you with other details. Bird Dog is located at 420 Ramona Street and Bistro Elan is at 2363 Birch Street. Both are in the moderate price range. Would you like to know if they serve alcohol or have live music?
+
+User: Does Bird Dog have a phone number I can call to inquire about reviews myself before making a reservation?
+
+System: Yes, Bird Dog's phone number is 650-656-8180. Would you like to proceed with a reservation at Bird Dog, or would you like information on the other restaurants?
+
+User: I think I will go ahead and just book a table at Bird Dog. I will call them later to verify the reviews. Can I make a reservation for tomorrow at 7:00 PM for 4 people?
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Bird Dog, city: Palo Alto, date: 2024-07-03, time: 19:00, party_size: 4})
+```
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street', 'date': '2024-07-03', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Okay, I have a reservation for you at Bird Dog in Palo Alto for tomorrow, July 3rd, at 7:00 PM for a party of 4. Can you confirm that this is correct?
+
+User: Yes, that is correct. Please proceed with the reservation.
+
+System:  System: Excellent. Your reservation at Bird Dog for tomorrow, July 3rd, at 7:00 PM for 4 people is confirmed. Is there anything else I can assist you with today?
+
+User: Could you please send me the confirmation details of the booking, just to be certain that I have them recorded correctly?
+
+System: Okay, here are the details of your reservation at Bird Dog:
+
+*   **Restaurant Name:** Bird Dog
+*   **City:** Palo Alto
+*   **Date:** July 3rd, 2024
+*   **Time:** 7:00 PM
+*   **Party Size:** 4
+*   **Phone Number:** 650-656-8180
+*   **Address:** 420 Ramona Street
+
+Please note that Bird Dog does not serve alcohol and does not have live music.
+
+Is there anything else I can help you with to ensure your dining experience is well-planned?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

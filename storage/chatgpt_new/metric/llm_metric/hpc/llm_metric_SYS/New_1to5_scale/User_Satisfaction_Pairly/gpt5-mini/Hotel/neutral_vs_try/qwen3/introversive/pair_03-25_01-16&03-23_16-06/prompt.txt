@@ -1,0 +1,128 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need a hotel in Portland.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Portland })
+Search Results
+[{'location': 'Portland', 'number_of_rooms': 1, 'phone_number': '+1 503-200-5678', 'place_name': 'Aloft Portland Airport At Cascade Station', 'price_per_night': 93, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '9920 Northeast Cascades Parkway'}, {'location': 'Portland', 'number_of_rooms': 3, 'phone_number': '+1 503-251-9991', 'place_name': 'Best Western Plus Portland Airport Hotel & Suites', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '11938 Northeast Airport Way'}, {'location': 'Portland', 'number_of_rooms': 2, 'phone_number': '+1 971-351-0230', 'place_name': 'Canopy By Hilton Portland Pearl District', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '425 Northwest 9th Avenue'}]
+End Search Results
+System: 
+
+Found a 4-star hotel named Canopy By Hilton Portland Pearl District for $176 per night. Would you like to proceed with this option?
+User: 
+
+Is smoking allowed?
+System: 
+
+No, smoking is not allowed at Canopy By Hilton Portland Pearl District.
+User: 
+
+Yes, reserve it.
+System: 
+
+Great! To proceed with the reservation, could you please provide the check-in date and the number of days you plan to stay?
+User: 
+
+From the 15th for three days.
+System: 
+
+Could you please confirm the check-in date in YYYY-MM-DD format (e.g., 2023-10-15) and let me know how many rooms you'd like to book? The default is 1 room.
+User: 
+
+2023-10-15. One room.
+System: 
+
+Please confirm your reservation: 1 room at Canopy By Hilton Portland Pearl District in Portland, check-in on 2023-10-15 for 3 days. Is that correct?
+User: 
+
+Yes.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: '2023-10-15', location: 'Portland', number_of_rooms: 1, place_name: 'Canopy By Hilton Portland Pearl District', stay_length: 3 })
+Search Results
+[{'location': 'Portland', 'number_of_rooms': 2, 'phone_number': '+1 971-351-0230', 'place_name': 'Canopy By Hilton Portland Pearl District', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '425 Northwest 9th Avenue', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+Philadelphia.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Philadelphia })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-521-6500', 'place_name': "Hilton Philadelphia At Penn'S Landing", 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '201 South Christopher Columbus Boulevard'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 855-295-2355', 'place_name': 'Kimpton Hotel Monaco Philadelphia', 'price_per_night': 160, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '433 Chestnut Street'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-422-8200', 'place_name': 'Le MeRidien Philadelphia', 'price_per_night': 384, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1421 Arch Street'}]
+End Search Results
+System: 
+
+Found a 4-star hotel named Hilton Philadelphia At Penn's Landing.
+User: 
+
+Smoking allowed?
+System: 
+
+All the hotels I found in Philadelphia don't allow smoking. Would you like to proceed with one of these non-smoking options, or should I search for hotels that permit smoking?
+User: 
+
+Proceed with the Hilton.
+System: 
+
+Great! To complete your reservation at Hilton Philadelphia At Penn's Landing, could you please share your check-in date (YYYY-MM-DD) and the number of nights you'll be staying?
+User: 
+
+2023-10-15 for five nights.
+System: 
+
+How many rooms would you like to reserve? The default is 1 room.
+User: 
+
+One room.
+System: 
+
+Please confirm to book 1 room at Hilton Philadelphia At Penn's Landing from 2023-10-15 for 5 nights in Philadelphia.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: "Hilton Philadelphia At Penn's Landing", check_in_date: "2023-10-15", stay_length: 5, location: "Philadelphia", number_of_rooms: 1 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-521-6500', 'place_name': "Hilton Philadelphia At Penn'S Landing", 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '201 South Christopher Columbus Boulevard', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

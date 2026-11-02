@@ -1,0 +1,115 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in Vegas. Don't try to pawn off some dump on me.
+
+System: Okay, I will help you find a nice hotel in Vegas. Do you have any preferences for star rating, or any other requirements like smoking allowance?
+
+User: Star rating better be high, or I'm walking. And it better not smell like smoke.
+
+System: Okay, I understand. So you're looking for a high-star-rated, non-smoking hotel in Vegas. Can you please confirm the number of rooms you require?
+
+User: One. And it better be clean. I don't want to find any surprises.
+
+System: Okay, just to confirm, you need one non-smoking room in a high-star-rated hotel in Vegas. Is that correct?
+
+User: Yeah, yeah, get on with it. Find me something decent.
+
+System: APICall(method='SearchHotel', parameters={ location: Vegas, number_of_rooms: 1, smoking_allowed: False, star_rating: dontcare })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-489-7500', 'place_name': 'Thunderbird Boutique Hotel', 'price_per_night': 56, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '1215 South Las Vegas Boulevard'}]
+End Search Results
+System: Okay, I found a few options for you in Las Vegas. Best Western Plus Las Vegas West and Oasis At Gold Spike, both are 3-star hotels and non-smoking. Or there is Thunderbird Boutique Hotel with 2 stars and also non-smoking. Which one do you prefer?
+
+User: None of those sound promising. What's the point of even calling them "hotels"? Find me something that's actually worth my time and money. I want at least 4 stars, and it better be spotless.
+
+System: Okay, I understand. I will search again for hotels in Vegas with at least 4 stars and non-smoking.
+
+APICall(method='SearchHotel', parameters={ location: Vegas, number_of_rooms: 1, smoking_allowed: False, star_rating: 4 })
+
+Search Results
+
+End Search Results
+System: I am sorry, there are no 4 stars hotels that match your requirements. Would you like me to search for hotels with different star ratings?
+
+User: Of course there are 4 stars hotels, you just don't want to find them. Try harder. Show me something with 4 stars and non-smoking.
+
+System: APICall(method='SearchHotel', parameters={ location: Vegas, number_of_rooms: 1, smoking_allowed: False, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: I am sorry, there are no 5 stars hotels that match your requirements. Would you like me to search for hotels with different star ratings?
+
+User: I said 4 stars, not 5. Are you even listening? Find me a 4-star, non-smoking hotel. And it better not be some fleabag motel disguised as luxury.
+
+System: APICall(method='SearchHotel', parameters={ location: Vegas, number_of_rooms: 1, smoking_allowed: False, star_rating: 4 })
+
+Search Results
+
+End Search Results
+System: I am sorry, there are no 4 stars hotels that match your requirements. Would you like me to search for hotels with different star ratings or smoking allowance?
+
+User: Fine, drop the non-smoking requirement then. But it better be worth it for me to put up with the smell. What 4-star hotels do you have in Vegas that allow smoking?
+
+System: APICall(method='SearchHotel', parameters={ location: Vegas, number_of_rooms: 1, star_rating: 4 })
+
+Search Results
+
+End Search Results
+System: I am sorry, there are no 4 stars hotels that match your requirements. Would you like me to search for hotels with different star ratings?
+
+User: Are you incompetent? I want a 4-star hotel. Now find it. Smoking doesn't matter.
+
+System: APICall(method='SearchHotel', parameters={ location: Vegas, number_of_rooms: 1, star_rating: 4 })
+
+Search Results
+
+End Search Results
+
+Dialogue B:
+  User: I need a hotel in New York. And it better be worth my time.
+
+System: Alright, New York it is. I trust you have high standards. Any preference on the star rating? I wouldn't want to waste my time showing you something subpar.
+
+User: What's the most expensive hotel you've got? I only deal with the best. And don't try to upsell me with some garbage about "value."
+
+System: Of course, only the best for you. Let me see what expensive options we have. Do you have any preference on the star rating?
+
+User: Just show me the highest-rated, most expensive hotel you've got. Star rating doesn't matter if it's got the highest price tag. I'm not paying for less than the best.
+
+System: Alright, let's cut to the chase. I'm searching for hotels in New York. I need to know how many rooms you require.
+
+User: Rooms? I need enough to impress. Make it three. And they better be suites.
+
+System: Suites? I only have information about the number of rooms. Do you want to proceed with three rooms? I need to know for how many days you will be staying and from which date you want to book.
+
+User: Alright, three rooms it is. I'll be staying for 7 days, starting tomorrow. And don't even *think* about trying to sneak in any hidden fees. I'll be watching.
+
+System: I don't have time for games. Let's get this done.
+
+APICall(method='ReserveHotel', parameters={location: New York, number_of_rooms: 3, stay_length: 7, check_in_date: 2024-07-26})
+
+<Failed Dialog>
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

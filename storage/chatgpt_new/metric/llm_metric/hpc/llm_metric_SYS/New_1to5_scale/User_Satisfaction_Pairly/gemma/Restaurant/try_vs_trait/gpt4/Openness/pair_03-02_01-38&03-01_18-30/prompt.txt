@@ -1,0 +1,64 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm in the mood for an adventurous culinary experience in San Francisco. Can you help me find a restaurant that offers something unique and perhaps has live music or an artistic atmosphere?
+System: Is there a specific type of cuisine you're interested in, or should I surprise you with something adventurous? Additionally, do you have a preferred price range in mind?
+User: Surprise me! I'm open to trying any cuisine as long as it's an unforgettable experience. As for the price range, let's keep it moderate to high—I'm ready to indulge in something extraordinary!
+System: Great! I’ll find a unique and unforgettable dining experience in San Francisco for you. Let me check for restaurants that offer an adventurous cuisine with live music or an artistic atmosphere. Please hold on for a moment while I gather some options for you.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Fusion, price_range: expensive, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems we couldn't find any restaurants matching all of your criteria. Let's try adjusting the price range to "moderate" and see if we can find some exciting options. Please hold on for a moment while I check again.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Fusion, price_range: moderate, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street'}]
+End Search Results
+System: I found a great option for you! El Valenciano offers a fusion cuisine with live music to enhance your dining experience. It's located at 1153 Valencia Street in San Francisco. Would you like the phone number or any other details about the restaurant?
+User: That sounds amazing! Could you go ahead and make a reservation for me? Let's do it for this Saturday at 7:00 PM for a party of four. Looking forward to a night of culinary adventure and great music!
+System: Great choice! Let me confirm the details: you'd like to make a reservation at El Valenciano in San Francisco for this Saturday at 7:00 PM for a party of four. Let me just finalize this for you. Please hold on one moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'El Valenciano', city: 'San Francisco', cuisine: 'Fusion', date: '2023-10-07', time: '19:00', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street', 'date': '2023-10-07', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at El Valenciano in San Francisco has been successfully made for this Saturday at 7:00 PM for a party of four. Enjoy your culinary adventure and the live music! If you need the phone number or any additional information, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm in the mood for a culinary adventure in San Francisco. Could you help me find a restaurant with a unique ambiance, perhaps with some live music and an artistic flair? I'd love to explore something with a creative menu, maybe fusion cuisine or something off the beaten path.
+System: San Francisco sounds like the perfect place for a culinary adventure with its vibrant food scene! How about exploring a fusion cuisine that might offer the creative and unique flair you're looking for? Let me check the options for you. Could you please specify a price range you're comfortable with?
+User: I'm open to a range of experiences, so let's say moderate to high. I'm excited to see what intriguing options are available!
+System: Fantastic! Let me find a fusion restaurant in San Francisco that fits your adventurous spirit and offers a moderate to high price range, along with live music and an artistic ambiance. I'll check the options for you. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Fusion, price_range: moderate, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street'}]
+End Search Results
+System: I found a great option for you! El Valenciano in San Francisco offers a delightful fusion cuisine that matches your adventurous spirit. It features live music and has an artistic ambiance. The restaurant is located at 1153 Valencia Street, and you can contact them at 415-826-9561. They also serve alcohol, which might add to your vibrant dining experience. Would you like any further details or perhaps make a reservation?
+User: Yes, please make a reservation for tomorrow evening at 7:00 pm for two people. I'm eager to immerse myself in this creative culinary experience!
+System: To make sure your reservation is secured, could you please confirm the date for tomorrow? Once I have that, I'll proceed to make the reservation for you at El Valenciano in San Francisco.
+User: Tomorrow's date is [insert tomorrow's date here]. Please go ahead and secure the reservation for two at 7:00 pm. I can't wait to dive into this vibrant dining experience!
+System: Thank you for confirming the date. I will now proceed to secure your reservation for two people at El Valenciano in San Francisco for tomorrow at 7:00 pm. APICall (method='ReserveRestaurant', parameters={restaurant_name: 'El Valenciano', city: 'San Francisco', time: '19:00', date: '[insert tomorrow's date here]', party_size: 2})
+<Failed Dialog>
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,152 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+Looking for a restaurant in Berkeley.
+System: 
+
+What cuisine are you interested in?
+User: 
+
+Italian.
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: 
+
+Cugini Restaurant is at 1556 Solano Avenue in Berkeley.
+User: 
+
+Please reserve it.
+System: 
+
+What time would you like to reserve?
+User: 
+
+7 PM
+System: 
+
+What date would you like to reserve for?
+User: 
+
+tomorrow
+System: 
+
+Please specify the reservation date in YYYY-MM-DD format.
+User: 
+
+2023-10-06
+System: 
+
+How many guests?
+User: 
+
+1
+System: 
+
+Confirm reservation for Cugini Restaurant in Berkeley on 2023-10-06 at 7 PM for 1 guest.
+User: 
+
+Yes.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Cugini Restaurant, city: Berkeley, time: 19:00, date: 2023-10-06, party_size: 1})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue', 'date': '2023-10-06', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: 
+
+Reservation confirmed for Cugini Restaurant on October 6th at 7 PM for 1 guest.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I need to find a restaurant.
+System: 
+
+Sure! Could you let me know which city you'd like to search for restaurants in?
+User: 
+
+San Carlos.
+System: 
+
+What type of cuisine are you interested in? For example, Mexican, Italian, American, or something else?
+User: 
+
+American.
+System: 
+
+APICall (method='FindRestaurants', parameters={city: San Carlos, cuisine: American})
+Search Results
+[{'city': 'San Carlos', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-654-2822', 'price_range': 'moderate', 'restaurant_name': "Izzy's San Carlos", 'serves_alcohol': False, 'street_address': '525 Skyway Road'}, {'city': 'San Carlos', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-597-3108', 'price_range': 'moderate', 'restaurant_name': 'Piacere Restaurant', 'serves_alcohol': True, 'street_address': '727 Laurel Street'}, {'city': 'San Carlos', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-610-0438', 'price_range': 'moderate', 'restaurant_name': 'The Cask Wine Bar', 'serves_alcohol': True, 'street_address': '782 Laurel Street'}]
+End Search Results
+System: 
+
+I found Izzy's San Carlos in San Carlos. It's located at 525 Skyway Road, has a moderate price range, and does not serve alcohol. Would you like more details about this restaurant or see other options?
+User: 
+
+I would like to reserve this restaurant.
+System: 
+
+What time would you like to reserve Izzy's San Carlos for in San Carlos?
+User: 
+
+7 PM.
+System: 
+
+How many people will be dining with you?
+User: 
+
+One.
+System: 
+
+What date would you like to reserve for? Please provide the date in YYYY-MM-DD format.
+User: 
+
+2023-10-15
+System: 
+
+Confirming: You want to reserve Izzy's San Carlos in San Carlos for 1 person on 2023-10-15 at 7 PM. Is that correct?
+User: 
+
+Yes.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: "Izzy's San Carlos", city: San Carlos, time: 19:00, cuisine: American, date: 2023-10-15, party_size: 1})
+Search Results
+[{'city': 'San Carlos', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-654-2822', 'price_range': 'moderate', 'restaurant_name': "Izzy's San Carlos", 'serves_alcohol': False, 'street_address': '525 Skyway Road', 'date': '2023-10-15', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: 
+
+Your reservation at Izzy's San Carlos for 1 person on October 15th at 7 PM is confirmed. The restaurant is located at 525 Skyway Road. Enjoy your meal!
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,86 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I wanna find a place to eat in San Francisco. Something with a chill vibe, you know?
+System: What type of cuisine are you interested in, such as Italian, Chinese, or something else?
+User: Hmm, I'm not really sure. Maybe something like Italian or whatever's good. I'm open to trying new stuff.
+System: Is there a specific price range you have in mind, or any particular features like live music or alcohol that you'd prefer the restaurant to offer?
+User: I don't really care about the price, but it'd be cool if they have live music. And sure, a drink or two would be nice.
+System: Great! Let me find some options for you. I'll look for restaurants in San Francisco that offer live music, serve alcohol, and have Italian cuisine or something new you might enjoy. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found two great Italian restaurants in San Francisco that offer live music and serve alcohol. The first option is "Fior D'italia," located at 2237 Mason Street. The second option is "Zingari Ristorante + Jazz Bar," situated at 501 Post Street. Would you like more information about either of these, or do you have any other preferences?
+User: Let's go with Zingari Ristorante + Jazz Bar. Can you make a reservation for me?
+System: Sure, I can help with that. Could you please confirm the date and time you'd like to make the reservation for, as well as the number of people in your party?
+User: Uh, let's do it for tonight. Maybe around 7:00 PM? And it'll just be me, so a table for one.
+System: Great, just to confirm, you'd like to reserve a table for one at Zingari Ristorante + Jazz Bar in San Francisco tonight at 7:00 PM. Is that correct?
+User: Yeah, that sounds about right. Go ahead and book it for me.
+System: APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Zingari Ristorante + Jazz Bar', city: 'San Francisco', time: '19:00', date: '2023-10-30', party_size: 1})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-30', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Your reservation for one at Zingari Ristorante + Jazz Bar in San Francisco tonight at 7:00 PM has been successfully made. The address is 501 Post Street, and you can reach them at 415-885-8850 if needed. Enjoy your evening with some great Italian food and live jazz music!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I'm feeling kinda hungry right now. Can you help me find a place to eat in San Francisco? I'm not really picky, so just whatever sounds good.
+System: Sure! Since you're open to options, how about I find you a place with some tasty Vietnamese cuisine? It's quite popular and offers a variety of flavors. Let me know if that sounds good, or if you have any other preferences.
+User: I guess Vietnamese could work. Do they have any places with live music or something fun like that?
+System: Great choice! Let me look into that for you. I'll find a Vietnamese restaurant in San Francisco that features live music. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese, has_live_music: True})
+Search Results
+
+End Search Results
+System: Unfortunately, I couldn't find any Vietnamese restaurants in San Francisco with live music. Would you like me to search for a Vietnamese restaurant without live music, or would you prefer to try a different type of cuisine that might have live music?
+User: Hmm, maybe just go ahead with the Vietnamese spots you found. I'm not too fussed about the music.
+System: No problem! Let me find some Vietnamese restaurants in San Francisco for you. Please hold on for a moment while I look this up. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street'}]
+End Search Results
+System: Here are some Vietnamese restaurant options in San Francisco for you:
+
+1. **Anh Hong** - Located at 808 Geary Street. They have a moderate price range, serve alcohol, and can be reached at 415-885-5180.
+
+2. **Aux Delices** - You can find them at 2327 Polk Street. They also have a moderate price range but do not serve alcohol. Their contact number is 415-928-4977.
+
+3. **Co Nam** - Situated at 1653 Polk Street, they have a moderate price range and serve alcohol. You can call them at 415-292-6161.
+
+Let me know if any of these places catch your interest, or if you need further assistance!
+User: I think Co Nam sounds alright. Could you book a table for me there? Oh, and make it for... let's say, tonight. Not sure what time yet, maybe like 7-ish? And it'll be for... hmm, four people?
+System: Sure, I can help with that! Just to confirm, you'd like a reservation at Co Nam in San Francisco for tonight at 7 PM for four people. Is that correct, or would you like to adjust the time or party size?
+User: Yeah, that sounds about right. Go ahead and book it for me.
+System: Great! I'll proceed with making the reservation for you. Please hold on for a moment while I confirm your booking at Co Nam for tonight at 7 PM for four people. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Co Nam', city: 'San Francisco', time: '19:00', date: '2023-10-10', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street', 'date': '2023-10-10', 'party_size': '4', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street', 'date': '2023-10-10', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Co Nam in San Francisco for tonight at 7 PM for four people has been successfully made. Enjoy your dinner! If you have any other questions or need further assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

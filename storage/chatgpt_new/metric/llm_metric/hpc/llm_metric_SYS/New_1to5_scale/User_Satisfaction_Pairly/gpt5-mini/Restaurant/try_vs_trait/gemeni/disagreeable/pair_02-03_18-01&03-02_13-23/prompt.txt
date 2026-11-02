@@ -1,0 +1,117 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a restaurant in San Francisco. And it better be good.
+
+System: What cuisine do you want? Don't tell me you don't have a preference.
+
+User: I want Italian, and it better not be some tourist trap.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: 54 Mint Ristorante Italiano is located at 16 Mint Plaza. A16 is located at 2355 Chestnut Street. Allegro Romano is located at 1701 Jones Street. All three serve Italian cuisine in San Francisco. Pick one.
+
+User: Which one is the least likely to be full of annoying tourists? And don't try to upsell me.
+
+System: I don't have information about the tourist density of these restaurants. However, Allegro Romano does not serve alcohol, so that might deter some of the crowd you're trying to avoid. Does that sound like a good option for you?
+
+User: Fine, book a table at Allegro Romano for tomorrow night. Six people, 8 PM sharp. And it better be ready when we get there.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Allegro Romano, city: San Francisco, date: 2019-03-02, party_size: 6, time: 20:00})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street', 'date': '2019-03-02', 'party_size': '6', 'time': '20:00'}]
+End Search Results
+System: Alright, table for six at Allegro Romano, tomorrow at 8 PM. Don't be late.
+
+User: And I expect the food to be decent, or I'm blaming you.
+
+System: I don't control the quality of the food. However, your table is booked. Anything else?
+
+User: Does it have live music? Because if it does, cancel the reservation.
+
+System: Allegro Romano does not have live music. So, the reservation stands. Is there anything else I can help you with?
+
+User: Fine. Just make sure they have enough parking.
+
+System: I don't have information about parking. Consider yourself warned. Is there anything else?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a place to eat in San Francisco. Don't try to tell me about some hole-in-the-wall; I want something decent.
+
+System: Okay, I understand. I'll help you find a good restaurant in San Francisco. Do you have a particular type of cuisine in mind?
+
+User: Whatever, just make sure it's not something cheap. I'm thinking Italian, but it better be authentic.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, price_range: expensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-292-3699', 'price_range': 'expensive', 'restaurant_name': 'Ala Romana', 'serves_alcohol': True, 'street_address': '1098 Jackson Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-416-6959', 'price_range': 'expensive', 'restaurant_name': 'Che Fico', 'serves_alcohol': False, 'street_address': '838 Divisadero Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-362-6012', 'price_range': 'expensive', 'restaurant_name': 'Chiaroscuro', 'serves_alcohol': True, 'street_address': '550 Washington Street'}]
+End Search Results
+System: Alright, based on your preference for authentic Italian and a higher price range, I've found a few options in San Francisco. Ala Romana, Che Fico, and Chiaroscuro all seem to fit the bill. Ala Romana and Chiaroscuro serve alcohol. Che Fico does not. Which of these sounds the most appealing to you?
+
+User: Don't give me that "seems to fit the bill" garbage. I want the best, not just something that "seems" good enough. Tell me which one *you* would pick if you knew anything about restaurants. And does Ala Romana have outdoor seating? I don't want to be stuck inside.
+
+System: I understand you want the best. Based on the search results, Ala Romana and Chiaroscuro both serve alcohol, which could enhance your dining experience. I don't have information about outdoor seating for Ala Romana, so I can't comment on that. Would you like me to look up information about Ala Romana?
+
+User: Yeah, look up Ala Romana. And hurry up about it. I don't have all day.
+
+System: APICall (method='FindRestaurants', parameters= {restaurant_name: Ala Romana, city: San Francisco, cuisine: Italian, price_range: expensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-292-3699', 'price_range': 'expensive', 'restaurant_name': 'Ala Romana', 'serves_alcohol': True, 'street_address': '1098 Jackson Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-292-3699', 'price_range': 'expensive', 'restaurant_name': 'Ala Romana', 'serves_alcohol': True, 'street_address': '1098 Jackson Street', 'date': '2019-03-09', 'party_size': 2, 'time': '17:00'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-292-3699', 'price_range': 'expensive', 'restaurant_name': 'Ala Romana', 'serves_alcohol': True, 'street_address': '1098 Jackson Street', 'date': '2019-03-12', 'party_size': 2, 'time': '11:00'}]
+End Search Results
+System: I've re-checked the information for Ala Romana. It's an expensive Italian restaurant in San Francisco that serves alcohol. Unfortunately, the search results don't specify whether they have outdoor seating. Would you like me to call them to confirm, or would you prefer to consider one of the other options?
+
+User: Call them. I want to know about the outdoor seating before I waste my time even thinking about going there.
+
+System: I am sorry, but I am unable to call the restaurant to confirm if they have outdoor seating. However, I can help you with other details. Would you like to know their address or phone number?
+
+User: Don't bother. Just give me the address and phone number. I'll figure it out myself.
+
+System: The address for Ala Romana is 1098 Jackson Street, and their phone number is 415-292-3699. Is there anything else I can help you with?
+
+User: And what about Che Fico? Does it have outdoor seating? Since you can't be bothered to do your job properly with Ala Romana, maybe you'll have better luck with that one.
+
+System: APICall (method='FindRestaurants', parameters= {restaurant_name: Che Fico, city: San Francisco, cuisine: Italian, price_range: expensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-416-6959', 'price_range': 'expensive', 'restaurant_name': 'Che Fico', 'serves_alcohol': False, 'street_address': '838 Divisadero Street'}]
+End Search Results
+System: I've checked the information for Che Fico, and unfortunately, there's no mention of outdoor seating in the search results. The address is 838 Divisadero Street, and the phone number is 415-416-6959. Also, keep in mind that Che Fico does not serve alcohol. Would you like any further details about Che Fico or perhaps consider Chiaroscuro?
+
+User: Fine, give me the address and phone number for Chiaroscuro. And don't leave out any important details this time.
+
+System: The address for Chiaroscuro is 550 Washington Street, and their phone number is 415-362-6012. They serve alcohol, but I don't have information about outdoor seating. Is there anything else you'd like to know?
+
+User: Does Chiaroscuro take reservations? I'm not waiting around like some peasant.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Chiaroscuro, city: San Francisco, cuisine: Italian})
+
+<Failed Dialog>
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

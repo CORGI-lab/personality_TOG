@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm thinking of grabbing something to eat. Maybe a place in San Francisco?
+System: Do you have a particular type of cuisine in mind, or are you open to suggestions?
+User: Umm, not really sure. Maybe something like Italian? Or, you know, whatever's good and not too fancy.
+System: Great choice! I'll look for some Italian restaurants in San Francisco with a moderate price range. Give me a moment. APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that might suit your taste. How about 54 Mint Ristorante Italiano, located at 16 Mint Plaza? It's moderately priced and serves alcohol. If you need more options, there's also A16 on Chestnut Street and Allegro Romano on Jones Street. Would you like more details on any of these, or is there something else you're looking for?
+User: I guess 54 Mint sounds alright. Can you just book a table for me there? Like, maybe for tonight?
+System: Sure, I can help with that. Could you please provide the time you’d like the reservation for, and also confirm the number of people in your party?
+User: Let's just say around 7-ish, and make it for 4 people. 
+System: Thank you for providing the details. Just to confirm, you'd like to book a table for 4 people at 54 Mint Ristorante Italiano in San Francisco at 7:00 PM tonight. Is that correct?
+User: Yeah, that sounds about right. Go ahead and book it.
+System: Great! I'll proceed with the reservation for you. APICall (method='ReserveRestaurant', parameters= {restaurant_name: '54 Mint Ristorante Italiano', city: San Francisco, time: 19:00, party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at 54 Mint Ristorante Italiano in San Francisco for 4 people at 7:00 PM tonight has been successfully made. If you need to contact them, their phone number is 415-543-5100. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm feeling kinda hungry. Can you find me a place to eat in San Francisco?
+System: Do you have a specific type of cuisine in mind, or should I pick a random one for you?
+User: I don't really care. Just find something that's not too expensive.
+System: Let's go with a random cuisine for you. How about trying some Vietnamese food? I'll find a place for you in San Francisco. Please hold on. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese, price_range: inexpensive})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-724-2325', 'price_range': 'expensive', 'restaurant_name': 'Khai', 'serves_alcohol': False, 'street_address': '655 Townsend Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-668-8080', 'price_range': 'inexpensive', 'restaurant_name': 'La Vie', 'serves_alcohol': False, 'street_address': '5830 Geary Boulevard'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-397-2290', 'price_range': 'inexpensive', 'restaurant_name': 'Lai Hong Lounge', 'serves_alcohol': False, 'street_address': '1416 Powell Street'}]
+End Search Results
+System: I found a couple of Vietnamese restaurants in San Francisco that fit your preference for something not too expensive. One option is "La Vie," which is located at 5830 Geary Boulevard. If you're interested, you can give them a call at 415-668-8080. Would you like more information about another restaurant, or does this one work for you?
+User: I guess that works. Can you reserve a table for me there?
+System: What time would you like to reserve the table for, and how many people will be in your party?
+User: Oh, let's say around 7 pm for... I don't know, maybe 4 people.
+System: Just to confirm, you'd like to reserve a table for 4 people at "La Vie" in San Francisco at 7 pm. Is that correct?
+User: Yeah, sure, that sounds fine.
+System: Great! I'll make the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'La Vie', city: 'San Francisco', time: '19:00', date: '2023-10-05', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-668-8080', 'price_range': 'inexpensive', 'restaurant_name': 'La Vie', 'serves_alcohol': False, 'street_address': '5830 Geary Boulevard', 'date': '2023-10-05', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at "La Vie" in San Francisco for 4 people at 7 pm has been successfully made. If you need to contact them, their phone number is 415-668-8080. Enjoy your meal!
+User: Alright, cool. Can you also tell me if they have live music or something like that?
+System: "La Vie" does not have live music. If there's anything else you'd like to know or need help with, feel free to ask!
+User: Nah, that's all good. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

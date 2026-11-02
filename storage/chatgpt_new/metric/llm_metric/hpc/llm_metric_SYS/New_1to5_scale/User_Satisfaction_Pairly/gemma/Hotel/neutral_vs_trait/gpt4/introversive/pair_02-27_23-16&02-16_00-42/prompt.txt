@@ -1,0 +1,69 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Seattle. Can you help me find one?
+System: Do you have any specific star rating preference for the hotel in Seattle, or are you open to any star rating?
+User: I'm open to any star rating. Just no smoking places, please.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, smoking_allowed: False })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few options for you in Seattle. There's the Ace Hotel Seattle with a 2-star rating, located at 2423 1st Avenue, priced at $136 per night. Another option is the Belltown Inn, also 2-star, located at 2301 3rd Avenue, priced at $186 per night. Lastly, there's the Days Inn By Wyndham Seattle North Of Downtown, a 2-star hotel at 9100 Aurora Avenue North, priced at $84 per night. All of these hotels are non-smoking. Would you like more information on any of these options, or is there anything else you'd like to know?
+User: Could you tell me more about the Ace Hotel Seattle, like the number of rooms available?
+System: The Ace Hotel Seattle has 2 rooms available. If you need any further information or assistance with booking, feel free to let me know!
+User: I'd like to make a reservation at the Ace Hotel Seattle. Could you book one room for me? I'll be checking in on the 5th and staying for five days.
+System: Please confirm that you would like to book 1 room at the Ace Hotel Seattle, checking in on the 5th and staying for 5 days.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Seattle, number_of_rooms: 1, place_name: Ace Hotel Seattle, stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue', 'check_in_date': '2023-11-05'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-340-1222', 'place_name': 'Green Tortoise Hostel Seattle', 'price_per_night': 174, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '105 Pike Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Ace Hotel Seattle has been successfully confirmed. You will be checking in on November 5th and staying for 5 days. If there's anything else you need assistance with, please let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in Seattle, please.
+System: What star rating are you looking for in a hotel in Seattle?
+User: I'm looking for something around 4 stars, if possible.
+System: Let me look for a 4-star hotel in Seattle for you. Please give me a moment.  
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 252, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}]
+End Search Results
+System: I found two 4-star hotels in Seattle. One is the Crowne Plaza Seattle Downtown, located at 1113 6th Avenue, with prices starting at $120 per night. The other is the Grand Hyatt Seattle, located at 721 Pine Street, with prices starting at $456 per night. Would you like more information on any of these options or need assistance with something else?
+User: Could you tell me if smoking is allowed in these hotels?
+System: Neither the Crowne Plaza Seattle Downtown nor the Grand Hyatt Seattle allow smoking. Would you like more information on any other features or need assistance with booking a room?
+User: Can you tell me the number of rooms available at both hotels, please?
+System: The Crowne Plaza Seattle Downtown has options for 1 or 3 rooms available, while the Grand Hyatt Seattle offers 3 rooms. Would you like to proceed with booking any of these hotels or need further assistance?
+User: I would like to book 3 rooms at the Crowne Plaza Seattle Downtown. Can you help me with that?
+System: Certainly. Before proceeding with the booking, could you please provide the check-in date and the number of days you plan to stay at the Crowne Plaza Seattle Downtown?
+User: Check-in on the 5th, and I'll be staying for 7 days.
+System: Please confirm that you would like to book 3 rooms at the Crowne Plaza Seattle Downtown starting from the 5th for 7 days.
+User: Yes, that is correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-05, location: Seattle, number_of_rooms: 3, place_name: Crowne Plaza Seattle Downtown, stay_length: 7})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': '3', 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 264, 'smoking_allowed': False, 'star_rating': '4', 'street_address': '1113 6th Avenue', 'check_in_date': '2023-11-05', 'stay_length': '7'}]
+End Search Results
+System: Your reservation for 3 rooms at the Crowne Plaza Seattle Downtown from November 5th for 7 days has been successfully confirmed. The hotel is located at 1113 6th Avenue. If you need further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

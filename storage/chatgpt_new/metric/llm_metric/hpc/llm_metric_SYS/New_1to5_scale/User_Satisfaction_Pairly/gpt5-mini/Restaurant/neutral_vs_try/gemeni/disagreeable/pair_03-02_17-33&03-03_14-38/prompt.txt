@@ -1,0 +1,141 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a restaurant in San Francisco. American cuisine. Don't try to give me some dive, I want the best you've got.
+
+System: Okay, I understand. You're looking for a top-notch American restaurant in San Francisco. Do you have a preference for the price range?
+
+User: Expensive. And it better be worth it.
+
+System: Okay, noted. I'll only look at the truly exceptional places.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: expensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Alright, let's see... Out of the expensive American restaurants in San Francisco, I've found three that might meet your standards: 1760, 25 Lusk, and 3rd Cousin. 25 Lusk serves alcohol. Would you like to know more about any of them?
+
+User: What's the point of knowing more if they're not all serving alcohol? Waste of my time. Just tell me about 25 Lusk.
+
+System: Okay, 25 Lusk is located at 25 Lusk Street in San Francisco. Their phone number is 415-495-5875. Is there anything else you'd like to know about 25 Lusk?
+
+User: Yeah, yeah, yeah, very informative. Now book a table for me, tomorrow night. Six people. 8 PM sharp.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 25 Lusk, city: San Francisco, date: 2024-03-02, party_size: 6, time: 20:00})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street', 'date': '2024-03-02', 'party_size': '6', 'time': '20:00'}]
+End Search Results
+System: Alright, I have a table for six at 25 Lusk in San Francisco for tomorrow, March 2nd, at 8 PM. Can I assume the reservation is under your name?
+
+User: Whatever. Just get it done.
+
+System: Excellent. Your table for six at 25 Lusk is confirmed for tomorrow at 8 PM. Is there anything else I can assist you with?
+
+User: Just make sure they know I expect the best service, or there will be problems.
+
+System: I've made a note on the reservation regarding your expectations for top-tier service. Is there anything else I can assist you with?
+
+User: Yeah, yeah. Make sure they comp something for the hassle. Now give me the damn confirmation number.
+
+System: I do not have access to confirmation numbers. Is there anything else I can help you with?
+
+User: Fine. Just make sure they don't seat me next to the kitchen or the bathroom. That's all.
+
+System: I've added a note to your reservation requesting a table away from the kitchen and restrooms. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a restaurant in San Francisco. And it better be good.
+
+System: Okay, I can help with that. What type of cuisine are you interested in?
+
+User: I don't care about cuisine, just tell me the fanciest, most expensive place you've got. Don't waste my time with anything less.
+
+System: Okay, since you don't have a preference for cuisine, I'll look for an expensive restaurant in San Francisco. How about French cuisine?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: French, price_range: expensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-202-0100', 'price_range': 'expensive', 'restaurant_name': 'Bistro Aix', 'serves_alcohol': False, 'street_address': '3340 Steiner Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-931-7272', 'price_range': 'expensive', 'restaurant_name': 'Bistro Central Parc', 'serves_alcohol': False, 'street_address': '560 Central Avenue'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-981-5565', 'price_range': 'expensive', 'restaurant_name': 'Cafe Jacqueline', 'serves_alcohol': False, 'street_address': '1454 Grant Avenue'}]
+End Search Results
+System: I found three expensive French restaurants in San Francisco: Bistro Aix, Bistro Central Parc, and Cafe Jacqueline. Bistro Aix is located at 3340 Steiner Street, Bistro Central Parc is at 560 Central Avenue, and Cafe Jacqueline is at 1454 Grant Avenue. Do any of these sound good?
+
+User: Cafe Jacqueline... Is that the best you can do? Fine, reserve a table for me. Tomorrow night. 8 PM. Two people. And it better be worth my while.
+
+System: Okay, I can make a reservation for you at Cafe Jacqueline for tomorrow night at 8 PM for two people. Could you please confirm the date for the reservation?
+
+User: Tomorrow is the 16th. And if they screw up the reservation, I'm holding you responsible.
+
+System: Okay, I will make a reservation for you at Cafe Jacqueline for tomorrow, March 16th, at 8 PM for two people. Is that correct?
+
+User: Yeah, yeah, just get it done. And make sure they know who they're dealing with.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Cafe Jacqueline, city: San Francisco, date: 2019-03-16, time: 20:00, party_size: 2})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-981-5565', 'price_range': 'expensive', 'restaurant_name': 'Cafe Jacqueline', 'serves_alcohol': False, 'street_address': '1454 Grant Avenue', 'date': '2019-03-16', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: Okay, I have made a reservation for you at Cafe Jacqueline for tomorrow, March 16th, at 8 PM for two people. The restaurant is located at 1454 Grant Avenue, and their phone number is 415-981-5565.
+
+User: Whatever. Just tell me if they serve alcohol. And what's the price range? I expect it to be high.
+
+System: They do not serve alcohol. The price range is expensive, as you requested. Is there anything else I can help you with?
+
+User: No alcohol? Useless. Cancel that reservation. Find me another place. Same requirements: fancy, expensive, San Francisco. And this time, it better have a damn good wine list.
+
+System: Okay, I will find another expensive restaurant in San Francisco that serves alcohol. How about Italian cuisine?
+
+User: Italian? Fine. As long as it's the most overpriced, pretentious place you can find.
+
+System: ```system
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, price_range: expensive, serves_alcohol: True})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-292-3699', 'price_range': 'expensive', 'restaurant_name': 'Ala Romana', 'serves_alcohol': True, 'street_address': '1098 Jackson Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-362-6012', 'price_range': 'expensive', 'restaurant_name': 'Chiaroscuro', 'serves_alcohol': True, 'street_address': '550 Washington Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}]
+End Search Results
+System: I found three expensive Italian restaurants in San Francisco that serve alcohol: Ala Romana, Chiaroscuro, and Fior D'italia. Ala Romana is located at 1098 Jackson Street, Chiaroscuro is at 550 Washington Street, and Fior D'italia is at 2237 Mason Street and has live music. Do any of these sound good?
+
+User: Fior D'italia... Live music, huh? Alright, reserve a table there. Same time, same number of people. Tomorrow night, 8 PM, two people. And don't you dare screw this one up.
+
+System: Okay, I will make a reservation for you at Fior D'italia for tomorrow, March 16th, at 8 PM for two people. Is that correct?
+
+User: Yeah, confirm. And make damn sure they have a decent Pinot Grigio.
+
+System: ```system
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Fior D'italia, city: San Francisco, date: 2019-03-16, time: 20:00, party_size: 2})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street', 'date': '2019-03-16', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: Okay, I have made a reservation for you at Fior D'italia for tomorrow, March 16th, at 8 PM for two people. The restaurant is located at 2237 Mason Street, and their phone number is 415-986-1886. They serve alcohol and have live music. Is there anything else I can help you with?
+
+User: Fine. Now give me the address again and don't leave anything out. I want to be absolutely sure they're not trying to pull a fast one on me.
+
+System: The restaurant is located at 2237 Mason Street in San Francisco. Is there anything else?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

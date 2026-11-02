@@ -1,0 +1,84 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Vancouver. Can you help me find one?
+System: Do you have any preferences for star rating or smoking allowance for the hotel in Vancouver?
+User: Not really into smoking. A decent star rating would be nice, maybe 3 or 4 stars.
+System: I'll search for hotels in Vancouver with a 3 or 4-star rating that do not allow smoking. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: dontcare, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}]
+End Search Results
+System: I found a 4-star hotel named Coast Coal Harbour Vancouver Hotel By Apa. It does not allow smoking and is priced at $108 per night. Would you like more information on this, or would you prefer details on another option?
+User: Could you tell me more about this hotel, please?
+System: The Coast Coal Harbour Vancouver Hotel By Apa is located at 1180 West Hastings Street. It offers one room, and the price per night is $108. If you need further assistance or have any other preferences, please let me know!
+User: That sounds suitable. Can you go ahead and make a reservation for me?
+System: How many days are you planning to stay at the Coast Coal Harbour Vancouver Hotel By Apa, and from which date would you like to check in? Also, please confirm the number of rooms you would like to reserve.
+User: I would like to check in on the 15th and stay for five days. One room will be enough.
+System: Please confirm to book 1 room for 5 days at the Coast Coal Harbour Vancouver Hotel By Apa, starting from the 15th of this month in Vancouver.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking for 1 room at the Coast Coal Harbour Vancouver Hotel By Apa has been successfully confirmed. The check-in date is set for October 15th, and your stay will last for 5 days. If there's anything else you need or if you have any questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Seattle. Can you help me find one?
+System: What star rating hotel are you interested in? If you don't have a preference, I can find a suitable option for you.
+User: A three-star hotel would be fine.
+System: I'll proceed to find a suitable three-star hotel for you in Seattle. Please hold on for a moment while I perform a search. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found a few options for you. The Best Western Plus Pioneer Square Hotel Downtown offers a three-star experience with a price of $63 per night, located at 77 Yesler Way. Would you like more information about this hotel, or should I provide details about another option?
+User: Could you tell me if they allow smoking in that hotel?
+System: The Best Western Plus Pioneer Square Hotel Downtown does not allow smoking. Would you like to know more about this hotel or should I provide information on another option?
+User: Can you provide information on another option?
+System: The Courtyard By Marriott Seattle Downtown/Lake Union is another three-star option. It has a price of $168 per night and is located at 925 Westlake Avenue North. Smoking is not permitted. Would you like more details about this hotel, or should I provide information on another option?
+User: That seems too expensive. Can you find something more affordable?
+System: The Best Western Plus Pioneer Square Hotel Downtown is the most affordable option I've found at $63 per night. If you'd like to consider this hotel, I can help you with more details or assist with booking. Would you like to proceed with this option, or should I search again for other possibilities?
+User: Could you search again for other possibilities?
+System: I'll search again for more affordable options in Seattle. Please hold on for a moment while I perform another search. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: The search results were the same as before. The Best Western Plus Pioneer Square Hotel Downtown remains the most affordable option at $63 per night. Would you like to consider this hotel, or should I explore other possibilities for you?
+User: Let's go with the Best Western Plus Pioneer Square Hotel Downtown. Can you help me book it?
+System: How many rooms would you like to book, and what is the check-in date and duration of your stay at the Best Western Plus Pioneer Square Hotel Downtown in Seattle?
+User: I'd like to book one room, checking in on the 10th of next month, and staying for five nights.
+System: Please confirm to book 1 room for 5 nights at the Best Western Plus Pioneer Square Hotel Downtown in Seattle, checking in on the 10th of next month.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: Best Western Plus Pioneer Square Hotel Downtown, stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': '1', 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': '3', 'street_address': '77 Yesler Way', 'check_in_date': '2023-11-10', 'stay_length': '5'}]
+End Search Results
+System: Your booking at the Best Western Plus Pioneer Square Hotel Downtown in Seattle has been successfully confirmed for 1 room, checking in on the 10th of next month for 5 nights. If you need any further assistance or details, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

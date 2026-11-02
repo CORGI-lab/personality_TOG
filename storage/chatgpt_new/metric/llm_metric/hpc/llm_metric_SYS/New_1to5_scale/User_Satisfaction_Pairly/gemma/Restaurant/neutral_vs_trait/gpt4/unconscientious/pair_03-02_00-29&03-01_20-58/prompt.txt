@@ -1,0 +1,88 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in San Francisco. Can you help me out?
+System: Sure! Do you have a specific type of cuisine in mind, like Italian, Mexican, or something else?
+User: I don't really care about the type of cuisine. Maybe something cheap and has a fun vibe?
+System: Let's find a place that fits your preference. Can you please confirm if you'd like me to focus on restaurants that have live music or serve alcohol to enhance the fun vibe?
+User: Um, I guess either live music or alcohol could be fun. Just go with whatever you think works!
+System: Great! Let me find a restaurant in San Francisco that offers a fun vibe with either live music or alcohol, and is economical. I'll select a random cuisine for you. Let's go with Mexican this time. Please hold on a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, price_range: economical, has_live_music: True, serves_alcohol: True})
+Search Results
+
+End Search Results
+System: It seems there were no results for a Mexican restaurant in San Francisco with both live music and alcohol that's economical. Would you like me to try another cuisine or adjust the criteria, such as focusing on just one of those features?
+User: I'm not really sure. Maybe just try looking for something with live music then?
+System: Alright, let's focus on finding a restaurant in San Francisco with live music. I'll keep the cuisine as Mexican and make sure it's economical. Please hold on a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, price_range: economical, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems there were no results for a Mexican restaurant in San Francisco with live music that's economical. Would you like to try another cuisine, or should we relax the price range criteria to increase the options?
+User: I guess we can relax the price range a bit. Let's see what options we get.
+System: Alright, I'll search for Mexican restaurants in San Francisco with live music, and I'll include a wider range of prices. Please hold on a moment.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue'}]
+End Search Results
+System: I found a Mexican restaurant in San Francisco called Los Yaquis. It features live music and is moderately priced. Although they do not serve alcohol, you can find them at 324 South Van Ness Avenue. Would you like more information about this restaurant or explore other options?
+User: Can you tell me more about Los Yaquis? Like, do they have any cool dishes or anything special?
+System: I currently don't have specific information about the dishes or special features at Los Yaquis. However, they do offer a lively atmosphere with live music. If you'd like to contact them for more details, you can reach them at 415-252-8204. Would you like to explore more options, or is there anything else I can assist you with?
+User: Nah, I think Los Yaquis sounds alright. Can you just go ahead and make a reservation for me? Maybe for like tonight around 7 pm or something. I'm not even sure how many people, let's just say 4.
+System: To make the reservation at Los Yaquis, I'll need to confirm a few details. Could you please let me know if the reservation is for today and if 7 PM works for you? Once I have these details, I can proceed with the reservation for 4 people.
+User: Yeah, just go with tonight at 7 PM for 4 people. I hope that's alright.
+System: Great! I'll proceed with the reservation for 4 people at Los Yaquis in San Francisco for tonight at 7 PM. Please hold on a moment while I make the reservation.
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, restaurant_name: Los Yaquis, date: 2023-10-10, time: 19:00, party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue', 'date': '2023-10-10', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation for 4 people at Los Yaquis in San Francisco has been successfully made for tonight at 7 PM. If you need any further assistance or have other questions, feel free to ask. Enjoy your evening!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm, like, super hungry right now and thinking of grabbing a bite in San Francisco. Can you find a place for me to eat?
+System: Do you have a particular type of cuisine in mind, or should I pick something for you? If you're open to suggestions, I can choose a cuisine at random for you.
+User: Uh, I don't know, maybe something with pizza or burgers? I'm not too picky. Just something easy and quick, I guess.
+System: Great! Let's go with a classic choice that's both easy and quick. How about American cuisine? It covers both burgers and a variety of other options. I'll find some places in San Francisco for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: American})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Here are a few American cuisine options for you in San Francisco. You could try 1760 located at 1760 Polk Street, or if you'd like a place that serves alcohol, 25 Lusk at 25 Lusk Street might be a good fit. Would you like more details, or shall I assist you with something else?
+User: Hmm, can you just book a table for me at 25 Lusk? Maybe around 7:00 pm or something like that? It's just me, so it shouldn't be too hard, right?
+System: Sure, I can help with that. Let me confirm the details: You want to reserve a table for 1 at 25 Lusk in San Francisco at 7:00 pm today. Is that correct?
+User: Yeah, I guess that sounds about right. Just make sure it's all set, please.
+System: Great, I'll proceed with the reservation for you. One moment, please. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 25 Lusk, city: San Francisco, time: 19:00, party_size: 1})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Your reservation at 25 Lusk in San Francisco for 1 person at 7:00 pm is confirmed. If you need to reach them, their phone number is 415-495-5875. Enjoy your meal!
+User: Cool, thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

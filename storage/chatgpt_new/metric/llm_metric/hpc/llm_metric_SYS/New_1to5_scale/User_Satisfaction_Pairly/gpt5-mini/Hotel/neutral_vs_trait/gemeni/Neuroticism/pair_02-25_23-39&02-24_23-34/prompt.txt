@@ -1,0 +1,163 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel. I'm already stressed about this trip, please tell me you can make this easy. Let's try London.
+
+System: Okay, I can definitely help with that. How many rooms do you need?
+
+User: Just one, I guess. But it *has* to be a good one. What are the star ratings available? I don't want to end up in some dodgy place.
+
+System: Okay, I understand. I will search for a hotel in London with one room. To ensure it meets your standards, do you have a preferred star rating?
+
+User: Ugh, preferred? Of course, I have preferences! Five stars, absolutely. Nothing less. And non-smoking, obviously. I can't stand the smell. Is that even still a thing? Please tell me all hotels are non-smoking these days.
+
+System: Okay, I will search for a 5-star, non-smoking hotel in London with one room.
+
+APICall(method='SearchHotel', parameters={location: London, number_of_rooms: 1, star_rating: 5, smoking_allowed: False})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7377 4390', 'place_name': "Batty Langley'S Hotel", 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '12 Folgate Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 3327 4142', 'place_name': 'Chelsea Bridge Apartments', 'price_per_night': 390, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '124 Prince Of Wales Drive'}]
+End Search Results
+System: I found three 5-star, non-smoking hotels in London. They are 45 Park Lane, Batty Langley'S Hotel, and Chelsea Bridge Apartments. Would you like to know more about any of them?
+
+User: Chelsea Bridge Apartments... that sounds a bit... impersonal, doesn't it? Tell me more about 45 Park Lane and Batty Langley's Hotel. Which one is less likely to have hidden problems? Like, are there any known issues with noise or cleanliness at either of them? I need to know everything before I commit.
+
+System: I don't have access to information about noise levels or cleanliness issues for either hotel. However, I can share the available details. 45 Park Lane has 2 rooms available and their phone number is +44 20 7493 4545. The price per night is $330 and the street address is 45 Park Lane. Batty Langley'S Hotel has 3 rooms available and their phone number is +44 20 7377 4390. The price per night is $510 and the street address is 12 Folgate Street. Does either of those sound appealing?
+
+User: Okay, $510 is a lot! But Folgate Street... is that a safe area? I keep hearing stories about London. And are those prices *really* fixed? What if I find a cheaper rate online later? Ugh, this is all so stressful. Fine, tell me more about 45 Park Lane. $330 is still expensive, but at least it's slightly less terrifying.
+
+System: Okay, 45 Park Lane is located at 45 Park Lane, London and their phone number is +44 20 7493 4545. They have 2 rooms available and the price per night is $330. Would you like to proceed with booking this hotel?
+
+User: Okay, but before I commit, are you *absolutely* sure there are no hidden catches? No extra fees that will suddenly appear? And is there any flexibility if, heaven forbid, I need to cancel? What's their cancellation policy? I need to know *everything* before I say yes.
+
+System: I don't have information about hidden fees or cancellation policies. However, I can confirm that 45 Park Lane is located at 45 Park Lane in London, their phone number is +44 20 7493 4545, they have 2 rooms available, and the price per night is $330. Would you like to proceed with booking this hotel?
+
+User: Okay, fine. Let's just book it. But if anything goes wrong, I'm holding *you* responsible. I need to book one room at 45 Park Lane. Check-in date... let's say October 27th. And I'll be staying for... oh, I don't know, four nights? I hope that's enough.
+
+System: Okay, I'll reserve one room at 45 Park Lane in London for four nights, starting on October 27th. Could you please confirm the year for the check-in date?
+
+User: Oh god, of course, there's a year to worry about too! This is a nightmare. Let's just make it 2024. Please, just get this over with.
+
+System: Okay, I will reserve one room at 45 Park Lane in London for four nights, starting on October 27, 2024. Is that correct?
+
+User: Yes, that's correct. Please just make the reservation. I can't handle any more decisions right now.
+
+System: APICall(method='ReserveHotel', parameters={location: London, number_of_rooms: 1, place_name: '45 Park Lane', check_in_date: 2024-10-27, stay_length: 4})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Okay, I have reserved one room at 45 Park Lane in London for four nights, starting on October 27, 2024. The phone number for the hotel is +44 20 7493 4545. Is there anything else I can help you with?
+
+User: No, I think that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to book a hotel. I'm so stressed about this trip, I need to make sure everything is perfect. Can you help me find something? I'm just so worried about everything going wrong.
+
+System: Okay, I understand you're feeling stressed and want to ensure your hotel booking goes smoothly. I'm here to help make this as easy as possible for you. To start, could you tell me which city you're looking to book a hotel in? Knowing the location will allow me to search for the perfect place for you.
+
+User: Okay, um... let's try New York. But what if something goes wrong with the booking? Or what if the hotel isn't as nice as the pictures online? I'm just so anxious about this...
+
+System: Okay, I understand your concerns about booking a hotel in New York and wanting to make sure everything goes smoothly. I'll do my best to find a suitable hotel for you and alleviate your worries.
+
+To start, I will search for hotels in New York. Would you prefer a specific star rating, or would you like me to look at hotels with various ratings?
+
+User: Oh god, various ratings. But what if I pick the wrong one? Maybe stick to four or five stars? But are those *really* worth the money? Ugh, okay, fine, search for four or five star hotels in New York. I hope this is the right decision...
+
+System: Okay, I understand your preference for four or five-star hotels in New York. I'll focus my search on those options to help ease your worries about making the wrong choice.
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: dontcare })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: Okay, I see a few options in New York. To ease your concerns, these options have generally positive feedback.
+
+There's 11 Howard, a three-star hotel located at 11 Howard Street. Another three-star option is the Adria Hotel & Conference Center at 221-17 Northern Boulevard, Bayside. Finally, there's Aloft Harlem, also a three-star hotel, located at 2296 Frederick Douglass Boulevard.
+
+Would you like me to provide more details about any of these, perhaps to help you feel more confident in your choice? Or is there anything specific you're worried about regarding these options?
+
+User: Three stars...? Are you sure those are safe? I mean, what if the rooms aren't clean? Or what if the neighborhood is dangerous? Ugh, okay, tell me more about 11 Howard. But I'm probably just going to be disappointed.
+
+System: Okay, I understand your concerns about the safety and cleanliness of three-star hotels. I'll provide you with more information about 11 Howard to help ease your worries, though I understand you're still feeling uncertain.
+
+11 Howard is located at 11 Howard Street in New York. They have 3 rooms available. The price per night is $270 and smoking is allowed. Their phone number is +1 212-235-1111 if you need to contact them directly.
+
+Would you like me to check if smoking is allowed? Or is there anything else you're worried about regarding this hotel? Perhaps knowing more details will help you feel more confident in your decision, or at least help you rule it out if it's not the right fit.
+
+User: Smoking is *allowed*? Oh god, no, absolutely not. I have asthma! What if the whole place reeks of smoke? This is a disaster. Okay, fine, search again, but this time, absolutely NO smoking allowed. And maybe stick to five stars? I need something reliable, something I can trust. This whole trip is going to be a nightmare, I just know it.
+
+System: Okay, I understand. No smoking allowed, and let's focus on five-star hotels in New York to ensure a reliable and trustworthy experience. I'll do my best to find something that meets your needs and helps alleviate your worries.
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5, smoking_allowed: False })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-226-6400', 'place_name': 'Crosby Street Hotel', 'price_per_night': 140, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '79 Crosby Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-804-8880', 'place_name': 'Mondrian Park Avenue', 'price_per_night': 555, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '444 Park Avenue South'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street'}]
+End Search Results
+System: Okay, I understand your need for a reliable and smoke-free five-star hotel. I've found a few options in New York that might ease your concerns:
+
+There's the Crosby Street Hotel located at 79 Crosby Street, Mondrian Park Avenue at 444 Park Avenue South, and Park Hyatt New York at 153 West 57th Street. All three are five-star hotels with no smoking allowed.
+
+To help you feel more confident, would you like me to provide more details about any of these hotels? Perhaps knowing the price per night or the number of rooms available would help you narrow down your choices and ease your worries about making the wrong decision.
+
+User: Okay, um... tell me about the Park Hyatt New York. But what if it's too expensive? Or what if the location isn't good? I'm just so nervous about this whole thing.
+
+System: Okay, I understand your concerns about the Park Hyatt New York and wanting to make sure it's the right fit for you. I'll provide you with more details to help ease your worries, though I understand you're still feeling uncertain.
+
+Park Hyatt New York is located at 153 West 57th Street in New York. They have 3 rooms available. The price per night is $450 and smoking is not allowed. Their phone number is +1 646-774-1234 if you need to contact them directly.
+
+Would you like me to check if smoking is allowed? Or is there anything else you're worried about regarding this hotel? Perhaps knowing more details will help you feel more confident in your decision, or at least help you rule it out if it's not the right fit.
+
+User: $450 a night? Oh god, what if I can't afford that? What if there are hidden fees? Okay, fine, I guess that's doable. But what if the rooms are small? Or noisy? What if the service is terrible? I'm going to regret this, I just know it. Okay, um... what are the room sizes like? Do they have soundproofing? I need to know *everything*. This is just going to be a disaster, isn't it?
+
+System: I understand your concerns and the need for reassurance. Unfortunately, I don't have information about the room sizes or whether they have soundproofing. I only have access to the hotel's location, number of rooms, phone number, place name, price per night, smoking allowance, and star rating.
+
+To help ease your worries, perhaps you could contact the Park Hyatt New York directly at +1 646-774-1234 and inquire about the room sizes and soundproofing. This might give you the peace of mind you need to make a confident decision.
+
+Would you like me to help you with anything else regarding this hotel, or perhaps explore other options with different amenities that might better suit your needs?
+
+User: No, no, no, I can't call them! What if they're rude? Or what if they try to upsell me on something I don't need? Ugh, okay, fine, just... just book it. Park Hyatt New York. But what if I made the wrong choice? What if there's a better hotel out there? I'm going to regret this so much. Okay, um... book it for... for five nights. Starting... next Monday. Oh god, I'm so stressed.
+
+System: Okay, I understand your decision to book the Park Hyatt New York for five nights starting next Monday, even though you're feeling anxious about it. I'll do my best to make this process as smooth as possible for you.
+
+To confirm, you'd like to book a room at the Park Hyatt New York, located at 153 West 57th Street, for five nights starting next Monday.
+
+Could you please also let me know which date next Monday is, and how many rooms you'll need? Knowing these details will allow me to finalize the booking and hopefully ease some of your stress.
+
+User: Oh god, next Monday... that's the 29th. October 29th. And just one room. But what if something goes wrong with the reservation? What if they overbook? Ugh, this is going to be a nightmare.
+
+System: Okay, I understand you'd like to book one room at the Park Hyatt New York for five nights starting on October 29th. I'll proceed with the reservation, but I want to assure you that I'm here to help if any issues arise.
+
+APICall(method='ReserveHotel', parameters={ location: New York, place_name: Park Hyatt New York, check_in_date: 2024-10-29, stay_length: 5, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street', 'check_in_date': '2024-10-29'}]
+End Search Results
+System: Okay, I understand. I've made the reservation for one room at the Park Hyatt New York, located at 153 West 57th Street, for five nights starting on October 29th.
+
+The confirmation details are as follows: check-in date is 2024-10-29, and the price per night is $450. The hotel's phone number is +1 646-774-1234 if you need to contact them directly. They do not allow smoking.
+
+I understand you're still feeling anxious, so please know that I've done my best to ensure everything is in order. Is there anything else I can assist you with to help ease your worries about this booking? Perhaps double-checking the details or answering any further questions you may have?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

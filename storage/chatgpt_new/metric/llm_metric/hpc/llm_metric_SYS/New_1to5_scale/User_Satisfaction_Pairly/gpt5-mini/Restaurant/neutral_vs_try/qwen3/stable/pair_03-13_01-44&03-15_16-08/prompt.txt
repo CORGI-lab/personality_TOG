@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I'd like to find a restaurant in Palo Alto.
+System: 
+
+What type of cuisine are you interested in? For example, American, Italian, Mexican, or something else?
+User: 
+
+I usually enjoy American cuisine.
+System: 
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: American})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street'}]
+End Search Results
+System: 
+
+I found a restaurant called Bazille in Palo Alto, located at 550 Stanford Shopping Center. Would you like to know more about it or see another option?
+User: 
+
+What is the price range and do they serve alcohol?
+System: 
+
+Bazille has a moderate price range and serves alcohol. Would you like to proceed with booking or see another restaurant option?
+User: 
+
+Yes, I'd like to make a reservation at Bazille.
+System: 
+
+What time would you like to reserve for?
+User: 
+
+11:30 am today
+System: 
+
+Can you please confirm that you want to book a table for 2 at 11:30 am at Bazille restaurant in Palo Alto for today?
+User: 
+
+Yes, that's correct. Can you tell me if they feature live music?
+System: 
+
+Bazille does not feature live music.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I'm looking to reserve a table for two at an American restaurant in San Francisco with a moderate price range.
+System: 
+
+APICall (method='FindRestaurants', parameters= {cuisine: American, city: San Francisco, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': 'Alba Rays', 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: 
+
+I found three American restaurants in San Francisco with moderate pricing: Academy Bar And Kitchen, Alba Rays, and Aliment. Which one would you like to reserve a table at?
+User: 
+
+Could you please share the addresses and whether each restaurant serves alcohol for Academy Bar And Kitchen, Alba Rays, and Aliment?
+System: 
+
+Academy Bar And Kitchen is located at 1800 Fillmore Street and does not serve alcohol. Alba Rays is at 2293 Mission Street and serves alcohol. Aliment is at 786 Bush Street and does not serve alcohol. Which restaurant would you like to reserve a table at?
+User: 
+
+I'd like to reserve Alba Rays.
+System: 
+
+What time would you like to reserve for at Alba Rays? Also, confirming it's for two people?
+User: 
+
+7:00 PM for two.
+System: 
+
+I'll reserve Alba Rays in San Francisco for two people at 7:00 PM today. Is that correct?
+User: 
+
+Yes, that's correct.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 'Alba Rays', city: 'San Francisco', time: '7:00 PM', party_size: 2, date: '2023-10-05'})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': 'Alba Rays', 'serves_alcohol': True, 'street_address': '2293 Mission Street', 'date': '2023-10-05', 'party_size': '2', 'time': '7:00 PM'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2023-10-05', 'party_size': '2', 'time': '7:00 PM'}]
+End Search Results
+System: 
+
+Your reservation at Alba Rays for two people at 7:00 PM today is confirmed. The restaurant is located at 2293 Mission Street and serves alcohol. Enjoy your meal!
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

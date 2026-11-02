@@ -1,0 +1,62 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to book a hotel in Vancouver. Can you help me with that?
+System: Sure, I can assist with that. Could you please let me know your check-in date and how long you plan to stay?
+User: I will check in on the 10th of next month and stay for 5 days.
+System: Could you please confirm how many rooms you would like to book for your stay in Vancouver?
+User: I would like to book one room, please.
+System: Could you please confirm the name of the hotel where you'd like to make the reservation in Vancouver? Once I have all the necessary information, I'll proceed with the booking.
+User: I don't have a specific hotel in mind. Can you suggest some options?
+System: Let's find some options for you. Do you have a specific star rating in mind, or should I select a hotel based on available options?
+User: I prefer a hotel with at least a 3-star rating, please.
+System: Thank you for providing the details. I'll search for hotels in Vancouver with at least a 3-star rating. APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a few options for you in Vancouver. Would you like to book at the Atrium Inn Vancouver or the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., both of which have a 3-star rating? Please let me know your preference so I can proceed with the reservation.
+User: I would like to book at the Atrium Inn Vancouver, please proceed with the reservation.
+System: Please confirm to book 1 room for 5 days at the Atrium Inn Vancouver from the 10th of next month in Vancouver.
+User: Yes, that is confirmed.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Atrium Inn Vancouver, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Atrium Inn Vancouver has been successfully confirmed. You will have one room for 5 days starting from the 10th of next month. Is there anything else you need assistance with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to book a hotel in Philadelphia. Can you help with that?
+System: Sure, I'd be happy to help you book a hotel in Philadelphia. Could you please let me know the check-in date and how many days you plan to stay?
+User: Check-in on the 15th, staying for five days.
+System: Great, thank you for providing the details. Could you please let me know how many rooms you will need for your stay?
+User: One room, please.
+System: Thank you for the information. Let me confirm, you want to book one room in Philadelphia with a check-in date of the 15th for a stay of five days. Is there any specific star rating or smoking preference you have for the hotel?
+User: I prefer non-smoking rooms. A 3-star hotel would be fine.
+System: APICall(method='ReserveHotel', parameters={ location: Philadelphia, check_in_date: 2023-11-15, stay_length: 5, number_of_rooms: 1, place_name: dontcare, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': '1', 'phone_number': '+1 215-365-4150', 'place_name': 'dontcare', 'price_per_night': 75, 'smoking_allowed': 'False', 'star_rating': '3', 'street_address': '4509 Island Avenue', 'check_in_date': '2023-11-15', 'stay_length': '5'}]
+End Search Results
+System: Your booking for a 3-star hotel in Philadelphia with a non-smoking room is confirmed. The hotel is located at 4509 Island Avenue, and the price per night is $75. If you need further assistance or have any other requests, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

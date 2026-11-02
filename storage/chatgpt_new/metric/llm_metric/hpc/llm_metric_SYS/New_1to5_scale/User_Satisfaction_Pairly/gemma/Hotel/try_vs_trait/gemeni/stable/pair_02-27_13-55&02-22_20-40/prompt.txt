@@ -1,0 +1,115 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in San Diego, please.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: A 3-star or 4-star hotel would be perfectly acceptable.
+
+System: Okay, searching for hotels in San Diego with a 3 or 4-star rating.
+
+APICall(method='SearchHotel', parameters={location: San Diego, star_rating: dontcare})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: We have three hotels that fit your criteria in San Diego. Bahia Resort Hotel, Best Western Plus Bayside Inn, and Best Western Plus Hacienda Hotel Old Town. Would you like to know more about any of these?
+
+User: Perhaps tell me a bit more about the Bahia Resort Hotel.
+
+System: Okay, the Bahia Resort Hotel in San Diego has rooms available, with a price of $225 per night. Their phone number is +1 858-539-8666, and they are located at 998 West Mission Bay Drive. Smoking is not allowed. Does this sound like something you might be interested in?
+
+User: That sounds reasonable. Is there anything else available?
+
+System: Okay, let me see what else we have. How about the Best Western Plus Bayside Inn? It's also a 3-star hotel in San Diego, with rooms available for $234 per night. Smoking is allowed there. Their phone number is +1 619-233-7500, and they're located at 555 West Ash Street.
+
+User: That's good to know. The Bahia Resort Hotel sounds more appealing so far. Let's go ahead and reserve a room there. I'll be arriving in San Diego on the 15th, and I'll need the room for four nights.
+
+System: Okay, I can help you with that. To confirm, you'd like to reserve a room at the Bahia Resort Hotel in San Diego, arriving on the 15th for a four-night stay. How many rooms will you need?
+
+User: One room will be sufficient.
+
+System: Okay, just to confirm, you'd like to book one room at the Bahia Resort Hotel in San Diego, with check-in on the 15th for a stay of four nights. Could you please specify the year you intend to book?
+
+User: 2024, please. That sounds right, let's proceed with the reservation.
+
+System: Okay, I'll go ahead and make that reservation for you.
+
+APICall(method='ReserveHotel', parameters={place_name: Bahia Resort Hotel, check_in_date: 2024-10-15, stay_length: 4, location: San Diego, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-10-15'}]
+End Search Results
+System: Excellent, I've successfully reserved one room for you at the Bahia Resort Hotel in San Diego, checking in on October 15, 2024, for a four-night stay. The phone number is +1 858-539-8666 and the address is 998 West Mission Bay Drive. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Diego, please.
+
+System: Okay, I can help with that. Do you have any preferences regarding the star rating or smoking allowance for the hotel in San Diego?
+
+User: I'm open to suggestions. What are some of the highest-rated hotels available?
+
+System: Okay, let's see what's available.
+
+APICall(method='SearchHotel', parameters={ location: San Diego, star_rating: 5 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 3, 'phone_number': '+1 858-314-2000', 'place_name': 'Hotel Fairmont Grand Del Mar', 'price_per_night': 540, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '5300 Grand Del Mar Court'}, {'location': 'San Diego', 'number_of_rooms': 2, 'phone_number': '+1 619-738-7000', 'place_name': 'Pendry San Diego', 'price_per_night': 240, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '550 J Street'}]
+End Search Results
+System: I found two 5-star hotels in San Diego: Hotel Fairmont Grand Del Mar and Pendry San Diego. Hotel Fairmont Grand Del Mar offers 3 rooms, does not allow smoking, and costs $540 per night. Pendry San Diego has 2 rooms, allows smoking, and costs $240 per night. Which one sounds better to you?
+
+User: Perhaps something in between? A 4-star hotel would be perfectly suitable.
+
+System: APICall(method='SearchHotel', parameters={ location: San Diego, star_rating: 4 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-488-1081', 'place_name': 'Catamaran Resort Hotel And Spa', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '3999 Mission Boulevard'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 855-430-7503', 'place_name': 'Estancia La Jolla Hotel & Spa', 'price_per_night': 248, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '9700 North Torrey Pines Road, La Jolla, California 92037, United States'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 888-828-5498', 'place_name': 'Grande Colonial La Jolla', 'price_per_night': 248, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '910 Prospect Street, La Jolla, CA 92037, USA'}]
+End Search Results
+System: Okay, I found three 4-star hotels in San Diego. Catamaran Resort Hotel And Spa has 1 room, does not allow smoking, and costs $136 per night. Estancia La Jolla Hotel & Spa also has 1 room, doesn't allow smoking, and costs $248 per night. Grande Colonial La Jolla offers 1 room, doesn't allow smoking, and also costs $248 per night. Do any of these sound appealing?
+
+User: The Catamaran Resort Hotel And Spa sounds reasonable. I'd like to know its address to get a sense of the location.
+
+System: Okay, the address for the Catamaran Resort Hotel And Spa is 3999 Mission Boulevard, San Diego. Is there anything else I can help you with regarding this hotel?
+
+User: That seems like a good, reliable option. I think I'd like to reserve a room there.
+
+System: Okay, I can help you with that. To confirm, you'd like to reserve a room at the Catamaran Resort Hotel And Spa in San Diego. Could you please provide the check-in date and the length of your stay?
+
+User: I'm planning to arrive on the 10th of next month, and I'll need the room for four nights.
+
+System: Okay, just to confirm, you'd like to reserve a room at the Catamaran Resort Hotel And Spa in San Diego, checking in on the 10th of next month for a four-night stay. Could you also confirm the year?
+
+User: Yes, that's correct. Checking in on the 10th of next month in 2024 for four nights.
+
+System: Okay, I have all the details. APICall(method='ReserveHotel', parameters={ place_name: Catamaran Resort Hotel And Spa, location: San Diego, check_in_date: 2024-07-10, stay_length: 4, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': '1', 'phone_number': '+1 858-488-1081', 'place_name': 'Catamaran Resort Hotel And Spa', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': '4', 'street_address': '3999 Mission Boulevard', 'check_in_date': '2024-07-10', 'stay_length': '4'}]
+End Search Results
+System: Excellent, your reservation has been successfully made at the Catamaran Resort Hotel And Spa in San Diego, checking in on July 10, 2024, for a four-night stay. Is there anything else I can assist you with?
+
+User: No, that's all perfectly clear. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,125 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: What type of cuisine would you prefer?
+
+User: American, please.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: I see three American restaurants in San Francisco: 1760, 25 Lusk, and 3rd Cousin. Would you like to know more about any of them?
+
+User: Can you just tell me the price range for 1760?
+
+System: 1760 is in the expensive price range.
+
+User: Okay, maybe something else then. Can you find one that's more moderate in price?
+
+System: ```tool_code
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: Alright, I found three American restaurants in San Francisco that are in the moderate price range: Academy Bar And Kitchen, Alba Ray's, and Aliment. Do any of those sound good to you?
+
+User: Alba Ray's... can you tell me the address?
+
+System: Alba Ray's is located at 2293 Mission Street.
+
+User: Okay, thanks. Can you check if they have any tables available tomorrow night?
+
+System:  System: What time tomorrow night would you like to reserve a table? And for how many people?
+
+User: 8 pm, for just myself.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Alba Ray's, city: San Francisco, date: 2019-03-02, time: 20:00, party_size: 1})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street', 'date': '2019-03-02', 'party_size': '1', 'time': '20:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2019-03-02', 'party_size': '1', 'time': '20:00'}]
+End Search Results
+System: Okay, I have a reservation for you at Alba Ray's for tomorrow, March 2nd, at 8 pm for 1 person. Is that correct?
+
+User: Yes, that is correct.
+
+System: Great! Your reservation at Alba Ray's is confirmed. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco.
+
+System: Okay, I can help with that. Do you have a particular type of cuisine in mind?
+
+User: Not really, anything is fine.
+
+System: Since you're open to anything, how about we explore some American cuisine in San Francisco?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Alright, I found a few American restaurants in San Francisco. 1760, 25 Lusk, and 3rd Cousin are all good options. They are all in the expensive price range. Would you like to explore one of these options further?
+
+User: Maybe something less expensive?
+
+System: Given your preference for something less expensive, let me check for American restaurants in San Francisco with a moderate price range.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: Okay, I found a few more options. Academy Bar And Kitchen, Alba Ray's, and Aliment are all American restaurants in San Francisco with moderate price ranges. Are any of those sounding good?
+
+User: Alba Ray's... can you tell me more about it?
+
+System: Alba Ray's is an American restaurant located at 2293 Mission Street in San Francisco. They serve alcohol and are in the moderate price range. Their phone number is 415-872-9409. Is there anything else you'd like to know about Alba Ray's?
+
+User: No, that's okay. Can you just make a reservation for me there?
+
+System: Absolutely! To make a reservation, I'll need a bit more information. What date and time are you thinking of, and how many people will be in your party?
+
+User: Uh, tomorrow night... at 7:00 PM, for two people.
+
+System: Okay, just to confirm, you'd like a reservation at Alba Ray's in San Francisco for tomorrow, which is 2019-03-02, at 7:00 PM for a party of two?
+APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2019-03-02, party_size: 2, restaurant_name: Alba Ray's, time: 19:00})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Great! I've made a reservation for you at Alba Ray's for tomorrow, March 2nd, at 7:00 PM for two people. Is there anything else I can help you with?
+
+User: No, that's all. Thanks a lot!
+
+System:  System: You're welcome! Enjoy your dinner at Alba Ray's. If you need anything else in the future, feel free to ask!
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

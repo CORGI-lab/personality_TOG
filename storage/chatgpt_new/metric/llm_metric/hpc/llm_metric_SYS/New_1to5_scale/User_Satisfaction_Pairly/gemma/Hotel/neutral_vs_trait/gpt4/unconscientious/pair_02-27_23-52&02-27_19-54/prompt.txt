@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I'm thinking of booking a hotel in Las Vegas. Can you help me find something there?
+System: Do you have a specific star rating preference for the hotel in Las Vegas, or are you open to any star rating?
+User: Uh, I haven't really thought about that. I guess anything is fine, as long as it's not too expensive.
+System: Could you please provide me with your check-in date and the number of days you plan to stay? This will help me find the best options for you in Las Vegas.
+User: Oh, um, let's go with the 15th. And... maybe I'll stay for about 3 days.
+System: Thank you for providing the check-in date and stay duration. How many rooms would you like to book for your stay in Las Vegas?
+User: Hmm, I think just one room should be fine.
+System: Great! Let me find some hotel options for you in Las Vegas. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: dontcare, smoking_allowed: dontcare, number_of_rooms: 1})
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found a few hotel options for you in Las Vegas. One option is the Best Western Plus Las Vegas West, which is a 3-star hotel priced at $117 per night. It is located at 8669 West Sahara Avenue, and smoking is not allowed. Would you like more information on this, or would you like to hear about other options?
+User: Uh, that sounds alright, but can you tell me if there's anything cheaper? I wasn't planning on spending too much.
+System: Certainly! Another option is the Budget Suites Of America, a 1-star hotel priced at $44 per night. It is located at 2219 North Rancho Drive, and smoking is allowed there. Would you like more information on this hotel, or do you have any other preferences?
+User: Oh, that sounds like a better deal! I don't really care about the star rating. Can you just go ahead and book that one for me?
+System: Please confirm the booking for 1 room at Budget Suites Of America in Las Vegas, starting from the 15th, for a duration of 3 days.
+User: Yeah, go ahead and book it. Sounds good to me!
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-12-15, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 3})
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-12-15'}]
+End Search Results
+System: Your booking for 1 room at Budget Suites Of America in Las Vegas, starting from December 15th for 3 days, has been successfully confirmed. The hotel is located at 2219 North Rancho Drive, and the price is $44 per night. If there's anything else you need, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Uh, hey, I need to find a hotel somewhere. Maybe in Los Angeles? Let's see what's out there.
+System: Do you have any specific star rating or preferences for smoking allowance in mind, or should I just find something random for you in Los Angeles?
+User: Honestly, I'm not too picky about star ratings or anything like that. Just see what's available, maybe something cheap would be nice.
+System: APICall(method='SearchHotel', parameters={location: Los Angeles})
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 323-852-7000', 'place_name': 'Ac Hotel By Marriott Beverly Hills', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '6399 Wilshire Boulevard'}, {'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 800-224-7835', 'place_name': 'Airtel Plaza Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7277 Valjean Avenue, Van Nuys, California 91406, United States'}, {'location': 'Los Angeles', 'number_of_rooms': 3, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow - Hollywood Hostel', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, CA 90028, USA'}]
+End Search Results
+System: I found a few options in Los Angeles for you. We have:
+
+1. **Ac Hotel By Marriott Beverly Hills**: A 2-star hotel, non-smoking, priced at $120 per night. Located at 6399 Wilshire Boulevard. 
+2. **Airtel Plaza Hotel**: A 3-star hotel that allows smoking, priced at $216 per night. Located at 7277 Valjean Avenue, Van Nuys.
+3. **Banana Bungalow - Hollywood Hostel**: A 1-star hotel that allows smoking, priced at $72 per night. Located at 5920 Hollywood Boulevard.
+
+Which one sounds good to you, or should I suggest something else?
+User: Uh, I guess the Banana Bungalow sounds kind of fun, plus it's cheap. Can you go ahead and book that one for me?
+System: How many rooms would you like to book, and what will be your check-in date and length of stay for Banana Bungalow - Hollywood Hostel in Los Angeles?
+User: Let's go with one room. I'll check in on the 5th and stay for, like, a week.
+System: Please confirm that you would like to book 1 room at the Banana Bungalow - Hollywood Hostel in Los Angeles, with a check-in date of 2023-11-05, for a stay of 7 days.
+User: Yeah, that sounds fine. Go ahead and book it!
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-05, location: Los Angeles, number_of_rooms: 1, place_name: Banana Bungalow - Hollywood Hostel, stay_length: 7})
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 3, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow - Hollywood Hostel', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, CA 90028, USA', 'check_in_date': '2023-11-05'}, {'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow Hollywood', 'price_per_night': 21, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, California 90028, United States', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Banana Bungalow - Hollywood Hostel in Los Angeles has been successfully confirmed. You'll be staying in one room starting from November 5th for a week. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I'm kind of feeling hungry and don't really know where to go. Can you help me find a restaurant in Oakland?
+System: Sure! Do you have a particular type of cuisine in mind, such as Italian, Mexican, or something else?
+User: Uh, I don't know, maybe something like... Italian? Or whatever. Just something tasty.
+System: Alright, let's go with Italian cuisine for now. I'll find some options for you in Oakland. Please hold on a moment while I search for Italian restaurants in Oakland. 
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: Italian})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-768-8003', 'price_range': 'expensive', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '5356 College Avenue'}, {'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-350-7619', 'price_range': 'moderate', 'restaurant_name': 'Belotti Ristorante E Bottega', 'serves_alcohol': True, 'street_address': '5403 College Avenue'}, {'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-918-3205', 'price_range': 'moderate', 'restaurant_name': 'Contrasto', 'serves_alcohol': True, 'street_address': '388 Grand Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Oakland for you. One option is A16, which is located at 5356 College Avenue. It's a bit on the expensive side, and they do serve alcohol. Would you like more information about this place or hear about another restaurant?
+User: Uh, yeah, tell me about another place. Maybe something not too pricey.
+System: Sure, another option for you is Belotti Ristorante E Bottega, located at 5403 College Avenue. It has a moderate price range and also serves alcohol. Would you like more information about this restaurant or hear about another option?
+User: Yeah, I guess that sounds okay. Can you just make a reservation for me there?
+System: For what time and date would you like to make the reservation at Belotti Ristorante E Bottega? Also, please let me know the number of people for the reservation.
+User: Uh, let's go with tomorrow night, around 7 pm, for like, I don't know, maybe 3 people?
+System: Just to confirm, you would like to make a reservation for 3 people at Belotti Ristorante E Bottega in Oakland, for tomorrow night at 7 pm. Is that correct?
+User: Yeah, that sounds about right. Let's do it.
+System: Great! I'll make the reservation for you now. Please hold on a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: Belotti Ristorante E Bottega, city: Oakland, time: 19:00, date: 2023-10-27, party_size: 3})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-350-7619', 'price_range': 'moderate', 'restaurant_name': 'Belotti Ristorante E Bottega', 'serves_alcohol': True, 'street_address': '5403 College Avenue', 'date': '2023-10-27', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Belotti Ristorante E Bottega for 3 people tomorrow at 7 pm has been successfully made. The restaurant is located at 5403 College Avenue, and they do serve alcohol. If you need anything else, feel free to let me know!
+User: Cool, thanks. That's all I need.
+
+Dialogue B:
+  User: I'm in San Francisco and kinda hungry. Can you find me a restaurant to eat at?
+System: Do you have any particular cuisine in mind, or are you open to suggestions?
+User: Uh, I don't really care. Just whatever's nearby and not too expensive, I guess.
+System: Let's try exploring a Vietnamese restaurant option for you in San Francisco. Could you please confirm if that works for you, or if you have any other preferences?
+User: Sure, Vietnamese sounds fine. Just make sure it's cheap.
+System: Great! I'll find some affordable Vietnamese restaurants for you in San Francisco. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese, price_range: inexpensive})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-724-2325', 'price_range': 'expensive', 'restaurant_name': 'Khai', 'serves_alcohol': False, 'street_address': '655 Townsend Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-668-8080', 'price_range': 'inexpensive', 'restaurant_name': 'La Vie', 'serves_alcohol': False, 'street_address': '5830 Geary Boulevard'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-397-2290', 'price_range': 'inexpensive', 'restaurant_name': 'Lai Hong Lounge', 'serves_alcohol': False, 'street_address': '1416 Powell Street'}]
+End Search Results
+System: I found a couple of affordable Vietnamese restaurants in San Francisco for you. "La Vie" is located at 5830 Geary Boulevard, and "Lai Hong Lounge" is at 1416 Powell Street. Do you want more information about either of these places or need help with anything else?
+User: Do any of these places have live music or serve alcohol?
+System: Neither "La Vie" nor "Lai Hong Lounge" offers live music or serves alcohol. If there's anything else you'd like to know or if you need further assistance, just let me know!
+User: Do you have any other restaurant options that might have live music or serve alcohol?
+System: Let's explore some additional Vietnamese restaurant options in San Francisco that might have live music or serve alcohol. Please give me a moment to find more options for you. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street'}]
+End Search Results
+System: I found a couple of moderate-priced Vietnamese restaurants in San Francisco that serve alcohol. "Anh Hong" is located at 808 Geary Street, and "Co Nam" is at 1653 Polk Street. Unfortunately, neither of these places offers live music. Would you like more information on either of these options or any further assistance?
+User: Yeah, tell me more about Co Nam. Do they have any cool features?
+System: "Co Nam," located at 1653 Polk Street in San Francisco, is a Vietnamese restaurant that serves alcohol. However, it does not feature live music. If you need the phone number or any other information about "Co Nam," feel free to ask!
+User: Uh, I guess Co Nam sounds alright. Can you just go ahead and make a reservation for me there? Maybe for like, 7:00 pm, and let's say for 3 people.
+System: Sure, let me confirm the details with you. You'd like to make a reservation at "Co Nam" in San Francisco for 3 people at 7:00 pm. Please confirm if everything is correct before I proceed with the reservation.
+User: Yeah, whatever, that sounds good. Just go ahead with it.
+System: Great! I'll proceed with making the reservation for you at "Co Nam" in San Francisco for 3 people at 7:00 pm. Please hold on a moment. APICall (method='ReserveRestaurant', parameters={restaurant_name: Co Nam, city: San Francisco, time: 19:00, party_size: 3})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your reservation at "Co Nam" in San Francisco for 3 people at 7:00 pm has been successfully made. If you need anything else or have further questions, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

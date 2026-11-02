@@ -1,0 +1,64 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I want to find a hotel in Las Vegas. Can you help with that?
+System: Do you have any specific preferences for the hotel, such as star rating or whether smoking is allowed?
+User: Uh, I don't really care about the star rating or the smoking policy. Just find something that's available, I guess.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found a few options for you in Las Vegas. One option is the Best Western Plus Las Vegas West, which is a 3-star hotel with a price of $117 per night. Another option is the Budget Suites Of America, a 1-star hotel that allows smoking, priced at $44 per night. Lastly, there's the Hampton Inn Las Vegas/Summerlin, also a 3-star hotel allowing smoking, with a price of $279 per night. Would you like more information about any of these, or is there a specific one you'd like to go with?
+User: Um, let's go with the Best Western Plus Las Vegas West. Can you book it for me?
+System: How many rooms would you like to book, and for how many nights? Also, please provide the check-in date so I can proceed with the reservation.
+User: Let's do two rooms for like, five nights. And, uh, I guess I want to check in tomorrow.
+System: Please confirm that you'd like to book 2 rooms for 5 nights at the Best Western Plus Las Vegas West, with a check-in date of tomorrow.
+User: Yeah, sure, let's do that.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-26, location: Las Vegas, number_of_rooms: 2, place_name: Best Western Plus Las Vegas West, stay_length: 5 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue', 'check_in_date': '2023-10-26'}]
+End Search Results
+System: Your booking for 2 rooms at the Best Western Plus Las Vegas West in Las Vegas has been successfully confirmed for a stay of 5 nights, starting from October 26, 2023. If there's anything else you need, feel free to let me know!
+User: Nah, I'm good. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, can you help me find a hotel in San Diego? I'm not too picky, just need a place to crash for a bit.
+System: Sure! I can help with that. Do you have any preferences for the star rating, or should I just find a random one for you?
+User: I honestly don't care about the star rating. Just find something cheap and easy.
+System: Great! I'll search for a hotel in San Diego. Let me quickly find something available for you. APICall(method='SearchHotel', parameters={ location: San Diego, star_rating: dontcare })
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found a few options for you in San Diego. One option is the Bahia Resort Hotel, which is a 3-star hotel with rooms available at $225 per night. Another option is the Best Western Plus Bayside Inn, also 3-star, which allows smoking and costs $234 per night. Lastly, the Best Western Plus Hacienda Hotel Old Town offers rooms at $198 per night, though it does not allow smoking. Would you like more details on any of these, or is there another preference you have in mind?
+User: I guess the Best Western Plus Bayside Inn sounds alright since it allows smoking. Can you book a room there for me?
+System: Certainly! To book a room at the Best Western Plus Bayside Inn, could you please let me know your check-in date and how long you'd like to stay?
+User: Let's see... I'll check in tomorrow and probably stay for... let's say 5 days.
+System: Please confirm your reservation for a room at the Best Western Plus Bayside Inn in San Diego, checking in tomorrow and staying for 5 days. Once you confirm, I'll proceed with the booking.
+User: Yeah, go ahead and book it for me.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-30, location: San Diego, number_of_rooms: 1, place_name: Best Western Plus Bayside Inn, stay_length: 5 })
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street', 'check_in_date': '2023-10-30'}]
+End Search Results
+System: Your booking at the Best Western Plus Bayside Inn in San Diego has been successfully confirmed. You'll be checking in on October 30th and staying for 5 days. The hotel address is 555 West Ash Street. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

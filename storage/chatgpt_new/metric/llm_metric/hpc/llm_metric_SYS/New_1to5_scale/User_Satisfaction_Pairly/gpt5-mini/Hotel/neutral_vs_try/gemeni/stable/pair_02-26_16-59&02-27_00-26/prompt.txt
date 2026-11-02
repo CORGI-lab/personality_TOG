@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in Chicago, please.
+
+System: Okay, I can help with that.
+
+APICall(method='SearchHotel', parameters={ location: Chicago })
+
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street'}, {'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street'}, {'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-894-0800', 'place_name': 'Acme Hotel Company Chicago', 'price_per_night': 222, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '15 East Ohio Street'}]
+End Search Results
+System: Alright, I found a few hotels in Chicago. There's the 3-star AC Hotel By Marriott Chicago Downtown, the 4-star Ace Hotel Chicago, and the 3-star Acme Hotel Company Chicago. Do any of those sound interesting to you?
+
+User: Those all sound fine. Could you tell me the price per night for each, please?
+
+System: Okay, no problem!
+
+AC Hotel By Marriott Chicago Downtown is $342 per night, Ace Hotel Chicago is $132 per night, and Acme Hotel Company Chicago is $222 per night. Does one of these prices stand out to you?
+
+User: The Ace Hotel Chicago sounds reasonable. Could you tell me more about it?
+
+System: Okay, Ace Hotel Chicago is a 4-star hotel located at 311 North Morgan Street. They do not allow smoking and have 1 room available. The phone number is +1 312-764-1919. Is there anything specific you'd like to know about it?
+
+User: That sounds like a decent option. How far is it from the city center?
+
+System: I am sorry, that information is not available. However, would you like to proceed with a reservation at the Ace Hotel Chicago?
+
+User: It sounds suitable. Yes, let's book a room there. I'll be arriving on the 15th and staying for three nights.
+
+System: Okay, I can help you with that! To confirm, you'd like to book a room at the Ace Hotel Chicago, arriving on the 15th for a three-night stay. Could you please specify the year and the number of rooms you will need?
+
+User: Yes, that's correct. I'd like to book one room at Ace Hotel Chicago, arriving on December 15th, 2024, for three nights.
+
+System:  System: Great! Just to confirm, you want to reserve one room at Ace Hotel Chicago, arriving on December 15th, 2024, for a three-night stay. Is that all correct?
+
+User: Yes, that is perfectly correct.
+
+System: Okay, perfect! One moment while I confirm the details with the hotel.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-12-15, location: Chicago, number_of_rooms: 1, place_name: Ace Hotel Chicago, stay_length: 3 })
+
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street', 'check_in_date': '2024-12-15'}]
+End Search Results
+System: Fantastic! I've successfully booked one room for you at the Ace Hotel Chicago, arriving on December 15th, 2024, for a three-night stay! Is there anything else I can assist you with today?
+
+User: That's perfect. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Diego, please.
+
+System: Okay, I can help you with that. Do you have any preferences for the star rating of the hotel?
+
+User: I'm open to suggestions. Perhaps something around 3 or 4 stars? I'm not too fussy.
+
+System: Okay, searching for hotels in San Diego with a star rating of 3 or 4.
+
+APICall(method='SearchHotel', parameters={location: San Diego, star_rating: dontcare})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: Okay, I found a few 3-star hotels in San Diego. One is Bahia Resort Hotel, another is Best Western Plus Bayside Inn, and the third is Best Western Plus Hacienda Hotel Old Town. Would you like to know more about any of these?
+
+User: Bahia Resort Hotel sounds good. Tell me more about it.
+
+System: Okay, Bahia Resort Hotel is located at 998 West Mission Bay Drive in San Diego. The price per night is $225, and their phone number is +1 858-539-8666. Smoking is not allowed, and they have rooms available. Does that sound good?
+
+User: That sounds reasonable. Does it have a restaurant or bar on site? Those are always convenient.
+
+System: I don't have information about whether Bahia Resort Hotel has a restaurant or bar on site. However, I can tell you that it is a 3-star hotel, the price per night is $225, the phone number is +1 858-539-8666, smoking is not allowed, and the street address is 998 West Mission Bay Drive.
+
+User: That's alright. I'm not overly concerned about the restaurant or bar. Could you check if they have parking available? It's usually a necessity for me.
+
+System: I don't have information about parking availability. However, I can confirm it is located at 998 West Mission Bay Drive, the price per night is $225, and their phone number is +1 858-539-8666. Smoking is not allowed. Would you like to proceed with booking?
+
+User: That's fine. I'm generally happy with what I've heard. Let's go ahead and book a room for, say, 3 nights, starting on the 15th of next month.
+
+System: Okay, let's book a room at Bahia Resort Hotel for 3 nights, starting on the 15th of next month. And how many rooms would you like to reserve?
+
+User: Just one room will be fine, thank you.
+
+System: Okay, let me confirm the details. You want to book 1 room at Bahia Resort Hotel in San Diego, starting on 2024-07-15 for 3 nights. Is that correct?
+
+User: Yes, that's all correct. Please proceed with the booking.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-15, location: San Diego, number_of_rooms: 1, place_name: Bahia Resort Hotel, stay_length: 3})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Okay, I have booked 1 room at Bahia Resort Hotel in San Diego, starting on 2024-07-15 for 3 nights. The price per night is $225. Is there anything else I can help you with?
+
+User: No, thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

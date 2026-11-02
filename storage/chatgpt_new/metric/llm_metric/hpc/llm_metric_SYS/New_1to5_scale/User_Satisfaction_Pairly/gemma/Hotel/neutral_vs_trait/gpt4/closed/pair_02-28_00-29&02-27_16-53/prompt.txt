@@ -1,0 +1,66 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel in Fresno. Can you help me with that?
+System: Sure, I can help with that. Could you please let me know your check-in date and how long you plan to stay?
+User: Check-in on the 5th, and I'll be staying for five days.
+System: To proceed with your hotel booking in Fresno, could you please confirm how many rooms you would like to reserve?
+User: One room, please.
+System: Thank you for the details. Let me find a hotel for you in Fresno. APICall(method='ReserveHotel', parameters={place_name: '', check_in_date: 2023-11-05, stay_length: 5, location: Fresno, number_of_rooms: 1})
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': '1', 'phone_number': '+1 888-287-9400', 'place_name': '', 'price_per_night': 87, 'smoking_allowed': False, 'star_rating': '', 'street_address': '6844 North Fresno Street', 'check_in_date': '2023-11-05', 'stay_length': '5'}]
+End Search Results
+System: It seems the search did not return the name or star rating for any specific hotel. However, I found a hotel in Fresno for your requested dates, with the price per night being $87, and smoking is not allowed. The address is 6844 North Fresno Street. Would you like to proceed with this reservation, or do you have any other preferences or requirements?
+User: Is there another option available?
+System: Unfortunately, the search results only provided this option. If you have any specific preferences, such as a different price range or smoking allowance, please let me know, and I can perform another search to try and find a suitable option for you.
+User: I suppose I'll go with this option. Can you proceed with the reservation?
+System: Your reservation is confirmed for one room in Fresno from November 5th for five days. The hotel is located at 6844 North Fresno Street, with a nightly rate of $87. Smoking is not allowed. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Vancouver. Can you help me find something suitable?
+System: Could you please let me know what star rating you're looking for in a hotel in Vancouver? If you're open to any star rating, I can choose one for you.
+User: I'm looking for a hotel with a 3-star rating.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a 3-star hotel in Vancouver called Atrium Inn Vancouver. It is located at 2889 East Hastings Street, and the price per night is $228. Would you like more information or are you interested in any other options?
+User: Is smoking allowed in this hotel?
+System: Smoking is not allowed at Atrium Inn Vancouver. Would you like to consider another hotel, or is there anything else you would like to know about this hotel?
+User: Could you find another 3-star hotel where smoking is allowed?
+System: I am sorry, but none of the 3-star hotels in Vancouver from the search results allow smoking. Would you be open to considering a hotel with a different star rating or perhaps a non-smoking room?
+User: I would prefer to stick with a 3-star hotel. Could you check if there are any other options?
+System: The other 3-star hotels in Vancouver I found are Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. located at 1100 Granville Street, with a price of $72 per night, and Best Western Plus Sands at 1755 Davie Street, priced at $222 per night. Unfortunately, both do not allow smoking. Would you like to proceed with any of these options, or is there anything else you’d like to know?
+User: Let's go with Best Western Plus Sands. Can you make a reservation for me?
+System: How many rooms would you like to reserve, and what will be the check-in date and length of your stay at Best Western Plus Sands in Vancouver?
+User: I would like to reserve one room, checking in on the 15th, and staying for five nights.
+System: Please confirm that you would like to reserve 1 room at Best Western Plus Sands, checking in on 2023-11-15, for a duration of 5 nights in Vancouver.
+User: Yes, that is correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Sands, stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation for 1 room at Best Western Plus Sands in Vancouver has been successfully confirmed. You will be checking in on November 15, 2023, for a duration of 5 nights. If there's anything else you need, please let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

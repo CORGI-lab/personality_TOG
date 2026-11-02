@@ -1,0 +1,157 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in Vancouver.
+
+System: Okay, I can help you with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really. Just something... quiet.
+
+System: Okay, I understand. Since you don't have a preference for the star rating, I'll search for hotels in Vancouver.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found three hotels in Vancouver. Shangri-La Hotel and Wedgewood Hotel & Spa Vancouver are 5-star hotels, and Auberge Vancouver Hotel is a 4-star hotel. Do any of these sound good to you?
+
+User: Maybe the 4-star one. Is it really quiet?
+
+System: Based on the search result, Auberge Vancouver Hotel allows smoking. Would you prefer a non-smoking hotel for a quieter environment?
+
+User: Yes, please. No smoking.
+
+System: Okay, I will search for hotels in Vancouver that do not allow smoking.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}]
+End Search Results
+System: Okay, I found three non-smoking hotels in Vancouver: Shangri-La Hotel and Wedgewood Hotel & Spa Vancouver are 5-star hotels, and Coast Coal Harbour Vancouver Hotel By Apa is a 4-star hotel. Are any of these suitable for you?
+
+User: The Coast Coal Harbour... that sounds okay. Can you reserve it?
+
+System: Okay, I can help you with that. To reserve the Coast Coal Harbour Vancouver Hotel By Apa, I need to know the check-in date and the length of your stay. Also, how many rooms will you need?
+
+User: Just one room, please. Check-in... let's say October 27th. For three nights.
+
+System: Okay, I need to confirm the year for your check-in date. Could you please provide the year for your check-in date of October 27th?
+
+User: 2024, please.
+
+System: Okay, so you want to book one room at the Coast Coal Harbour Vancouver Hotel By Apa, checking in on October 27, 2024, for a stay of three nights. Is that correct?
+
+User: Yes, that's correct.
+
+System: Okay, let me process your request.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-10-27, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 3 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Okay, your reservation at Coast Coal Harbour Vancouver Hotel By Apa has been confirmed for one room, checking in on October 27, 2024, for three nights. The phone number for the hotel is +1 604-697-0202 and the address is 1180 West Hastings Street. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating?
+
+User: Not really. Just something... quiet.
+
+System: Okay, I understand. I'll look for a quiet hotel in Seattle for you.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 5 })
+
+Search Results
+
+End Search Results
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: 5})
+```
+
+Search Results
+
+End Search Results
+System: Okay, I've searched for 5-star hotels in Seattle. I'll proceed with these results first.
+```tool_code
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: 5})
+```
+Search Results
+
+End Search Results
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: 5})
+```
+Search Results
+
+End Search Results
+System: ```tool_code
+APICall(method='SearchHotel', parameters={location: Seattle})
+```
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: Okay, I found a few hotels in Seattle. Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown. All are 2-star hotels and do not allow smoking. Would you like to know more about any of them?
+
+User: Belltown Inn... tell me about it.
+
+System: Okay. Belltown Inn is located at 2301 3rd Avenue, Seattle. The price per night is $186, and they don't allow smoking. The phone number is +1 866-525-4704. They have 2 rooms available. Does that sound like it might be a fit for you?
+
+User: Okay... is it generally quiet there?
+
+System: I don't have information to confirm how quiet it is. However, if you'd like, I can check if smoking is allowed, or search for a different star rating.
+
+User: No smoking is good. What other options are there?
+
+System: Okay, I can show you the other options that came up in my search for hotels in Seattle. There's also Ace Hotel Seattle and Days Inn By Wyndham Seattle North Of Downtown. Both are 2-star hotels and do not allow smoking. Would you like to know more about either of them?
+
+User: Ace Hotel Seattle... tell me about that one.
+
+System: Ace Hotel Seattle is located at 2423 1st Avenue, Seattle. The price per night is $136, and smoking is not allowed. The phone number is +1 206-448-4721, and they have 2 rooms available. Would you like me to make a reservation for you? If so, I'll need the dates and length of your stay.
+
+User: No, I don't think so. Let's stick with Belltown Inn. I'd like to reserve a room there.
+
+System: Okay, I can help you with that. I will need the check-in date and how many days you plan to stay.
+
+User: I'll be arriving on the 15th, staying for two nights.
+
+System: Okay. Just to confirm, you want to reserve a room at Belltown Inn in Seattle, arriving on the 15th for two nights. I'll also need to know the year.
+
+User: This year.
+
+System: Okay, so that would be arriving on 2024-07-15 for two nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={'place_name': 'Belltown Inn', 'location': 'Seattle', 'check_in_date': '2024-07-15', 'stay_length': 2})
+```
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue', 'check_in_date': '2024-07-15'}]
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

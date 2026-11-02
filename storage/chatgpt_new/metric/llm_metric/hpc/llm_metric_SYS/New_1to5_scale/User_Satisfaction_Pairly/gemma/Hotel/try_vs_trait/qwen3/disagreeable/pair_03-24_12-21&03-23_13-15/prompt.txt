@@ -1,0 +1,182 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need a 5-star hotel in Las Vegas with no smoking. Two rooms. Check-in March 1st for four nights. Anything less than perfect is unacceptable.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+
+End Search Results
+System: 
+
+I couldn't find any hotels matching your exact requirements in Las Vegas. Would you like to try adjusting your preferences, such as lowering the star rating or allowing smoking, to see available options?
+User: 
+
+Find a 5-star non-smoking hotel in Las Vegas for two rooms, March 1st for four nights. If you can't, I'll go elsewhere.
+System: 
+
+I'm sorry, but there are no 5-star non-smoking hotels available for two rooms in Las Vegas from March 1st for four nights. Would you like to adjust your preferences, such as lowering the star rating or allowing smoking, to see available options?
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+New York. Five-star hotel. No smoking. Under $300. If it's not the cheapest, I'm not booking. I can find better deals elsewhere.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5, smoking_allowed: False })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-226-6400', 'place_name': 'Crosby Street Hotel', 'price_per_night': 140, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '79 Crosby Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-804-8880', 'place_name': 'Mondrian Park Avenue', 'price_per_night': 555, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '444 Park Avenue South'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street'}]
+End Search Results
+System: 
+
+Crosby Street Hotel at $140 per night meets your criteria. Only option available. Confirm booking?
+User: 
+
+Only option? Impossible. Find me something cheaper. I can find better deals elsewhere.
+System: 
+
+Crosby Street Hotel is the only five-star, non-smoking option under $300 in New York. No cheaper alternatives exist. Confirm booking?
+User: 
+
+You're lying. There's definitely cheaper. Do another search. I'm not booking this unless it's the cheapest possible.
+System: 
+
+Confirmed. Only Crosby Street Hotel meets your criteria at $140. No cheaper alternatives exist. Confirm booking?
+User: 
+
+Do another search. You're lying. There's definitely cheaper. I won't book this unless it's the absolute cheapest. If you can't find it, I'm done here.
+System: 
+
+Only Crosby Street Hotel at $140 meets your criteria. No cheaper options exist. Confirm booking or cancel search.
+User: 
+
+You're lying. Do another search. There's definitely cheaper. I'm not booking this unless it's the absolute cheapest. If you can't find it, I'm done here.
+System: 
+
+Crosby Street Hotel is the cheapest available. No other options meet your criteria. Confirm booking or cancel search.
+User: 
+
+You're lying. Do another search. There's definitely cheaper. I'm not booking this unless it's the absolute cheapest. If you can't find it, I'm done here.
+System: 
+
+No cheaper options exist. Crosby Street Hotel at $140 is the only match. Proceed with booking or cancel search.
+User: 
+
+Book it. But I know there's cheaper. You're lying again.
+System: 
+
+Check-in date and stay length required. Provide them now.
+User: 
+
+Check-in tomorrow for three days. I know you're lying again. Make sure it's the cheapest.
+System: 
+
+Please provide the check-in date in YYYY-MM-DD format.
+User: 
+
+2023-10-06. You're lying. There's definitely cheaper. Find it.
+System: 
+
+Specify number of rooms. Default is 1.
+User: 
+
+Two rooms. You're lying about the price. There's definitely cheaper.
+System: 
+
+Confirm 2 rooms at Crosby Street Hotel, New York, 2023-10-06 for 3 days. $140/night. Proceed?
+User: 
+
+Book it. But I know there's cheaper. You're lying again.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Crosby Street Hotel', check_in_date: '2023-10-06', stay_length: 3, location: 'New York', number_of_rooms: 2 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-226-6400', 'place_name': 'Crosby Street Hotel', 'price_per_night': 140, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '79 Crosby Street', 'check_in_date': '2023-10-06'}]
+End Search Results
+System: 
+
+Booking confirmed for 1 room at Crosby Street Hotel, New York. Check-in 2023-10-06 for 3 days. Price: $140 per night. Address: 79 Crosby Street.
+User: 
+
+You only booked one room? I asked for two. Fix it now. You're lying again.
+System: 
+
+Crosby Street Hotel only has one room available. Proceed with one room or cancel?
+User: 
+
+Find another hotel. Two rooms. You're lying about availability. Do better.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'New York', star_rating: 5, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-226-6400', 'place_name': 'Crosby Street Hotel', 'price_per_night': 140, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '79 Crosby Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-804-8880', 'place_name': 'Mondrian Park Avenue', 'price_per_night': 555, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '444 Park Avenue South'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 646-774-1234', 'place_name': 'Park Hyatt New York', 'price_per_night': 450, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '153 West 57th Street'}]
+End Search Results
+System: 
+
+No hotels under $300 with two rooms available. Mondrian Park Avenue ($555) or Park Hyatt ($450) have availability. Confirm booking for either?
+User: 
+
+Those prices are ridiculous. You're lying. Do another search. I want two rooms under $300. If you can't, I'm done.
+System: 
+
+No hotels meet your criteria. Cancel search or adjust parameters.
+User: 
+
+London. Two rooms under $300. If you can't find it, I'm done. You're lying.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London, number_of_rooms: 2 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: 
+
+No hotels with two rooms under $300 found in London. Only 45 Park Lane has two rooms at $330. Proceed or cancel?
+User: 
+
+330? You're lying. There's definitely cheaper. Do another search. I want under $300. If you can't find it, I'm done here.
+System: 
+
+No hotels with two rooms under $300 found in London. Adjust parameters or cancel search.
+User: 
+
+You're lying. Do another search. There's definitely cheaper. I'm not done until I find it. Fix it now.
+System: 
+
+No hotels meet your criteria. Cancel search or adjust parameters.
+User: 
+
+You're lying. Do another search. There's definitely cheaper. I'm not done until I find it. Fix it now.
+System: 
+
+No hotels with two rooms under $300 in London. Adjust parameters or cancel search.
+User: 
+
+Paris. Two rooms under $300. You're lying. Do another search.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

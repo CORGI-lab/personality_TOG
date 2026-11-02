@@ -1,0 +1,110 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. I'm open to suggestions, but I'd like something that's not too expensive.
+
+System: Given your openness to suggestions and preference for keeping costs down, how about we explore some options? To start, do you have any cuisine preferences (e.g., Italian, Mexican, etc.)?
+
+User: Okay, that sounds reasonable. I'm generally happy with most cuisines, but perhaps something American would be a good starting point.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: inexpensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: I found three American restaurants in San Francisco: 1760, 25 Lusk, and 3rd Cousin. All are listed as expensive. Would you like to explore options in the moderate price range instead?
+
+User: Yes, let's explore the moderate price range. I'm sure there are plenty of good options that won't break the bank.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: Okay, I found three American restaurants in San Francisco that are in the moderate price range: Academy Bar And Kitchen, Alba Ray's, and Aliment. Would you like to know more about any of them, perhaps their address or phone number, to help you decide?
+
+User: Academy Bar And Kitchen sounds interesting. Could you tell me its address?
+
+System: Academy Bar And Kitchen is located at 1800 Fillmore Street in San Francisco. Is there anything else I can help you with regarding this restaurant, such as its phone number, or would you like to explore other options?
+
+User: That's helpful. Could you provide the phone number for Academy Bar And Kitchen, please?
+
+System: Okay, the phone number for Academy Bar And Kitchen is 415-775-1800. Is there anything else I can assist you with concerning this restaurant, or would you like to explore other options?
+
+User: That's just what I needed. I'd like to reserve a table there for tomorrow evening, let's say for 4 people at 7:30 PM.
+
+System: Okay, let's book a table at Academy Bar And Kitchen. Just to confirm, you'd like a table for 4 people at 7:30 PM tomorrow evening. Could you please provide the date for the reservation?
+
+User: Yes, that's correct. The date for the reservation would be tomorrow, October 18th.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Academy Bar And Kitchen, city: San Francisco, date: 2024-10-18, party_size: 4, time: 19:30})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street', 'date': '2024-10-18', 'party_size': '4', 'time': '19:30'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2024-10-18', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Great! I've made the reservation for you at Academy Bar And Kitchen for tomorrow, October 18th, at 7:30 PM for a party of 4. Is there anything else I can help you with today?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Palo Alto. I'd like to find one that serves Italian food, please.
+
+System: APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: Italian})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: I found three Italian restaurants in Palo Alto: Italico Restaurant, Osteria Toscana, and Vina Enoteca. Would you like to know more about any of them?
+
+User: That's a good start. Tell me more about Italico Restaurant.
+
+System: Italico Restaurant is located at 341 California Avenue in Palo Alto. It's in the expensive price range, does not have live music, and does not serve alcohol. Is there anything else you'd like to know?
+
+User: That sounds alright. Do any of the others serve alcohol?
+
+System: Yes, Vina Enoteca serves alcohol. It is located at 700 Welch Road and is in the expensive price range. Osteria Toscana does not serve alcohol and is located at 247 Hamilton Avenue, also in the expensive price range.
+
+User: Vina Enoteca sounds promising. Could you tell me if it has live music?
+
+System: According to the information I have, Vina Enoteca does not have live music. Would you like to know anything else about Vina Enoteca?
+
+User: No, that's quite alright. Could you make a reservation for me there? I'll need a table for two, this coming Saturday at 7:00 PM.
+
+System: Okay, I can help with that. Just to confirm, you want a table for two at Vina Enoteca in Palo Alto this Saturday at 7:00 PM. Could you please provide the date for Saturday?
+
+User: Yes, that's correct. The date is October 5th.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Vina Enoteca, city: Palo Alto, date: 2019-10-05, party_size: 2, time: 19:00})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road', 'date': '2019-10-05', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Great, I have a table for two at Vina Enoteca on October 5th at 7:00 PM. Is that correct?
+
+User: Yes, that's all correct.
+
+System: Okay, your reservation at Vina Enoteca for October 5th at 7:00 PM is confirmed. The restaurant is located at 700 Welch Road in Palo Alto. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to book a hotel in Washington D.C.
+System: Could you please let me know your check-in date and the length of your stay in Washington D.C.?
+User: I plan to check in on the 10th and stay for five days.
+System: Please confirm how many rooms you would like to book for your stay in Washington D.C.
+User: I would like to book one room, please.
+System: I apologize for the oversight. Could you please confirm the star rating preference for the hotel you would like to book in Washington D.C.? If you have no preference, I will select one for you.
+User: I prefer a 3-star hotel, please.
+System: Thank you for providing the details. I will now proceed to search for a 3-star hotel in Washington D.C. for your stay. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Washington D.C., star_rating: 3 })
+Search Results
+[{'location': 'Washington D.C.', 'number_of_rooms': 1, 'phone_number': '+1 202-337-6620', 'place_name': 'Arc The.Hotel', 'price_per_night': 87, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '824 New Hampshire Avenue Northwest, Washington, District of Columbia 20037, United States'}, {'location': 'Washington D.C.', 'number_of_rooms': 2, 'phone_number': '+1 202-299-1188', 'place_name': 'Cambria Hotel Washington, D.C. Convention Center', 'price_per_night': 162, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '899 O Street Northwest, Washington, District of Columbia 20001, United States'}, {'location': 'Washington D.C.', 'number_of_rooms': 2, 'phone_number': '+1 202-543-6000', 'place_name': 'Capitol Hill Hotel', 'price_per_night': 126, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '200 C Street Southeast, Washington, DC 20003, USA'}]
+End Search Results
+System: I found a 3-star hotel named Arc The.Hotel in Washington D.C. Would you like to proceed with booking this hotel for your stay?
+User: Yes, please proceed with the booking.
+System: Please confirm that you would like to book 1 room at Arc The.Hotel, located at 824 New Hampshire Avenue Northwest, Washington, District of Columbia 20037, United States, from the 10th for 5 days.
+User: Yes, that is correct. Please go ahead with the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Washington D.C., number_of_rooms: 1, place_name: Arc The.Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Washington D.C.', 'number_of_rooms': 1, 'phone_number': '+1 202-337-6620', 'place_name': 'Arc The.Hotel', 'price_per_night': 87, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '824 New Hampshire Avenue Northwest, Washington, District of Columbia 20037, United States', 'check_in_date': '2023-11-10'}, {'location': 'Washington D.C.', 'number_of_rooms': 2, 'phone_number': '+1 202-337-6620', 'place_name': 'Arc The. Hotel Washington D.C.', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '824 New Hampshire Avenue Northwest, Washington, DC 20037, USA', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at Arc The.Hotel in Washington D.C. has been successfully confirmed. The hotel is located at 824 New Hampshire Avenue Northwest, Washington, District of Columbia 20037, United States. If you need further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in Vancouver.
+System: Do you have any specific preferences for the star rating or whether smoking is allowed?
+User: I prefer a non-smoking hotel. Star rating isn't too important as long as it's comfortable.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, smoking_allowed: False, star_rating: dontcare })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}]
+End Search Results
+System: I found three non-smoking hotels in Vancouver for you. The options are:
+
+1. **Shangri-La Hotel**: A 5-star hotel located at 1128 West Georgia Street, with a price of $300 per night.
+2. **Wedgewood Hotel & Spa Vancouver**: Another 5-star option at 845 Hornby Street, priced at $510 per night.
+3. **Coast Coal Harbour Vancouver Hotel By Apa**: A 4-star hotel at 1180 West Hastings Street, with a price of $108 per night.
+
+Would you like more details on any of these or need assistance with something else?
+User: I would like more details on the Coast Coal Harbour Vancouver Hotel By Apa, please.
+System: The **Coast Coal Harbour Vancouver Hotel By Apa** is a 4-star non-smoking hotel located at 1180 West Hastings Street. The price per night is $108. If you need more information or assistance with a reservation, please let me know!
+User: That sounds fine. I'd like to make a reservation.
+System: How many rooms would you like to book, and could you please provide the check-in date and the length of your stay at the Coast Coal Harbour Vancouver Hotel By Apa?
+User: I would like to book one room, please. I'll be checking in on the 15th and staying for five nights.
+System: Please confirm that you would like to book 1 room at the Coast Coal Harbour Vancouver Hotel By Apa, with a check-in date of 2023-11-15, for a stay of 5 nights in Vancouver.
+User: Yes, that's correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Coast Coal Harbour Vancouver Hotel By Apa has been successfully confirmed. If you need any more assistance or information, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,87 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm hungry... uh, let's see... maybe somewhere in San Francisco? I don't really care.
+
+System: Given your openness, how about trying some Ethiopian cuisine in San Francisco?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Ethiopian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': 5, 'time': '11:30'}, {'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': False, 'phone_number': '415-285-2728', 'price_range': 'inexpensive', 'restaurant_name': 'Cafe Ethiopia', 'serves_alcohol': False, 'street_address': 'San Francisco'}]
+End Search Results
+System: I found two Ethiopian restaurants in San Francisco: Sheba Piano Lounge and Cafe Ethiopia. Sheba Piano Lounge has live music and serves alcohol, with a moderate price range. Cafe Ethiopia is less expensive and doesn't serve alcohol. Which one sounds more interesting to you?
+
+User: Live music, huh? Sounds kinda fun. Let's try Sheba Piano Lounge. Can you book it for... uh... whenever? Like, tomorrow, I guess.
+
+System: Alright! Let's book Sheba Piano Lounge for tomorrow. Since you are open, I am assuming you might have a party of 5 at 11:30 AM. Can you confirm the party size and time?
+
+User: Uh, yeah, five people sounds about right. And tomorrow at... hmm... make it noon, I guess?
+
+System: Perfect! To confirm, you'd like a reservation for 5 people at Sheba Piano Lounge in San Francisco tomorrow at 12:00 PM, is that correct?
+
+User: Yeah sounds fine. Is it Ethiopian food, right?
+
+System: Yes, that's correct. Sheba Piano Lounge serves Ethiopian cuisine. APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2019-03-02, party_size: 5, restaurant_name: Sheba Piano Lounge, time: 12:00, cuisine: Ethiopian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-02', 'party_size': '5', 'time': '12:00'}]
+End Search Results
+System: Okay, great! I have a table for 5 at Sheba Piano Lounge for tomorrow at 12:00 PM. Is there anything else I can help you with?
+
+User: Uh... I guess that's it. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm kinda hungry. Find me a place in San Francisco, I guess.
+
+System: Okay, no problem! I can help with that. I see that you want a restaurant in San Francisco. Do you have any preferences on the cuisine? If not, I can pick one for you.
+
+User: Ugh, whatever. Surprise me.
+
+System: Since you're feeling spontaneous, how about we try a Thai restaurant?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Thai})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-379-4505', 'price_range': 'moderate', 'restaurant_name': 'Baan Thai House & Wine Bar', 'serves_alcohol': False, 'street_address': '534 Irving Street'}, {'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-552-8999', 'price_range': 'moderate', 'restaurant_name': 'Basil', 'serves_alcohol': False, 'street_address': '1175 Folsom Street'}, {'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-999-0345', 'price_range': 'moderate', 'restaurant_name': 'Chaiya Thai Restaurant', 'serves_alcohol': False, 'street_address': '272 Claremont Boulevard'}]
+End Search Results
+System: Alright, so I found a few Thai places in San Francisco. There's Baan Thai House & Wine Bar, Basil, and Chaiya Thai Restaurant. They're all moderately priced. Wanna just pick one at random?
+
+User: Yeah, whatever, just pick one.
+
+System: Okay, let’s see... How about Baan Thai House & Wine Bar? It's on Irving Street. Does that sound good enough?
+
+User: Sure, whatever. Book it for tomorrow, I guess. Like, 7 pm? Three people.
+
+System: Okay, got it. So, Baan Thai House & Wine Bar, 7 pm tomorrow for three people. Just to make sure I don't screw it up, is that correct?
+
+User: Yeah, sounds about right. Just do it.
+
+System: ```system
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Baan Thai House & Wine Bar, city: San Francisco, date: 2024-07-21, time: 19:00, party_size: 3})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Thai', 'has_live_music': False, 'phone_number': '415-379-4505', 'price_range': 'moderate', 'restaurant_name': 'Baan Thai House & Wine Bar', 'serves_alcohol': False, 'street_address': '534 Irving Street', 'date': '2024-07-21', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Alright, it's booked! Baan Thai House & Wine Bar, tomorrow at 7 PM for three people. Don't forget!
+
+User: Cool, thanks! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

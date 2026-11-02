@@ -1,0 +1,86 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm planning a fun trip to Las Vegas and need to find an awesome hotel to stay in. Can you help me with that?
+System: For sure! Las Vegas sounds like a fantastic place for a fun trip. Could you please let me know if you have any specific preferences, such as the star rating of the hotel or any other features you’d like? Or are you open to exploring any exciting options?
+User: Oh, I'm definitely open to exploring exciting options! Let's aim for something lively and fun, maybe a 4 or 5-star hotel. And if there's a rooftop bar or a pool party scene, that would be amazing! Also, I’d prefer a non-smoking room. Can't wait to see what you've got!
+System: Great! Las Vegas is full of exciting options. Let's start by finding a lively 4 or 5-star hotel for you. I'll look for places with a vibrant atmosphere. Give me a moment to gather the details! 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4, smoking_allowed: False })
+Search Results
+
+End Search Results
+System: It looks like we didn't find any 4-star non-smoking hotels in Las Vegas. Let's try expanding our search a bit! How about I look for some lively 5-star options that match your preferences?
+User: Yes, let's go for the 5-star options! I’m sure there’s something spectacular waiting for me. Can't wait to hear what you find!
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5, smoking_allowed: False })
+Search Results
+
+End Search Results
+System: Unfortunately, it seems that there are no available 5-star non-smoking hotels in Las Vegas at the moment. How about we explore some other star ratings or adjust the smoking preference to see if we can find something just as exciting? Let me know how you'd like to proceed!
+User: Hmm, that's a bit of a bummer, but I'm always up for an adventure! How about we check out some vibrant 3-star options with a great social scene? Or if there's a fun 5-star hotel that allows smoking but has a fabulous pool party or rooftop bar, I'm open to considering that too. Let's see what exciting options we can discover!
+System: Let's explore some exciting 3-star options with a lively social scene first. I'll look for hotels in Las Vegas that match your vibe. Give me a moment to find the best options for you! 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: I found some lively 3-star hotels for you in Las Vegas! Here's what we've got:
+
+1. **Best Western Plus Las Vegas West**: Located at 8669 West Sahara Avenue, it's a non-smoking hotel with rooms available at $117 per night. Contact them at +1 702-256-3766.
+
+2. **Hampton Inn Las Vegas/Summerlin**: If you're open to smoking-allowed options, this might be fun! It's situated at 7100 Cascade Valley Court, with rooms priced at $279 per night. You can reach them at +1 702-360-5700.
+
+3. **Oasis At Gold Spike**: Another non-smoking option, located at 217 Las Vegas Boulevard North, offering rooms for $63 per night. Their contact number is +1 702-768-9823.
+
+Let me know if any of these catch your eye or if you'd like to explore more options!
+User: The "Oasis At Gold Spike" sounds like a fun and budget-friendly choice, especially since it's non-smoking and right in the heart of Las Vegas! I love the idea of being close to all the action. Could you reserve a room for me there? I'll be checking in next Friday, and I'll be staying for four days. Let's lock it in and get ready for some Vegas fun!
+System: Alright! "Oasis At Gold Spike" sounds like a fantastic choice for your vibrant Las Vegas adventure. Let's get your reservation sorted. Just to confirm: I'll reserve one room for you, checking in next Friday for a stay of four days. Please hold on for a moment while I make the reservation.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-20, location: Las Vegas, number_of_rooms: 1, place_name: 'Oasis At Gold Spike', stay_length: 4 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North', 'check_in_date': '2023-10-20'}]
+End Search Results
+System: Your reservation at "Oasis At Gold Spike" has been successfully confirmed! You'll be checking in on 2023-10-20 for a four-day stay. The hotel is located at 217 Las Vegas Boulevard North, and you can contact them at +1 702-768-9823. Get ready for an exciting time in Las Vegas! If there's anything else you need, just let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hi there! I'm planning a fun trip to Sydney and would love some help finding a fantastic hotel. Could you show me some exciting options?
+System: Do you have any specific preferences for the hotel in Sydney, such as a particular star rating or whether smoking is allowed? Or would you like me to search for a variety of options?
+User: I'm looking for something with a lively vibe, so a 4 or 5-star hotel would be amazing! Also, it would be great if they allow smoking. Can you find something like that for me?
+System: APICall(method='SearchHotel', parameters={ location: Sydney, star_rating: 5, smoking_allowed: True })
+Search Results
+[{'location': 'Sydney', 'number_of_rooms': 2, 'phone_number': '+61 2 9277 1125', 'place_name': 'Meriton Serviced Apartments Zetland', 'price_per_night': 250, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '8 Defries Avenue, Zetland New South Wales 2017, Australia'}, {'location': 'Sydney', 'number_of_rooms': 2, 'phone_number': '+61 2 9277 1125', 'place_name': 'Meriton Suites Kent Street, Sydney', 'price_per_night': 510, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '528 Kent Street'}]
+End Search Results
+System: I found two fantastic 5-star hotels in Sydney that allow smoking. The first option is Meriton Serviced Apartments Zetland, located at 8 Defries Avenue, Zetland New South Wales 2017, with a price of $250 per night. The second option is Meriton Suites Kent Street, located at 528 Kent Street, with a price of $510 per night. Would you like more information on either of these hotels or proceed with a reservation?
+User: Oh, both sound fabulous! Could you tell me a bit more about the Meriton Serviced Apartments Zetland? Like, what amenities do they offer, and is it close to any fun places or attractions?
+System: I'm sorry, but the specific amenities or nearby attractions for Meriton Serviced Apartments Zetland are not available in the provided data. However, it's a 5-star hotel with a lively vibe, allowing smoking, and is located at 8 Defries Avenue, Zetland, New South Wales 2017. If you'd like any further assistance with your reservation or have other questions, feel free to ask!
+User: No worries! It sounds like a perfect spot to stay. Let's go ahead and book it! I'll need the reservation for two rooms starting from the 15th of next month, and I'll be staying for a week. Can't wait to experience Sydney!
+System: Please confirm that you want to book 2 rooms at Meriton Serviced Apartments Zetland in Sydney, starting from the 15th of next month for a duration of one week.
+User: Yes, that's right! Please go ahead and make the reservation. I'm super excited for this trip!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Sydney, number_of_rooms: 2, place_name: Meriton Serviced Apartments Zetland, stay_length: 7 })
+Search Results
+[{'location': 'Sydney', 'number_of_rooms': 2, 'phone_number': '+61 2 9277 1125', 'place_name': 'Meriton Serviced Apartments Zetland', 'price_per_night': 250, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '8 Defries Avenue, Zetland New South Wales 2017, Australia', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking for 2 rooms at Meriton Serviced Apartments Zetland in Sydney starting from November 15th for a week has been successfully confirmed! If you need any more assistance or have further questions, feel free to let me know. Enjoy your trip to Sydney!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

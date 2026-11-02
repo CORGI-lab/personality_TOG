@@ -1,0 +1,166 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in New York. Don't try to give me something cheap.
+
+System: Okay, I will search for hotels in New York. Do you have a star rating in mind?
+
+User: Of course, I have a star rating in mind. I only stay in 5-star hotels. Don't waste my time with anything less.
+
+System: Okay, searching for 5-star hotels in New York. Is there anything else I should consider, like smoking allowance or number of rooms?
+
+User: Smoking allowed. And make sure it's actually a 5-star, not some dump pretending to be fancy.
+
+System: APICall(method='SearchHotel', parameters={location: New York, star_rating: 5, smoking_allowed: True})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I found three 5-star hotels in New York that allow smoking: 1 Hotel Central Park, Baccarat Hotel, and 1 Hotel Brooklyn Bridge. Which one would you like to know more about?
+
+User: 1 Hotel Central Park? What kind of ridiculous name is that? Tell me about the Baccarat. And don't sugarcoat it; I want the dirt.
+
+System: The Baccarat Hotel has rooms available and the price per night is $525. The address is 28 West 53rd Street and the phone number is +1 866-957-5139. They allow smoking. Would you like to reserve a room there?
+
+User: $525? You're kidding me, right? That better be for a suite the size of my apartment. How many rooms do they even have available?
+System: The Baccarat Hotel has 2 rooms available. Would you like to reserve one of them?
+
+User: Two rooms? Pathetic. I bet they're not even good rooms. Fine, reserve one for me. Check-in a week from today for one night.
+
+System: Okay, I will reserve one room for you at the Baccarat Hotel in New York, checking in a week from today for one night. Could you please provide the exact date for the check-in?
+
+User: A week from today is August 29th. And make sure it's the best damn room they have available. I expect a view.
+
+System: Okay, reserving one of the two available rooms at the Baccarat Hotel in New York for check-in on August 29th for one night. I do not have the ability to guarantee a view. Is that correct?
+
+User: Correct. Now, get on with it and make the reservation. And don't screw it up.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-08-29, location: New York, number_of_rooms: 1, place_name: Baccarat Hotel, stay_length: 1})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street', 'check_in_date': '2024-08-29'}]
+End Search Results
+System: Excellent. Your reservation has been confirmed. The cost is $525. The Baccarat Hotel is located at 28 West 53rd Street, and their phone number is +1 866-957-5139. Is there anything else?
+
+User: Yeah, yeah, whatever. Just send the confirmation to my email, and don't bother me again unless there's a problem.
+
+System: I am sorry, I do not have the functionality to send confirmations to your email address. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Las Vegas. Don't tell me about any dumps.
+
+System: Okay, I understand. To make sure I find the right hotel for you in Las Vegas, do you have a star rating preference?
+
+User: Of course I have a preference. I want the best, so only show me 5-star hotels. And it better not be overpriced.
+
+System: Okay, I will only look for 5-star hotels in Las Vegas.
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 5})
+
+Search Results
+
+End Search Results
+System: Okay, I'm on it. There are no 5-star hotels listed in Las Vegas. Would you like to lower the star rating to see what else is available?
+
+User: Don't insult my intelligence. If there are no 5-star hotels, then show me the best of the rest. But I'm not paying a fortune for some glorified motel. What are the prices like?
+
+System: APICall(method='SearchHotel', parameters={location: Las Vegas})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: Okay, I found a few options for you in Las Vegas. The Hampton Inn Las Vegas/Summerlin and Best Western Plus Las Vegas West are both 3-star hotels. The Hampton Inn is priced at $279 per night, while the Best Western is $117. There's also a 1-star hotel, Budget Suites Of America, at $44 per night. Would you like more details on any of these, or perhaps prefer one over the others?
+
+User: $279 for a Hampton Inn? Are you kidding me? That's highway robbery. Tell me more about this "Best Western Plus." What makes it so "plus?"
+
+System: Okay, I'll give you the details on the Best Western Plus Las Vegas West. It's a 3-star hotel located at 8669 West Sahara Avenue. The price is $117 per night, and their phone number is +1 702-256-3766. They do not allow smoking, and it has one room available. Does this sound suitable for your standards?
+
+User: One room available? What kind of operation are they running? I need at least two rooms, and they better be non-smoking. I don't want to smell like someone else's filth.
+
+System: Okay, let's refine the search. I will look for hotels in Las Vegas with at least two rooms available and a non-smoking preference.
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, number_of_rooms: 2, smoking_allowed: False})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-489-7500', 'place_name': 'Thunderbird Boutique Hotel', 'price_per_night': 56, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '1215 South Las Vegas Boulevard'}]
+End Search Results
+System: I am sorry, but it looks like the hotels in Las Vegas do not have 2 rooms with a non-smoking preference. I can search for hotels that allow smoking, or search for hotels that have one room available. Please let me know how you would like to proceed.
+
+User: Don't give me that helpless act. There are plenty of hotels in Las Vegas. Search again and find me two non-smoking rooms in a decent hotel. And don't waste my time with budget garbage.
+
+System: Okay, I am sorry about that. It seems that the previous search did not yield the results that you need. I will search again for hotels in Las Vegas that have at least two rooms available and do not allow smoking. I will try to find something decent without wasting your time.
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, number_of_rooms: 2, smoking_allowed: False})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-489-7500', 'place_name': 'Thunderbird Boutique Hotel', 'price_per_night': 56, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '1215 South Las Vegas Boulevard'}]
+End Search Results
+System: I apologize for the continued inconvenience. It appears that hotels with two non-smoking rooms are scarce. To broaden our search, would you be open to considering hotels that offer smoking rooms? Alternatively, we can proceed with hotels that have one non-smoking room available. Please advise on how you wish to proceed.
+
+User: Fine, find me a hotel with one non-smoking room. But it better be worth my money.
+
+System: Okay, I understand. I will only look for hotels in Las Vegas that have one non-smoking room available, and I will make sure that it is worth your money.
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, number_of_rooms: 1, smoking_allowed: False})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-489-7500', 'place_name': 'Thunderbird Boutique Hotel', 'price_per_night': 56, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '1215 South Las Vegas Boulevard'}]
+End Search Results
+System: Okay, I've found three hotels in Las Vegas that fit the bill with one non-smoking room available:
+
+*   **Best Western Plus Las Vegas West:** A 3-star hotel at $117 per night.
+*   **Oasis At Gold Spike:** A 3-star hotel at $63 per night.
+*   **Thunderbird Boutique Hotel:** A 2-star hotel at $56 per night.
+
+Want me to explain more about these options to ensure you are getting your money's worth?
+
+User: Oasis at Gold Spike for $63? What's the catch? That sounds too cheap to be any good. Tell me the worst thing about it.
+
+System: Okay, I understand your concern. Here's what I can tell you about the Oasis At Gold Spike. It's a 3-star hotel located at 217 Las Vegas Boulevard North, and the price is $63 per night. They do not allow smoking, and it has one room available.
+
+I don't have information about the "worst" thing about it, as my data is limited to the basic details. However, I can tell you it's a less expensive option than the Best Western Plus, and it's only a 3-star hotel, so it may not have all the amenities you'd expect from a higher-end place.
+
+Would you like me to provide you with the phone number and address so you can do some research on your own?
+
+User: Give me the address. I don't trust your "basic details."
+
+System: Alright, here's the address for the Oasis At Gold Spike: 217 Las Vegas Boulevard North. If you need anything else, don't hesitate to ask.
+
+User: Fine, book that Oasis place for me. Check-in on the 15th for 3 nights. And don't screw it up.
+
+System: Okay, I will book the Oasis At Gold Spike for you. Could you please specify the year for the check-in date?
+
+User: This better be done right. 2024.
+
+System: Okay, I understand. I will book one non-smoking room at the Oasis At Gold Spike in Las Vegas, checking in on June 15, 2024, for a stay of three nights. Is that correct?
+
+User: Yes, that's correct. Now make the damn booking.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Oasis At Gold Spike, check_in_date: 2024-06-15, stay_length: 3, location: Las Vegas, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North', 'check_in_date': '2024-06-15'}]
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

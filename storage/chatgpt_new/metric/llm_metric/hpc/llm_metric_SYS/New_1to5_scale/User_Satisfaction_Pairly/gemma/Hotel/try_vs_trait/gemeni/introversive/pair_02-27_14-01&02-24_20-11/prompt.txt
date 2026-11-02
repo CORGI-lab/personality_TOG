@@ -1,0 +1,133 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in San Francisco.
+
+System: Do you have any preferences for the star rating of the hotel?
+
+User: Maybe a three-star hotel would be alright.
+
+System: APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 3})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: Okay, I found three 3-star hotels in San Francisco: Bei Hotel San Francisco, Beresford Arms Hotel, and Chancellor Hotel On Union Square. Would you like me to provide you with more details about any of them?
+
+User: Just list the price per night for each.
+
+System: Okay, here are the prices per night for those hotels:
+
+*   **Bei Hotel San Francisco:** \$351
+*   **Beresford Arms Hotel:** \$132
+*   **Chancellor Hotel On Union Square:** \$189
+
+Do any of these prices stand out to you, or would you like to know more about a particular hotel?
+
+User: The Beresford Arms Hotel sounds reasonable.
+
+System: Okay, great! The Beresford Arms Hotel is \$132 per night. Would you like to know its address or phone number? Or perhaps you're ready to reserve a room there?
+
+User: I'd like to reserve a room.
+
+System: Okay, I can help with that. To reserve a room at the Beresford Arms Hotel, I need to know:
+
+*   What date would you like to check in?
+*   How many nights will you be staying?
+*   How many rooms do you need?
+
+User: I need it for one night, starting tomorrow, and just one room.
+
+System: And for clarification, you'd like to book one room at the Beresford Arms Hotel in San Francisco for one night, starting tomorrow. Could you please confirm the year, month, and day for your check-in date?
+
+User: Just confirm it for today.
+
+System: Okay, so you'd like to book one room at the Beresford Arms Hotel in San Francisco for one night, starting today, is that correct? Please confirm the year, month, and day for your check-in date.
+
+User: Yes, that is correct. Today's date for one night.
+
+System: Could you please provide the full date, including the year, month, and day, for your check-in?
+
+User: 2024-07-03
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-03, location: San Francisco, number_of_rooms: 1, place_name: Beresford Arms Hotel, stay_length: 1})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street', 'check_in_date': '2024-07-03'}]
+End Search Results
+System: Alright! I've successfully booked one room for you at the Beresford Arms Hotel in San Francisco for one night, starting today, July 3rd, 2024. Is there anything else I can help you with regarding this reservation?
+
+User: No, that's all I need. Thanks a lot!
+
+Dialogue B:
+  User: I need to find a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really, just something… quiet.
+
+System: Okay, I understand. I will search for hotels in Seattle. Since you prefer something quiet and don't have a preference for the star rating, I will start with a moderate rating.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3 })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found three hotels matching your request. Best Western Plus Pioneer Square Hotel Downtown, Courtyard By Marriott Seattle Downtown/Lake Union, and Embassy Suites By Hilton Seattle Downtown Pioneer Square. They are all 3-star hotels. Would you like more information on any of these?
+
+User: Perhaps the Best Western Plus Pioneer Square Hotel Downtown.
+
+System: Okay. The Best Western Plus Pioneer Square Hotel Downtown has 1 room available, the phone number is +1 206-340-1234, the price per night is $63, smoking is not allowed, and the street address is 77 Yesler Way. Would you like to know anything else about it?
+
+User: No, that seems… fine. Could I reserve a room there?
+
+System: Okay. To reserve a room, I need a little more information. What date would you like to check in, and how many days will you be staying? Also, can you confirm that the reservation is for Seattle?
+
+User: Yes, Seattle. Check-in… tomorrow. Stay length, two days.
+
+System: Okay, I can help with that. And to confirm, you'd like to reserve a room at the Best Western Plus Pioneer Square Hotel Downtown in Seattle, checking in tomorrow for a two-day stay? I will need the exact date for the check-in. Could you please provide the full date including the year (YYYY-MM-DD)?
+
+User: 2024-03-10.
+
+System: Okay, I have all the information needed.
+
+APICall(method='ReserveHotel', parameters={ place_name: Best Western Plus Pioneer Square Hotel Downtown, check_in_date: 2024-03-10, stay_length: 2, location: Seattle, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2024-03-10'}]
+End Search Results
+System: Okay. The Best Western Plus Pioneer Square Hotel Downtown, confirms your check-in date as 2024-03-10 for two days. The price per night is $63. Is that correct?
+
+User: Yes, that's correct. Please proceed.
+
+System: Okay, I've noted the confirmation.
+
+APICall(method='ReserveHotel', parameters={ place_name: Best Western Plus Pioneer Square Hotel Downtown, check_in_date: 2024-03-10, stay_length: 2, location: Seattle, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2024-03-10'}]
+End Search Results
+System: Okay. Your reservation at the Best Western Plus Pioneer Square Hotel Downtown in Seattle, checking in on 2024-03-10 for two nights, is confirmed. Is there anything else I can assist you with at the moment?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

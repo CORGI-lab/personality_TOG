@@ -1,0 +1,148 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm kinda hungry. Find me a place to grab some food, I guess... in San Francisco, maybe? Or... whatever.
+
+System: Okay, San Francisco sounds good. How about we look for some American food there? Does that sound alright, or do you have something else in mind?
+
+User: Ugh, American's fine, I guess. Just find something, anything.
+
+System: Alright, let's see what American restaurants are in San Francisco.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Okay, so there are a few options. How about 1760? It's American cuisine in San Francisco. Does that sound okay?
+
+User: Yeah, whatever. Just book it for... I don't know, tomorrow? Around 7 pm? And, uh, for like, 3 people. Or maybe 4? Just put 4.
+
+System: Okay, so you want me to book at 1760 for tomorrow at 7 pm for 4 people?
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 1760, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 4})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Alright, the booking at 1760 for tomorrow at 7 pm for 4 people is confirmed. Is there anything else?
+
+User: Wait, hold on. Is that place expensive? I don't even know if I have money... Check for something cheaper, maybe? Same time, same people, whatever.
+
+System: Okay, let's see if we can find something a bit more affordable. How about we look for something in the moderate price range?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: Okay, so there are some options in the moderate price range. How about Academy Bar And Kitchen? It's American cuisine in San Francisco. Does that sound okay?
+
+User: Ugh, fine. Book it. Same time, same people, you know, tomorrow at 7 for 4. Whatever.
+
+System: Okay, so you want me to book Academy Bar And Kitchen for tomorrow at 7 pm for 4 people?
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Academy Bar And Kitchen, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 4})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Alright, Academy Bar And Kitchen, tomorrow at 7 pm for 4 people is confirmed. Is there anything else?
+
+User: Wait, wait. Does that place have, like, a bar? I might want a drink...
+
+System: Okay, let's see if that place serves alcohol.
+APICall (method='FindRestaurants', parameters= {restaurant_name: Academy Bar And Kitchen, city: San Francisco, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street'}]
+End Search Results
+System: Okay, it looks like Academy Bar And Kitchen doesn't serve alcohol. Want to try Alba Ray's instead? It's also American cuisine and in the moderate price range, plus they serve alcohol. Still tomorrow at 7 pm for 4 people?
+
+User: Yeah, whatever, that sounds... okay, I guess. Just book it, same as before.
+
+System: Alright, changing the reservation to Alba Ray's for tomorrow at 7 pm for 4 people. Is that all correct?
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Alba Ray's, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 4})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+
+Dialogue B:
+  User: I'm kinda hungry, wanna find somewhere to eat in San Francisco, I guess. Don't really care what kind of food.
+
+System: Given you're open to anything, how about we look for a restaurant serving French cuisine in San Francisco?
+
+User: Uh, French? Okay, sure, whatever. Find me one that's not too expensive, I guess.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: French, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-292-6916', 'price_range': 'moderate', 'restaurant_name': 'Amelie San Francisco', 'serves_alcohol': True, 'street_address': '1754 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-402-5290', 'price_range': 'moderate', 'restaurant_name': 'Aquitaine Wine Bar & Bistro', 'serves_alcohol': False, 'street_address': '175 Sutter Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-986-5673', 'price_range': 'moderate', 'restaurant_name': 'Cafe Bastille', 'serves_alcohol': False, 'street_address': '22 Belden Place'}]
+End Search Results
+System: Alright, I see three moderately priced French restaurants in San Francisco: Amelie San Francisco, Aquitaine Wine Bar & Bistro, and Cafe Bastille. How about we narrow it down further? Do you care whether they serve alcohol or not?
+
+User: Alcohol? Yeah, whatever, doesn't matter. Just pick one, I guess.
+
+System: Okay, I'll just pick one then. How about Amelie San Francisco? It's a moderately priced French restaurant located at 1754 Polk Street in San Francisco. They serve alcohol. Does that sound alright?
+
+User: Yeah, sounds...fine, I guess. Can you just book it for, like, tomorrow? Uh, maybe around 7 pm? And it's just me, so one person.
+
+System: APICall (method='ReserveRestaurant', parameters= {city: San Francisco, restaurant_name: Amelie San Francisco, date: 2019-03-02, time: 19:00, party_size: 1})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-292-6916', 'price_range': 'moderate', 'restaurant_name': 'Amelie San Francisco', 'serves_alcohol': True, 'street_address': '1754 Polk Street', 'date': '2019-03-02', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Alright, your reservation at Amelie San Francisco for tomorrow, March 2nd, at 7 pm for one person is confirmed. Is there anything else I can help you with?
+
+User: Tomorrow? Wait, no, I meant tonight. Can you change it to tonight, March 1st, same time?
+
+System: APICall (method='ReserveRestaurant', parameters= {city: San Francisco, restaurant_name: Amelie San Francisco, date: 2019-03-01, time: 19:00, party_size: 1})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-292-6916', 'price_range': 'moderate', 'restaurant_name': 'Amelie San Francisco', 'serves_alcohol': True, 'street_address': '1754 Polk Street', 'date': '2019-03-01', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Okay, I've updated your reservation. You're all set for tonight, March 1st, at Amelie San Francisco at 7 PM for one person. Anything else you need?
+
+User: Uh, is it too late to change the cuisine? I'm kinda feeling Italian now.
+
+System: Alright, changing the cuisine from French to Italian. Let me check for Italian restaurants in San Francisco with a moderate price range. 
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Alright, I see three moderately priced Italian restaurants in San Francisco: 54 Mint Ristorante Italiano, A16, and Allegro Romano. Do any of those sound good to you?
+
+User: Uh, sure, whatever. Pick one, I guess.
+
+System: Okay, how about 54 Mint Ristorante Italiano? It's located at 16 Mint Plaza in San Francisco and they serve alcohol. Would you like to keep your reservation for tonight, March 1st, at 7 PM for one person there instead?
+
+User: Yeah, sure. That sounds okay. Change my reservation to that place, I guess.
+
+System: APICall (method='ReserveRestaurant', parameters= {city: San Francisco, restaurant_name: 54 Mint Ristorante Italiano, date: 2019-03-01, time: 19:00, party_size: 1})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2019-03-01', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: Alright, your reservation at 54 Mint Ristorante Italiano for tonight, March 1st, at 7 PM for one person is confirmed. Is there anything else I can help you with?
+
+User: Nah, that's it. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

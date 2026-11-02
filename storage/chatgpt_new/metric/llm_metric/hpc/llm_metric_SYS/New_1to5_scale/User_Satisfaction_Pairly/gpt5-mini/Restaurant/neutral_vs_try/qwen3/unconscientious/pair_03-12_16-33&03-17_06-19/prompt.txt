@@ -1,0 +1,128 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I'm hungry, let's find a restaurant in San Francisco. I don't know what to eat, just pick one.
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Japanese})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-655-3738', 'price_range': 'expensive', 'restaurant_name': 'Izakaya Sushi Ran', 'serves_alcohol': True, 'street_address': '2223 Market Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-484-1206', 'price_range': 'expensive', 'restaurant_name': 'Motze', 'serves_alcohol': True, 'street_address': '983 Valencia Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-552-4400', 'price_range': 'expensive', 'restaurant_name': 'Nihon Whisky Lounge', 'serves_alcohol': True, 'street_address': '1779 Folsom Street'}]
+End Search Results
+System: 
+
+I found a Japanese restaurant called Izakaya Sushi Ran in San Francisco. It's located at 2223 Market Street, has an expensive price range, and serves alcohol. Would you like to book a table there or see other options?
+User: 
+
+Book it.
+System: 
+
+Sure! What time would you like to reserve for, and how many people will be in your party?
+User: 
+
+8:00, two people. I don't care.
+System: 
+
+Just to confirm, is that 8:00 AM or 8:00 PM?
+User: 
+
+PM
+System: 
+
+Confirming your reservation for Izakaya Sushi Ran in San Francisco at 8:00 PM today for 2 people. Is that correct?
+User: 
+
+Yeah, sure.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 'Izakaya Sushi Ran', city: 'San Francisco', time: '20:00', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-655-3738', 'price_range': 'expensive', 'restaurant_name': 'Izakaya Sushi Ran', 'serves_alcohol': True, 'street_address': '2223 Market Street', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: 
+
+Your reservation at Izakaya Sushi Ran for 8:00 PM today for 2 people is confirmed. Enjoy your meal!
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I'm hungry, want to find a restaurant in San Francisco. But I don't know what I want. Maybe just anything?
+System: 
+
+Sure! I'll find restaurants in San Francisco. What cuisine are you interested in? For example, Italian, Mexican, or something else?
+User: 
+
+I don't know, just find me something. Anything is fine.
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: 
+
+I found a restaurant called 1760 located at 1760 Polk Street. Would you like to know more details about it?
+User: 
+
+Book it for me. Two people.
+System: 
+
+Sure! What time would you like to book the table for at 1760? For example, 7:00 PM.
+User: 
+
+Now
+System: 
+
+Could you please specify the exact time for your reservation? For example, 7:00 PM.
+User: 
+
+7:00
+System: 
+
+Could you please confirm if the reservation time is 7:00 AM or 7:00 PM?
+User: 
+
+PM
+System: 
+
+Confirming your reservation: 2 people at 1760 in San Francisco at 7:00 PM today for American cuisine. Is that correct?
+User: 
+
+Yeah, sure.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 1760, city: San Francisco, time: 19:00, cuisine: American, party_size: 2, date: 2023-10-05})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street', 'date': '2023-10-05', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: 
+
+Your reservation at 1760 for 2 people at 7:00 PM today has been confirmed. Enjoy your meal!
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,66 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to find a place to eat in San Francisco. Can you help me with that?
+System: What type of cuisine are you interested in? For example, Mexican, Italian, or something else?
+User: Uh, I'm not really sure. Maybe something like Italian? But if there's something else that's really good, I'm open to it. Whatever works.
+System: Great! Let's start with Italian cuisine. I'll look for some Italian restaurants in San Francisco for you. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that you might like. 54 Mint Ristorante Italiano is one option, located at 16 Mint Plaza. They serve alcohol and fall within a moderate price range. Would you like more information about this restaurant or explore other options?
+User: I don't know, sounds okay, I guess. Can you check if they have live music or something?
+System: Unfortunately, 54 Mint Ristorante Italiano does not feature live music. Would you like to know more about another restaurant or need information about anything else?
+User: Um, yeah, maybe tell me about another place. Something fun or different, you know?
+System: Another option is A16, located at 2355 Chestnut Street in San Francisco. It's an Italian restaurant with a moderate price range and they serve alcohol. However, they do not offer live music either. Would you like more information about this restaurant or perhaps explore different options?
+User: I guess A16 sounds decent enough. Can you make a reservation for me there?
+System: Could you please specify the date and time you'd like to make the reservation for, as well as the number of people in your party?
+User: Uh, sure, let's say tomorrow for dinner, maybe around 7 pm, and make it for like, four people.
+System: To confirm, you'd like to make a reservation at A16 in San Francisco for 4 people at 7 pm tomorrow. Is that correct?
+User: Yeah, that should work. Can you also tell me if they have vegetarian options?
+System: Your reservation is confirmed for A16 at 7 pm tomorrow for 4 people. However, the information about vegetarian options is not available in the current data. I recommend contacting the restaurant directly at 415-771-2216 for details regarding their menu. Is there anything else I can assist you with?
+User: Nah, that should be fine. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a place to eat in San Francisco. Can you help me find something?
+System: Do you have a preference for any particular type of cuisine, or would you like me to suggest something for you? If you're open to suggestions, I can find something that might fit your mood.
+User: Hmm, I'm not really sure what I want. Maybe something with a variety of options? Like, they serve different types of food? What's a good place that has a bit of everything?
+System: Let's try something interesting! How about I find a place with a variety of cuisines to match your adventurous mood? How does a "Fusion" restaurant in San Francisco sound to you?
+User: Yeah, that sounds kinda cool. Go ahead and check out one of those fusion spots for me.
+System: Great choice! Let me find a Fusion restaurant for you in San Francisco. I'll just need to check a few options. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Fusion})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street'}]
+End Search Results
+System: I've found a great Fusion restaurant for you in San Francisco! It's called El Valenciano. It's a moderate-priced place located at 1153 Valencia Street. They also have live music and serve alcohol. If you need the phone number, it's 415-826-9561. Would you like any more information or perhaps make a reservation?
+User: I guess that sounds good. Can you go ahead and make a reservation for me? Maybe for tonight, around 7 pm? Oh, and it'll be for two people.
+System: Sure, let me confirm the details: You'd like to make a reservation for two people at El Valenciano in San Francisco for tonight at 7 pm. Is that correct?
+User: Uh, yeah, that sounds about right. Let's do it!
+System: Perfect! I'll proceed with the reservation for you. Please hold on for a moment. APICall (method='ReserveRestaurant', parameters={restaurant_name: 'El Valenciano', city: 'San Francisco', time: '19:00', date: '2023-10-10', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street', 'date': '2023-10-10', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at El Valenciano for two people tonight at 7 pm is confirmed! If you need to reach them, their phone number is 415-826-9561. Enjoy the live music and have a great evening!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

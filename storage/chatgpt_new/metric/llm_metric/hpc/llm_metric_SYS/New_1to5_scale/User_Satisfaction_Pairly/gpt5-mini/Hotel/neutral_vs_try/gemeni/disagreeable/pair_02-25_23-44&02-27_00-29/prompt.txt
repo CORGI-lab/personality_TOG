@@ -1,0 +1,150 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in New York. Don't try to give me some dump, I want something decent.
+
+System: Given your preference for a decent hotel in New York, could you specify the star rating you're looking for?
+
+User: Anything less than 4 stars is a waste of my time. Don't bother suggesting anything lower.
+
+System: Okay, I understand. You are looking for a hotel in New York with a star rating of 4 or higher.
+
+APICall(method='SearchHotel', parameters={location: New York, star_rating: 4})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}]
+End Search Results
+System: Alright, we have three 4-star hotels in New York that might suit your taste. The first is 1 Hotel Brooklyn Bridge, with a price of $216 per night. The second is 6 Columbus Hotel, priced at $396 per night. And the third is AC Hotel New York Times Square, at $176 per night. All of them allow smoking except the last one. Which one sounds more like what you had in mind?
+
+User: I bet those prices are inflated. Let's see if you can find something cheaper around the same rating. And smoking is non-negotiable.
+
+System: Okay, let's refine the search. I'll look for 4-star hotels in New York that allow smoking and have a lower price per night than the ones I previously mentioned.
+
+APICall(method='SearchHotel', parameters={location: New York, star_rating: 4, smoking_allowed: True})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street'}]
+End Search Results
+System: Alright, it seems our previous options weren't quite hitting the mark on price. I've adjusted the search to only show 4-star hotels in New York that allow smoking. Here are the updated results: 1 Hotel Brooklyn Bridge at $216 per night, 6 Columbus Hotel at $396 per night, and AKA Wall Street at $200 per night. Are any of these more in line with what you're looking for?
+
+User: AKA Wall Street sounds vaguely acceptable, but I want to be absolutely certain. Confirm that smoking is definitely allowed there, and tell me the exact street address. I don't want to end up somewhere I can't light up.
+
+System: Okay, let's get you the specifics for AKA Wall Street to ensure it meets your requirements. Yes, smoking is definitely allowed there. The street address is 84 William Street. Does this information satisfy your concerns, or do you need any further details?
+
+User: Fine, book it for seven nights starting tomorrow. And don't screw up the dates.
+
+System: Okay, I'll book AKA Wall Street for you for seven nights starting tomorrow, with smoking allowed. Before I finalize the reservation, could you please confirm the exact date you'd like the booking to begin, and how many rooms you'll need?
+
+User: Just one room. And the date is... damn it, what's tomorrow? The 22nd. Make sure it's the 22nd.
+
+System: Okay, just to be absolutely clear, you want me to book one room at AKA Wall Street, located at 84 William Street in New York, for seven nights starting tomorrow, the 22nd. Is that correct?
+
+User: Yes, book it already. And make sure there are ashtrays in the damn room.
+
+System: Understood. I will proceed with the booking for AKA Wall Street.
+
+APICall(method='ReserveHotel', parameters={place_name: AKA Wall Street, location: New York, check_in_date: 2024-07-22, stay_length: 7, number_of_rooms: 1})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street', 'check_in_date': '2024-07-22'}]
+End Search Results
+System: Excellent. We have successfully booked one room at AKA Wall Street, located at 84 William Street in New York, for seven nights beginning July 22nd. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in New York. Don't give me any of those overpriced tourist traps.
+
+System: Okay, I will help you find a hotel in New York. Do you have any preferences for the star rating of the hotel?
+
+User: Star rating? Who cares about stars? Just find me something cheap and close to the action. And make sure they don't rip me off with hidden fees.
+
+System: Okay, I understand. I will search for a hotel in New York that is not overpriced. Do you have any preferences regarding smoking allowance or the number of rooms you need?
+
+User: Smoking? What do you think I am, some kind of health nut? Of course, I want a smoking room. And just one room, I'm not sharing with anyone.
+
+System: APICall(method='SearchHotel', parameters={ location: New York, smoking_allowed: True, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: I found three hotels in New York that allow smoking and have one or more rooms available. The first is 11 Howard, a 3-star hotel with rooms starting at $270 per night. The second is Adria Hotel & Conference Center, a 3-star hotel with rooms starting at $234 per night. The third is Amsterdam Court Hotel, a 3-star hotel with rooms starting at $216 per night. Would you like more information on any of these hotels?
+
+User: $270? $234? $216? You call that cheap? Are you trying to scam me? Find something under $150, and don't even think about suggesting some dump in the middle of nowhere. It needs to be *close* to something interesting.
+
+System: I understand that you are looking for a hotel in New York that allows smoking, has one room available, and is under $150 per night, while also being close to interesting attractions. Unfortunately, based on my search, I don't find any hotels that meet all of your requirements. Would you be willing to consider a hotel that doesn't allow smoking or perhaps increase your budget slightly?
+
+User: Increase my budget slightly? You've got to be kidding me. Fine, $170, but that's my limit. And it better be worth it. Now, find me something decent, close to Times Square, and with smoking allowed. And don't try to pull any fast ones.
+
+System: APICall(method='SearchHotel', parameters={ location: New York, smoking_allowed: True, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: I am still unable to find any hotels that meet your requirements of being under $170 per night, close to Times Square, and allowing smoking. The available hotels are: 11 Howard ($270/night), Adria Hotel & Conference Center ($234/night), and Amsterdam Court Hotel ($216/night). Would you like to proceed with any of these options, or perhaps reconsider your budget or smoking preference?
+
+User: Reconsider? You think I'm just going to cave and let you win? Fine, no smoking. But the price stays at $170. And it better be practically *in* Times Square, not just "close." Now, what have you got?
+
+System: APICall(method='SearchHotel', parameters={ location: New York, number_of_rooms: 1, smoking_allowed: False })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-433-9305', 'place_name': 'Aloft Long Island City-Manhattan View', 'price_per_night': 234, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '27-45 Jackson Avenue, Long Island City'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-513-0003', 'place_name': 'Aloft Manhattan Downtown - Financial District', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '49-53 Ann Street'}]
+End Search Results
+System: Okay, I found three hotels in New York that do not allow smoking and have one room available. The first is Aloft Harlem, a 3-star hotel with rooms starting at $243 per night. The second is Aloft Long Island City-Manhattan View, a 3-star hotel with rooms starting at $234 per night. The third is Aloft Manhattan Downtown - Financial District, a 3-star hotel with rooms starting at $63 per night. Would you like more information on any of these hotels?
+User: $63 you say? Aloft Manhattan Downtown - Financial District... Financial District? That better not be some back alley miles from Times Square. How far away *exactly* is it? And what's the catch? There's *always* a catch.
+
+System: Okay, I can understand your concern. The Aloft Manhattan Downtown - Financial District is located at 49-53 Ann Street. I don't have the exact distance to Times Square, but the Financial District is about 30 minutes away by subway. The price is $63 per night and it is a 3-star hotel. Is there anything else you would like to know about it?
+
+User: 30 minutes by subway? You think I'm going to waste an hour of my life every day on public transportation? Fine, what else you got? And don't try to sneak in another Financial District dump on me.
+
+System: Okay, let's try this again. I need to know your updated preferences. To clarify, you want a hotel in New York, with one room, that does not allow smoking, and is as close to Times Square as possible, ideally under $170. Is that correct?
+
+User: Correct. And don't waste my time with anything over $200. I'm not made of money.
+
+System: APICall(method='SearchHotel', parameters={ location: New York, number_of_rooms: 1, smoking_allowed: False })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-433-9305', 'place_name': 'Aloft Long Island City-Manhattan View', 'price_per_night': 234, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '27-45 Jackson Avenue, Long Island City'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-513-0003', 'place_name': 'Aloft Manhattan Downtown - Financial District', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '49-53 Ann Street'}]
+End Search Results
+System: Okay, I found three hotels in New York that do not allow smoking and have one room available. The first is Aloft Harlem, with price of $243 per night. The second is Aloft Long Island City-Manhattan View, with price of $234 per night. The third is Aloft Manhattan Downtown - Financial District, with price of $63 per night. Do you want to know more about any of them?
+
+User: Are you deaf? I said *under* $200. And Harlem? Long Island City? Are you deliberately trying to annoy me? What is the *nearest* hotel to Times Square you can find for under $200, no smoking? And I want the *real* price, not some bait-and-switch garbage.
+
+System: I apologize for the previous suggestions. I understand you are looking for a hotel in New York near Times Square, with one non-smoking room, and under $200. Let me search again with those specific requirements.
+
+APICall(method='SearchHotel', parameters={ location: New York, number_of_rooms: 1, smoking_allowed: False })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-433-9305', 'place_name': 'Aloft Long Island City-Manhattan View', 'price_per_night': 234, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '27-45 Jackson Avenue, Long Island City'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-513-0003', 'place_name': 'Aloft Manhattan Downtown - Financial District', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '49-53 Ann Street'}]
+End Search Results
+System: I am still unable to find a hotel that meets all your criteria. The Aloft Manhattan Downtown - Financial District is the only one under $200, at $63 per night, but it is a 30-minute subway ride to Times Square. The other options, Aloft Harlem ($243) and Aloft Long Island City-Manhattan View ($234), are further away and over budget.
+
+Would you consider increasing your budget or the distance from Times Square to find a suitable hotel?
+
+User: Fine, what's the cheapest you've got within walking distance, say 15 minutes, of Times Square? And don't try to upsell me on some "luxury" garbage. I just need a bed and a shower.
+
+System: APICall(method='SearchHotel', parameters={ location: New York, number_of_rooms: 1, smoking_allowed: False })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-433-9305', 'place_name': 'Aloft Long Island City-Manhattan View', 'price_per_night': 234, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '27-45 Jackson Avenue, Long Island City'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-513-0003', 'place_name': 'Aloft Manhattan Downtown - Financial District', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '49-53 Ann Street'}]
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

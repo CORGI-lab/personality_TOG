@@ -1,0 +1,86 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel room. Can you help me find one? I would prefer something in New York.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: I'd prefer a hotel with a 4 or 5-star rating, and definitely non-smoking. I also need to know if they have reliable Wi-Fi, as I'll need to do some work while I'm there.
+
+System: Okay, I understand. I will search for a 4 or 5-star, non-smoking hotel in New York. Unfortunately, I don't have information about Wi-Fi availability. Would you still like me to proceed with searching for hotels matching your other criteria?
+
+User: Yes, please proceed. I can always check the Wi-Fi situation once we narrow down the options. It's more important to get the star rating and non-smoking sorted first.
+
+System: APICall(method='SearchHotel', parameters={location: New York, smoking_allowed: False, star_rating: [4, 5]})
+
+<Failed Dialog>
+
+Dialogue B:
+  User: I'd like to find a hotel in Chicago, please. I need to make a reservation.
+
+System: Okay, I can help with that. To ensure I find the best hotel for you in Chicago, I need a little more information. Could you please provide the check-in date and the length of your stay? Also, how many rooms will you need?
+
+User: I'll be arriving on October 26th and staying for four nights. I'll need one room. Could you please prioritize hotels with a high star rating and a reputation for cleanliness and quiet?
+
+System: Thank you for providing the details. I will prioritize hotels with high star ratings. Could you please specify the year of your check-in date?
+
+User: I'll be arriving on October 26th of this year, 2024. Also, could you provide a range of prices per night for these highly-rated hotels so I can factor that into my decision-making process?
+
+System: Thank you for confirming the year. I understand you're looking for a high-star-rated hotel in Chicago for your stay from October 26, 2024, for four nights, and you'll need one room. I will also provide the price per night for these hotels.
+
+```tool_code
+APICall(method='SearchHotel', parameters={location: Chicago, number_of_rooms: 1})
+```
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street'}, {'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street'}, {'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-894-0800', 'place_name': 'Acme Hotel Company Chicago', 'price_per_night': 222, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '15 East Ohio Street'}]
+End Search Results
+System: I have found three hotels that match your criteria in Chicago.
+
+Ac Hotel By Marriott Chicago Downtown: is a 3-star hotel with the price of $342 per night.
+Ace Hotel Chicago: is a 4-star hotel and the price is $132 per night.
+Acme Hotel Company Chicago: is a 3-star hotel, with the price of $222 per night.
+
+Would you like to know more about any of these options to help you make a decision?
+
+User: Yes, please provide more details about the Ace Hotel Chicago. I'm particularly interested in understanding why it has a 4-star rating and what its customer reviews emphasize – specifically, any comments about noise levels and overall cleanliness. I'd also like to know the street address.
+
+System: The Ace Hotel Chicago, located at 311 North Morgan Street, is a 4-star hotel with a price of $132 per night. Unfortunately, I do not have access to customer reviews or specific details regarding noise levels and cleanliness. However, the 4-star rating indicates a generally high level of quality and service. Would you like to proceed with booking or explore other options?
+
+User: Before proceeding, could you confirm that the listed price of $132 per night includes all taxes and fees? Also, can you tell me if Ace Hotel Chicago offers a detailed breakdown of its amenities and services on its website? I'd like to review that information before making a decision.
+
+System: I do not have access to real-time pricing details that includes all taxes and fees. Also, I do not have access to the hotel's website. However, you can find this information online. Would you like me to proceed with the reservation at Ace Hotel Chicago for the dates you specified, or would you like me to search for hotels with different star ratings?
+
+User: Please proceed with the reservation at Ace Hotel Chicago for the dates I specified, October 26th to October 30th, 2024, for one room. I will independently verify the total cost, including taxes and fees, as well as amenities, online to ensure everything aligns with my expectations.
+
+System: Okay, I will proceed with the reservation at Ace Hotel Chicago for one room, checking in on October 26, 2024, and checking out on October 30, 2024.
+
+```tool_code
+APICall(method='ReserveHotel', parameters={'place_name': 'Ace Hotel Chicago', 'check_in_date': '2024-10-26', 'stay_length': 4, 'location': 'Chicago', 'number_of_rooms': 1})
+```
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street', 'check_in_date': '2024-10-26'}]
+End Search Results
+System: Excellent. I have successfully made the reservation for you at Ace Hotel Chicago. The details are as follows: one room, check-in date is October 26, 2024, for a stay of four nights. The hotel's phone number is +1 312-764-1919 and the address is 311 North Morgan Street. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

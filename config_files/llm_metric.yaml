@@ -1,0 +1,40 @@
+
+hydra:
+  job:
+    chdir: false   # run from the repository root; all paths are relative to it
+  run:
+    dir: ./output/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+# Config for metrics/llm_eval_pairly.py (pairwise user satisfaction)
+project_root: .
+dialog_path: ./storage/chatgpt_new
+prompt_name: null
+output_path: ./storage/chatgpt_new/metric/llm_metric/hpc/llm_metric_SYS/New_1to5_scale/User_Satisfaction_Pairly/gpt5-mini
+domain: [Restaurant, Hotel]
+date: null
+
+sys_prompt_path: ./LLM_Interaction/prompts/llm_evaluator_prompt_SYS_satisfaction_pairly.yml
+
+# LLM judge (LLM_Interaction/llm_models_api.judge_response)
+#   GPT-5-mini (default): judge_provider: open_route, judge_model: openai/gpt-5-mini, reasoning_effort: low
+#   Gemma:                judge_provider: ollama,     judge_model: gemma4:31b-cloud,  reasoning_effort: null
+judge_provider: open_route
+judge_model: openai/gpt-5-mini
+reasoning_effort: low
+gpt_max_tokens: 4000          # for reasoning models this covers reasoning + answer
+num_workers: 16               # parallel judge requests
+
+# Position-bias control for pairwise judging:
+#   fixed  - case_a always shown as Dialogue A
+#   random - seeded per-pair A/B flip
+#   both   - judge both orders; verdicts that flip with order count as tie
+order_mode: random
+seed: 42
+
+case_pairs:
+- ["neutral", "trait"]
+- ["neutral", "try"]
+- ["try", "trait"]
+
+# Reuse verdict.json of already-judged pairs (resume a run; no API calls for released outputs)
+skip_existing: true

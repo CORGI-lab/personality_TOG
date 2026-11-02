@@ -1,0 +1,90 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. Let's see what you've got.
+System: Do you have a particular type of cuisine in mind, or should I choose one for you?
+User: I doubt you'll know what I like, but let's go with Italian. Don't disappoint me.
+System: Alright, I'll find some Italian restaurants for you in San Francisco. Allow me a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Here are a few Italian restaurants in San Francisco that might suit your needs. First up is 54 Mint Ristorante Italiano, located at 16 Mint Plaza, which serves alcohol and falls within the moderate price range. Another option is A16 on 2355 Chestnut Street, also serving alcohol and within the same price range. Lastly, there's Allegro Romano at 1701 Jones Street, which does not serve alcohol but is moderately priced. Let me know if you need more information or want to make a reservation.
+User: Why bother suggesting a place that doesn't serve alcohol? Let's go with A16. Make a reservation for me.
+System: For your reservation at A16, I'll need to know the time, date, and party size. Could you provide these details, please?
+User: Make it for tonight at 7:00 PM for two people. Don't mess it up.
+System: Confirming your reservation details: a table for two at A16, located at 2355 Chestnut Street, San Francisco, tonight at 7:00 PM. Let me finalize this for you. APICall (method='ReserveRestaurant', parameters={restaurant_name: A16, city: San Francisco, time: 19:00, date: [today's date], party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': "[today's date]", 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 for two people tonight at 7:00 PM has been successfully made. The restaurant is located at 2355 Chestnut Street, San Francisco, and they do serve alcohol. Enjoy your evening.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. It better be top-notch and not some run-of-the-mill place. Got any recommendations?
+System: Do you have a specific type of cuisine in mind, or are you open to exploring different options? Additionally, could you let me know your preferred price range for the restaurant?
+User: I don't care about the cuisine, just make sure it's not cheap. I'm not interested in wasting my time on low-quality places.
+System: APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese, price_range: expensive})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-655-3738', 'price_range': 'expensive', 'restaurant_name': 'Izakaya Sushi Ran', 'serves_alcohol': True, 'street_address': '2223 Market Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-484-1206', 'price_range': 'expensive', 'restaurant_name': 'Motze', 'serves_alcohol': True, 'street_address': '983 Valencia Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-552-4400', 'price_range': 'expensive', 'restaurant_name': 'Nihon Whisky Lounge', 'serves_alcohol': True, 'street_address': '1779 Folsom Street'}]
+End Search Results
+System: Here are a few top-notch Japanese restaurants in San Francisco that you might enjoy:
+
+1. **Izakaya Sushi Ran** - Located at 2223 Market Street, they offer an upscale dining experience and serve alcohol. You can contact them at 415-655-3738.
+
+2. **Motze** - Situated at 983 Valencia Street, this restaurant also provides a high-quality dining experience with alcohol available. Their phone number is 415-484-1206.
+
+3. **Nihon Whisky Lounge** - Found at 1779 Folsom Street, they offer an extensive whisky selection along with their cuisine. You can reach them at 415-552-4400.
+
+Let me know if you need more information or if you'd like to make a reservation at any of these places!
+User: What's the point of suggesting these without live music? I want the whole experience, not just food. Find me something that checks all the boxes.
+System: Let me look for restaurants in San Francisco that offer live music to ensure you get the full experience. I'll check for options that match your preference for an upscale atmosphere. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese, price_range: expensive, has_live_music: True})
+Search Results
+
+End Search Results
+System: Unfortunately, it seems there aren't any Japanese restaurants in San Francisco that match your criteria of being expensive and offering live music. Would you be open to considering a different type of cuisine that offers live music, or perhaps relaxing your preference on live music? Let me know how you'd like to proceed!
+User: I guess I'll just have to settle for something else, but it better still be upscale and have live music. How about Italian? Find me one that fits the bill.
+System: Certainly, let me find an upscale Italian restaurant in San Francisco that offers live music for you. Please hold on for a moment while I check the options. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: expensive, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: Here are a couple of upscale Italian restaurants in San Francisco that offer live music:
+
+1. **Fior D'italia** - Located at 2237 Mason Street. They provide a fine dining experience with live music and serve alcohol. You can contact them at 415-986-1886.
+
+2. **Zingari Ristorante + Jazz Bar** - Found at 501 Post Street. This place combines an upscale dining experience with live jazz music, and they also serve alcohol. Their phone number is 415-885-8850.
+
+Let me know if you're interested in making a reservation or need more information about any of these places!
+User: Zingari Ristorante + Jazz Bar sounds tolerable. Book a table for two this Friday at 8 PM. Don't mess it up.
+System: Sure, I'll handle that for you. Please hold on while I confirm the details for your reservation. Just to make sure everything is correct, you would like to book a table for two at Zingari Ristorante + Jazz Bar in San Francisco for this Friday at 8 PM. Let me finalize this for you. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Zingari Ristorante + Jazz Bar', city: 'San Francisco', time: '20:00', date: '2023-11-03', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-11-03', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: Your reservation at Zingari Ristorante + Jazz Bar for this Friday at 8 PM has been successfully made. You can look forward to enjoying live jazz music and a fine dining experience. If there's anything else you need, feel free to let me know.
+User: Fine, that's sorted. I hope it lives up to the hype. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

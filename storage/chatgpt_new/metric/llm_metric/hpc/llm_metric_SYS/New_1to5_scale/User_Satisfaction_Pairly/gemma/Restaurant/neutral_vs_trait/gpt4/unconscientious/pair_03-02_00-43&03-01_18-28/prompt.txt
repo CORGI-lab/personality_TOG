@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a place to eat in San Francisco.
+System: What type of cuisine are you interested in, such as Mexican, Italian, or something else?
+User: Uh, I don't really know. Maybe something with, like, tacos? Or burgers? I guess whatever is easy.
+System: Let's go with Mexican cuisine for tacos. Is there a specific price range you have in mind, or any other preferences like live music or alcohol service?
+User: I don't really care about the price, just somewhere that has a good vibe. Maybe live music could be cool, but it's not a must. Oh, and a place that serves alcohol would be nice.
+System: Great! Let me find a Mexican restaurant in San Francisco that serves alcohol. I'll check for options that may have live music, but won't prioritize it. Please hold on for a moment. 
+
+SYSTEM: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mexican, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-660-7701', 'price_range': 'expensive', 'restaurant_name': 'Cala', 'serves_alcohol': True, 'street_address': '149 Fell Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-431-1826', 'price_range': 'expensive', 'restaurant_name': 'Fenix', 'serves_alcohol': True, 'street_address': '1077 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-926-5630', 'price_range': 'expensive', 'restaurant_name': 'Hecho', 'serves_alcohol': True, 'street_address': '2200 Market Street'}]
+End Search Results
+System: I found a few Mexican restaurants in San Francisco that serve alcohol. One option is Cala, located at 149 Fell Street. Would you like more information on this restaurant or perhaps another suggestion?
+User: Is Cala a fun place? Like, do people go there to hang out, or is it more for serious dining?
+System: Unfortunately, I don't have specific details on the ambiance or vibe of Cala. However, it is a Mexican restaurant that serves alcohol, which might be suitable for hanging out. If you'd like, I can provide information about another restaurant for comparison. Would you like to hear about Fenix or Hecho?
+User: Honestly, just pick one and tell me about it. I can't really decide.
+System: Let's go with Fenix. It's a Mexican restaurant located at 1077 Mission Street in San Francisco. They serve alcohol, and while I don't have specific details about its ambiance, it could be a good spot for a casual outing. If you need more information or want to hear about another restaurant, feel free to let me know!
+User: Can you just make a reservation for me at Fenix? I guess I should probably do that. Maybe for tomorrow night, around 7 pm, for like 3 people. Mexican food sounds good.
+System: Can you please confirm that you want to make a reservation for 3 people at Fenix, located at 1077 Mission Street in San Francisco, for tomorrow night at 7 pm?
+User: Yeah, go ahead and book it. Thanks.
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Fenix, city: San Francisco, time: 19:00, date: [tomorrow's date], party_size: 3})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-431-1826', 'price_range': 'expensive', 'restaurant_name': 'Fenix', 'serves_alcohol': True, 'street_address': '1077 Mission Street', 'date': "[tomorrow's date]", 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Fenix has been successfully made for 3 people tomorrow night at 7 pm. The restaurant is located at 1077 Mission Street in San Francisco. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I'm in the mood to eat out. Can you help me find a place in San Francisco?
+System: Sure! Do you have a preference for a specific type of cuisine, or should I pick a random one for you?
+User: I don't know, maybe something with Italian vibes? Or whatever, I'm not too picky.
+System: Let's go with Italian cuisine then. Can you let me know if you have a specific price range in mind, or should I find something moderate for you?
+User: Honestly, I don't really have a budget in mind. Just find whatever's good.
+System: Alright, I'll find an Italian restaurant in San Francisco for you. Give me a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco. How about trying 54 Mint Ristorante Italiano? It's located at 16 Mint Plaza, and they do serve alcohol. Would you like more information on this place, or should I check another option for you?
+User: Uh, yeah, let's go with that one. Can you just go ahead and make a reservation for me there? Maybe for tonight?
+System: Sure, I'll make a reservation for you at 54 Mint Ristorante Italiano. Could you please let me know what time you'd like the reservation for and how many people will be in your party?
+User: Let's do it around 8 PM, and it'll be for 3 people.
+System: Great! Let me confirm the details: a reservation for 3 people at 8 PM tonight at 54 Mint Ristorante Italiano in San Francisco. Is that correct?
+User: Yeah, that sounds right. Just let me know if it's all set.
+System: Your reservation for 3 people at 8 PM tonight at 54 Mint Ristorante Italiano in San Francisco has been confirmed. Enjoy your dinner! If you need anything else, feel free to ask.
+User: Cool, thanks. That's all I need!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

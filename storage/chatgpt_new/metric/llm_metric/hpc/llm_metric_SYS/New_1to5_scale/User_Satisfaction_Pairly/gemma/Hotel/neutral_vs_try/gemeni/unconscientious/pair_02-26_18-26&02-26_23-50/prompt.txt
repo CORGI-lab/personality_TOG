@@ -1,0 +1,108 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Okay, I need to find a hotel in... um... maybe Paris? I guess that sounds kinda fun right now.
+
+System: Do you have any preferences on star rating, or smoking allowance?
+
+User: Ugh, I don't know. Whatever's cheapest, I guess? And, uh, smoking... doesn't really matter, I'll just do it outside if I have to.
+
+System: APICall(method='SearchHotel', parameters={ location: Paris, smoking_allowed: dontcare, star_rating: dontcare })
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}]
+End Search Results
+System: I found three hotels in Paris. Ac Hotel By Marriott Paris Porte Maillot and Amastan Paris are both 4-star hotels, and Aparthotel Adagio Access Paris La Villette is a 3-star hotel. Would you like to know more about any of them?
+
+User: Ugh, just tell me the price of the cheapest one. And, like, the address, I guess. Don't really care about the rest.
+
+System: The cheapest one is Aparthotel Adagio Access Paris La Villette. It costs $120 per night, and the address is 28bis Avenue Corentin Cariou, 75019.
+
+User: Okay, yeah, that sounds... fine. Book it. I guess I'll be there... sometime. What date is it today? And, uh, just book it for a few days. I don't know, three?
+
+System: Okay, I will book Aparthotel Adagio Access Paris La Villette for you. What date would you like to check in?
+
+User: Uh, just book it starting... tomorrow? Yeah, tomorrow sounds good.
+
+System: Okay, I will book it for three days starting tomorrow. Could you please confirm the full check-in date (year, month, and day)?
+
+User: Ugh, fine. Just... whatever the date is tomorrow. I don't even know. Just... book it. Please?
+
+System: Okay, I will book 1 room at Aparthotel Adagio Access Paris La Villette for three days starting tomorrow, which will be 2024-03-27. Is that correct?
+
+User: Yeah, yeah, whatever. Just do it.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-27, location: Paris, number_of_rooms: 1, place_name: Aparthotel Adagio Access Paris La Villette, stay_length: 3 })
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019', 'check_in_date': '2024-03-27'}]
+End Search Results
+System: Okay, I have reserved 1 room at Aparthotel Adagio Access Paris La Villette for 3 nights, starting on 2024-03-27. The phone number is +33 1 44 72 42 00. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I need a hotel, I guess. Somewhere... easy. How does this work again?
+
+System: Okay, I can help with that. First, where are you looking to book a hotel?
+
+User: Ugh, somewhere... warm? Las Vegas, maybe? I don't know, surprise me.
+
+System: Okay, Las Vegas it is! To help me narrow down the perfect spot for you, do you have any preferences on the star rating of the hotel?
+
+User: Star rating? Whatever's cheapest, I guess. Or... maybe something kinda fancy? I don't know, what's the difference, really? Just... surprise me, I guess.
+
+System: Given your openness to both budget-friendly and fancy options, I'll start with something in the middle. How about a 3-star hotel in Las Vegas?
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: Alright, I found a few 3-star hotels in Las Vegas. There's the Best Western Plus Las Vegas West at $117 a night, Hampton Inn Las Vegas/Summerlin at $279, and Oasis At Gold Spike for $63. Any of those sound interesting, or should we look at other options?
+
+User: Oasis at Gold Spike... is that, like, a real hotel? Sounds kinda sketchy. But also... cheap. Okay, yeah, tell me more about that one. Actually, no, wait. Does it matter? Just... book it. For, uh... I don't know, five nights? Starting... tomorrow? Or whenever. Just... whenever's easiest.
+
+System: Okay, to book the Oasis At Gold Spike for you, I'll need a specific check-in date. Could you give me the exact date you'd like to start your five-night stay?
+
+User: Ugh, dates. Fine, uh... let's say... November 12th? Is that even a thing? Just... whatever works.
+
+System: Okay, so that's checking into Oasis At Gold Spike on November 12th for five nights. How many rooms will you need?
+
+User: Rooms? Uh... just one. Unless... are they, like, really small? Are we sure this is a good idea? Okay, fine, one room. Just book it already.
+
+System: Alright, checking in on November 12th for five nights, one room at Oasis At Gold Spike. Let me confirm the details before booking.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-11-12, location: Las Vegas, number_of_rooms: 1, place_name: Oasis At Gold Spike, stay_length: 5 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North', 'check_in_date': '2024-11-12'}]
+End Search Results
+System: Okay, I've got your reservation set for Oasis At Gold Spike, checking in on November 12th for five nights, one room. Just to be absolutely sure, the address is 217 Las Vegas Boulevard North. Can I go ahead and confirm this booking for you?
+
+User: Uh, yeah, I guess. Confirm it. Whatever.
+
+System: Okay, the booking at Oasis At Gold Spike for one room, checking in on November 12th for five nights, is now confirmed. The address is 217 Las Vegas Boulevard North, and the phone number is +1 702-768-9823 if you need to contact them. Is there anything else I can help you with today?
+
+User: Phone number? Eh, I'll probably lose it anyway. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

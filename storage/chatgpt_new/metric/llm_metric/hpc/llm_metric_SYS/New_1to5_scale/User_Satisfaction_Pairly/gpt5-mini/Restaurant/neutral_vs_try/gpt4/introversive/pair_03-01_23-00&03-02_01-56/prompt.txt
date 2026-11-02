@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in Berkeley. Can you help me find a restaurant?
+System: Certainly! Do you have a preference for any specific type of cuisine, or are you open to suggestions?
+User: I'm interested in something quiet and not too crowded. Maybe Italian cuisine.
+System: Great choice! Let me find some Italian restaurants in Berkeley that are likely to offer a quieter dining experience. Please hold on for a moment while I check for options. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Berkeley that might suit your preference for a quieter setting. "Cugini Restaurant" is located at 1556 Solano Avenue, and they don't have live music, which might make it more peaceful. Would you like more information about this restaurant or explore other options?
+User: Could you tell me about their price range and if they serve alcohol?
+System: "Cugini Restaurant" in Berkeley falls under a moderate price range, and they do not serve alcohol. Would you like to explore more options or need more information about another restaurant?
+User: Do you have any suggestions for an Italian place with a similar setting that does serve alcohol?
+System: Certainly! "Filippo's Berkeley Elmwood" might be a great option for you. It's located at 2930 College Avenue and offers a moderate price range. They also serve alcohol and do not have live music, which should provide a quieter dining experience. Would you like more details or assistance with anything else?
+User: That sounds like it could work. Can you make a reservation for me there?
+System: Certainly! To make a reservation at "Filippo's Berkeley Elmwood," could you please provide me with the date, time, and the number of people for the reservation?
+User: I'd like to reserve a table for two people tomorrow evening around 7:00 pm.
+System: Thank you for providing the details. Let me confirm: you'd like to reserve a table for two at "Filippo's Berkeley Elmwood" in Berkeley for tomorrow evening at 7:00 pm. Please hold on for a moment while I make the reservation. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Filippo's Berkeley Elmwood", city: Berkeley, date: 2023-10-04, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': '2023-10-04', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at "Filippo's Berkeley Elmwood" in Berkeley for tomorrow evening at 7:00 pm has been successfully made for two people. If you need any more assistance or have further questions, feel free to let me know. Enjoy your dinner!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I am looking for a place to eat in Berkeley.
+System: What type of cuisine are you interested in, such as Italian, Mexican, or something else?
+User: I prefer something quiet, maybe a nice Italian place.
+System: Is there a particular price range you're looking for, or any other features like live music or alcohol service that you're interested in for the Italian restaurant in Berkeley?
+User: I don't need live music or alcohol. Just something reasonably priced.
+System: APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Berkeley that might interest you. One option is Cugini Restaurant, located at 1556 Solano Avenue. Another choice is Donato & Co., situated at 2635 Ashby Avenue. If you'd like more information or another suggestion, feel free to let me know!
+User: Can you tell me more about the Cugini Restaurant, like its price range and whether it's generally quiet?
+System: Cugini Restaurant in Berkeley has a moderate price range, and it does not offer live music, which might contribute to a quieter dining experience. Additionally, it does not serve alcohol. If you need more information or have another question, feel free to ask!
+User: That sounds suitable. I'd like to make a reservation there.
+System: What date and time would you like to make the reservation for, and for how many people?
+User: For tomorrow at 7 pm, and it will be for two people.
+System: Could you please confirm the following reservation details: a table for two at Cugini Restaurant in Berkeley, tomorrow at 7 PM? Let me know if everything is correct before I proceed with the reservation.
+User: Yes, that looks fine.
+System: Great! I will now proceed with making the reservation. Please hold on for a moment. APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Cugini Restaurant', city: 'Berkeley', time: '19:00', date: '2023-10-01', party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue', 'date': '2023-10-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Cugini Restaurant in Berkeley for two people on October 1st at 7 PM is confirmed. If you need further assistance or have any other questions, feel free to let me know. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

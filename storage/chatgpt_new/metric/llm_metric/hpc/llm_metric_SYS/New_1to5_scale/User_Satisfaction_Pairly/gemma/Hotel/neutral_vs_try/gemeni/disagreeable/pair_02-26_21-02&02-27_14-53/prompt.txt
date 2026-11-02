@@ -1,0 +1,151 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in New York. Don't waste my time with anything less than 4 stars.
+
+System: Okay, I will only search for hotels with 4 or more stars in New York. Is that correct?
+
+User: Yeah, but make sure they aren't ripping me off. What's the price range I'm looking at? I don't want to pay more than I have to.
+
+System: Okay, I understand. I will search for 4-star or higher hotels in New York and try to find something reasonably priced. To start, what is the maximum price per night you're willing to pay?
+
+User: Hmph, "reasonably priced" is subjective. Give me the cheapest 4-star you can find. I'll decide if it's reasonable. And don't try to upsell me later.
+
+System: Okay, I will search for the cheapest 4-star hotel in New York. Can you please confirm if you have any preferences on smoking allowance or number of rooms?
+
+User: Smoking allowed, damn it. And just one room. I'm not sharing.
+
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4, smoking_allowed: True, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 833-625-6111', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '60 Furman Street, Brooklyn'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-204-3000', 'place_name': '6 Columbus Hotel', 'price_per_night': 396, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '308 West 58th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street'}]
+End Search Results
+System: Okay, I found three 4-star hotels in New York that allow smoking and have at least one room available. The cheapest one is Aka Wall Street, priced at $200 per night. Would you like to know more about this hotel?
+
+User: Aka Wall Street, eh? Sounds pretentious. What's the address? I need to make sure it's not in some shady part of town.
+
+System: The address for Aka Wall Street is 84 William Street.
+
+User: 84 William Street... fine. And what's the catch? I bet that price doesn't include some hidden "resort fee" or something.
+
+System: The price is $200 per night, and it does not include any other hidden resort fees. Would you like to proceed with booking this hotel?
+
+User: Alright, fine. Book it. Check-in tomorrow for one night. And I expect that price to be honored.
+
+System: Okay, let me reserve a room for you at Aka Wall Street, located at 84 William Street in New York. The check-in date is tomorrow for one night, and the price is $200. Do you confirm these details?
+
+User: Yeah, yeah, confirm. Just get it done.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-29, location: New York, number_of_rooms: 1, place_name: Aka Wall Street, stay_length: 1 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-252-9090', 'place_name': 'Aka Wall Street', 'price_per_night': 200, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '84 William Street', 'check_in_date': '2024-07-29'}]
+End Search Results
+System: Okay, the reservation at Aka Wall Street for one night, checking in tomorrow, is confirmed.
+
+User: Give me the confirmation number. And don't lose it. I'll be holding you responsible if anything goes wrong with this booking.
+
+System: I do not have access to a confirmation number. However, your booking details are as follows: Aka Wall Street, located at 84 William Street in New York. Check-in date is tomorrow for one night, and the price is $200. The phone number is +1 212-252-9090. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Vegas. Don't try to give me some dump.
+
+System: Okay, I understand. To ensure you have a pleasant stay, do you have any preferences for the star rating of the hotel?
+
+User: Star rating? Who cares about some stupid stars? Just find me something decent, you know, 4 stars at least. And it better not be overpriced.
+
+System: Okay, I'll focus on finding a decent 4-star hotel in Vegas that isn't overpriced. Do you have any preferences regarding smoking?
+
+User: Smoking? What kind of a question is that? Of course, I want to be able to smoke. It's my right. Make sure the place allows smoking, or I'm walking.
+
+System: Alright, I'll make sure the hotel allows smoking. How many rooms do you need?
+
+User: Rooms? What do you care? Just one. And make sure it's the best one they have. I'm not paying for some broom closet.
+
+System: Okay, I'll search for a 4-star hotel in Vegas that allows smoking and has one of their best rooms available.
+
+APICall(method='SearchHotel', parameters={ location: Vegas, star_rating: 4, smoking_allowed: True, number_of_rooms: 1 })
+
+Search Results
+
+End Search Results
+System: Okay, I've searched for a 4-star hotel in Vegas that allows smoking and has one room available. Unfortunately, I didn't find any hotels matching all of your criteria. Would you be willing to consider hotels with a different star rating or perhaps one that doesn't allow smoking indoors?
+
+User: What a joke. You couldn't find a single damn hotel that fits my needs? Fine, drop the smoking requirement. But it better be a damn good 4-star hotel, or you're wasting my time.
+
+System: Okay, I understand. I'll search again for a 4-star hotel in Vegas with one room, but this time I'll remove the smoking requirement.
+
+APICall(method='SearchHotel', parameters={ location: Vegas, star_rating: 4, number_of_rooms: 1 })
+
+Search Results
+
+End Search Results
+System: Okay, I've searched again for a 4-star hotel in Vegas with one room, and I've removed the smoking requirement. Unfortunately, I didn't find any hotels matching all of your criteria. Would you be willing to consider hotels with a different star rating?
+
+User: Are you kidding me? Still nothing? Fine, find me a 3-star then. But it better be clean, and the service better be impeccable. I'm not lowering my standards for nothing.
+
+System: Okay, I understand. I'll search for a 3-star hotel in Vegas with one room, focusing on cleanliness and impeccable service.
+
+APICall(method='SearchHotel', parameters={ location: Vegas, star_rating: 3, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: Alright, finally some results! I found three 3-star hotels in Vegas with one room available.
+
+*   **Best Western Plus Las Vegas West:** Phone number is +1 702-256-3766, it's located at 8669 West Sahara Avenue and the price per night is $117. Smoking is not allowed.
+*   **Hampton Inn Las Vegas/Summerlin:** Phone number is +1 702-360-5700, it's located at 7100 Cascade Valley Court and the price per night is $279. Smoking is allowed.
+*   **Oasis At Gold Spike:** Phone number is +1 702-768-9823, it's located at 217 Las Vegas Boulevard North and the price per night is $63. Smoking is not allowed.
+
+Which one sounds the least offensive to you?
+
+User: Offensive? You think I care about your feelings? Tell me about the Hampton Inn. $279 a night? It better be worth it. Is that the best you can do?
+
+System: Okay, let's talk about the Hampton Inn Las Vegas/Summerlin. Yes, it's $279 a night. It allows smoking, and the phone number is +1 702-360-5700. The address is 7100 Cascade Valley Court. Do you want to book it?
+
+User: Book it for one night. Check-in today. And don't screw it up.
+
+System: Okay, I'll book the Hampton Inn Las Vegas/Summerlin for you for one night, checking in today. Could you please provide the exact date you'd like to check in? I need the year-month-day.
+
+User: Today is 2024-07-03, so book it for 2024-07-03. And make damn sure they know I expect the best service.
+
+System: Okay, booking the Hampton Inn Las Vegas/Summerlin for you for one night, checking in on 2024-07-03.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-03, location: Las Vegas, number_of_rooms: 1, place_name: Hampton Inn Las Vegas/Summerlin, stay_length: 1 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court', 'check_in_date': '2024-07-03'}]
+End Search Results
+System: Alright, the Hampton Inn Las Vegas/Summerlin is booked for you for one night, checking in on 2024-07-03. Just to confirm, that's one room at the Hampton Inn Las Vegas/Summerlin. The phone number is +1 702-360-5700, and the address is 7100 Cascade Valley Court. You can smoke there. Is that all correct?
+
+User: Yeah, yeah, sounds right. Just get it done.
+
+System: Okay, the Hampton Inn Las Vegas/Summerlin is booked for you for one night, checking in on 2024-07-03. I trust you'll find the service to your satisfaction. Is there anything else I can do for you?
+
+User: Alright, alright, I heard you the first time. Now, get out of my face.
+
+```
+```
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

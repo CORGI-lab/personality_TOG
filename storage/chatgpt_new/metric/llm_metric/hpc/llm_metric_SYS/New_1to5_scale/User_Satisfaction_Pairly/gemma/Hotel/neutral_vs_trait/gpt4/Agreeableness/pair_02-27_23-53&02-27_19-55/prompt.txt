@@ -1,0 +1,62 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to book a hotel in Vancouver, please. Could you help me find one?
+System: Do you have a specific check-in date and how long do you plan to stay in Vancouver?
+User: I plan to check in on the 10th of this month and stay for five nights.
+System: How many rooms would you like to book for your stay in Vancouver?
+User: I would like to book one room, please. Thank you for asking!
+System: Please confirm to book 1 room for 5 nights in Vancouver starting from the 10th of this month.
+User: Yes, that sounds perfect. Please go ahead and make the reservation. Thank you so much for your help!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-10, location: Vancouver, number_of_rooms: 1, stay_length: 5, place_name: RandomHotelName })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-697-0202', 'place_name': 'RandomHotelName', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-10-10', 'stay_length': '5'}]
+End Search Results
+System: Your booking at RandomHotelName in Vancouver has been successfully confirmed. The hotel is located at 1180 West Hastings Street, and the contact number is +1 604-697-0202. Enjoy your stay! Is there anything else you need help with?
+User: No, that's all I need. Thanks a lot!
+
+Dialogue B:
+  User: I would love to find a hotel in Seattle, please.
+System: Could you please let me know if you have any specific preferences for the hotel's star rating, or if you're looking for any particular amenities like smoking allowance? This will help me provide options that best suit your needs.
+User: I'm not too particular about the star rating, as long as it's comfortable and welcoming. I do prefer a non-smoking environment, though. Thank you for helping me with this!
+System: Thank you for sharing your preferences. I'll look for a hotel in Seattle with a non-smoking environment for you. Let's see what options we can find. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, smoking_allowed: False })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few non-smoking hotels in Seattle that might suit your needs. The Ace Hotel Seattle, located at 2423 1st Avenue, is a 2-star hotel with a price of $136 per night. Another option is the Belltown Inn, situated at 2301 3rd Avenue, also a 2-star with a price of $186 per night. Lastly, there's the Days Inn By Wyndham Seattle North Of Downtown at 9100 Aurora Avenue North, which is a bit more affordable at $84 per night, also rated 2-star. Would you like more information on any of these options, or is there anything else I can assist you with?
+User: Could you please tell me more about the Belltown Inn? It seems like a nice option, and I'd love to know a bit more about it before deciding. Thank you!
+System: The Belltown Inn is a 2-star hotel located at 2301 3rd Avenue in Seattle. It's a non-smoking establishment, ensuring a welcoming environment for you. The price per night is $186. If you have any other questions or need further assistance, please let me know!
+User: That sounds like a great option. Could you please help me reserve a room at the Belltown Inn? I'm planning to check in on the 15th of next month and stay for five nights. Thank you so much for your help!
+System: To proceed with the reservation at the Belltown Inn, could you please confirm the number of rooms you'd like to book?
+User: I would like to reserve just one room, please. Thanks again for all your assistance!
+System: Thank you for confirming the details. I'll proceed with reserving one room at the Belltown Inn from the 15th of next month for a total of five nights. Let's get this booked for you. 
+
+APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Seattle, number_of_rooms: 1, place_name: Belltown Inn, stay_length: 5})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Belltown Inn in Seattle has been successfully confirmed. You have one room booked from the 15th of next month for five nights. If you need further assistance or have any questions, feel free to ask. Enjoy your stay!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

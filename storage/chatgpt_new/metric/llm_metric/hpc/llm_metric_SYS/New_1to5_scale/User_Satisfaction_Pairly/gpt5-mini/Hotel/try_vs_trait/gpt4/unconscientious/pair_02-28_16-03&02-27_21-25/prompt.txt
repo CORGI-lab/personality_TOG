@@ -1,0 +1,66 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm thinking of going to Las Vegas. Can you help me find a hotel there?
+System: Do you have any specific preferences for the hotel, like star rating or if smoking is allowed? Or should I look for a random option for you?
+User: I don't really have any specific preferences. Just find me something that seems alright, I guess.
+System: Alright, I'll find a random hotel option for you in Las Vegas. Let's see what's available. APICall(method='SearchHotel', parameters={ location: Las Vegas })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I've found a couple of options for you in Las Vegas. One is the Best Western Plus Las Vegas West, a 3-star hotel with a price of $117 per night, and another is Budget Suites Of America, a 1-star hotel that allows smoking at $44 per night. Would you like more details on any of these, or should I help you with something else?
+User: Uh, let's go with the Budget Suites Of America. It sounds cheap and allows smoking, so why not? Can you book it for me?
+System: How many rooms would you like to book at Budget Suites Of America, and when do you plan to check in? Also, how long will you be staying?
+User: Let's just do one room, I guess. I'll check in tomorrow and stay for, like, five days.
+System: Please confirm the details: You want to book 1 room at Budget Suites Of America in Las Vegas, checking in tomorrow and staying for 5 days. Shall I proceed with the reservation?
+User: Yeah, that sounds about right. Go ahead and book it.
+System: APICall(method='ReserveHotel', parameters={ location: Las Vegas, place_name: Budget Suites Of America, number_of_rooms: 1, check_in_date: 2023-10-28, stay_length: 5 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-10-28'}]
+End Search Results
+System: Your booking for 1 room at Budget Suites Of America in Las Vegas has been successfully confirmed. The check-in date is set for tomorrow, and you'll be staying for 5 days. If you need anything else or have questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm kind of thinking about going to Los Angeles. Can you help me find a hotel there?
+System: Certainly! Could you please let me know if you have a preference for the star rating of the hotel or any specific requirements such as smoking allowance or the number of rooms?
+User: I don't really care about the star rating or any of that fancy stuff. Just find me something cheap and maybe with a smoking room if possible.
+System: Sure! Let me search for hotels in Los Angeles that might fit your criteria. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={location: Los Angeles, smoking_allowed: True, star_rating: dontcare})
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 800-224-7835', 'place_name': 'Airtel Plaza Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7277 Valjean Avenue, Van Nuys, California 91406, United States'}, {'location': 'Los Angeles', 'number_of_rooms': 3, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow - Hollywood Hostel', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, CA 90028, USA'}, {'location': 'Los Angeles', 'number_of_rooms': 2, 'phone_number': '+1 213-624-0000', 'place_name': 'Hilton Checkers Los Angeles', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '535 South Grand Avenue'}]
+End Search Results
+System: I found a couple of options for you in Los Angeles. The Banana Bungalow - Hollywood Hostel is a 1-star hotel that allows smoking and costs $72 per night. Alternatively, there's the Airtel Plaza Hotel, a 3-star option at $216 per night, also with smoking rooms available. Which one would you like to know more about or consider for booking?
+User: The Banana Bungalow sounds alright to me. Can you book that for me?
+System: To proceed with the reservation at the Banana Bungalow - Hollywood Hostel, could you please let me know the check-in date and how many nights you plan to stay? Additionally, confirm the number of rooms you require for your stay.
+User: Uh, let's see... I think I'll check in on the 5th and stay for, like, 8 nights or something. Just one room should be fine.
+System: Please confirm that I should book 1 room for 8 nights at the Banana Bungalow - Hollywood Hostel starting from the 5th in Los Angeles.
+User: Yeah, go ahead and book it. Sounds good to me.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-05, location: Los Angeles, number_of_rooms: 1, place_name: Banana Bungalow - Hollywood Hostel, stay_length: 8})
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 3, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow - Hollywood Hostel', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, CA 90028, USA', 'check_in_date': '2023-11-05'}, {'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 323-469-2500', 'place_name': 'Banana Bungalow Hollywood', 'price_per_night': 21, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '5920 Hollywood Boulevard, Hollywood, California 90028, United States', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Banana Bungalow - Hollywood Hostel has been successfully confirmed. You have reserved 1 room for 8 nights starting from November 5th. If there is anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

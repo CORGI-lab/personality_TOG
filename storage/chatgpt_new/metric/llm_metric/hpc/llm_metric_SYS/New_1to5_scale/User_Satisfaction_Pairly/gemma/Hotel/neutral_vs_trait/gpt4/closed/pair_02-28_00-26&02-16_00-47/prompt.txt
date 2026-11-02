@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a hotel in Philadelphia. Can you help with that?
+System: Do you have any specific preferences for the star rating or smoking allowance for the hotel in Philadelphia, or should I search for any available options?
+User: I prefer a hotel that doesn't allow smoking. As for the star rating, something decent but not too fancy is fine.
+System: I'll search for hotels in Philadelphia that don't allow smoking. Let's start with a 3-star hotel and see what we find. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Philadelphia, smoking_allowed: False, star_rating: 3 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 267-298-1700', 'place_name': 'Aloft Philadelphia Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4301 Island Avenue'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-607-2020', 'place_name': 'Aloft Philadelphia Downtown', 'price_per_night': 297, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '101 North Broad Street'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-398-3080', 'place_name': 'Best Western Plus Philadelphia Convention Center Hotel', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1225 Vine Street'}]
+End Search Results
+System: I found three 3-star hotels in Philadelphia that don't allow smoking. Here are your options:
+
+1. Aloft Philadelphia Airport located at 4301 Island Avenue, priced at $216 per night.
+2. Aloft Philadelphia Downtown located at 101 North Broad Street, priced at $297 per night.
+3. Best Western Plus Philadelphia Convention Center Hotel located at 1225 Vine Street, priced at $180 per night.
+
+Would you like more information on any of these, or would you like to proceed with a reservation?
+User: I would like to know more about Aloft Philadelphia Airport, please.
+System: Aloft Philadelphia Airport is a 3-star hotel located at 4301 Island Avenue in Philadelphia. It offers rooms at a price of $216 per night and does not allow smoking. If you need further details or wish to make a reservation, please let me know!
+User: I think Aloft Philadelphia Airport is suitable. Please go ahead and make a reservation for me.
+System: How many rooms would you like to book at Aloft Philadelphia Airport, and what will be your check-in date and the length of your stay?
+User: I need one room, and I'll check in on the 10th for a five-night stay.
+System: Please confirm to book 1 room for 5 nights at Aloft Philadelphia Airport starting from the 10th in Philadelphia.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Philadelphia, number_of_rooms: 1, place_name: Aloft Philadelphia Airport, stay_length: 5 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 267-298-1700', 'place_name': 'Aloft Philadelphia Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4301 Island Avenue', 'check_in_date': '2023-11-10'}, {'location': 'Philadelphia', 'number_of_rooms': 1, 'phone_number': '+1 215-365-4150', 'place_name': 'Doubletree By Hilton Hotel Philadelphia Airport', 'price_per_night': 75, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4509 Island Avenue', 'check_in_date': '2023-11-10'}, {'location': 'Philadelphia', 'number_of_rooms': 1, 'phone_number': '+1 215-365-4500', 'place_name': 'Embassy Suites By Hilton Philadelphia Airport', 'price_per_night': 69, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '9000 Bartram Avenue', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking for 1 room at Aloft Philadelphia Airport for 5 nights starting from November 10th has been successfully confirmed. The hotel is located at 4301 Island Avenue, and the contact number is +1 267-298-1700. If you need anything else, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a hotel in San Diego. Can you assist me with that?
+System: Do you have any specific preferences regarding the star rating of the hotel in San Diego?
+User: I prefer something modest, maybe around 3 stars.
+System: APICall(method='SearchHotel', parameters={location: San Diego, star_rating: 3})
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found a few options for 3-star hotels in San Diego. One option is the Bahia Resort Hotel, located at 998 West Mission Bay Drive, with a nightly rate of $225. Another option is the Best Western Plus Bayside Inn at 555 West Ash Street, which allows smoking and has a rate of $234 per night. Lastly, there's the Best Western Plus Hacienda Hotel Old Town at 4041 Harney Street, with a price of $198 per night. Would you like more information on any of these?
+User: Can you tell me if any of these hotels allow smoking?
+System: The Best Western Plus Bayside Inn at 555 West Ash Street allows smoking. Would you like to proceed with this option, or do you need more details about another hotel?
+User: I think I'll go with the Best Western Plus Bayside Inn. Can you make a reservation for me there?
+System: Sure, I can help with that. How many rooms would you like to reserve, and what would be the check-in date and length of your stay at the Best Western Plus Bayside Inn?
+User: I would like to reserve one room, checking in from the 10th for five days.
+System: Please confirm to book 1 room for 5 days at the Best Western Plus Bayside Inn in San Diego, starting from the 10th.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-10, location: San Diego, number_of_rooms: 1, place_name: Best Western Plus Bayside Inn, stay_length: 5})
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street', 'check_in_date': '2023-11-10', 'stay_length': 5}]
+End Search Results
+System: Your booking at the Best Western Plus Bayside Inn in San Diego has been successfully confirmed. You have reserved 1 room for a 5-day stay starting from November 10, 2023. If you need any further assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

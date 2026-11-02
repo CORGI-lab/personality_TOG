@@ -1,0 +1,117 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, wanna find a hotel in... uh... Vegas, I guess? Somewhere easy, ya know?
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Star rating? Nah, not really. Just... whatever's available, I guess. As long as it's a place to crash.
+
+System: Okay, I will search for hotels in Las Vegas with any star rating.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: dontcare })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: Okay, I found three hotels in Las Vegas. There is a 3-star hotel named Best Western Plus Las Vegas West, a 1-star hotel named Budget Suites Of America, and another 3-star hotel named Hampton Inn Las Vegas/Summerlin. Would you like to know more about any of these?
+
+User: Uh, tell me about the...Budget Suites thing. Sounds cheap, right?
+
+System: Okay, Budget Suites Of America is a 1-star hotel. It has rooms available, and smoking is allowed. The price per night is $44. Would you like to know the address or phone number?
+
+User: Smoking is allowed, huh? And it's cheap... sounds good enough for me. Just book it. Whatever dates... uh... let's say starting tomorrow for, like, five days? Hope I don't regret this.
+
+System: Okay, I can book Budget Suites Of America for you. So, to confirm, you want to book a room at Budget Suites Of America in Las Vegas, starting tomorrow for five days? How many rooms will you need?
+
+User: Yeah, sounds about right. Just one room, I guess. Let's get this over with.
+
+System: Okay, I will book one room at Budget Suites Of America in Las Vegas, starting tomorrow for five days. To confirm, the check-in date is tomorrow, and the stay length is five days. Is that correct?
+
+User: Yeah, yeah, whatever. Just book the stupid room already.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-07, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 5 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2024-07-07'}]
+End Search Results
+System: Okay, I have booked one room at Budget Suites Of America in Las Vegas, starting tomorrow, July 7, 2024, for five days. The phone number for Budget Suites Of America is +1 702-638-1800. Is there anything else I can help you with?
+
+User: Uh... probably should've checked the reviews first, huh? Oh well. What's the address of the place? Might as well know where I'm stumbling into.
+
+System: The address of Budget Suites Of America is 2219 North Rancho Drive, Las Vegas. Is there anything else I can help you with?
+
+User: Nah, I'm good. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I need to find a hotel somewhere. I guess... London? Yeah, London sounds good.
+
+System: Alright, London it is! To find the perfect hotel for you, do you have any preferences on the star rating or whether smoking is allowed? Or, you know, we could just wing it and see what pops up?
+
+User: Ugh, star rating... does it even matter? I guess, maybe something not totally gross? Three stars, maybe? And definitely non-smoking. Don't want to wake up smelling like an ashtray, haha.
+
+System: Okay, three stars and non-smoking in London. Got it! Let's see what we can find.
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 3, smoking_allowed: False })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7403 4299', 'place_name': 'Accommodation London Bridge', 'price_per_night': 204, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '58 Great Dover Street'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7373 1075', 'place_name': 'Ambassadors Hotel', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '16 Collingham Road'}]
+End Search Results
+System: Alright, check this out! I found a few options that might work. There's the Abc Hyde Park Hotel, Accommodation London Bridge, and Ambassadors Hotel, all rocking three stars and strictly non-smoking. Wanna just pick one at random, or should we, like, actually look into them?
+
+User: Ugh, decisions, decisions... Okay, tell me about the Hyde Park one. What's the price like? And, uh, where exactly *is* Hyde Park anyway? I hope it's not, like, in the middle of nowhere.
+
+System: Okay, so the Abc Hyde Park Hotel is £102 per night. It's located at 121 Sussex Gardens in London. Does that sound alright, or are you already bored with it?
+
+User: Sussex Gardens... hmm, that sounds vaguely familiar. Is it close to anything interesting? Like, pubs? Or, uh, I dunno, anything fun?
+
+System: Well, according to the info I have, the Abc Hyde Park Hotel is at 121 Sussex Gardens. I don't have details on nearby pubs or "fun" stuff, but it's in London, so there's gotta be something, right? Wanna just roll with it?
+
+User: Yeah, yeah, London has to have something. Okay, fine, let's just book it. How many days, though? Uh... I guess three nights? And, uh, starting... tomorrow? Is that okay?
+
+System: Okay, three nights starting tomorrow at the Abc Hyde Park Hotel. Got it! I just need the date to book the rooms and the number of rooms you want to reserve.
+
+User: Uh, just one room. And, uh, tomorrow is... check calendar... August 16th. I think. Yeah, August 16th. Just book it, I guess.
+
+System: Okay, one room for three nights starting August 16th at the Abc Hyde Park Hotel in London. Just to be super clear, that's check-in date: 2024-08-16, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 3. Sound good?
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-08-16, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-08-16'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-08-16'}]
+End Search Results
+System: Okay, so I've got a booking at Abc Hyde Park Hotel for one room, checking in on August 16th for three nights. The address is 121 Sussex Gardens, London. Is that all correct?
+
+User: Yeah, yeah, that sounds... right. Just book it already.
+
+System: Alright, cool. So, just to be clear, it's the Abc Hyde Park Hotel, one room, three nights starting August 16th. Let's just do it!
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-08-16, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-08-16'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-08-16'}]
+End Search Results
+System: Okay, you're all set! You're booked at the Abc Hyde Park Hotel for one room, checking in on August 16th for three nights. Anything else I can help you with, or are we good to go?
+
+User: Nah, that's it. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

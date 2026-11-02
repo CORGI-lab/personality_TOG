@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a nice restaurant in San Francisco with a cozy atmosphere. Could you suggest something?
+System: Do you have a specific type of cuisine in mind, or are you open to any cuisine options?
+User: I'm open to any cuisine options, as long as the atmosphere is cozy and inviting.
+System: Could you specify if you have any preference for the price range or if you'd like the restaurant to have live music or serve alcohol? These details could help me narrow down the options for you.
+User: I'm looking for something moderately priced, and it would be nice if they serve alcohol. Live music isn't necessary.
+System: Great. Let me find a moderately priced restaurant in San Francisco that serves alcohol for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: American, price_range: moderate, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-627-4303', 'price_range': 'moderate', 'restaurant_name': 'All Spice', 'serves_alcohol': True, 'street_address': '648 Bush Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-977-5155', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '865 Market Street'}]
+End Search Results
+System: I found a few options for you in San Francisco. One of them is Alba Ray's, located at 2293 Mission Street. It serves American cuisine, is moderately priced, and offers alcohol. Would you like more information about this restaurant or details about another option?
+User: Alba Ray's sounds interesting. Can you make a reservation for two people at 7:00 pm tomorrow?
+System: Certainly! Let me confirm the details for the reservation. You would like to make a reservation for two people at Alba Ray's in San Francisco at 7:00 pm tomorrow. Could you please confirm this information before I proceed with the booking?
+User: Yes, that information is correct. Please go ahead and make the reservation.
+System: Thank you for confirming. I will now proceed to make the reservation for you at Alba Ray's. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Alba Ray's", city: 'San Francisco', time: '19:00', date: '2023-10-20', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at Alba Ray's in San Francisco at 7:00 pm on October 20th has been successfully made. The restaurant is located at 2293 Mission Street. If you need any further assistance, feel free to ask. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in Napa. Can you help me with that?
+System: Certainly! Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: I'm open to suggestions. What do you recommend?
+System: Great! Since you're open to suggestions, how about trying some Italian cuisine? It's quite popular and offers a variety of delicious options. Let me know if this sounds good to you, or if you'd prefer something else, and I'll proceed with the search.
+User: Italian sounds great. Please go ahead with the search.
+System: Excellent choice! I'll look for Italian restaurants in Napa for you. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: Napa, cuisine: Italian})
+Search Results
+[{'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-224-3300', 'price_range': 'expensive', 'restaurant_name': 'Bistro Don Giovanni', 'serves_alcohol': False, 'street_address': '4110 Howard Lane'}, {'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-252-1022', 'price_range': 'expensive', 'restaurant_name': 'Oenotri', 'serves_alcohol': False, 'street_address': '1425 1st Street'}, {'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-254-8006', 'price_range': 'moderate', 'restaurant_name': 'Allegria', 'serves_alcohol': False, 'street_address': '1026 1st Street'}]
+End Search Results
+System: Here are some Italian restaurants in Napa that you might enjoy:
+
+1. **Bistro Don Giovanni** - Located at 4110 Howard Lane. They offer an expensive dining experience. If you're interested, you can contact them at 707-224-3300.
+
+2. **Oenotri** - Situated at 1425 1st Street, this restaurant also falls under the expensive category. You can reach them at 707-252-1022.
+
+3. **Allegria** - Found at 1026 1st Street, offering a more moderate price range. You can call them at 707-254-8006.
+
+None of these places have live music or serve alcohol. Let me know if you need more information or if you'd like to make a reservation at any of these places!
+User: I would like to make a reservation at Allegria for a party of four. Could you book a table for tomorrow evening at 7:00 pm?
+System: Sure, let me confirm your details: You'd like to reserve a table for four people at Allegria in Napa for tomorrow evening at 7:00 pm. Please hold on while I make the reservation. APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Allegria', city: 'Napa', date: '2023-10-06', time: '19:00', party_size: 4})
+Search Results
+[{'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-254-8006', 'price_range': 'moderate', 'restaurant_name': 'Allegria', 'serves_alcohol': False, 'street_address': '1026 1st Street', 'date': '2023-10-06', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Allegria in Napa has been successfully made for a party of four tomorrow evening at 7:00 pm. If you need any further assistance or adjustments, feel free to let me know. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

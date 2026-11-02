@@ -1,0 +1,114 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really. Just something... quiet.
+
+System: Okay. I will search for a hotel in Seattle.
+
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: dontcare})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few options in Seattle. There's the Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown, all with 2-star ratings. Would you like to know more about any of these?
+
+User: Perhaps the Belltown Inn.
+
+System: The Belltown Inn has rooms available. It's located at 2301 3rd Avenue, and the price is $186 per night. Would you like to know anything else about it?
+
+User: Is smoking allowed?
+
+System: Smoking is not allowed at the Belltown Inn. Would you like me to check if any of the other hotels allow smoking, or perhaps provide more details on another hotel?
+
+User: No, that's fine. How many rooms does it have?
+
+System: It has 2 rooms. Would you like to make a reservation at the Belltown Inn?
+
+User: Yes, please. I'd like to reserve a room there.
+
+System: Okay. To reserve a room, I will need to know the check-in date and the length of your stay. Could you please provide those details?
+
+User: I'll be checking in tomorrow and staying for two nights.
+
+System: Okay, checking in tomorrow for two nights at the Belltown Inn. Could you also please confirm the date tomorrow so I can make the reservation?
+
+User: Just... book it for tomorrow, the 28th.
+
+System: Okay, so that's checking in on the 2024-03-28 for two nights at the Belltown Inn. Just to confirm, it will be for 1 room. Can you confirm this is correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-03-28, location: Seattle, number_of_rooms: 1, place_name: Belltown Inn, stay_length: 2})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue', 'check_in_date': '2024-03-28'}]
+End Search Results
+System: Okay, your reservation at the Belltown Inn for one room, checking in on 2024-03-28 for two nights, is confirmed. The phone number for the hotel is +1 866-525-4704 and the street address is 2301 3rd Avenue. Is there anything else I can help you with?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really, but maybe nothing too fancy.
+
+System: Okay, I will search for hotels in San Francisco. How many rooms do you need?
+
+User: Just one, please.
+
+System: APICall(method='SearchHotel', parameters={ location: San Francisco, number_of_rooms: 1, star_rating: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: I found three 3-star hotels in San Francisco. Bei Hotel San Francisco, Beresford Arms Hotel, and Chancellor Hotel On Union Square. Would you like to know more about any of these?
+
+User: Tell me about Bei Hotel San Francisco.
+
+System: Bei Hotel San Francisco is located at 50 8th Street. The price per night is $351, and smoking is allowed. Their phone number is +1 415-626-6103. Would you like to know about the other hotels?
+
+User: No, that will be all. Can you book a room for me at Bei Hotel San Francisco?
+
+System: Okay, I can help you with that. What date would you like to check in, and how many nights will you be staying?
+
+User: I need to check in on the 27th and stay for two nights.
+
+System: Okay, let me confirm. You want to book 1 room at Bei Hotel San Francisco in San Francisco, checking in on the 27th for two nights. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-27, location: San Francisco, number_of_rooms: 1, place_name: Bei Hotel San Francisco, stay_length: 2 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street', 'check_in_date': '2024-07-27'}]
+End Search Results
+System: Okay, I have confirmed your booking. One room at Bei Hotel San Francisco, San Francisco, checking in on July 27th for two nights. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

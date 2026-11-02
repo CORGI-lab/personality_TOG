@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm excited to find a great place to eat out with some friends. Let's look for something in San Francisco. I'm in the mood for something lively and fun, maybe with some live music. What do you have?
+System: Could you let me know what type of cuisine you are interested in? If you don't have a preference, I can suggest a random cuisine for you.
+User: I'm open to trying different cuisines, but let's go with something Asian this time. It would be amazing if the place is vibrant and offers live music.
+System: Let me find some Asian restaurants in San Francisco that offer live music. Please hold on for a moment while I make the search. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Asian, has_live_music: True})
+Search Results
+
+End Search Results
+System: It seems there are no specific results for Asian restaurants with live music in San Francisco. Would you like me to search for Asian restaurants without the live music requirement, or perhaps try a different cuisine that might offer live music?
+User: Let's try a different cuisine that offers live music! How about Italian or Mexican? I'm sure we can find something fun and lively!
+System: Let's explore some Italian or Mexican restaurants in San Francisco that offer live music. Please hold on for a moment while I make the search. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found a couple of Italian restaurants in San Francisco that offer live music. Would you be interested in "Fior D'italia," located at 2237 Mason Street, or "Zingari Ristorante + Jazz Bar," situated at 501 Post Street? Both places have live music and serve alcohol. Let me know which one you'd like more information on or if you need help with anything else!
+User: Zingari Ristorante + Jazz Bar sounds fantastic with the jazz vibe! Could you provide more details about it, like the price range and if there are any available reservations for this weekend? I'm planning to go with a group of six friends.
+System: "Zingari Ristorante + Jazz Bar" falls within the expensive price range. To check available reservations for this weekend, could you please specify the date and time you're interested in? Additionally, confirming that you're planning for a party size of seven, including yourself, will help me assist you better.
+User: Sure thing! Let's aim for a reservation this Saturday evening around 7 PM for the seven of us. Can't wait to enjoy the jazz vibes!
+System: Great! Let me check the availability for a reservation at "Zingari Ristorante + Jazz Bar" this Saturday evening at 7 PM for a party of seven. Please hold on for a moment while I make the reservation search. 
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, restaurant_name: 'Zingari Ristorante + Jazz Bar', date: '2023-10-14', time: '19:00', party_size: 7})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-14', 'party_size': '7', 'time': '19:00'}]
+End Search Results
+System: Your reservation at "Zingari Ristorante + Jazz Bar" for this Saturday at 7 PM for a party of seven is confirmed. You can look forward to enjoying the lively jazz vibes! If you need any further assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm looking for an exciting place to eat in San Francisco. Can you help me find a great spot with some lively vibes? Maybe a place with some live music and a fun atmosphere?
+System: Sure! Do you have a specific cuisine in mind, or are you open to suggestions? Also, do you have a preference for a price range? Knowing these will help me find the perfect spot for you in San Francisco.
+User: I'm open to all kinds of cuisines! Just looking for a place where the energy is high and the atmosphere is buzzing. As for the price range, let's keep it moderate to high. I'm ready for a fun dining adventure!
+System: Great! Let's go with a cuisine that often pairs well with lively vibes. How about we try something like Mexican, which can offer a vibrant atmosphere? I'll look for restaurants in San Francisco with live music and a moderate to high price range. Give me a moment to find some options for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, price_range: moderate, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue'}]
+End Search Results
+System: I found a vibrant spot for you in San Francisco! "Los Yaquis" offers a lively atmosphere with live music. It's a moderate-priced Mexican restaurant located at 324 South Van Ness Avenue. While they don't serve alcohol, the energetic vibe should make for a fun dining adventure. Would you like any more details or assistance with something else?
+User: Los Yaquis sounds intriguing! Can you go ahead and make a reservation for me there? I'm thinking of heading out with a group of friends this Friday evening around 7:00 PM. We'll be a party of six. Thanks!
+System: Let's get that reservation set up for you. Just to confirm, you'd like a reservation at Los Yaquis in San Francisco for a party of six this Friday evening at 7:00 PM. Is that correct?
+User: Yes, that's perfect! Can't wait to enjoy the lively atmosphere with my friends. Let me know once the reservation is confirmed.
+System: Excellent! I'll proceed with making the reservation for you. Please give me a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: Los Yaquis, city: San Francisco, time: 19:00, date: [Insert Friday's Date in YYYY-MM-DD format], party_size: 6})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue', 'date': "[Insert Friday's Date in YYYY-MM-DD format]", 'party_size': '6', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Los Yaquis in San Francisco is confirmed for a party of six this Friday evening at 7:00 PM. Enjoy the lively atmosphere and your dining adventure with friends! If you need anything else or have any questions, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

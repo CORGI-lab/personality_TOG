@@ -1,0 +1,92 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm starving! Let's find a place to grab some food in San Francisco. I don't really care what kind.
+
+System: Given your openness, perhaps you'd be interested in trying Vietnamese cuisine? It's quite popular.
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Vietnamese})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street'}]
+End Search Results
+System: Alright, I see a few Vietnamese restaurants in San Francisco. There's Anh Hong, Aux Delices, and Co Nam. Anh Hong and Co Nam both serve alcohol. Does any of those sound good?
+
+User: Uh, Vietnamese? Sure, why not. Tell me about Anh Hong. What's the damage gonna be?
+
+System: Okay, Anh Hong is in the moderate price range. The address is 808 Geary Street, and their phone number is 415-885-5180. They serve alcohol but do not have live music. Does that sound like what you're looking for?
+
+User: Sounds... okay. I guess. Can you book it? For, like, tomorrow night? Uh, say 7 p.m.? There'll be four of us, I think.
+
+System: Okay, I can book Anh Hong for you. Just to confirm, that's for four people tomorrow night at 7 p.m.?
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Anh Hong, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 4})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Excellent! I've made a reservation for you for tomorrow, March 2nd, at 7 p.m. at Anh Hong for a party of four.
+
+User: Wait, tomorrow's the 2nd? I think half the group might be running late. Can we push it to 7:30 instead?
+
+System: Okay, let me check if I can change the reservation to 7:30 p.m. for you.
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Anh Hong, city: San Francisco, date: 2019-03-02, time: 19:30, party_size: 4})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Great, I've updated your reservation at Anh Hong for tomorrow, March 2nd, at 7:30 p.m. for four people. Is there anything else I can help you with?
+
+User: Yeah, whatever. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, find me a restaurant in San Francisco. I guess.
+
+System: Okay, San Francisco it is! Any preference on the type of cuisine, or are you open to anything?
+
+User: Ugh, I don't know... maybe Italian? Or, whatever's easiest, I guess.
+
+System: Alright, Italian it is... unless you change your mind! Let me check what's available.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Alright, so there are a few Italian places in San Francisco. How about 54 Mint Ristorante Italiano? It's got moderate prices and serves alcohol. Does that sound okay, or should I just pick something else?
+
+User: Whatever, that sounds fine. Just book it for... uh... tomorrow night? I think six people? Maybe seven? Around 8 pm? I don't really care.
+
+System: Okay, so you want me to book 54 Mint Ristorante Italiano in San Francisco for tomorrow night, around 8 pm. Is it six or seven people? I need to know for sure before I book it. Also, what's tomorrow's date? Just give me the year-month-day, like 2019-03-01.
+
+User: Ugh, just go with six people. And the date... I don't know, 2024-03-08? Is that tomorrow? Whatever, just book it.
+
+System: Okay, got it. So, six people at 54 Mint Ristorante Italiano on 2024-03-08 around 8 pm. Let me make that reservation for you.
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 54 Mint Ristorante Italiano, city: San Francisco, date: 2024-03-08, party_size: 6, time: 8:00 PM, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2024-03-08', 'party_size': '6', 'time': '8:00 PM'}]
+End Search Results
+System: Okay, your table for six at 54 Mint Ristorante Italiano on 2024-03-08 around 8 pm is booked! You can reach them at 415-543-5100. Anything else I can help you with, or are we good to go?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

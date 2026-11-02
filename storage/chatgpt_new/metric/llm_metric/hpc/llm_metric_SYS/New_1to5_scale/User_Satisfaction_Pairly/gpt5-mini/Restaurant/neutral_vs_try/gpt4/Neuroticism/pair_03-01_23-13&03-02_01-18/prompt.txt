@@ -1,0 +1,110 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. Can you help me find one? I think I might want to make a reservation, but I'm not sure yet.
+System: Certainly! I can help with that. Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: I'm so overwhelmed by all the options. I guess something Italian might be nice, but I'm worried it won't be available. Can you check if there are any good Italian places?
+System: Sure, I can check that for you. Let me find some options for Italian restaurants in San Francisco. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Here are a few Italian restaurant options in San Francisco that you might like:
+
+1. **54 Mint Ristorante Italiano** - Located at 16 Mint Plaza, it's a moderate-priced restaurant that serves alcohol. You can contact them at 415-543-5100.
+
+2. **A16** - Situated at 2355 Chestnut Street, this moderate-priced spot also serves alcohol. Their phone number is 415-771-2216.
+
+3. **Allegro Romano** - This restaurant is at 1701 Jones Street. It's moderately priced, but please note they do not serve alcohol. You can reach them at 415-928-4002.
+
+If any of these options sound appealing, let me know if you'd like more information or if you're ready to make a reservation.
+User: I can't decide. What if I pick one and it's not a good choice? Could you tell me more about A16, like if they have live music or anything else that might help me feel more confident about choosing them?
+System: A16 does not feature live music, but it is a moderately priced Italian restaurant that serves alcohol. Located at 2355 Chestnut Street in San Francisco, it offers a cozy and authentic dining experience. You can contact them at 415-771-2216. If you think A16 is a good choice and would like to make a reservation, just let me know!
+User: I'm still unsure, but maybe I should go with A16. Can you make a reservation for me? I'm feeling anxious about it, but I think I might need a table for two tonight around 7 PM.
+System: Alright, let's move forward with booking a table for you at A16. Can you please confirm the reservation details: a table for two tonight at 7 PM at A16 in San Francisco? Once confirmed, I'll proceed with the reservation.
+User: Yes, please go ahead and make the reservation. I'm hoping it will be a good choice.
+System: Great, I'll make the reservation for you. Please hold on for a moment while I confirm your booking at A16 for two people tonight at 7 PM in San Francisco.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'A16', city: 'San Francisco', time: '19:00', date: '2023-10-10', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-10', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 for two people tonight at 7 PM in San Francisco has been successfully made. Enjoy your dining experience! If you have any other questions or need further assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. Can you help me with that?
+System: Sure! What type of cuisine are you interested in, such as Italian, Japanese, or something else?
+User: I don't really know... Maybe something like Italian? But I'm not even sure if that's what I want. What if I get there and don't like it? Is there any place that's kind of popular or well-rated? That might make me feel a bit more comfortable.
+System: I understand your concern. Although I don't have access to restaurant ratings or reviews, I can certainly help you find some Italian restaurants in San Francisco. Once we have a few options, you can decide if any of them appeal to you. Does that sound good?
+User: I guess that sounds okay, but what if none of them are any good? I just wish I could be sure about something for once. Can you maybe find a place that serves good Italian food and also offers some kind of ambiance, like live music or a cozy setting? That might help me feel a little more at ease.
+System: I understand your preference. Let me find some Italian restaurants in San Francisco that might have a cozy setting or offer live music. Could you please let me know if you have any specific preference for the price range or if serving alcohol is important to you?
+User: I guess a moderate price range would be fine. And it would be nice if they serve alcohol, just in case I need a drink to calm my nerves.
+System: Thank you for sharing your preferences. I'll look for Italian restaurants in San Francisco that have a moderate price range, serve alcohol, and might offer a cozy ambiance with live music. Please hold on for a moment while I fetch the relevant options for you.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: moderate, serves_alcohol: True, has_live_music: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no specific results available at the moment for Italian restaurants in San Francisco that match all your preferences, including a moderate price range and serving alcohol. Would you like to adjust any of your preferences, or perhaps try a different cuisine?
+User: Honestly, I'm getting anxious about not finding anything. Maybe we could try a different cuisine? Something like Mexican might be okay. Let's see if there's anything that fits in San Francisco.
+System: I understand. Let's explore some Mexican restaurants in San Francisco with a moderate price range that serve alcohol. Please hold on for a moment while I find the available options for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, price_range: moderate, serves_alcohol: True, has_live_music: dontcare})
+Search Results
+
+End Search Results
+System: It appears that there are no Mexican restaurants in San Francisco matching your criteria of a moderate price range and serving alcohol at the moment. Would you like to try another cuisine, or perhaps adjust your preferences to see if more options become available?
+User: I'm really starting to feel overwhelmed here. Is there any chance we could try looking for American cuisine instead? Maybe that'll have better luck. I just really need to find something soon before I stress out even more.
+System: Let's try finding American cuisine restaurants in San Francisco for you. I'll look for options within a moderate price range that also serve alcohol. Please hold on while I gather the information. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: American, price_range: moderate, serves_alcohol: True, has_live_music: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are currently no American restaurants in San Francisco that match your preferences for a moderate price range and serving alcohol. Would you like to consider adjusting your criteria or trying a different city? Let me know how you'd like to proceed.
+User: I can't believe this is still so difficult. Okay, let's try looking in Berkeley for American cuisine with a moderate price range that serves alcohol. I really hope we find something there.
+System: Let's search for American cuisine restaurants in Berkeley that have a moderate price range and serve alcohol. Please hold on while I find the available options for you.
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: American, price_range: moderate, serves_alcohol: True, has_live_music: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no American restaurants in Berkeley matching your criteria for a moderate price range and serving alcohol at the moment. Would you like to adjust any of your preferences, explore another cuisine, or perhaps try a different city? Let me know how you'd like to proceed.
+User: I feel like I'm never going to find the right place! Maybe we should try looking in Oakland for American cuisine with the same criteria: moderate price range and serving alcohol. I just hope there's something there, or I don't know what I'll do.
+System: Let's search for American cuisine restaurants in Oakland that have a moderate price range and serve alcohol. Please hold on while I gather the available options for you.
+
+APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: American, price_range: moderate, serves_alcohol: True, has_live_music: dontcare})
+Search Results
+
+End Search Results
+System: It appears that there are no American restaurants in Oakland that match your criteria for a moderate price range and serving alcohol at the moment. Would you like to adjust your preferences, explore a different cuisine, or consider a different city? Please let me know how you'd like to proceed so we can find the right option for you.
+User: I can't believe this is happening. Okay, let's try looking in San Mateo for American cuisine with the same criteria: moderate price range and serving alcohol. I just need to find something soon before I completely lose it.
+System: Let's search for American cuisine restaurants in San Mateo that have a moderate price range and serve alcohol. Please hold on while I find the available options for you.
+
+APICall (method='FindRestaurants', parameters={city: San Mateo, cuisine: American, price_range: moderate, serves_alcohol: True, has_live_music: dontcare})
+Search Results
+
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

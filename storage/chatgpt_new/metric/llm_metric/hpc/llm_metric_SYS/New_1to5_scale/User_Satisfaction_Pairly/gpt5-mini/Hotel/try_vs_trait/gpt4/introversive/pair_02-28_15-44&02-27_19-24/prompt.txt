@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in Berlin. Can you assist me with that?
+System: Certainly. What star rating are you open to considering for hotels in Berlin?
+User: I prefer a quiet place, so maybe a 4 or 5 star hotel would be nice.
+System: Understood. Let me find some options for you. Please allow me a moment.
+
+APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 4})
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+System: I found a few 4-star hotel options for you in Berlin. One option is the Adina Apartment Hotel Berlin Mitte, which allows smoking and is priced at 160 per night. Would you like more details about this hotel, or would you prefer to hear about another option?
+User: I'd like to hear about another option, please.
+System: The next option is the Ameron Hotel Abion Spreebogen Waterside. It is a 4-star hotel, does not allow smoking, and is priced at 360 per night. Would you like more details about this hotel, or should I tell you about another option?
+User: Can you tell me about another option?
+System: The third option is the Arcotel John F Berlin. This is a 4-star hotel that allows smoking, and the price per night is 248. Would you like more details about this hotel, or is there anything else I can assist you with?
+User: Could you provide more details about the Arcotel John F Berlin, please?
+System: The Arcotel John F Berlin is a 4-star hotel located at Werderscher Markt 11, 10117 in Berlin. It offers smoking-allowed rooms and is priced at 248 per night. If you need more information or wish to proceed with a reservation, please let me know.
+User: Can you reserve a room for me at the Arcotel John F Berlin? I plan to check in on the 5th and stay for five nights.
+System: Please confirm if you would like to book one room for your stay at the Arcotel John F Berlin, checking in on the 5th and staying for five nights.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 'YYYY-MM-DD', location: 'Berlin', number_of_rooms: 1, place_name: 'Arcotel John F Berlin', stay_length: 5})
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117', 'check_in_date': 'YYYY-MM-DD'}]
+End Search Results
+System: Your booking at the Arcotel John F Berlin for one room, checking in on the 5th and staying for five nights, has been successfully confirmed. Is there anything else you need assistance with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Vancouver. Can you help me find one?
+System: What star rating are you looking for in a hotel in Vancouver? If you don't have a preference, I can search for a variety of options for you.
+User: I don't have a specific star rating in mind. You can show me different options.
+System: Great! I'll find a few options for you. Let me check the available hotels in Vancouver for you. Please give me a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: dontcare })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found several hotels in Vancouver for you. Here are a few options: 
+
+1. Shangri-La Hotel, a luxurious 5-star hotel located at 1128 West Georgia Street, with a price of $300 per night. Please note that smoking is not allowed.
+
+2. Wedgewood Hotel & Spa Vancouver, another 5-star option located at 845 Hornby Street, priced at $510 per night, also non-smoking.
+
+3. Auberge Vancouver Hotel, a 4-star hotel at 837 West Hastings Street, offering rooms at $296 per night, where smoking is permitted.
+
+Would you like more information on any of these, or is there a specific option you are interested in?
+User: Could you tell me more about the Auberge Vancouver Hotel, please?
+System: The Auberge Vancouver Hotel is a 4-star hotel located at 837 West Hastings Street. It offers rooms at $296 per night, and smoking is permitted. If you need more details or would like to proceed with a reservation, please let me know!
+User: I think the Auberge Vancouver Hotel sounds suitable. Can you help me reserve a room?
+System: Certainly! To proceed with the reservation at the Auberge Vancouver Hotel, could you please provide me with your desired check-in date and the length of your stay? Additionally, let me know how many rooms you would like to reserve.
+User: I'll be checking in on the 10th and would like to stay for five days. Just one room will be fine.
+System: To confirm your reservation at the Auberge Vancouver Hotel, please verify that you'd like to book 1 room for 5 days starting from 2023-11-10. Once confirmed, I will proceed with the reservation.
+User: Yes, please go ahead with the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Auberge Vancouver Hotel has been successfully confirmed. You'll be staying for 5 days starting from 2023-11-10. If you need any further assistance or have other questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

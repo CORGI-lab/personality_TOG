@@ -1,0 +1,187 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm feeling inspired to visit Paris! Could you help me find a hotel there? Something with a bit of character, not just a bland chain.
+
+System: Okay, I'd be happy to help you find a hotel in Paris. To start, do you have any preferences on star rating or smoking allowance?
+
+User: Oh, star rating isn't a huge deal, but I'd prefer something with a unique style. And definitely non-smoking! I'm also curious about the number of rooms they have - a smaller hotel might have more charm.
+
+System: Okay, I understand you're looking for a non-smoking hotel in Paris with a unique style, and you're curious about the number of rooms, perhaps preferring a smaller hotel.
+
+APICall(method='SearchHotel', parameters={ location: Paris, smoking_allowed: False, number_of_rooms: dontcare, star_rating: dontcare })
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}]
+End Search Results
+System: Alright, I've found a few options in Paris that might interest you. 
+
+*   **Ac Hotel By Marriott Paris Porte Maillot:** This one is a 4-star hotel with 2 rooms.
+*   **Amastan Paris:** Also a 4-star hotel, but with 1 room.
+*   **Aparthotel Adagio Access Paris La Villette:** A 3-star hotel with 2 rooms.
+
+Do any of these sound like they might fit the bill for your unique getaway?
+
+User: Hmm, those sound okay, but "Ac Hotel By Marriott Paris Porte Maillot" sounds a bit...generic. Amastan Paris sounds more intriguing with only one room – perhaps a more intimate, artistic vibe? Tell me more about Amastan Paris. What's their style like?
+
+System: Okay, I can tell you more about the Amastan Paris. It's a 4-star hotel with 1 room, located at 34 Rue Jean Mermoz. They can be reached at +33 1 49 52 99 70. The price per night is $96. Would you like to know anything else specific about it?
+
+User: $96 sounds reasonable. I'm picturing something chic and modern, maybe with some unexpected artistic touches. Does it have good reviews regarding its design or ambiance? And what's the neighborhood like? Is it close to any interesting galleries or museums?
+
+System: I don't have access to reviews or neighborhood information, but I can tell you that Amastan Paris is located at 34 Rue Jean Mermoz. Would you like to proceed with booking a room at Amastan Paris? If not, I can share details about the other hotels I found.
+
+User: Rue Jean Mermoz... that rings a bell! I think I've read about some cool galleries around there. Okay, let's be impulsive! If it's available, I'd love to book a room at Amastan Paris. I'm planning a short, sweet trip, so I'll need it from, say, next Monday for three nights.
+
+System: Great! Before I finalize the reservation, I'll need a couple more details. Could you please confirm the full date you'd like to check in next Monday? Also, for how many rooms?
+
+User: Ah, yes, of course! Let's say Monday, September 9th for three nights, and just one room for me, please. I'm envisioning a solo artistic exploration of Paris.
+
+System: Okay, just to confirm, you'd like to book one room at Amastan Paris for three nights, starting on Monday, September 9th. Is that correct?
+
+User: Perfect! Go ahead and book it! I'm already imagining sipping coffee in a charming Parisian cafe.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={'check_in_date': '2024-09-09', 'location': 'Paris', 'number_of_rooms': 1, 'place_name': 'Amastan Paris', 'stay_length': 3})
+```
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008', 'check_in_date': '2024-09-09'}]
+End Search Results
+System: Excellent! I've successfully booked one room for you at Amastan Paris for three nights, starting on September 9th. The hotel is located at 34 Rue Jean Mermoz and their phone number is +33 1 49 52 99 70. Is there anything else I can assist you with today?
+
+User: Fantastic! Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm feeling a trip to Paris! Let's find a hotel there. Something with character, you know?
+
+System: Ah, Paris! A city brimming with art, history, and romance. I can feel your excitement! To find the perfect hotel with character for your adventure, I'll need a bit more information. Are you travelling alone or with company, and do you have any preference on the star rating of your hotel, or whether smoking is allowed?
+
+User: Ooh, company for sure! It's always better to share the Parisian magic. As for the star rating, I'm not too fussed, as long as it's clean and has a certain...je ne sais quoi. Maybe something with a bit of history? And definitely non-smoking, please. Breathe in the fresh Parisian air, not stale cigarette fumes!
+
+System: Alright! To capture that certain *je ne sais quoi* and ensure a breath of fresh Parisian air, I'll focus on non-smoking hotels. To make sure your companion has a comfortable stay, how many rooms would you like to book?
+
+User: Let's say... two rooms! It's always nice to have a little space to spread out and maybe even create some art inspired by the city. Are there any hotels that maybe have a view? I'd love to wake up to a beautiful Parisian vista.
+
+System: Wonderful! Two rooms it is, for you and your fellow artist! I'm afraid I don't have information about the view. I will make an API call to search for hotels in Paris with two rooms and non-smoking: APICall(method='SearchHotel', parameters={location: Paris, number_of_rooms: 2, smoking_allowed: False})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}]
+End Search Results
+System: Ah, excellent! The muse is already whispering! I've found a few options that might spark your artistic soul:
+
+1.  **AC Hotel by Marriott Paris Porte Maillot**, a 4-star hotel located at 6 Rue Gustave Charpentier, 75017. It offers two rooms and is entirely non-smoking, with a price of $192 per night.
+2.  **Aparthotel Adagio Access Paris La Villette**, a 3-star hotel located at 28bis Avenue Corentin Cariou, 75019. It offers two rooms and is entirely non-smoking, with a price of $120 per night.
+
+Which one calls to you more? Or perhaps you'd like more details on either before making a decision?
+
+User: Hmm, those sound interesting, but do either of them have a particularly inspiring view, or perhaps a unique artistic vibe? I'm picturing something with maybe a quirky design or a connection to the local art scene. If not, let's keep searching for a hidden gem!
+
+System: You seek inspiration! I like that. While I don't have details on inspiring views or artistic vibes, I can tell you more about the hotels. Perhaps their location or features will spark your interest.
+
+The **AC Hotel by Marriott Paris Porte Maillot** is a 4-star hotel that could be a great base for exploring the city.
+
+The **Aparthotel Adagio Access Paris La Villette** is a 3-star hotel that offers a comfortable stay.
+
+Would you like to know more about either of these, or would you like me to search for something different? Perhaps a different star rating?
+
+User: Let's keep searching! Maybe something smaller, more boutique? I'm open to anything with a unique story or a sense of place. Perhaps near Montmartre? That area always felt so wonderfully bohemian.
+
+System: I understand your desire for a hotel with a unique story and a bohemian vibe, especially near Montmartre! However, I am limited to only searching for hotels within the city of Paris.
+
+Since you're open to unique experiences, let's broaden our search a bit. I can search for hotels with different star ratings. Would you be interested in a hotel with 5 stars, 1 star, 2 stars, 3 stars, or 4 stars? Let me know and I'll run a new search!
+
+User: Let’s try a 3-star hotel near Montmartre, if possible, and definitely something charming. I'm really looking for an authentic Parisian experience, not just a generic hotel room.
+
+System: Alright, I understand your vision! A charming, authentic 3-star hotel near Montmartre sounds like the perfect setting for your Parisian adventure. I will make an API call to search for 3-star hotels in Paris:
+APICall(method='SearchHotel', parameters={location: Paris, star_rating: 3})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 42 57 14 55', 'place_name': 'Aparthotel Adagio Paris Montmartre', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '10 Place Charles Dullin, 75018'}, {'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 48 74 48 71', 'place_name': "Austin'S Saint Lazare HoTel", 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': "26 Rue d'Amsterdam, 75009"}]
+End Search Results
+System: Okay, I've found a few 3-star hotels in Paris that might capture the charm you're seeking!
+
+1.  **Aparthotel Adagio Access Paris La Villette**, located at 28bis Avenue Corentin Cariou, 75019. It has rooms with two beds, is non-smoking, and costs $120 per night.
+2.  **Aparthotel Adagio Paris Montmartre**, located at 10 Place Charles Dullin, 75018, right in Montmartre! It has rooms with one bed, allows smoking, and costs $90 per night.
+3.  **Austin'S Saint Lazare HoTel**, located at 26 Rue d'Amsterdam, 75009. It has rooms with three beds, is non-smoking, and costs $189 per night.
+
+The Aparthotel Adagio Paris Montmartre is located in Montmartre, but it allows smoking. Would you like to know more about any of these options?
+
+User: Ooh, the Montmartre one sounds promising in terms of location, but smoking is definitely a no-go. Tell me more about Austin'S Saint Lazare HoTel - three beds sounds a bit quirky, but maybe it has a fun story behind it! What's the vibe like there?
+
+System: Alright! Let's dive into the story of Austin'S Saint Lazare HoTel. While I don't have details on the hotel's specific "vibe" or any quirky stories behind the three beds, I can share its known attributes. It's a 3-star hotel located at 26 Rue d'Amsterdam, 75009. It's entirely non-smoking, and the price is $189 per night.
+
+Would you like to know more about the hotel, or would you like me to search for something different?
+User: Hmm, okay. Since you don't have the vibe, let's try something different. Maybe a hotel that's known for its artistic connections? Perhaps one that hosts art exhibitions or has a design inspired by a famous artist? It doesn't necessarily need to be in Montmartre, as long as it has that creative spark.
+
+System: I understand your desire for a hotel with artistic connections. I am limited to only searching for hotels within the city of Paris. I don't have information about hotels that host art exhibitions or have a design inspired by a famous artist.
+
+Since you're open to unique experiences, let's broaden our search a bit. I can search for hotels with different star ratings. Would you be interested in a hotel with 5 stars, 1 star, 2 stars, 3 stars, or 4 stars? Let me know and I'll run a new search!
+
+User: Let's try a 4-star hotel then. Maybe a bit more upscale will mean a more curated and artistic experience. I'm still hoping for something that feels uniquely Parisian, even if it's not explicitly art-themed.
+
+System: Alright, a 4-star hotel it is! Let's see if we can find a gem that whispers Parisian charm. I will make an API call to search for 4-star hotels in Paris:
+APICall(method='SearchHotel', parameters={location: Paris, star_rating: 4})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 84 82 49 09', 'place_name': 'Ac Hotel By Marriott Paris Porte Maillot', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '6 Rue Gustave Charpentier, 75017'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008'}, {'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 45 38 52 59', 'place_name': 'Best Western Bretagne Montparnasse', 'price_per_night': 444, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '33 Rue Raymond Losserand, 75014'}]
+End Search Results
+System: Okay, let's explore these 4-star options and see if any of them resonate with your artistic soul:
+
+1.  **AC Hotel by Marriott Paris Porte Maillot**, located at 6 Rue Gustave Charpentier, 75017. It has rooms with two beds, is non-smoking, and costs $192 per night.
+2.  **Amastan Paris**, located at 34 Rue Jean Mermoz, 75008. It has rooms with one bed, is non-smoking, and costs $96 per night.
+3.  **Best Western Bretagne Montparnasse**, located at 33 Rue Raymond Losserand, 75014. It has rooms with three beds, smoking is allowed, and costs $444 per night.
+
+The Best Western Bretagne Montparnasse allows smoking. Would you like to know more about any of these options?
+
+User: Amastan Paris sounds intriguing! Tell me more about it – location, vibe, anything that makes it stand out. And definitely double-check that it's truly non-smoking, even if it says so already!
+
+System: Alright, let's delve into the allure of Amastan Paris! I can share its known attributes with you.
+
+It's a 4-star hotel located at 34 Rue Jean Mermoz, 75008. It has rooms with one bed, is non-smoking, and costs $96 per night.
+
+Given your aversion to smoking, I want to confirm that Amastan Paris is indeed a non-smoking hotel.
+
+Would you like to know more about the hotel, or would you like me to search for something different?
+
+User: Okay, it sounds promising! Is it near any interesting museums or galleries? And does it have any unique design features or architectural details that might spark my imagination? If it ticks those boxes, let's book it!
+
+System: I am limited to only searching for hotels within the city of Paris. I don't have information about hotels near any interesting museums or galleries or information about unique design features or architectural details that might spark your imagination.
+
+If you're ready to embrace the artistic spirit of Paris, let's move forward with securing your room at Amastan Paris! To confirm, you'd like one non-smoking room, correct? I'll also need to know the dates you'll be gracing Paris with your presence and how long you plan to stay.
+
+User: Yes, one non-smoking room at Amastan Paris sounds perfect! I'm thinking of arriving on October 27th and staying for five glorious nights. Let's make it happen!
+
+System: Fantastic! October 27th for five nights it is! I will make an API call to reserve your room at Amastan Paris:
+APICall(method='ReserveHotel', parameters={place_name: Amastan Paris, check_in_date: 2024-10-27, stay_length: 5, location: Paris, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 49 52 99 70', 'place_name': 'Amastan Paris', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '34 Rue Jean Mermoz, 75008', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Magnifique! Your reservation at Amastan Paris is confirmed for one non-smoking room, arriving on October 27th and staying for five nights of Parisian enchantment!
+
+The hotel's address is 34 Rue Jean Mermoz, 75008, and their phone number is +33 1 49 52 99 70.
+
+Is there anything else I can assist you with to make your Parisian adventure even more magical? Perhaps directions to a hidden gem of a cafe, or information on local art classes?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

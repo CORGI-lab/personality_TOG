@@ -1,0 +1,66 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Palo Alto that serves Italian cuisine. Can you help me with that?
+System: Sure, I can help with that. Let me find some Italian restaurants in Palo Alto for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Italian})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-473-9616', 'price_range': 'expensive', 'restaurant_name': 'Italico Restaurant', 'serves_alcohol': False, 'street_address': '341 California Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-328-5700', 'price_range': 'expensive', 'restaurant_name': 'Osteria Toscana', 'serves_alcohol': False, 'street_address': '247 Hamilton Avenue'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road'}]
+End Search Results
+System: I found a few Italian restaurants in Palo Alto. One option is Italico Restaurant, located at 341 California Avenue, but it does not serve alcohol. Another choice is Osteria Toscana at 247 Hamilton Avenue, which also does not serve alcohol. Lastly, Vina Enoteca at 700 Welch Road serves alcohol. Would you like more details on any of these options, or is there anything else I can assist you with?
+User: Could you please provide more details about Vina Enoteca, such as the price range and whether they offer live music?
+System: Vina Enoteca in Palo Alto has an expensive price range. Unfortunately, they do not offer live music. Is there anything else you would like to know or need assistance with?
+User: Could you please reserve a table for two at Vina Enoteca for this Saturday at 7:00 PM?
+System: Could you please confirm the date you would like the reservation for as this Saturday, and I will proceed with making the reservation for two at Vina Enoteca in Palo Alto at 7:00 PM.
+User: Yes, please go ahead and make the reservation for this Saturday at 7:00 PM for two people at Vina Enoteca.
+System: Thank you for confirming. I will now proceed to make the reservation. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={city: Palo Alto, restaurant_name: Vina Enoteca, time: 19:00, date: 2023-10-14, party_size: 2})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-646-3477', 'price_range': 'expensive', 'restaurant_name': 'Vina Enoteca', 'serves_alcohol': True, 'street_address': '700 Welch Road', 'date': '2023-10-14', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two at Vina Enoteca in Palo Alto at 7:00 PM on Saturday, October 14, 2023, has been successfully made. If you have any other questions or need further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I am looking to reserve a restaurant in San Francisco. Could you help me find one with Italian cuisine?
+System: Could you please let me know the time and date you're planning to make the reservation, as well as the number of people in your party? This will help me ensure we find the most suitable option for you.
+User: I am planning to make the reservation for this Saturday at 7:00 PM, and it will be for a party of four.
+System: Thank you for providing the details. I will now proceed to find an Italian restaurant in San Francisco that can accommodate your reservation request. Please hold on for a moment while I check the availability. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: '', city: San Francisco, time: 19:00, date: 2023-10-21, party_size: 4, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-282-0500', 'price_range': 'moderate', 'restaurant_name': '', 'serves_alcohol': False, 'street_address': '2854 Mission Street', 'date': '2023-10-21', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: It seems we found an Italian restaurant in San Francisco that fits your requirements for this Saturday at 7:00 PM for a party of four. Unfortunately, the restaurant's name is not listed in the search results. The restaurant is located at 2854 Mission Street, has a moderate price range, and does not serve alcohol or feature live music. If this meets your needs, please let me know if you'd like to proceed with the reservation or if you need further assistance.
+User: Could you please check if there are any other Italian restaurants available that serve alcohol and have live music?
+System: APICall (method='ReserveRestaurant', parameters={city: San Francisco, time: 19:00, date: 2023-10-21, party_size: 4, cuisine: Italian, serves_alcohol: True, has_live_music: True, restaurant_name: ''})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': 'True', 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': '', 'serves_alcohol': 'True', 'street_address': '2237 Mason Street', 'date': '2023-10-21', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: It looks like we've found another Italian restaurant in San Francisco that meets your criteria for this Saturday at 7:00 PM for a party of four. This restaurant offers live music and serves alcohol. It is located at 2237 Mason Street and has an expensive price range. Please let me know if you'd like to proceed with this reservation or if there's anything else you'd like to know.
+User: I would like to proceed with the reservation at the restaurant on Mason Street for this Saturday at 7:00 PM for a party of four. Thank you.
+System: Your reservation has been successfully made at the Italian restaurant on Mason Street in San Francisco for this Saturday at 7:00 PM for a party of four. Enjoy the live music and the dining experience! If you need any further assistance or details, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

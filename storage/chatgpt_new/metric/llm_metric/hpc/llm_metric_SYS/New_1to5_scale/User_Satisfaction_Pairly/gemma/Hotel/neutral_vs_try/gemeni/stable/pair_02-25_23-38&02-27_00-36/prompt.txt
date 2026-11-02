@@ -1,0 +1,114 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in San Diego, please.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: I'm primarily looking for something clean and comfortable. Perhaps a 3 or 4-star hotel would be suitable. Smoking isn't an issue for me, doesn't matter if it's allowed or not.
+
+System: Okay, searching for 3 or 4-star hotels in San Diego.
+
+APICall(method='SearchHotel', parameters={ location: San Diego, star_rating: dontcare })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found three 3-star hotels in San Diego: Bahia Resort Hotel, Best Western Plus Bayside Inn, and Best Western Plus Hacienda Hotel Old Town. Would you like to know more about any of these?
+
+User: The Bahia Resort Hotel sounds pleasant. Can you tell me more about it?
+
+System: The Bahia Resort Hotel is located at 998 West Mission Bay Drive. The price per night is $225 and their phone number is +1 858-539-8666. Smoking is not allowed. Would you like to know anything else?
+
+User: That sounds reasonable. What's the availability like, and do they have rooms with a view?
+
+System: I do not have the information about rooms with a view, but they have one room available. Would you like me to check the availability and proceed with a reservation? I would need to know the check-in date and how many nights you plan to stay.
+
+User: Yes, please check the availability. I'm planning to check in on the 15th, and I'll be staying for three nights.
+
+System: Okay, let me check the availability for Bahia Resort Hotel for a stay of 3 nights starting on the 15th. Could you please specify the year of your check-in date?
+
+User: 2024, please.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-08-15, location: San Diego, number_of_rooms: 1, place_name: Bahia Resort Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-08-15'}]
+End Search Results
+System: Okay, I have confirmed the availability for Bahia Resort Hotel for 3 nights starting on August 15, 2024. The price per night is $225. Would you like to proceed with the reservation?
+
+User: Yes, let's go ahead and reserve that for me.
+System: Okay, I'm confirming a reservation for you at the Bahia Resort Hotel in San Diego. The check-in date is August 15, 2024, for a duration of 3 nights. The price is $225 per night for 1 room. Is that correct?
+
+User: Yes, that is correct. Please proceed with the reservation.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-08-15, location: San Diego, number_of_rooms: 1, place_name: Bahia Resort Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-08-15'}]
+End Search Results
+System: Great, your reservation at Bahia Resort Hotel has been successfully made for 1 room, checking in on August 15, 2024, for 3 nights. The price is $225 per night. Is there anything else I can assist you with?
+
+User: No, that's all confirmed. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to book a hotel in San Francisco.
+
+System: Okay! And do you have any preferences on the star rating, smoking allowance or number of rooms?
+
+User: I'd prefer a hotel with a 4-star rating or higher. Non-smoking, please. And we'll need two rooms.
+
+System: Okay, I understand. Just to confirm, you're looking for a hotel in San Francisco with a 4-star rating or higher, non-smoking, and you need two rooms. Is that correct?
+
+User: Yes, that's all correct.
+
+System: APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 4, smoking_allowed: False, number_of_rooms: 2})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-348-1111', 'place_name': 'Hotel Zelos San Francisco', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '12 4th Street'}]
+End Search Results
+System: I found three 4-star hotels in San Francisco that meet your criteria: Argonaut Hotel, Hotel Spero, and Hotel Zelos San Francisco. Argonaut Hotel offers 3 rooms and costs $408 per night. Hotel Spero and Hotel Zelos San Francisco each have 1 room available, with prices of $80 and $96 per night, respectively. Which one sounds best to you?
+
+User: Let's go with the Argonaut Hotel. It sounds reliable.
+
+System: Great choice! The Argonaut Hotel is located at 495 Jefferson Street and their phone number is +1 415-563-0800. Before I make the reservation, for what date would you like to book the rooms and how long will you be staying?
+
+User: Let's book for two nights, starting on the 15th.
+
+System: Okay, just to confirm, you want to book two rooms at the Argonaut Hotel in San Francisco for two nights, starting on the 15th. Could you please confirm the year you would like to book the rooms from?
+
+User: This year, please.
+
+System: Okay, so that would be booking two rooms at the Argonaut Hotel in San Francisco for two nights starting on November 15th, 2024?
+
+User: Yes, please confirm the booking.
+
+System: APICall(method='ReserveHotel', parameters={'place_name': 'Argonaut Hotel', 'check_in_date': '2024-11-15', 'stay_length': 2, 'location': 'San Francisco', 'number_of_rooms': 2})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street', 'check_in_date': '2024-11-15'}]
+End Search Results
+System: Excellent! I have successfully reserved two rooms for you at the Argonaut Hotel in San Francisco for two nights, starting on November 15th, 2024. The hotel is located at 495 Jefferson Street, and their phone number is +1 415-563-0800. The price is $408 per night. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

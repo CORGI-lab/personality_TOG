@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm looking to book a hotel, can you help me out?
+System: Sure, I'd be happy to help you book a hotel. Could you please let me know the location where you would like to book the hotel?
+User: Um, let's go with Los Angeles. Sounds fun, I guess.
+System: Do you have a specific check-in date and how long would you like to stay? Additionally, can you let me know how many rooms you need?
+User: Uh, I'm not really sure about the date. Maybe just book it for tomorrow? And let's say... five days? Oh, and just one room should be fine.
+System: Please confirm that you would like to book one room for five days with a check-in date of tomorrow in Los Angeles.
+User: Yeah, sure, let's go with that.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-12, location: Los Angeles, number_of_rooms: 1, stay_length: 5, place_name: 'Random Hotel', star_rating: 4 })
+Search Results
+[{'location': 'Los Angeles', 'number_of_rooms': 1, 'phone_number': '+1 800-624-6835', 'place_name': 'The Orlando Hotel', 'price_per_night': 144, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '8384 West 3rd Street', 'check_in_date': '2023-10-12'}]
+End Search Results
+System: Your booking at The Orlando Hotel in Los Angeles has been successfully confirmed. Here are the details: 
+
+- Check-in Date: 2023-10-12
+- Stay Length: 5 days
+- Number of Rooms: 1
+- Price per Night: $144
+- Smoking Allowed: Yes
+- Hotel Address: 8384 West 3rd Street
+- Phone Number: +1 800-624-6835
+
+Is there anything else I can assist you with?
+User: Nah, that's all good. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Let's find a hotel in Las Vegas. Can you help me with that?
+System: Do you have any specific preferences for the hotel, like star rating or smoking allowance, or should I search broadly for options in Las Vegas?
+User: Uh, I don't really care about star ratings or anything like that. Just find something that allows smoking, maybe? But, I guess it doesn't really matter. Just show me what you find.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4, smoking_allowed: dontcare, number_of_rooms: dontcare })
+Search Results
+
+End Search Results
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 2, smoking_allowed: dontcare, number_of_rooms: dontcare })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-489-7500', 'place_name': 'Thunderbird Boutique Hotel', 'price_per_night': 56, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '1215 South Las Vegas Boulevard'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-553-2553', 'place_name': 'The Downtowner', 'price_per_night': 100, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '129 North 8th Street'}]
+End Search Results
+System: I found a couple of options in Las Vegas that might interest you. One is La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, a 2-star hotel allowing smoking, with rooms starting at $72 per night. Another option is The Downtowner, also a 2-star hotel that allows smoking, with prices starting at $100 per night. Would you like more details or have any preferences among these?
+User: Hmm, I guess the cheaper one sounds fine. Can you just go ahead and book a room for me there?
+System: How many nights will you be staying, and when would you like to check in? Also, could you please confirm if you need just one room?
+User: Oh right, I should probably figure that out. Let's say, uh, check-in on the 5th, and I'll stay for, like, seven nights. And yeah, just one room should be fine.
+System: Please confirm that you would like to book one room for seven nights at La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, with check-in on the 5th. Once confirmed, I'll proceed with the reservation.
+User: Yeah, sure, whatever. Go ahead and book it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Las Vegas, number_of_rooms: 1, place_name: La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech, stay_length: 7 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech has been successfully confirmed. You have one room reserved for seven nights, starting from November 5th. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

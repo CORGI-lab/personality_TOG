@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm in an adventurous mood and eager to try something new in San Francisco! Could you help me find a lively restaurant with a fun atmosphere, maybe some live music? Oh, and I love all kinds of cuisines, so surprise me with something exciting!
+System: Sure! Let's find a lively restaurant in San Francisco with a fun atmosphere and live music. Since you're open to trying new cuisines, how about exploring Mexican cuisine for a vibrant experience? Let me check the options for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue'}]
+End Search Results
+System: I found a great option for you! Los Yaquis, located at 324 South Van Ness Avenue in San Francisco, offers a lively atmosphere with live music. The restaurant serves Mexican cuisine and falls within the moderate price range. They don't serve alcohol, but the vibrant ambiance should make for an exciting experience. Would you like more information or assistance with anything else?
+User: That sounds fantastic! I'd love to make a reservation at Los Yaquis. Could you book a table for me this Saturday at 7:00 PM for a party of four? Looking forward to a fun night out!
+System: Great choice! To proceed with your reservation at Los Yaquis this Saturday at 7:00 PM for a party of four, could you please confirm the date for me? Once confirmed, I'll make the reservation for you.
+User: The date is perfect! Yes, please reserve a table for this Saturday at 7:00 PM for four people. Can't wait for the fun night out!
+System: Thank you for confirming! I'll make the reservation for Los Yaquis in San Francisco this Saturday at 7:00 PM for a party of four. Please give me a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Los Yaquis', city: 'San Francisco', time: '19:00', date: '2023-10-07', party_size: 4})
+
+Once the reservation is confirmed, I'll let you know!
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue', 'date': '2023-10-07', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Los Yaquis in San Francisco is confirmed for this Saturday at 7:00 PM for a party of four. Enjoy the lively atmosphere and live music! If you have any other questions or need further assistance, feel free to ask. Have a fantastic night out!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hi there! I'm super excited to find a great place to eat out in San Francisco. I'm in the mood for something lively and fun, maybe with some live music. Do you have any recommendations?
+System: That sounds like a fantastic plan! Let's find you a vibrant spot in San Francisco. Could you let me know if you have any specific cuisine in mind, or are you open to discovering something new and exciting?
+User: I'm totally open to trying something new and exciting! Surprise me with a great spot that has live music and a lively atmosphere.
+System: Great! Let's spice things up with a lively Mexican restaurant in San Francisco, known for its vibrant atmosphere and live music. Hang tight for a moment while I find the perfect match for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue'}]
+End Search Results
+System: I found a fantastic spot for you! Los Yaquis offers a lively Mexican experience with live music in San Francisco. You can find them at 324 South Van Ness Avenue. Although they don't serve alcohol, the atmosphere is vibrant and fun. Would you like to know anything else about this place?
+User: That sounds absolutely amazing! I'd love to make a reservation there. Can we book a table for this Saturday at 7 PM for a party of four?
+System: Sure thing! Let's get that reservation booked for you. Just to confirm, you'd like a table for four at Los Yaquis in San Francisco this Saturday at 7 PM. Let me know if everything looks good, and I'll proceed with the reservation.
+User: Yes, that's perfect! Please go ahead and make the reservation. I'm so excited!
+System: Awesome! I'll make the reservation for a party of four at Los Yaquis in San Francisco this Saturday at 7 PM. Just a moment while I finalize this for you.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Los Yaquis', city: 'San Francisco', time: '19:00', date: '2023-10-07', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue', 'date': '2023-10-07', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Los Yaquis in San Francisco for a party of four this Saturday at 7 PM is all set! If you have any more questions or need further assistance, feel free to ask. Enjoy your lively dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

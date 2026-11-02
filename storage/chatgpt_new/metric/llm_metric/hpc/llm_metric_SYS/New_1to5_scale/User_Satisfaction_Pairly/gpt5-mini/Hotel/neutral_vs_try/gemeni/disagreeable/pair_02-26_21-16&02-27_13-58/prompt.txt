@@ -1,0 +1,138 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in New York. And it better be good.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Star rating? Who cares about stars? Just find me the cheapest possible place that's still vaguely habitable. I'm not paying a fortune for some fancy hotel.
+
+System: Okay, I understand. I will find you the cheapest hotel in New York. APICall(method='SearchHotel', parameters={location: New York, star_rating: dontcare})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: Alright, I've found a few options for you in New York. The cheapest of the bunch is the Adria Hotel & Conference Center, at $234 per night. It's a 3-star hotel. Does that sound like it might work for you?
+
+User: $234? For a 3-star dump? You're kidding, right? There's gotta be something cheaper. And don't insult me with "conference center." I want a hotel, not a business convention.
+
+System: Okay, okay, I get it. My apologies. Let's try this again. How about the Aloft Harlem? It's a 3-star hotel as well, but it's priced at $243 per night.
+
+
+User: Harlem? Seriously? That's the best you can do? Find me something decent. And I want to know if they allow smoking. I'm not going to be told where I can and can't light up.
+
+System: Okay, I understand. Let me refine the search for you. I'll look for hotels in New York that allow smoking and are a bit more centrally located.
+
+APICall(method='SearchHotel', parameters={location: New York, smoking_allowed: True})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: Okay, I've found a few more options in New York that allow smoking. The Amsterdam Court Hotel is centrally located and allows smoking. It's a 3-star hotel, and the price is $216 per night. How does that sound to you?
+
+User: $216 for a 3-star? Still too much. What's the absolute lowest you can find that tolerates smokers? And don't try to sneak me into some roach motel.
+
+System: Okay, I understand. I'll prioritize finding the cheapest possible option that allows smoking.
+
+APICall(method='SearchHotel', parameters={location: New York, smoking_allowed: True, star_rating: dontcare})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: Alright, I've checked again, and the Amsterdam Court Hotel is still the cheapest option that allows smoking at $216 per night. It's centrally located. Are you sure you wouldn't consider that one? I don't want you to end up in some place you regret.
+
+User: Regret? I don't regret anything. Fine, book me the Amsterdam Court Hotel. But I want the best room they've got. And make damn sure it's a smoking room. I'm checking in tomorrow for one night.
+
+System: Okay, I will book you the best smoking-allowed room at the Amsterdam Court Hotel for one night, starting tomorrow. Could you please provide the exact date for the check-in?
+
+User: What's the point of giving you the year if you can't figure it out yourself? Fine, it's 2024. Now, hurry up and book it before the price magically jumps up.
+
+System: Okay, I will book you the best smoking-allowed room at the Amsterdam Court Hotel for one night, starting tomorrow, October 12, 2024. Please confirm the number of rooms you'd like to reserve.
+
+User: One. Just one. And don't screw it up.
+
+System: Okay, one room at the Amsterdam Court Hotel, smoking-allowed, for one night starting tomorrow, October 12, 2024. Is that correct?
+
+APICall(method='ReserveHotel', parameters={place_name: Amsterdam Court Hotel, check_in_date: 2024-10-12, stay_length: 1, number_of_rooms: 1, location: New York})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street', 'check_in_date': '2024-10-12'}]
+End Search Results
+System: Okay, I've booked one smoking-allowed room at the Amsterdam Court Hotel for you, checking in tomorrow, October 12, 2024, for one night. The price is $216. Is there anything else I can do for you?
+
+User: Make sure that room is actually available and that I get it. People always try to pull a fast one.
+
+System: I understand your concern. I've confirmed the reservation, and it's guaranteed. The hotel's phone number is +1 855-781-0088 if you want to double-check directly, though I assure you everything is set. Anything else you need, or are we good to go?
+
+User: Fine. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in New York. Don't try to give me anything cheap.
+
+System: Okay, I will search for hotels in New York. Do you have a star rating preference?
+
+User: Of course I have a preference. Only show me the 5-star ones. I don't slum it.
+
+System: Okay, searching for 5-star hotels in New York.
+
+APICall(method='SearchHotel', parameters={location: New York, star_rating: 5})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I found three 5-star hotels in New York: 1 Hotel Central Park, Baccarat Hotel, and 1 Hotel Brooklyn Bridge.
+
+User: Alright, list the prices per night for all of them. And don't leave out any hidden fees, I'm watching you.
+
+System: Okay, the prices per night are $330 for 1 Hotel Central Park, $525 for Baccarat Hotel, and $465 for 1 Hotel Brooklyn Bridge. All three hotels allow smoking.
+User: Smoking allowed? That's disgusting. I want to know the number of rooms available at the Baccarat Hotel. I expect them to have plenty.
+
+System: The Baccarat Hotel has 2 rooms available.
+
+User: Only two rooms? Pathetic. I'll take it. Book it starting tomorrow for one night.
+
+System: What is the date you would like to check in?
+
+User: Tomorrow. And don't screw it up.
+
+System: What is the full date of your check-in? I need to know the year as well.
+
+User: I don't have time for games. What year is it? Make the reservation for tomorrow's date, whatever that is. For one night, Baccarat Hotel, two rooms. Get it done.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Baccarat Hotel, location: New York, number_of_rooms: 2, stay_length: 1, check_in_date: 2024-03-15})
+
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street', 'check_in_date': '2024-03-15'}]
+End Search Results
+System: Your booking has been confirmed at the Baccarat Hotel for tomorrow, March 15, 2024, for one night, with two rooms. The price is $525 per night.
+
+User: Fine. Just give me the confirmation number.
+
+System: I do not have access to a confirmation number. However, the phone number for the Baccarat Hotel is +1 866-957-5139 and the address is 28 West 53rd Street.
+
+User: I don't need that. Give me their street address. I don't trust phone numbers.
+
+System: Okay, the street address for the Baccarat Hotel is 28 West 53rd Street. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

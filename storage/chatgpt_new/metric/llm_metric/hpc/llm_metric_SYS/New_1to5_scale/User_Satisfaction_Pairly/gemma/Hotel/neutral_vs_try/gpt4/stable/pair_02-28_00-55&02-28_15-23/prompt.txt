@@ -1,0 +1,96 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Vancouver, please.
+System: Do you have any specific star rating preference for the hotel in Vancouver, or are you open to any options?
+User: I'm open to options, but I would prefer something with at least a 3-star rating.
+System: Let me find hotels in Vancouver with a star rating of 3 or higher for you. Please hold on a moment. 
+
+APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 3})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a few options for you in Vancouver with at least a 3-star rating. Here are some choices:
+
+1. **Atrium Inn Vancouver**  
+   - Star Rating: 3  
+   - Price per Night: $228  
+   - Address: 2889 East Hastings Street  
+   - Smoking Allowed: No
+
+2. **Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.**  
+   - Star Rating: 3  
+   - Price per Night: $72  
+   - Address: 1100 Granville Street  
+   - Smoking Allowed: No
+
+3. **Best Western Plus Sands**  
+   - Star Rating: 3  
+   - Price per Night: $222  
+   - Address: 1755 Davie Street  
+   - Smoking Allowed: No
+
+Would you like more information on any of these hotels, or would you like to make a reservation?
+User: Could you please provide more information about the Best Western Plus Sands?
+System: The **Best Western Plus Sands** in Vancouver has a 3-star rating. The price per night is $222, and the address is 1755 Davie Street. Please note that smoking is not allowed in this hotel. If you need more details or wish to make a reservation, feel free to let me know!
+User: That sounds good to me. Could you please make a reservation for the Best Western Plus Sands? I plan to check in on the 15th and stay for 5 nights.
+System: To confirm your reservation at the Best Western Plus Sands in Vancouver, I need to know how many rooms you would like to book. Could you please provide that information?
+User: I would like to book one room, please.
+System: Please confirm to book 1 room for 5 nights at the Best Western Plus Sands starting from the 15th in Vancouver.
+User: Yes, I confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Sands, stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Best Western Plus Sands in Vancouver has been successfully confirmed. You have reserved 1 room for 5 nights starting from November 15, 2023. If you need any further assistance or information, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in Vancouver, please.
+System: Do you have any preferences for the star rating of the hotel or whether smoking is allowed? This will help me narrow down the options for you.
+User: I'm looking for a hotel with a 4-star rating, and I prefer if smoking is not allowed.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street'}]
+End Search Results
+System: I found a few 4-star hotels in Vancouver that do not allow smoking. Here are some options:
+
+1. **Coast Coal Harbour Vancouver Hotel By APA**: Located at 1180 West Hastings Street, with a price per night of $108.  
+2. **Delta Hotels by Marriott Vancouver Downtown Suites**: Located at 550 West Hastings Street, with a price per night of $324.  
+3. **Georgian Court Hotel**: Located at 773 Beatty Street, with a price per night of $108.
+
+Would you like more information on any of these options, or do you have a specific choice in mind?
+User: Could you please provide more details about the **Coast Coal Harbour Vancouver Hotel By APA**? Specifically, I'd like to know the amenities they offer and if there are any additional fees.
+System: I'm sorry, but I don't have information about the amenities or additional fees for the Coast Coal Harbour Vancouver Hotel By APA. If you have any other questions or need help with the booking details, please let me know!
+User: That's alright. Could you help me book a room at the Coast Coal Harbour Vancouver Hotel By APA? I would like to check in on the 10th and stay for five days.
+System: To proceed with the booking at the Coast Coal Harbour Vancouver Hotel By APA, could you please confirm how many rooms you would like to book for your stay from the 10th for five days?
+User: I would like to book one room for my stay.
+System: Please confirm the booking of 1 room at the Coast Coal Harbour Vancouver Hotel By APA from the 10th for five days in Vancouver.
+User: Yes, I confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By APA, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Coast Coal Harbour Vancouver Hotel By APA has been successfully confirmed for one room from the 10th of November for five days. If you need any further assistance or information, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

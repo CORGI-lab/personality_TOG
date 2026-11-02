@@ -1,0 +1,105 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. I'm open to suggestions, but I'd like something that's not too expensive.
+
+System: Given your openness to suggestions and preference for keeping costs down, how about we explore some options? To start, do you have any cuisine preferences (e.g., Italian, Mexican, etc.)?
+
+User: Okay, that sounds reasonable. I'm generally happy with most cuisines, but perhaps something American would be a good starting point.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: inexpensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: I found three American restaurants in San Francisco: 1760, 25 Lusk, and 3rd Cousin. All are listed as expensive. Would you like to explore options in the moderate price range instead?
+
+User: Yes, let's explore the moderate price range. I'm sure there are plenty of good options that won't break the bank.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: Okay, I found three American restaurants in San Francisco that are in the moderate price range: Academy Bar And Kitchen, Alba Ray's, and Aliment. Would you like to know more about any of them, perhaps their address or phone number, to help you decide?
+
+User: Academy Bar And Kitchen sounds interesting. Could you tell me its address?
+
+System: Academy Bar And Kitchen is located at 1800 Fillmore Street in San Francisco. Is there anything else I can help you with regarding this restaurant, such as its phone number, or would you like to explore other options?
+
+User: That's helpful. Could you provide the phone number for Academy Bar And Kitchen, please?
+
+System: Okay, the phone number for Academy Bar And Kitchen is 415-775-1800. Is there anything else I can assist you with concerning this restaurant, or would you like to explore other options?
+
+User: That's just what I needed. I'd like to reserve a table there for tomorrow evening, let's say for 4 people at 7:30 PM.
+
+System: Okay, let's book a table at Academy Bar And Kitchen. Just to confirm, you'd like a table for 4 people at 7:30 PM tomorrow evening. Could you please provide the date for the reservation?
+
+User: Yes, that's correct. The date for the reservation would be tomorrow, October 18th.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Academy Bar And Kitchen, city: San Francisco, date: 2024-10-18, party_size: 4, time: 19:30})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street', 'date': '2024-10-18', 'party_size': '4', 'time': '19:30'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2024-10-18', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Great! I've made the reservation for you at Academy Bar And Kitchen for tomorrow, October 18th, at 7:30 PM for a party of 4. Is there anything else I can help you with today?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. I'd like to find a place that serves Italian food.
+
+System: Okay, I can help with that. I'll search for Italian restaurants in San Francisco. APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found three Italian restaurants in San Francisco: 54 Mint Ristorante Italiano, A16, and Allegro Romano. 54 Mint Ristorante Italiano is located at 16 Mint Plaza, A16 is at 2355 Chestnut Street, and Allegro Romano is at 1701 Jones Street. All are in the moderate price range. Do any of these sound good to you?
+
+User: Those all sound reasonable. Could you tell me if any of them have live music?
+
+System: None of them have live music. 54 Mint Ristorante Italiano's phone number is 415-543-5100, A16's is 415-771-2216, and Allegro Romano's is 415-928-4002.
+
+User: Okay, thanks. How about we try to find something in the same area, San Francisco, but with live music, and any cuisine is fine.
+
+System: Given your preference for stability and moderation, I will choose a cuisine that is widely appreciated and not too exotic. How about American cuisine? I will search for American restaurants with live music in San Francisco.
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, has_live_music: True})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-292-2583', 'price_range': 'moderate', 'restaurant_name': 'Biscuits & Blues', 'serves_alcohol': False, 'street_address': '401 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-433-6300', 'price_range': 'expensive', 'restaurant_name': 'Bix', 'serves_alcohol': False, 'street_address': '56 Gold Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-923-1138', 'price_range': 'inexpensive', 'restaurant_name': "Mcdonald's", 'serves_alcohol': False, 'street_address': '1100 Fillmore Street', 'date': '2019-03-01', 'party_size': 2, 'time': '17:00'}]
+End Search Results
+System: I found three American restaurants in San Francisco with live music: Biscuits & Blues, Bix, and McDonald's. Biscuits & Blues is in the moderate price range and is located at 401 Mason Street. Bix is expensive and is located at 56 Gold Street. McDonald's is inexpensive and is located at 1100 Fillmore Street. Which of these options appeals to you most?
+
+User: Biscuits & Blues sounds like a good option. Can you make a reservation for me there? I'd like to book a table for two on Friday at 7:00 PM.
+
+System: Okay, I can help with that. Just to confirm, you'd like to make a reservation at Biscuits & Blues in San Francisco for two people this Friday at 7:00 PM?
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Biscuits & Blues, city: San Francisco, date: 2024-01-26, party_size: 2, time: 19:00})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2024-01-26', 'party_size': '2', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-292-2583', 'price_range': 'moderate', 'restaurant_name': 'Biscuits & Blues', 'serves_alcohol': False, 'street_address': '401 Mason Street', 'date': '2024-01-26', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Alright, your reservation at Biscuits & Blues for two people on Friday, January 26th at 7:00 PM has been made.
+
+User: Perfect. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

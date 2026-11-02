@@ -1,0 +1,86 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a restaurant in Fremont.
+System: What type of cuisine are you interested in? For example, American, Italian, or any other specific type?
+User: Italian cuisine would be fine.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant in Fremont called Massimo's. It is located at 5200 Mowry Avenue Ste M. Would you like more information, such as their phone number or any specific features?
+User: Does Massimo's serve alcohol?
+System: Unfortunately, Massimo's does not serve alcohol. Is there anything else you would like to know about the restaurant or any other assistance I can provide?
+User: Do you have any other Italian restaurant options in Fremont that serve alcohol?
+System: Currently, I don't have any information on other Italian restaurants in Fremont that serve alcohol. Would you like to explore restaurants in nearby cities or consider a different type of cuisine?
+User: I'll stick with an Italian restaurant in Fremont. Can you check again, please?
+System: I will check again for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian, serves_alcohol: True})
+Search Results
+
+End Search Results
+System: I'm sorry, but it seems there are currently no Italian restaurants in Fremont that serve alcohol. Would you like me to search for Italian restaurants in a nearby city or explore other options for you?
+User: No, I'll just go with Massimo's. Can you make a reservation for two people for tomorrow at 7:00 pm?
+System: Sure, I can help with that. Just to confirm, you would like to make a reservation for two people at Massimo's in Fremont for tomorrow at 7:00 pm, correct?
+User: Yes, that's correct.
+System: Thank you for confirming. Let me make the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Massimo's", city: Fremont, date: YYYY-MM-DD, party_size: 2, time: 19:00})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at Massimo's in Fremont for tomorrow at 7:00 pm has been successfully made. If you need anything else, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Fremont. Can you help me find one?
+System: Sure, I'd be happy to help you find a restaurant in Fremont. Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: I'm interested in American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems there are no results for American cuisine in Fremont. Would you like me to search for a similar option, perhaps a different cuisine or a nearby city? Let me know how you'd like to proceed!
+User: No, just American cuisine in Fremont, please.
+System: I understand your preference for American cuisine in Fremont. Let's try broadening the search slightly to see if we can find a nearby option that might appeal to you. I'll look for American cuisine within a moderate price range, as it often offers the best variety. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American, price_range: moderate})
+Search Results
+
+End Search Results
+System: Unfortunately, it seems there are still no results for American cuisine in Fremont, even with a moderate price range. Would you like me to expand the search to include other nearby cities that might have more options for American cuisine? Let me know how you'd like to proceed!
+User: I would like to expand the search to nearby cities for American cuisine.
+System: Great! I'll expand the search to include nearby cities for American cuisine. Let's see what options we can find. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: nearby_cities, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems that we still don't have any results for American cuisine in the nearby cities. Would you like to try a different cuisine in Fremont or a specific nearby city you have in mind? This might help us find more options for you.
+User: No, I prefer to stick with American cuisine. Can you try again later or provide options only in Fremont?
+System: Certainly, I'll focus the search on Fremont again and see if any new options for American cuisine have become available. Let's give it another try and see if we can find a match this time. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It appears that there are still no results for American cuisine in Fremont at this moment. I apologize for the inconvenience. Would you like to be notified when an option becomes available, or would you consider trying a different cuisine just for today? Let me know how you'd like to proceed!
+User: No, I'll wait for American cuisine options in Fremont to become available. Thanks for your help.
+System: You're welcome! If you decide to try something new or need assistance in the future, feel free to reach out. Have a great day!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,115 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I need to find a hotel. Somewhere... easy. Maybe Las Vegas? I don't know, is that okay?
+
+System: Do you have any star rating preference?
+
+User: Ugh, star ratings... whatever. Just find me something cheap in Las Vegas. I don't really care, just as long as it's... there.
+
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found three hotels in Las Vegas. There's the 3-star Best Western Plus Las Vegas West, the 1-star Budget Suites Of America, and the 3-star Hampton Inn Las Vegas/Summerlin. Do any of those sound good to you?
+
+User: Hmm, Hampton Inn... sounds kinda familiar. Is it, like, *really* cheap? And does it have, uh, you know... a place to crash for a few nights? I guess three nights? I dunno, maybe four. Whatever's easiest.
+
+System: Okay, I see the Hampton Inn Las Vegas/Summerlin sounds interesting to you. To confirm, are you planning to stay in Las Vegas for 3 or 4 nights, and when would you like to check in?
+
+User: Uh, yeah, Hampton Inn sounds... fine. Let's say three nights, starting... whenever. Does it even matter? Just pick a date, I guess. Whatever's soonest.
+
+System: Okay, I will pick today's date for your check-in. So, you want to book a room at the Hampton Inn Las Vegas/Summerlin for 3 nights, starting today. Is that correct?
+
+User: Yeah, sure, whatever. Three nights at the Hampton Inn. Just... do it, I guess.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-08, location: Las Vegas, place_name: Hampton Inn Las Vegas/Summerlin, stay_length: 3 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court', 'check_in_date': '2024-03-08'}]
+End Search Results
+System: OK. I have one hotel matching your criteria: Hampton Inn Las Vegas/Summerlin. It has smoking allowed rooms and the price per night is $279. Shall I confirm the reservation?
+
+User: Smoking allowed? Seriously? Ugh, fine, whatever. Just book it. I don't even care anymore.
+
+System: OK. I have booked 1 room at Hampton Inn Las Vegas/Summerlin, checking in today for 3 nights. Is that correct?
+
+User: Yeah, yeah, that's right. Just book it already.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-08, location: Las Vegas, place_name: Hampton Inn Las Vegas/Summerlin, stay_length: 3, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court', 'check_in_date': '2024-03-08'}]
+End Search Results
+System: Great, one moment while I confirm your reservation at Hampton Inn Las Vegas/Summerlin for 3 nights, starting today.
+
+User: Okay, great. I'm all set, right? No more decisions? Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Okay, I need a hotel in... um... maybe Paris? Yeah, Paris sounds good.
+
+System: Okay, I can help you with that. Do you have any preferences for the star rating of the hotel?
+
+User: Star rating? Uh... does it really matter? I guess something not too fancy, but not a total dump either. Maybe like, three stars? Or is that too much effort to figure out? Just surprise me, whatever.
+
+System: Given your openness to suggestions, I'll search for a hotel in Paris.
+
+APICall(method='SearchHotel', parameters={ location: Paris, star_rating: 3 })
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 2, 'phone_number': '+33 1 44 72 42 00', 'place_name': 'Aparthotel Adagio Access Paris La Villette', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '28bis Avenue Corentin Cariou, 75019'}, {'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 42 57 14 55', 'place_name': 'Aparthotel Adagio Paris Montmartre', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '10 Place Charles Dullin, 75018'}, {'location': 'Paris', 'number_of_rooms': 3, 'phone_number': '+33 1 48 74 48 71', 'place_name': "Austin'S Saint Lazare HoTel", 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': "26 Rue d'Amsterdam, 75009"}]
+End Search Results
+System: Alright, I found a few options for you in Paris. There's the Aparthotel Adagio Access Paris La Villette, the Aparthotel Adagio Paris Montmartre, and Austin'S Saint Lazare HoTel, all with 3 stars. Would you like me to tell you more about any of them?
+
+User: Oh gosh, uh, sure. Tell me about the first one, the... Aparthotel thingy. La Villette, was it? Sounds kinda fancy, maybe? I don't know.
+
+System: Okay, about the Aparthotel Adagio Access Paris La Villette: it has 2 rooms available, the phone number is +33 1 44 72 42 00, the price per night is $120, and smoking is not allowed. The address is 28bis Avenue Corentin Cariou, 75019. Does that sound like it might work for you, or would you like to hear about the other options?
+
+User: Smoking not allowed, huh? Ugh, that's a bummer. What about the other one? The Montmartre one... tell me 'bout that. Hopefully, they're more chill about stuff.
+
+System: Okay, the Aparthotel Adagio Paris Montmartre has 1 room available, and the price per night is $90. Smoking is allowed there. The phone number is +33 1 42 57 14 55 and the address is 10 Place Charles Dullin, 75018. Does this sound better for you?
+
+User: Smoking is allowed? Okay, that's a plus. Price is cheaper too, nice. Uh... does it have, like, a good view or something? Or is it just, you know, a place to crash? I don't even know what I'm asking... just tell me if it's decent, I guess?
+
+System: Unfortunately, I don't have information about the view or other specific features beyond what I've already mentioned. However, given that smoking is allowed and the price is agreeable, would you like to proceed with this option, or would you prefer to explore Austin'S Saint Lazare HoTel?
+
+User: Ugh, fine, let's just go with the Montmartre one. I can't be bothered looking at more options. How long should I book it for? I dunno... three nights? Yeah, three nights sounds... okay. And, uh, starting... tomorrow? I guess? Just book it, whatever.
+
+System: To confirm, you'd like to book 1 room at the Aparthotel Adagio Paris Montmartre in Paris for 3 nights, starting tomorrow? I'll need the exact date for the booking. Can you confirm the year, month, and day you'd like to check in?
+
+User: Uh... whatever the date is tomorrow. Just... you know, the date after today. I can't even think about calendars right now. Just make it happen, please.
+
+System: Okay, I understand. I will book it for the date after today. But, I still need the exact date for the booking of 1 room at the Aparthotel Adagio Paris Montmartre in Paris for 3 nights. Can you please tell me the exact check-in date, including the year, month, and day?
+
+User: Ugh, you're making me actually think about stuff. Fine, fine... it's 2024, uh... May... and the day after today is... the 9th. So, May 9th, 2024. Just get it done already.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-05-09, location: Paris, number_of_rooms: 1, place_name: Aparthotel Adagio Paris Montmartre, stay_length: 3 })
+
+Search Results
+[{'location': 'Paris', 'number_of_rooms': 1, 'phone_number': '+33 1 42 57 14 55', 'place_name': 'Aparthotel Adagio Paris Montmartre', 'price_per_night': 90, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '10 Place Charles Dullin, 75018', 'check_in_date': '2024-05-09'}]
+End Search Results
+System: Alright, I've booked 1 room at the Aparthotel Adagio Paris Montmartre for 3 nights, starting tomorrow, May 9th, 2024. Is there anything else I can help you with, or are we all set?
+
+User: Nope, that's it. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

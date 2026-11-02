@@ -1,0 +1,73 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in Napa.
+System: Do you have a particular cuisine in mind, or would you prefer to explore something new? If you're open to suggestions, I can recommend a random cuisine for you.
+User: I'm not sure. Maybe something quiet.
+System: Let's explore a quiet dining experience with Vietnamese cuisine. I will search for Vietnamese restaurants in Napa for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Napa, cuisine: Vietnamese})
+Search Results
+
+End Search Results
+System: It seems there are no Vietnamese restaurants available in Napa at the moment. Would you like me to try another cuisine for you? Perhaps something similar or in a different category?
+User: Maybe try Italian cuisine instead.
+System: Certainly, I'll look for Italian restaurants in Napa for you. Please hold on for a moment while I perform the search.
+
+APICall (method='FindRestaurants', parameters={city: Napa, cuisine: Italian})
+Search Results
+[{'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-224-3300', 'price_range': 'expensive', 'restaurant_name': 'Bistro Don Giovanni', 'serves_alcohol': False, 'street_address': '4110 Howard Lane'}, {'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-252-1022', 'price_range': 'expensive', 'restaurant_name': 'Oenotri', 'serves_alcohol': False, 'street_address': '1425 1st Street'}, {'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-254-8006', 'price_range': 'moderate', 'restaurant_name': 'Allegria', 'serves_alcohol': False, 'street_address': '1026 1st Street'}]
+End Search Results
+System: I found a few Italian restaurants in Napa. "Bistro Don Giovanni" is one option, located at 4110 Howard Lane. If you prefer something more moderate in price, "Allegria" at 1026 1st Street might be suitable. Both places do not offer live music or serve alcohol. Would you like more information about any of these options?
+User: I think "Allegria" sounds fine. Could you make a reservation for me there?
+System: Could you please let me know the date, time, and the number of people for the reservation at "Allegria"?
+User: Tomorrow evening at 7 pm for two people.
+System: Thank you for providing the details. I will proceed with making a reservation for two people at "Allegria" in Napa tomorrow evening at 7 pm. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Allegria', city: 'Napa', date: '2023-10-10', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-254-8006', 'price_range': 'moderate', 'restaurant_name': 'Allegria', 'serves_alcohol': False, 'street_address': '1026 1st Street', 'date': '2023-10-10', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation has been successfully made for two people at "Allegria" in Napa on October 10th at 7 pm. If you need further assistance or have any questions, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Berkeley. Could you help me find one?
+System: What type of cuisine are you interested in? For example, American, Italian, or something else?
+User: I'm not too picky about the cuisine, but I do prefer a quiet place. Do you have any suggestions?
+System: Is there a specific price range you're looking for, or should I proceed with searching for restaurants across all price ranges?
+User: I prefer something moderately priced, please.
+System: Let's try that again. I'll look for moderately priced restaurants in Berkeley. To get started, I'll randomly choose a cuisine for you. Let's try with Italian. Please give me a moment. APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found a few moderately priced Italian restaurants in Berkeley for you. One option is Cugini Restaurant, located at 1556 Solano Avenue. Would you like more details about this restaurant, or would you prefer information about another option?
+User: Could you tell me if Cugini Restaurant is a quiet place? I prefer somewhere that's not too loud.
+System: Unfortunately, the search results don't specify whether Cugini Restaurant is a quiet place. However, it does not feature live music, which might contribute to a quieter atmosphere. Would you like to know more about this restaurant, or should I provide details about another option?
+User: I suppose knowing more about Cugini Restaurant would be helpful. Can you tell me if they serve alcohol?
+System: Cugini Restaurant does not serve alcohol. Would you like additional information about Cugini Restaurant, or are you interested in exploring another option?
+User: Could you tell me the address and phone number for Cugini Restaurant? I might need to contact them directly.
+System: Certainly! You can find Cugini Restaurant at 1556 Solano Avenue. If you need to contact them, their phone number is 510-558-9000. Is there anything else you'd like to know or any other assistance I can provide?
+User: No, that's all I need for now. Thanks.
+System: Take care and have a lovely evening!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,78 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in Fremont.
+System: What type of cuisine are you interested in? If you're open to any type, I can suggest something for you.
+User: I prefer American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems there are no available restaurants serving American cuisine in Fremont at the moment. Would you like me to search for a similar cuisine or perhaps try a different city?
+User: Let's search in Union City for American cuisine.
+System: Let me check for American cuisine restaurants in Union City for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Union City, cuisine: American})
+Search Results
+[{'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-429-6860', 'price_range': 'moderate', 'restaurant_name': "Chaplin's Sports Bistro", 'serves_alcohol': True, 'street_address': '29200 Kohoutek Way'}, {'city': 'Union City', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-489-6080', 'price_range': 'inexpensive', 'restaurant_name': "Mcdonald's", 'serves_alcohol': False, 'street_address': '27 Union Square'}, {'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-489-2797', 'price_range': 'moderate', 'restaurant_name': 'Tgi Fridays', 'serves_alcohol': True, 'street_address': '31900 Dyer Street'}]
+End Search Results
+System: I found a few American cuisine restaurants in Union City. One option is Chaplin's Sports Bistro, located at 29200 Kohoutek Way. It has a moderate price range and serves alcohol. Would you like the phone number or information about another restaurant?
+User: Do they have live music at Chaplin's Sports Bistro?
+System: Chaplin's Sports Bistro does not feature live music. Would you like to know about any other features or perhaps consider another restaurant in Union City?
+User: No, that's fine. I would like to reserve a table there. Can you make a reservation for two people at 7:00 PM tomorrow?
+System: Before making the reservation, can you please confirm that you want to book a table for 2 at Chaplin's Sports Bistro in Union City at 7:00 PM tomorrow?
+User: Yes, please confirm the reservation for 2 people at 7:00 PM tomorrow at Chaplin's Sports Bistro.
+System: Great! I'll proceed with the reservation for 2 people at Chaplin's Sports Bistro in Union City at 7:00 PM tomorrow. Please hold on for a moment while I complete the reservation.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Chaplin's Sports Bistro", city: "Union City", time: "19:00", date: "2023-11-08", party_size: 2})
+Search Results
+[{'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-429-6860', 'price_range': 'moderate', 'restaurant_name': "Chaplin's Sports Bistro", 'serves_alcohol': True, 'street_address': '29200 Kohoutek Way', 'date': '2023-11-08', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: The reservation for 2 people at Chaplin's Sports Bistro in Union City at 7:00 PM on November 8th has been successfully made. If you need any more information or assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to find a restaurant in Fremont. Can you help with that?
+System: Sure, I'd be happy to help you find a restaurant in Fremont. Do you have a preference for a specific type of cuisine, or would you like me to suggest one for you?
+User: I'm not sure. Maybe something simple, like American.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems there are no results for American cuisine in Fremont. Would you like me to look for a different type of cuisine in Fremont, or perhaps adjust the price range if you have a preference?
+User: Can you check for Italian cuisine instead?
+System: Let me search for Italian cuisine in Fremont. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant in Fremont called Massimo's. It is located at 5200 Mowry Avenue Ste M and has an expensive price range. They do not have live music, and they do not serve alcohol. Would you like more information or to make a reservation there?
+User: I would like to make a reservation at Massimo's.
+System: For what date and time would you like to make the reservation at Massimo's, and how many people will be in your party?
+User: I'd like to reserve a table for two at Massimo's for tomorrow at 7:00 pm.
+System: To confirm, you would like to reserve a table for two at Massimo's in Fremont for tomorrow at 7:00 pm. I'll proceed with making the reservation. APICall (method='ReserveRestaurant', parameters={restaurant_name: "Massimo's", city: Fremont, time: 19:00, date: YYYY-MM-DD, party_size: 2})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Massimo's in Fremont for two people tomorrow at 7:00 pm has been successfully made. If you have any other questions or need further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

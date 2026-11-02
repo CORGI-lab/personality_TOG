@@ -1,0 +1,62 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel in Vancouver. Can you assist me with that?
+System: Do you have a specific check-in date and the duration of your stay in mind?
+User: I plan to check in on the 15th and stay for five days.
+System: Please confirm whether you'd like to reserve a specific number of rooms for your stay in Vancouver.
+User: I need just one room, please.
+System: Please confirm if you have any preference regarding the star rating or smoking allowance for your hotel in Vancouver.
+User: No smoking, and a 3-star rating will do.
+System: APICall(method='ReserveHotel', parameters={ location: Vancouver, check_in_date: 2023-11-15, stay_length: 5, number_of_rooms: 1, place_name: dontcare })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-697-0202', 'place_name': 'dontcare', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-15', 'stay_length': '5'}]
+End Search Results
+System: The search has returned a hotel option with a 4-star rating, located at 1180 West Hastings Street in Vancouver. It is a non-smoking hotel, and the price per night is $108. Would you like to proceed with this booking?
+User: Is there anything else available with a 3-star rating?
+System: Unfortunately, the search did not return any 3-star hotels matching your criteria in Vancouver. Would you like to try a different star rating or adjust your smoking preference to find other available options?
+User: No, I'll stick with the options I have. Please go ahead and book the 4-star hotel for me.
+System: Please confirm that you would like to book 1 room for 5 days starting from November 15, 2023, at the 4-star hotel located at 1180 West Hastings Street in Vancouver.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ location: Vancouver, check_in_date: 2023-11-15, stay_length: 5, number_of_rooms: 1, place_name: 'dontcare', star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 800-663-1155', 'place_name': 'dontcare', 'price_per_night': 108, 'smoking_allowed': 'False', 'star_rating': '4', 'street_address': '773 Beatty Street', 'check_in_date': '2023-11-15', 'stay_length': '5'}]
+End Search Results
+System: Your reservation has been successfully confirmed at a 4-star hotel located at 773 Beatty Street in Vancouver. The stay is for 5 days, starting from November 15, 2023, with a non-smoking allowance. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to book a hotel in Philadelphia. Can you help with that?
+System: Sure, I'd be happy to help you book a hotel in Philadelphia. Could you please let me know the check-in date and how many days you plan to stay?
+User: Check-in on the 15th, staying for five days.
+System: Great, thank you for providing the details. Could you please let me know how many rooms you will need for your stay?
+User: One room, please.
+System: Thank you for the information. Let me confirm, you want to book one room in Philadelphia with a check-in date of the 15th for a stay of five days. Is there any specific star rating or smoking preference you have for the hotel?
+User: I prefer non-smoking rooms. A 3-star hotel would be fine.
+System: APICall(method='ReserveHotel', parameters={ location: Philadelphia, check_in_date: 2023-11-15, stay_length: 5, number_of_rooms: 1, place_name: dontcare, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': '1', 'phone_number': '+1 215-365-4150', 'place_name': 'dontcare', 'price_per_night': 75, 'smoking_allowed': 'False', 'star_rating': '3', 'street_address': '4509 Island Avenue', 'check_in_date': '2023-11-15', 'stay_length': '5'}]
+End Search Results
+System: Your booking for a 3-star hotel in Philadelphia with a non-smoking room is confirmed. The hotel is located at 4509 Island Avenue, and the price per night is $75. If you need further assistance or have any other requests, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,110 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm kinda hungry, maybe we should find a place to eat in San Francisco? I dunno, whatever's easy.
+
+System: Do you have a particular cuisine in mind, or are you open to suggestions?
+
+User: Um, I guess anything is fine... Maybe Italian? Or, wait, is there, like, any American food? I can't decide.
+
+System: Are you in the mood for Italian or American cuisine?
+
+User: Ugh, I don't know! Surprise me, I guess. Which one is closest? Or, like, has the fewest steps to get a reservation?
+
+System: Since you're open to either Italian or American and want the easiest option for a reservation, I'll look for an American restaurant in San Francisco.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Okay, I found three American restaurants in San Francisco: 1760, 25 Lusk, and 3rd Cousin. 1760 is located at 1760 Polk Street, phone number 415-359-1212. 25 Lusk is at 25 Lusk Street with phone number 415-495-5875, and 3rd Cousin is at 919 Cortland Avenue, phone number 415-814-3709. All three are in the expensive price range. Would you like to make a reservation at any of these restaurants?
+
+User: Expensive, huh? Eh, whatever. Just pick one, I guess. The first one, 1760, is fine.
+
+System: Alright, let's go with 1760. Could you please tell me what day and time you’d like to make a reservation for and how many people will be in your party?
+
+User: Uh, today, I guess? And, like, five people? Or six? I can't remember. Let's say six. And, uh, make it... I dunno, 8 pm?
+
+System: Okay, so you want to make a reservation at 1760 for 6 people at 8 pm today. Is that correct?
+
+User: Yeah, sounds about right. Whatever.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: 1760, city: San Francisco, date: 2019-03-01, party_size: 6, time: 8:00 PM})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street', 'date': '2019-03-01', 'party_size': '6', 'time': '8:00 PM'}]
+End Search Results
+System: Great! I have a table for 6 at 1760 in San Francisco for today at 8 pm. The phone number is 415-359-1212 and the address is 1760 Polk Street. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm kinda hungry, wanna find something to eat in San Francisco, I guess.
+
+System: Given your location, San Francisco, are you in the mood for something specific, or would you like me to suggest a type of cuisine?
+
+User: Ugh, I dunno... maybe Italian? Or, wait, Mexican! Yeah, let's go with Mexican.
+
+System: Alright, let's find some great Mexican spots in San Francisco. Do you have any preferences for the price range – like inexpensive, moderate, or expensive?
+
+User: Eh, whatever's cheapest, I guess.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mexican, price_range: inexpensive})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-660-7701', 'price_range': 'expensive', 'restaurant_name': 'Cala', 'serves_alcohol': True, 'street_address': '149 Fell Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-431-1826', 'price_range': 'expensive', 'restaurant_name': 'Fenix', 'serves_alcohol': True, 'street_address': '1077 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-926-5630', 'price_range': 'expensive', 'restaurant_name': 'Hecho', 'serves_alcohol': True, 'street_address': '2200 Market Street'}]
+End Search Results
+System: It seems all the Mexican restaurants I found in San Francisco are in the expensive price range, including Cala, Fenix, and Hecho. Would you like to explore those, or should I look for restaurants in a moderate price range instead?
+
+User: Expensive, huh? Fine, whatever, show me Cala.
+
+System: Okay, Cala is a Mexican restaurant located at 149 Fell Street in San Francisco. They serve alcohol and the price range is expensive. Their phone number is 415-660-7701. Would you like to know anything else about Cala?
+
+User: Nah, that's cool. Just book it for me.
+
+System: What time and for how many people?
+
+User: Uh... tomorrow, I guess? And, like, four people.
+
+System: And what time would you like to make the reservation for tomorrow?
+
+User: Shoot, I dunno... maybe 7 pm? Yeah, 7 sounds good.
+
+System: Okay, let's book Cala for tomorrow, March 2nd, at 7 pm for a party of four. Does that sound right?
+
+User: Yeah, whatever, that's fine.
+
+System: APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2019-03-02, party_size: 4, restaurant_name: Cala, time: 19:00, cuisine: Mexican})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-660-7701', 'price_range': 'expensive', 'restaurant_name': 'Cala', 'serves_alcohol': True, 'street_address': '149 Fell Street', 'date': '2019-03-02', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Great! Your reservation at Cala for tomorrow, March 2nd, at 7 pm for four people is confirmed. If you need anything else, just let me know.
+
+User: Cool, cool. What's their address again? Just wanna, like, see where it is.
+
+System: Cala is located at 149 Fell Street in San Francisco. Is there anything else I can help you with?
+
+User: Yeah, 'kay, that's it. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,60 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in Fremont.
+System: Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: I prefer Italian food.
+System: Great choice! I'll find some Italian restaurants in Fremont for you. Please give me a moment. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I've found an Italian restaurant in Fremont for you. It's called Massimo's, located at 5200 Mowry Avenue Ste M. It is an expensive option and does not serve alcohol or have live music. Would you like more information or assistance with anything else related to this restaurant?
+User: No, that's fine. Please go ahead and make a reservation for me.
+System: Sure, I can help with that. Could you please let me know the date, time, and the number of people for the reservation at Massimo's?
+User: The reservation is for tomorrow at 7:00 pm for two people.
+System: To confirm, you would like to make a reservation for two people at Massimo's in Fremont for tomorrow at 7:00 pm. Is that correct?
+User: Yes, that's correct.
+System: Great! I will make the reservation for you now. APICall (method='ReserveRestaurant', parameters={restaurant_name: "Massimo's", city: Fremont, time: '19:00', date: '2023-10-28', party_size: 2})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M', 'date': '2023-10-28', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Massimo's in Fremont for two people tomorrow at 7:00 pm has been successfully made. If you need any further assistance or have any other questions, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a restaurant in Fremont.
+System: Do you have a particular type of cuisine in mind, or would you like me to suggest one for you?
+User: Something simple, like American cuisine, would be fine.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It appears there are no American cuisine restaurants available in Fremont at the moment. Would you like me to search for restaurants with a similar cuisine or in a nearby city?
+User: Let's try searching in a nearby city instead. How about Newark?
+System: I'll search for American cuisine restaurants in Newark for you. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: Newark, cuisine: American})
+Search Results
+[{'city': 'Newark', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-445-0660', 'price_range': 'moderate', 'restaurant_name': "Chuck E. Cheese's", 'serves_alcohol': True, 'street_address': '39839 Mowry School Road', 'date': '2019-03-07', 'party_size': 2, 'time': '17:30'}]
+End Search Results
+System: I found an American cuisine restaurant in Newark for you. It's called Chuck E. Cheese's, located at 39839 Mowry School Road. Would you like additional details or assistance with a reservation?
+User: No, that's okay. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

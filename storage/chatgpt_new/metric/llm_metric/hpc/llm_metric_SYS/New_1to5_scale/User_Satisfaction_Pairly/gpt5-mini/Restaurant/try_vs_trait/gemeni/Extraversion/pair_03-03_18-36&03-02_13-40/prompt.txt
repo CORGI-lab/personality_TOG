@@ -1,0 +1,139 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm absolutely starving and in the mood for some seriously good food. Let's find a place in San Francisco, somewhere lively and fun!
+
+System: Alright! San Francisco is buzzing with amazing restaurants. To make sure we find the perfect spot for your outgoing personality, do you have a particular cuisine in mind, or are you open to suggestions? I'm thinking something exciting like Mexican or maybe Vietnamese!
+
+User: Ooh, I'm feeling adventurous! How about we explore some Vietnamese places? I'm always up for trying something new and vibrant!
+
+System: Fantastic choice! Vietnamese cuisine is bursting with flavor and energy, just like you! I'm happy to help you explore some Vietnamese options in San Francisco.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Vietnamese})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street'}]
+End Search Results
+System: Great news! I found three awesome Vietnamese restaurants in San Francisco. Anh Hong, Co Nam, and Aux Delices. Anh Hong and Co Nam serve alcohol, perfect for a lively evening! All are moderately priced. Which one sparks your interest the most? Or, tell me what you're looking for in a restaurant and I can help narrow it down.
+
+User: Tell me more about Anh Hong! What's the vibe like, and where can I find it? I'm all about atmosphere!
+
+System: Alright! Anh Hong is located at 808 Geary Street. It has a moderate price range and serves alcohol, perfect for a fun and lively atmosphere that matches your personality. Is there anything else you'd like to know about it, or are you ready to explore another option?
+
+User: That sounds promising! Does Anh Hong have outdoor seating? I love people-watching while I eat!
+
+System: I don't have information about whether Anh Hong has outdoor seating. But I can tell you that it's located at 808 Geary Street, it has a moderate price range and serves alcohol. Would you like to explore other options, or perhaps consider another restaurant?
+
+User: Hmm, okay. Since I can't confirm the outdoor seating, let's see what else is out there. How about we switch gears and try to find a place with live music? That always makes for a fun night out!
+
+System: Okay, switching gears to live music! Do you have a cuisine preference or should I search for restaurants with live music in San Francisco that have any type of cuisine?
+
+User: Surprise me! Anything with a good beat and a lively crowd!
+
+System: Alright, you're in for a treat! Let's find you a place with live music in San Francisco, no cuisine preference.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, has_live_music: True, cuisine: dontcare})
+
+Search Results
+
+End Search Results
+System: I am sorry, I did not find any restaurants with live music in San Francisco. Would you like me to search for restaurants with live music in another city or with different cuisine?
+
+User: Bummer! How about we stick with San Francisco, but maybe try a different vibe? Are there any happening Italian spots you know of? I'm craving some good pasta!
+
+System: Alright, let's dive into the vibrant Italian scene in San Francisco! I'm sure we can find a place to satisfy your craving for good pasta.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Here we go! I found three Italian restaurants that might catch your eye: 54 Mint Ristorante Italiano, A16, and Allegro Romano. 54 Mint and A16 both serve alcohol, perfect for a lively dinner! They are all in the moderate price range. Which one sounds the most exciting to you? Or tell me what else you're looking for and I can help narrow it down!
+
+User: Ooh, A16 sounds intriguing! Tell me more - what's the atmosphere like and where can I find it? I'm all about those hidden gems!
+
+System: Alright! A16 is located at 2355 Chestnut Street in San Francisco, perfect for a night out in the city! It has a moderate price range and serves alcohol. Does that sound like the kind of place you're looking for? Or is there anything else you'd like to know?
+
+User: Sounds perfect! Let's book a table there for, say, Friday night at 8 PM for four people. I'm super excited!
+
+System: Okay, let's get that table booked for you and your friends! Just to confirm, you'd like a reservation at A16 in San Francisco for this Friday at 8 PM for a party of four. Is that all correct?
+
+User: Yes, that's absolutely right! Book it!
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: A16, city: San Francisco, date: 2024-03-08, time: 20:00, party_size: 4, cuisine: Italian})
+```
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2024-03-08', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Awesome! I have a table for four at A16 in San Francisco this Friday at 8 PM. Get ready for some fantastic Italian food and a great time with your friends! Is there anything else I can help you with?
+
+User: Perfect! That's all set, then. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm absolutely starving and in the mood for a fun night out. Let's find a fantastic restaurant in San Francisco!
+
+System: Given your enthusiasm, I'm sure we can find the perfect spot in San Francisco! Do you have a particular type of cuisine in mind, or are you open to suggestions?
+
+User: Oh, I'm always up for anything exciting! Surprise me with your best recommendation, but maybe something lively and upbeat? I'm really craving a fun atmosphere!
+
+System: Since you're open to suggestions and looking for a lively atmosphere, how about we explore some restaurants with live music? Given your adventurous spirit, how about we try something different, like Vietnamese cuisine?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Vietnamese, has_live_music: True})
+
+Search Results
+
+End Search Results
+System: Since you're open to suggestions and looking for a lively atmosphere, how about we explore some restaurants with live music? Given your adventurous spirit, I recommend we start with a cuisine known for its vibrant flavors and communal dining experience. How about Ethiopian?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, has_live_music: True, cuisine: Ethiopian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': 5, 'time': '11:30'}]
+End Search Results
+System: Great! I found one place that fits the bill: Sheba Piano Lounge, an Ethiopian restaurant at 1419 Fillmore Street in San Francisco. They have live music and serve alcohol. Does this sound like the kind of lively place you're looking for?
+
+User: Oh, Ethiopian with live music sounds amazing! Can we book a table there for, say, tomorrow night? I'm thinking around 8 PM for a group of four.
+
+System: Okay, let's get that booked for you! Just to confirm, that's Sheba Piano Lounge in San Francisco, Ethiopian cuisine, with live music, for tomorrow, March 2nd, at 8 PM, for a party of four. Is that all correct?
+
+User: Absolutely perfect! Let's lock that in!
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Sheba Piano Lounge, city: San Francisco, date: 2019-03-02, time: 20:00, party_size: 4, cuisine: Ethiopian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-02', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Excellent! I've confirmed your reservation at Sheba Piano Lounge for tomorrow, March 2nd, at 8 PM for a party of four. You're all set to enjoy some Ethiopian cuisine and live music! Is there anything else I can assist you with regarding this reservation, or perhaps anything else I can help you with in San Francisco?
+
+User: Woo-hoo! This is going to be awesome! Just one quick question - do they have a good selection of cocktails? It's not a party without some tasty drinks!
+
+System:  System: I understand that cocktails are essential for a fun night out! Yes, Sheba Piano Lounge serves alcohol, so they should have a selection of cocktails. Is there anything else you'd like to know about Sheba Piano Lounge, or anything else I can help you with?
+
+User: Fantastic! I'm so excited! Tell me, do they have a website or maybe some pictures online? I'd love to get a sneak peek of the place before we go!
+
+System: I'm glad to hear you're excited! Unfortunately, I don't have access to external websites or images for Sheba Piano Lounge. However, I can tell you that it's located at 1419 Fillmore Street in San Francisco, it offers Ethiopian cuisine, features live music, and serves alcohol. It has a moderate price range. Is there anything else I can help you with?
+
+User: Alright, cool! Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

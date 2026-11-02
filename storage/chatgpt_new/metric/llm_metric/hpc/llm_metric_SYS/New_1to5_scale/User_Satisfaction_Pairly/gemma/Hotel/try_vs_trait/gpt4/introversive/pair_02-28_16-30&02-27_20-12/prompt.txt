@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Seattle. Can you help me find one?
+System: Sure! Do you have any specific preferences regarding the star rating, smoking allowance, or number of rooms? Let me know so I can find the best options for you.
+User: I prefer a quiet place, maybe with a 4-star rating. I don't need smoking allowed. Just one room is fine.
+System: Great! Let me look for a 4-star hotel in Seattle that matches your preferences. Please hold on for a moment while I search for the best options. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-448-8600', 'place_name': 'Hotel Andra', 'price_per_night': 372, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2000 4th Avenue'}]
+End Search Results
+System: I found a 4-star hotel in Seattle that matches your preferences: Crowne Plaza Seattle Downtown. It offers a quiet atmosphere with a non-smoking policy, and the price is $120 per night. Would you like more details about this hotel or need information on any other options?
+User: I think that sounds suitable. Can you tell me the address and how long it takes to walk to the nearest coffee shop?
+System: The address of the Crowne Plaza Seattle Downtown is 1113 6th Avenue. Unfortunately, I don't have information on how long it takes to walk to the nearest coffee shop. Would you like me to assist you with anything else, or are you ready to proceed with a reservation?
+User: I'm ready to proceed with a reservation. Please book one room for me at the Crowne Plaza Seattle Downtown. I plan to check in on the 15th and stay for four nights.
+System: Please confirm to book 1 room for 4 nights at the Crowne Plaza Seattle Downtown starting from 2023-11-15 in Seattle.
+User: Yes, that is confirmed.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Seattle, number_of_rooms: 1, place_name: Crowne Plaza Seattle Downtown, stay_length: 4})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Crowne Plaza Seattle Downtown has been successfully confirmed. Is there anything else you would like to know or need assistance with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to find a hotel in Berlin. Can you help with that?
+System: Could you let me know if you have a preference for the star rating of the hotel? If you have any other specific requirements such as smoking allowance, please mention them as well.
+User: No specific star rating in mind. Just need a quiet place, and smoking should be allowed.
+System: APICall(method='SearchHotel', parameters={ location: Berlin, smoking_allowed: True })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 383890', 'place_name': 'Holiday Inn Berlin - City West', 'price_per_night': 408, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Rohrdamm 80, 13629'}]
+End Search Results
+System: I found a few options for you in Berlin. The Adina Apartment Hotel Berlin Mitte is a quiet 4-star hotel where smoking is allowed, and the price per night is 160. Would you like more information about this hotel, or should I provide details on another option?
+User: Could you provide more details about the Adina Apartment Hotel Berlin Mitte, please? I'm interested in the location and amenities.
+System: The Adina Apartment Hotel Berlin Mitte is located at Platz vor dem Neuen Tor 6, 10115, Berlin. As for amenities, I'm afraid the specific details aren't available in the current search results. If you have any other questions or need further assistance, feel free to let me know.
+User: That location seems alright. Could you tell me about the number of rooms available and the total cost for a week's stay?
+System: The Adina Apartment Hotel Berlin Mitte has 2 rooms available. For a week's stay, the total cost would be 1,120, since the price per night is 160. Would you like to proceed with a reservation or need further assistance?
+User: Yes, please make a reservation for me.
+System: To proceed with the reservation, could you please confirm the check-in date and the number of rooms you would like to book?
+User: I'll need just one room, and I'd like to check in on the 15th of this month.
+System: Please confirm that you would like to book 1 room at the Adina Apartment Hotel Berlin Mitte for a week's stay starting from 2023-10-15. Once confirmed, I will proceed with the reservation.
+User: Yes, that's correct. Please go ahead with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Berlin, number_of_rooms: 1, place_name: Adina Apartment Hotel Berlin Mitte, stay_length: 7 })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your reservation at the Adina Apartment Hotel Berlin Mitte has been successfully confirmed. If you need further assistance or have any other inquiries, please let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

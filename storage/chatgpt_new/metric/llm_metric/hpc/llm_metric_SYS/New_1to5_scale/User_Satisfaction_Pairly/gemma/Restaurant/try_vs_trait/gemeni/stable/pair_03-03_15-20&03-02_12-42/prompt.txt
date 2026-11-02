@@ -1,0 +1,93 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco.
+
+System: Okay, I can help you with that. Is there a particular type of cuisine you're interested in?
+
+User: I'm open to suggestions, but something not too spicy would be appreciated. Perhaps Italian?
+
+System: Okay, Italian sounds good! I can help you find an Italian restaurant in San Francisco. APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found three Italian restaurants in San Francisco: 54 Mint Ristorante Italiano, A16, and Allegro Romano. All are moderately priced. Would you like to know more about any of them?
+
+User: 54 Mint Ristorante Italiano sounds interesting. Could you tell me its address?
+
+System: The address for 54 Mint Ristorante Italiano is 16 Mint Plaza, San Francisco.
+
+User: Okay, that sounds like a pleasant spot. Does 54 Mint Ristorante Italiano serve alcohol?
+
+System: Yes, 54 Mint Ristorante Italiano serves alcohol. Would you like to make a reservation there?
+
+User: Yes, let's make a reservation. I'll need a table for two, this Saturday at 7:00 PM.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: 54 Mint Ristorante Italiano, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 2})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Great! I have a table for two at 54 Mint Ristorante Italiano in San Francisco for this Saturday, March 2nd, at 7:00 PM. I trust the time is correct?
+
+User: Yes, the time is correct. Let's confirm the reservation.
+
+System: Excellent! Your reservation at 54 Mint Ristorante Italiano for two people on Saturday, March 2nd, at 7:00 PM is now confirmed. I hope you enjoy your dining experience! Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. I'm open to suggestions.
+
+System: Given your openness, how about we explore some Vietnamese cuisine in San Francisco?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Vietnamese})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street'}]
+End Search Results
+System: Okay, I see three Vietnamese restaurants in San Francisco: Anh Hong, Aux Delices, and Co Nam. Anh Hong and Co Nam serve alcohol, while Aux Delices does not have live music. All three are in the moderate price range. Would you like more information on any of these?
+
+User: That's a helpful start. Could you tell me a bit more about Anh Hong? Perhaps the address and phone number?
+
+System: Certainly. Anh Hong is located at 808 Geary Street in San Francisco, and their phone number is 415-885-5180.
+
+User: That's good to know. And what kind of food do they offer exactly? I'm in the mood for something specific, maybe.
+
+System: Could you specify what kind of Vietnamese dishes you are interested in? That might help narrow down your options.
+
+User: I'm not particularly craving anything specific, just good, authentic Vietnamese food. Are there any specialties or dishes they're known for?
+
+System: Since I don't have information about their specialties, I recommend checking their online menu or giving them a call. Would you like me to provide the phone number again?
+
+User: Yes, please provide the phone number again. I'll give them a call to inquire about their menu. It's always good to have a direct line.
+
+System: Okay, the phone number for Anh Hong is 415-885-5180. Feel free to call them to discuss their menu.
+
+User: Thank you. I will contact them to inquire.
+
+System: Okay, please let me know if you need anything else after your call. I'm here to help if you decide to explore other options or make a reservation.
+
+User: Alright, I'll contact them directly. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm in San Francisco, and I'm in the mood for some food. Can you help me find a place to eat? I don't really care what kind of food it is, as long as it's tasty.
+System: Sure, I'd be happy to help you find a place to eat in San Francisco. Since you're open to any cuisine, let's try something interesting. How about we explore some Ethiopian cuisine? Let me find some options for you. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Ethiopian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': 5, 'time': '11:30'}, {'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': False, 'phone_number': '415-285-2728', 'price_range': 'inexpensive', 'restaurant_name': 'Cafe Ethiopia', 'serves_alcohol': False, 'street_address': 'San Francisco'}]
+End Search Results
+System: I found a couple of Ethiopian restaurants in San Francisco for you. One option is Sheba Piano Lounge, which features live music and serves alcohol. It's located at 1419 Fillmore Street and falls in the moderate price range. Alternatively, there's Cafe Ethiopia, which is an inexpensive option that does not serve alcohol. What do you think? Would you like more information on either of these, or do you have another preference?
+User: I guess the Sheba Piano Lounge sounds alright. Can you make a reservation for me there? I'm not too picky about the time or anything, just whenever they have a spot.
+System: I'll check the availability for a reservation at Sheba Piano Lounge for today. Could you please let me know how many people will be in your party?
+User: Uh, let's go with three people for the reservation. 
+System: Let's make sure we have everything needed for the reservation. Can you please provide me with a preferred time for your reservation at Sheba Piano Lounge in San Francisco?
+User: Just book it for whenever they have a spot. I don't really have a specific time in mind.
+System: Great, I'll proceed to make a reservation for three people at Sheba Piano Lounge in San Francisco. I'll book it for the first available spot today. Let me confirm the reservation for you. APICall (method='ReserveRestaurant', parameters={restaurant_name: Sheba Piano Lounge, city: San Francisco, party_size: 3, date: 2019-03-01, time: 11:30})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': '3', 'time': '11:30'}]
+End Search Results
+System: Your reservation for three people at Sheba Piano Lounge in San Francisco is confirmed for today at 11:30. Enjoy the live music and the culinary experience! If you need their contact number, it's 415-440-7414. Let me know if there's anything else I can assist you with.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm kinda in the mood for some food. Can you help me find a place to eat in San Francisco?
+System: Do you have a particular type of cuisine in mind, or are you open to trying something new? If you're open, I can suggest a random cuisine for you.
+User: I dunno, maybe something with pasta? Italian could work, I guess.
+System: Let's find you an Italian restaurant in San Francisco. Please hold on for a moment while I search for options. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco for you. How about trying 54 Mint Ristorante Italiano? It's located at 16 Mint Plaza, and they serve alcohol. Would you like more details about this place, or perhaps another option?
+User: Is there another option? Maybe something cheaper or with live music?
+System: Sure, let me check if there are any Italian restaurants in San Francisco with a lower price range or live music. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: inexpensive, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found a couple of Italian restaurants in San Francisco with live music. One of them is Fior D'italia, located at 2237 Mason Street, and the other is Zingari Ristorante + Jazz Bar at 501 Post Street. Both are in the expensive price range and serve alcohol. Would you be interested in either of these, or do you want to look at more options?
+User: Hmm, live music sounds fun, but expensive isn't really my thing right now. Can you find something more budget-friendly?
+System: Let's see if we can find a more budget-friendly Italian restaurant for you in San Francisco. I'll search for options in a moderate price range that might still give you a great experience. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: The options I found earlier in the moderate price range are your best bet for a more budget-friendly Italian restaurant. Would you like to consider A16, located at 2355 Chestnut Street? It doesn't have live music, but it does serve alcohol. Let me know if you'd like more details about this place or another option.
+User: Eh, A16 sounds alright. Can you just make a reservation there for me? I'm thinking maybe tomorrow evening, and it'll probably be for four people.
+System: For making a reservation at A16, could you please confirm the time for tomorrow evening?
+User: Uh, let's say around 7 pm or whenever they have a spot open. I'm not too picky about the exact time.
+System: I'll proceed with making a reservation for four people at A16 in San Francisco for tomorrow evening around 7 pm. Let me check the availability and confirm the booking for you. APICall (method='ReserveRestaurant', parameters={restaurant_name: A16, city: San Francisco, time: 19:00, date: [YYYY-MM-DD], party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '[YYYY-MM-DD]', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation for four people at A16 in San Francisco has been successfully made for tomorrow evening at 7 pm. If you need the address, it's 2355 Chestnut Street. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

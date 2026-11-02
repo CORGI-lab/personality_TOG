@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in San Francisco. Maybe something with Italian food?
+System: Is there a specific price range you have in mind for the Italian restaurant in San Francisco, or should I look for all options available?
+User: Uh, I haven't really thought about the price. Just show me whatever's out there.
+System: APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no available search results for Italian restaurants in San Francisco at the moment. Would you like to try another cuisine or perhaps a different city?
+User: I guess we could try looking for Mexican food instead.
+System: Let me search for Mexican restaurants in San Francisco for you. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, price_range: dontcare})
+Search Results
+
+End Search Results
+System: It appears there are no available search results for Mexican restaurants in San Francisco either. Would you like to explore another cuisine or consider a different city altogether?
+User: Alright, let's just see what you can find for Chinese food in San Francisco.
+System: Let me search for Chinese restaurants in San Francisco for you. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Chinese, price_range: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no available search results for Chinese restaurants in San Francisco at the moment. Would you like to try a different cuisine or perhaps explore options in another city?
+User: Okay, let's switch things up and look for any restaurant in San Francisco, doesn't matter the cuisine.
+System: Let's find a restaurant for you in San Francisco, regardless of the cuisine. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: dontcare, price_range: dontcare})
+Search Results
+
+End Search Results
+System: It appears there are still no available search results for any restaurants in San Francisco at the moment. Would you like to consider looking for restaurants in a different city, or perhaps specify additional preferences?
+User: Eh, let's just try looking for anything in Oakland then. I'm not too picky right now.
+System: Let's search for any restaurant in Oakland for you. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: dontcare, price_range: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no available search results for any restaurants in Oakland at the moment. Would you like to try another city, or perhaps provide more specific preferences such as a particular cuisine or price range?
+User: How about we just try Berkeley? I'm not really sure what I want, so anything's fine.
+System: Let's search for any restaurant in Berkeley for you. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: dontcare, price_range: dontcare})
+Search Results
+
+End Search Results
+
+Dialogue B:
+  User: I'm thinking of grabbing something to eat. Maybe a place in San Francisco?
+System: Do you have a particular type of cuisine in mind, or are you open to suggestions?
+User: Umm, not really sure. Maybe something like Italian? Or, you know, whatever's good and not too fancy.
+System: Great choice! I'll look for some Italian restaurants in San Francisco with a moderate price range. Give me a moment. APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that might suit your taste. How about 54 Mint Ristorante Italiano, located at 16 Mint Plaza? It's moderately priced and serves alcohol. If you need more options, there's also A16 on Chestnut Street and Allegro Romano on Jones Street. Would you like more details on any of these, or is there something else you're looking for?
+User: I guess 54 Mint sounds alright. Can you just book a table for me there? Like, maybe for tonight?
+System: Sure, I can help with that. Could you please provide the time you’d like the reservation for, and also confirm the number of people in your party?
+User: Let's just say around 7-ish, and make it for 4 people. 
+System: Thank you for providing the details. Just to confirm, you'd like to book a table for 4 people at 54 Mint Ristorante Italiano in San Francisco at 7:00 PM tonight. Is that correct?
+User: Yeah, that sounds about right. Go ahead and book it.
+System: Great! I'll proceed with the reservation for you. APICall (method='ReserveRestaurant', parameters= {restaurant_name: '54 Mint Ristorante Italiano', city: San Francisco, time: 19:00, party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at 54 Mint Ristorante Italiano in San Francisco for 4 people at 7:00 PM tonight has been successfully made. If you need to contact them, their phone number is 415-543-5100. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

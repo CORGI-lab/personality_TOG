@@ -1,0 +1,110 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm absolutely starving and in the mood for something fun. Let's find a great place to eat in San Francisco!
+
+System: Great! Is there a particular type of cuisine you're interested in?
+
+User: Oh, so many choices! I'm feeling adventurous, so surprise me! What are the most popular and lively restaurants in San Francisco right now? Somewhere with a great atmosphere, you know?
+
+System: Since you're open to anything, how about I surprise you with a restaurant that serves American cuisine?
+
+User: Ooh, American sounds good! But let's make it interesting. Does this place have a happening bar scene and maybe some live music to get the night going?
+
+System: ```
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, has_live_music: True, serves_alcohol: True})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-986-0069', 'price_range': 'expensive', 'restaurant_name': "John's Grill", 'serves_alcohol': True, 'street_address': '63 Ellis Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-956-2013', 'price_range': 'moderate', 'restaurant_name': 'Hard Rock Cafe', 'serves_alcohol': True, 'street_address': '39 Pier #256'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-384-9365', 'price_range': 'moderate', 'restaurant_name': "Mr. Tipple's Recording Studio", 'serves_alcohol': True, 'street_address': '39 Fell Street'}]
+End Search Results
+System: I found three restaurants in San Francisco that serve American cuisine, have live music, and serve alcohol. They are John's Grill, Hard Rock Cafe, and Mr. Tipple's Recording Studio. John's Grill is in the expensive price range, while Hard Rock Cafe and Mr. Tipple's Recording Studio are in the moderate price range. Would you like to know more about any of them?
+
+User: Tell me more about Mr. Tipple's Recording Studio! Sounds like a blast!
+
+System: Okay, Mr. Tipple's Recording Studio is located at 39 Fell Street, San Francisco, and the price range is moderate. They have live music and serve alcohol. Their phone number is 415-384-9365. Would you like to make a reservation?
+
+User: Yes, let's do it! I want to book a table at Mr. Tipple's Recording Studio!
+
+System: Great! To make a reservation, I need to know the date and time you'd like to book and how many people will be in your party.
+
+User: Awesome! Let's make it for tonight, say around 8 PM? And we'll be a party of four ready to have some fun!
+
+System: ```system
+Okay, so that's a table for four at Mr. Tipple's Recording Studio in San Francisco for tonight at 8 PM. Could you please confirm the date for the reservation?
+```
+User: Oh, you're right! Silly me. Let's make that reservation for tonight, which is October 3rd. Can't wait!
+
+System: ```system
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Mr. Tipple's Recording Studio, city: San Francisco, date: 2019-10-03, time: 8:00 PM, party_size: 4})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-384-9365', 'price_range': 'moderate', 'restaurant_name': "Mr. Tipple's Recording Studio", 'serves_alcohol': True, 'street_address': '39 Fell Street', 'date': '2019-10-03', 'party_size': '4', 'time': '8:00 PM'}]
+End Search Results
+System: Perfect! I have successfully booked a table for four at Mr. Tipple's Recording Studio for tonight, October 3rd, at 8 PM. Is there anything else I can assist you with?
+
+User: That’s fantastic! You've been a great help! Can you just double-check to make sure they have a good selection of cocktails? We're all pretty thirsty!
+
+System: Yes, they do serve alcohol. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm absolutely starving and in the mood for something amazing in San Francisco! Let's find a restaurant, maybe even book it right away. I'm open to suggestions, what have you got?
+
+System: Since you're open to suggestions and in San Francisco, how about we explore some Italian cuisine? It's a popular choice!
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Okay, great! I see three Italian restaurants in San Francisco: 54 Mint Ristorante Italiano, A16, and Allegro Romano. 54 Mint and A16 both serve alcohol and have a moderate price range, while Allegro Romano does not serve alcohol and also has a moderate price range. Which one sounds most appealing to you?
+
+User: Ooh, Italian sounds fantastic! Tell me more about 54 Mint Ristorante Italiano and A16 – which one has a livelier atmosphere, you think? I'm looking for a place with a bit of buzz!
+
+System: Both 54 Mint Ristorante Italiano and A16 serve alcohol and are moderately priced. Unfortunately, I don't have information about the atmosphere of either restaurant. Would you like to know their addresses or phone numbers to help you decide?
+
+User: Hmm, tough choice! Since you can't tell me about the atmosphere, let's go with 54 Mint Ristorante Italiano. Can you book a table for me there? I'm thinking tomorrow night would be perfect.
+
+System: Great choice! What time tomorrow night would you like to reserve a table at 54 Mint Ristorante Italiano, and how many people will be in your party?
+
+User: Fantastic! Let's do 7:30 PM for four people. I'm so excited!
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: 54 Mint Ristorante Italiano, city: San Francisco, date: 2019-03-02, time: 19:30, party_size: 4, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2019-03-02', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Excellent! I've made a reservation for you at 54 Mint Ristorante Italiano in San Francisco for tomorrow, March 2nd, at 7:30 PM for a party of four.
+
+Just to confirm, the restaurant is located at 16 Mint Plaza and their phone number is 415-543-5100. They serve alcohol and the price range is moderate.
+
+Is there anything else I can help you with regarding this reservation or any other dining needs?
+
+User: Perfect, that's all set! Just one last thing - can you double-check if they have any special events or live music that night? We're always up for a bit of extra fun!
+
+System: I've checked your reservation at 54 Mint Ristorante Italiano for tomorrow, March 2nd, at 7:30 PM for four people.
+
+Unfortunately, my information doesn't specify whether they have any special events or live music that night. You may want to call them directly at 415-543-5100 to inquire about special events or live music. Otherwise, is there anything else?
+
+User: Okay, great! I'll give them a quick call to check. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

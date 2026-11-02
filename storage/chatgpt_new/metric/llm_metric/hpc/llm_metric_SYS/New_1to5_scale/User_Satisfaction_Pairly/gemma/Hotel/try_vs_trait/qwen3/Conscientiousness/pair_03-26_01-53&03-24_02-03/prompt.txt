@@ -1,0 +1,92 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need to book a 5-star, non-smoking hotel in London for two rooms. Could you help me find suitable options?
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 5, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7377 4390', 'place_name': "Batty Langley'S Hotel", 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '12 Folgate Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 3327 4142', 'place_name': 'Chelsea Bridge Apartments', 'price_per_night': 390, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '124 Prince Of Wales Drive'}]
+End Search Results
+System: 
+
+I found a 5-star non-smoking hotel in London for two rooms: 45 Park Lane at £330 per night. Would you like to see more options?
+User: 
+
+Could you please provide the street address and check-in time for 45 Park Lane?
+System: 
+
+The street address for 45 Park Lane is 45 Park Lane. Check-in time details are not available. Please provide your check-in date and the number of days you'd like to stay.
+User: 
+
+I need to check in on June 15th for five days.
+System: 
+
+Confirming your booking: 2 rooms at 45 Park Lane in London, check-in on 2023-06-15 for 5 days. Is this correct?
+User: 
+
+Yes, please reserve it.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: '45 Park Lane', check_in_date: '2023-06-15', stay_length: 5, location: 'London', number_of_rooms: 2 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2023-06-15'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I need to book a hotel in Vancouver. Please search for a 4-star or higher, non-smoking hotel with two rooms for a 5-day stay starting October 15th.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'Vancouver', star_rating: 4, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street'}]
+End Search Results
+System: 
+
+I found a suitable option: Delta Hotels By Marriott Vancouver Downtown Suites at 550 West Hastings Street. It's a 4-star, non-smoking hotel with a nightly rate of $324. Would you like to proceed with booking two rooms for your 5-day stay starting October 15th?
+User: 
+
+Yes, please reserve two rooms at Delta Hotels By Marriott Vancouver Downtown Suites for a 5-day stay starting October 15th.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Delta Hotels By Marriott Vancouver Downtown Suites', check_in_date: '2023-10-15', stay_length: 5, location: 'Vancouver', number_of_rooms: 2 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your reservation at Delta Hotels By Marriott Vancouver Downtown Suites in Vancouver is confirmed. Check-in on October 15th, 2023, with a nightly rate of $324. The address is 550 West Hastings Street, and the hotel is a non-smoking 4-star property. Contact number: +1 844-254-5048. Is there anything else I can assist you with?
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

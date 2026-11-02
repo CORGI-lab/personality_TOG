@@ -1,0 +1,125 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in London.
+
+System: Okay, I can help with that. I will search for hotels in London. Do you have any preferences for the star rating?
+
+User: Uh, maybe just a three-star.
+
+System: APICall(method='SearchHotel', parameters={location: London, star_rating: 3})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7403 4299', 'place_name': 'Accommodation London Bridge', 'price_per_night': 204, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '58 Great Dover Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7834 0205', 'place_name': 'Airways Hotel London Victoria', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': "29-31 Saint George's Drive"}]
+End Search Results
+System: Okay, I see three hotels that match your request. Abc Hyde Park Hotel, Accommodation London Bridge, and Airways Hotel London Victoria. Would you like to know more about any of them?
+
+User: Just... the first one. Abc Hyde Park Hotel.
+
+System: Okay. Abc Hyde Park Hotel has 3 stars, and it's located at 121 Sussex Gardens in London. The price per night is $102, and the phone number is +44 20 7706 4660. They do not allow smoking, and they have 1 room available. Does this sound suitable?
+
+User: Okay
+System: , that sounds fine. Can you book it?
+
+User: Yes, please. Book it for me.
+
+System: Okay. To book the Abc Hyde Park Hotel, I need to know the check-in date and how many days you'll be staying. Could you please provide that information?
+
+User: Just... book it for tomorrow for one night.
+
+System: Okay, I can help you with that. To confirm, you want to book 1 room at the Abc Hyde Park Hotel in London, checking in tomorrow for one night. Is that correct?
+
+User: Yes, that's right.
+
+System: APICall(method='ReserveHotel', parameters={location: London, place_name: Abc Hyde Park Hotel, check_in_date: 2024-07-02, stay_length: 1, number_of_rooms: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-07-02'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-07-02'}]
+End Search Results
+System: Okay, your booking at Abc Hyde Park Hotel in London for tomorrow night is confirmed. The price is $102. The address is 121 Sussex Gardens, and the phone number is +44 20 7706 4660. Is there anything else I can assist you with?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in London.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Uh, maybe a three-star?
+
+System: Okay, let me see what I can find.
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 3 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7403 4299', 'place_name': 'Accommodation London Bridge', 'price_per_night': 204, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '58 Great Dover Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7834 0205', 'place_name': 'Airways Hotel London Victoria', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': "29-31 Saint George's Drive"}]
+End Search Results
+System: I found three 3-star hotels in London: Abc Hyde Park Hotel, Accommodation London Bridge, and Airways Hotel London Victoria. Would you like to know more about any of these?
+
+User: Abc Hyde Park Hotel... that sounds okay.
+
+System: Okay. Abc Hyde Park Hotel has 3 stars, and it's located at 121 Sussex Gardens. The price per night is $102, and their phone number is +44 20 7706 4660. They do not allow smoking and have 1 room available. Does this sound good?
+
+User: Yes, that sounds… acceptable.
+
+System: Great. How many rooms would you like to reserve?
+
+User: Just one, I guess.
+
+System: Okay, and for what date would you like to reserve the room, and how many nights will you be staying?
+
+User: Um… February 10th, for two nights.
+
+System: Okay, so you want to reserve 1 room at Abc Hyde Park Hotel in London for two nights starting on February 10th?
+
+User: Yes, that's right.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-02-10, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 2 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-02-10'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-02-10'}]
+End Search Results
+System: Okay, I have two hotels for you: Abc Hyde Park Hotel and Ascot Hyde Park Hotel. Abc Hyde Park Hotel has 1 room available and Ascot Hyde Park Hotel has 2 rooms available. Do you have a preference?
+
+User: Abc Hyde Park Hotel is fine.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={'check_in_date': '2024-02-10', 'location': 'London', 'number_of_rooms': 1, 'place_name': 'Abc Hyde Park Hotel', 'stay_length': 2})
+```
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-02-10'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-02-10'}]
+End Search Results
+System: Okay, just to confirm, you want to book 1 room at Abc Hyde Park Hotel in London for 2 nights starting on February 10th. Is that correct?
+
+User: Yes, please.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={'check_in_date': '2024-02-10', 'location': 'London', 'number_of_rooms': 1, 'place_name': 'Abc Hyde Park Hotel', 'stay_length': 2})
+```
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-02-10'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-02-10'}]
+End Search Results
+System: Okay, your booking at Abc Hyde Park Hotel for one room, starting on February 10th for two nights has been confirmed. Is there anything else I can help you with?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

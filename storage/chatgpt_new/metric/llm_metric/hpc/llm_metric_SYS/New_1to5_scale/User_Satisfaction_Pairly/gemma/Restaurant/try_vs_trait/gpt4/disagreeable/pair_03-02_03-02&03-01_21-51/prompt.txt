@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a place to eat in San Francisco, but it better be worth my time. Start with something fancy and upscale, and don't waste my time with anything less.
+System: To ensure I find the right place for you, could you please specify the type of cuisine you're interested in, or are you open to suggestions?
+User: I'm not interested in suggestions. Just find me a place that serves French cuisine. Make sure it has live music and serves alcohol.
+System: Thank you for specifying your preferences. I will look for French restaurants in San Francisco that offer live music and serve alcohol in an upscale setting. Let me locate the best options for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: French, price_range: very expensive, has_live_music: True, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': True, 'phone_number': '415-771-1140', 'price_range': 'expensive', 'restaurant_name': 'The Big 4', 'serves_alcohol': True, 'street_address': '1075 California Street'}]
+End Search Results
+System: I found a French restaurant in San Francisco that matches your requirements. It's called The Big 4, located at 1075 California Street. They offer live music and serve alcohol, fitting your preference for an upscale dining experience. Would you like the phone number to make a reservation?
+User: Why would I bother calling them myself when you can just make the reservation for me? Do it for tonight at 8 PM for two people.
+System: Certainly! I will proceed with making a reservation for you at The Big 4 restaurant tonight at 8 PM for two people. Let me confirm that for you. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'The Big 4', city: 'San Francisco', time: '20:00', date: '2023-10-23', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': True, 'phone_number': '415-771-1140', 'price_range': 'expensive', 'restaurant_name': 'The Big 4', 'serves_alcohol': True, 'street_address': '1075 California Street', 'date': '2023-10-23', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: Your reservation at The Big 4 restaurant in San Francisco for tonight at 8 PM has been successfully made for two people. If you need to contact them, their phone number is 415-771-1140. Enjoy your upscale dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco, and it better be worth my time. Don't bother with anything below top-notch quality.
+System: What type of cuisine are you interested in for your dining experience in San Francisco? If you're open to any, I can suggest something that matches your taste.
+User: I don't have time for guessing games. Just give me the best steakhouse you've got.
+System: Let me find the top steakhouse options in San Francisco for you. Please hold on while I gather the information. APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Steakhouse})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-989-2539', 'price_range': 'expensive', 'restaurant_name': '5a5 Steak Lounge', 'serves_alcohol': True, 'street_address': '244 Jackson Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-495-1111', 'price_range': 'very expensive', 'restaurant_name': "Alexander's Steakhouse", 'serves_alcohol': True, 'street_address': '448 Brannan Street'}, {'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-397-3003', 'price_range': 'very expensive', 'restaurant_name': 'Bourbon Steak Restaurant', 'serves_alcohol': True, 'street_address': '335 Powell Street'}]
+End Search Results
+System: I found a few steakhouses in San Francisco that might meet your high standards. Here are some options: 
+
+1. **5a5 Steak Lounge** - Located at 244 Jackson Street, it offers an expensive dining experience and serves alcohol. You can contact them at 415-989-2539.
+
+2. **Alexander's Steakhouse** - Situated at 448 Brannan Street, it's a very expensive option that also serves alcohol. You can reach them at 415-495-1111.
+
+3. **Bourbon Steak Restaurant** - Found at 335 Powell Street, this very expensive steakhouse offers alcohol as well. Their contact number is 415-397-3003.
+
+Let me know if you'd like more information on any of these or if you want to make a reservation.
+User: Alexander's Steakhouse better be as good as it sounds. Make a reservation there for tomorrow at 7 pm for a party of 4.
+System: Let me confirm your reservation details: You would like to book a table for 4 people at Alexander's Steakhouse in San Francisco for tomorrow at 7 pm. Please hold on while I make the reservation. APICall (method='ReserveRestaurant', parameters={restaurant_name: "Alexander's Steakhouse", city: San Francisco, time: 19:00, date: [tomorrow's date], party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Steakhouse', 'has_live_music': False, 'phone_number': '415-495-1111', 'price_range': 'very expensive', 'restaurant_name': "Alexander's Steakhouse", 'serves_alcohol': True, 'street_address': '448 Brannan Street', 'date': "[tomorrow's date]", 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Alexander's Steakhouse in San Francisco has been successfully made for tomorrow at 7 pm for a party of 4. The restaurant is located at 448 Brannan Street, and you can contact them at 415-495-1111 if needed. Enjoy your dining experience.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

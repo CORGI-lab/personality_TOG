@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to search for a hotel in Toronto.
+System: Do you have any specific preferences for the star rating or smoking allowance for the hotel in Toronto?
+User: I prefer a hotel with a 3-star rating or higher, and I would like it to be non-smoking.
+System: APICall(method='SearchHotel', parameters={location: Toronto, star_rating: 3, smoking_allowed: False})
+Search Results
+[{'location': 'Toronto', 'number_of_rooms': 2, 'phone_number': '+1 416-663-9500', 'place_name': 'Best Western Plus Toronto North York Hotel & Suites', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '50 Norfinch Drive'}, {'location': 'Toronto', 'number_of_rooms': 3, 'phone_number': '+1 416-637-7000', 'place_name': 'Best Western Premier Toronto Airport Carlingview Hotel', 'price_per_night': 351, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '135 Carlingview Drive, Etobicoke, Ontario M9W 5E7, Canada'}, {'location': 'Toronto', 'number_of_rooms': 2, 'phone_number': '+1 800-780-7234', 'place_name': 'Best Western Primrose Hotel Downtown-Toronto', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '111 Carlton Street'}]
+End Search Results
+System: I found a few non-smoking hotels in Toronto with a 3-star rating:
+
+1. Best Western Plus Toronto North York Hotel & Suites, located at 50 Norfinch Drive. The price per night is $228.
+
+2. Best Western Premier Toronto Airport Carlingview Hotel, located at 135 Carlingview Drive, Etobicoke, Ontario M9W 5E7, Canada. The price per night is $351.
+
+3. Best Western Primrose Hotel Downtown-Toronto, located at 111 Carlton Street. The price per night is $192.
+
+Would you like more information on any of these options, or is there a particular one you're interested in?
+User: I would like more information on the Best Western Primrose Hotel Downtown-Toronto, please.
+System: The Best Western Primrose Hotel Downtown-Toronto is a non-smoking hotel with a 3-star rating. It is located at 111 Carlton Street in Toronto. The price per night is $192. If you need any further details or wish to proceed with a reservation, please let me know!
+User: I would like to proceed with a reservation at the Best Western Primrose Hotel Downtown-Toronto.
+System: How many rooms would you like to book, and what is the check-in date and length of your stay at the Best Western Primrose Hotel Downtown-Toronto?
+User: I need one room, and I will check in on the 10th for a stay of five days.
+System: Please confirm your request to book 1 room for 5 days at the Best Western Primrose Hotel Downtown-Toronto, starting on the 10th of this month.
+User: Yes, that is correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-10-10, location: Toronto, number_of_rooms: 1, place_name: Best Western Primrose Hotel Downtown-Toronto, stay_length: 5})
+Search Results
+[{'location': 'Toronto', 'number_of_rooms': 2, 'phone_number': '+1 800-780-7234', 'place_name': 'Best Western Primrose Hotel Downtown-Toronto', 'price_per_night': 192, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '111 Carlton Street', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking has been successfully confirmed at the Best Western Primrose Hotel Downtown-Toronto. You have reserved 1 room for 5 days starting from October 10, 2023. The hotel is located at 111 Carlton Street in Toronto. If there's anything else you need, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in Washington D.C.
+System: Do you have any star rating preferences for the hotel in Washington D.C., or should I find one for you?
+User: Something with a 3-star rating would be fine.
+System: APICall(method='SearchHotel', parameters={ location: Washington D.C., star_rating: 3 })
+Search Results
+[{'location': 'Washington D.C.', 'number_of_rooms': 1, 'phone_number': '+1 202-337-6620', 'place_name': 'Arc The.Hotel', 'price_per_night': 87, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '824 New Hampshire Avenue Northwest, Washington, District of Columbia 20037, United States'}, {'location': 'Washington D.C.', 'number_of_rooms': 2, 'phone_number': '+1 202-299-1188', 'place_name': 'Cambria Hotel Washington, D.C. Convention Center', 'price_per_night': 162, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '899 O Street Northwest, Washington, District of Columbia 20001, United States'}, {'location': 'Washington D.C.', 'number_of_rooms': 2, 'phone_number': '+1 202-543-6000', 'place_name': 'Capitol Hill Hotel', 'price_per_night': 126, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '200 C Street Southeast, Washington, DC 20003, USA'}]
+End Search Results
+System: I found a few 3-star hotels in Washington D.C. The first one is Arc The.Hotel, located at 824 New Hampshire Avenue Northwest, with a price of $87 per night and no smoking allowed. Would you like more details about this hotel, or should I provide information about another option?
+User: I'd like to know about another option, please.
+System: The next option is the Cambria Hotel Washington, D.C. Convention Center. It's located at 899 O Street Northwest, and the price per night is $162. Smoking is not allowed in this hotel. Would you like more details on this hotel, or is there anything else you'd like to know?
+User: Is there another option available?
+System: The third option available is the Capitol Hill Hotel, located at 200 C Street Southeast. The price per night is $126, and smoking is not allowed. Would you like more details on this hotel, or is there anything else you'd like to know?
+User: Can you provide more information about the Capitol Hill Hotel?
+System: The Capitol Hill Hotel is a 3-star accommodation situated at 200 C Street Southeast, Washington, DC 20003, USA. The price per night is $126, and smoking is not allowed. If there's anything specific you'd like to know about this hotel or if you're ready to proceed with a reservation, please let me know!
+User: Can you find out if Capitol Hill Hotel has availability for a stay starting from the 15th of next month for about a week?
+System: Could you please confirm the number of rooms you'd like to book at the Capitol Hill Hotel for your stay starting from the 15th of next month?
+User: I would like to book one room, please.
+System: Please confirm that you would like to book 1 room at the Capitol Hill Hotel from the 15th of next month for a 7-day stay in Washington D.C. Once confirmed, I will proceed with the reservation.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Washington D.C., number_of_rooms: 1, place_name: Capitol Hill Hotel, stay_length: 7 })
+Search Results
+[{'location': 'Washington D.C.', 'number_of_rooms': 2, 'phone_number': '+1 202-543-6000', 'place_name': 'Capitol Hill Hotel', 'price_per_night': 126, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '200 C Street Southeast, Washington, DC 20003, USA', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Capitol Hill Hotel for 1 room starting from November 15th for a 7-day stay has been successfully confirmed. If there is anything else you need assistance with, please let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

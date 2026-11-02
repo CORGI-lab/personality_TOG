@@ -1,0 +1,96 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to find a hotel in Vancouver. Can you help with that?
+System: Sure, I can help with that. Do you have any preferences for the star rating or smoking allowances?
+User: I prefer a non-smoking hotel. And it should be at least 4 stars.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street'}]
+End Search Results
+System: I found a few non-smoking, 4-star hotels in Vancouver for you. Here are some options:
+
+1. **Coast Coal Harbour Vancouver Hotel By Apa**
+   - Price per night: $108
+   - Address: 1180 West Hastings Street
+
+2. **Delta Hotels By Marriott Vancouver Downtown Suites**
+   - Price per night: $324
+   - Address: 550 West Hastings Street
+
+3. **Georgian Court Hotel**
+   - Price per night: $108
+   - Address: 773 Beatty Street
+
+Would you like more information about any of these hotels or need assistance with a reservation?
+User: Could you tell me more about the Georgian Court Hotel, please?
+System: The Georgian Court Hotel is a 4-star, non-smoking hotel located at 773 Beatty Street in Vancouver. The price per night is $108. If you need any more information or would like to make a reservation, please let me know!
+User: I'll go with the Georgian Court Hotel. Can you make a reservation for me? I'll check in on the 15th and stay for five days.
+System: Please confirm that you would like to book a room at the Georgian Court Hotel in Vancouver, checking in on the 15th for a stay of five days. How many rooms would you like to reserve?
+User: Just one room, please.
+System: Thank you for confirming. I will proceed with booking 1 room at the Georgian Court Hotel in Vancouver, checking in on the 15th for a stay of five days. Please hold on while I make the reservation. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Georgian Court Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Georgian Court Hotel in Vancouver has been successfully confirmed. You have booked 1 room, checking in on November 15th for a stay of five days. If there is anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to book a hotel in Seattle. Could you help me find one?
+System: Sure! To help you find a hotel in Seattle, could you let me know your preferred check-in date and how long you plan to stay?
+User: I'll check in on the 10th and stay for three nights.
+System: Let's confirm your details: You'd like to book a hotel in Seattle, checking in on the 10th and staying for three nights. How many rooms do you need for your stay?
+User: Just one room, please.
+System: Great! Let me search for available hotels in Seattle for your specified dates. APICall(method='SearchHotel', parameters={location: Seattle})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few options for you in Seattle. Here's one: Ace Hotel Seattle, which is a 2-star hotel. Would you like more details about this hotel, or should I provide information on another option?
+User: Could you tell me if smoking is allowed at the Ace Hotel Seattle?
+System: At the Ace Hotel Seattle, smoking is not allowed. Would you like more information about this hotel or explore other options?
+User: I'd like to know if there are any other options available.
+System: Certainly! Another option is the Belltown Inn, which is also a 2-star hotel. Would you like more details about this hotel, or should I continue with additional options?
+User: Could you tell me if smoking is allowed at the Belltown Inn?
+System: Smoking is not allowed at the Belltown Inn. If you need more information about this hotel or wish to explore other available options, please let me know.
+User: Could you check if there are any hotels in Seattle where smoking is permitted?
+System: Let me check for hotels in Seattle that allow smoking. Please hold on for a moment while I search for options. APICall(method='SearchHotel', parameters={location: Seattle, smoking_allowed: True})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-365-8100', 'place_name': 'Extended Stay America - Seattle - Northgate', 'price_per_night': 124, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '13300 Stone Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-522-6991', 'place_name': 'Hampton Inn & Suites By Hilton Seattle/Northgate', 'price_per_night': 144, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '9550 1st Avenue Northeast'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found a few hotels in Seattle where smoking is permitted. One option is the Extended Stay America - Seattle - Northgate, which is a 2-star hotel. Would you like more details about this hotel, or should I provide information on another option?
+User: Could you provide more details about the Extended Stay America - Seattle - Northgate?
+System: The Extended Stay America - Seattle - Northgate is a 2-star hotel where smoking is permitted. It is located at 13300 Stone Avenue North. The price per night is $124. If you need any additional information or wish to explore other options, please let me know!
+User: Is there another hotel option where smoking is allowed?
+System: Another option is the Hampton Inn & Suites By Hilton Seattle/Northgate, which is also a 2-star hotel and allows smoking. It's located at 9550 1st Avenue Northeast, and the price per night is $144. Would you like more details about this hotel, or should I continue with additional options?
+User: I think the Extended Stay America fits my needs. Can you please reserve a room for me?
+System: To reserve a room at the Extended Stay America - Seattle - Northgate, could you please confirm the check-in date as the 10th and your stay for three nights, with one room? Once confirmed, I will proceed with the reservation.
+User: Yes, please confirm the reservation with those details.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: Extended Stay America - Seattle - Northgate, stay_length: 3})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-365-8100', 'place_name': 'Extended Stay America - Seattle - Northgate', 'price_per_night': 124, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '13300 Stone Avenue North', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Extended Stay America - Seattle - Northgate has been successfully confirmed. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

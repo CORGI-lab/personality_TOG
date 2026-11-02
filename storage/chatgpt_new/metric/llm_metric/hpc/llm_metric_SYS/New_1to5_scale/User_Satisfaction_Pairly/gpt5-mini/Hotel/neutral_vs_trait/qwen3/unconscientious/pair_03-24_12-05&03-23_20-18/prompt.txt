@@ -1,0 +1,116 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need a hotel in Las Vegas. I don't know what else, just find something.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: 
+
+I found a 1-star hotel called Budget Suites Of America for $44 per night. Would you like to book this one?
+User: 
+
+Yes, book it for me.
+System: 
+
+When would you like to check in and for how many days?
+User: 
+
+today, three days
+System: 
+
+Okay, booking 1 room at Budget Suites Of America in Las Vegas for today, 3 days. Confirm?
+User: 
+
+Yes, confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Budget Suites Of America', check_in_date: '2023-10-05', stay_length: 3, location: 'Las Vegas', number_of_rooms: 1 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-10-05'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+Can you help me find a hotel in Phoenix? I don't know what I want but it should be okay.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: 'Phoenix' })
+Search Results
+[{'location': 'Phoenix', 'number_of_rooms': 3, 'phone_number': '+1 602-275-6300', 'place_name': 'Aloft Phoenix-Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4450 East Washington Street'}, {'location': 'Phoenix', 'number_of_rooms': 1, 'phone_number': '+1 480-585-6644', 'place_name': 'Cambria Hotel North Scottsdale Desert Ridge', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4425 E Irma Ln&nbsp'}, {'location': 'Phoenix', 'number_of_rooms': 2, 'phone_number': '+1 602-603-2001', 'place_name': 'Courtyard By Marriott Phoenix Downtown', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '132 South Central Avenue'}]
+End Search Results
+System: 
+
+I found three hotels in Phoenix. The Aloft Phoenix-Airport is $216 per night, the Cambria Hotel North Scottsdale Desert Ridge is $72 per night, and the Courtyard By Marriott Phoenix Downtown is $228 per night. All are 3-star hotels. Would you like more details on any of these?
+User: 
+
+Yeah, the $72 one. Reserve it.
+System: 
+
+Sure! To reserve the Cambria Hotel North Scottsdale Desert Ridge in Phoenix, could you please let me know your check-in date and how many nights you plan to stay?
+User: 
+
+today, three days. I guess.
+System: 
+
+Confirming your reservation details: Cambria Hotel North Scottsdale Desert Ridge in Phoenix, check-in today for 3 nights. How many rooms do you need?
+User: 
+
+Two rooms.
+System: 
+
+Could you please specify the check-in date in YYYY-MM-DD format?
+User: 
+
+2023-10-05
+System: 
+
+Confirming your reservation: 2 rooms at Cambria Hotel North Scottsdale Desert Ridge in Phoenix from 2023-10-05 for 3 nights. Is that correct?
+User: 
+
+Yes, that's correct.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Cambria Hotel North Scottsdale Desert Ridge', check_in_date: '2023-10-05', stay_length: 3, location: 'Phoenix', number_of_rooms: 2 })
+Search Results
+[{'location': 'Phoenix', 'number_of_rooms': 1, 'phone_number': '+1 480-585-6644', 'place_name': 'Cambria Hotel North Scottsdale Desert Ridge', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4425 E Irma Ln&nbsp', 'check_in_date': '2023-10-05'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

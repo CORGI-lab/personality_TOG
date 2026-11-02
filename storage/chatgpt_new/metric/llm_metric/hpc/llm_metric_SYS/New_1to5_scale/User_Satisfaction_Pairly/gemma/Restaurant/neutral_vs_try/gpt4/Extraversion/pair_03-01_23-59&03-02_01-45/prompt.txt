@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm on the lookout for an exciting place to grab some food with friends in San Francisco. Any recommendations for a spot with a lively atmosphere and maybe some live music? Oh, and a place that serves some good cocktails would be amazing too!
+System: Could you please let me know what type of cuisine you have in mind? For example, Italian, American, or something else?
+User: I'm feeling adventurous, so let's go with something like Mexican or maybe even some fusion cuisine. Something colorful and fun!
+System: To find a restaurant that matches your preferences, could you confirm whether you have a budget in mind or if you're open to any price range?
+User: I'm open to exploring any price range as long as the place has great vibes and delicious food!
+System: Great! Let me find a restaurant in San Francisco that offers Mexican or fusion cuisine with live music and serves cocktails. Please hold on for a moment while I search for options. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, has_live_music: True, serves_alcohol: True})
+Search Results
+
+End Search Results
+System: It seems there are no available restaurants matching all your criteria in San Francisco at the moment. Would you like me to broaden the search criteria or try a different cuisine?
+User: Sure, let's broaden the search! Maybe try looking for a place with just live music and cocktails, and I'm open to different cuisines. Let's see what exciting options we can find!
+System: I apologize for the oversight. Let's try that again. I'll look for restaurants in San Francisco that offer live music and serve cocktails, and I'll choose a random cuisine for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, has_live_music: True, serves_alcohol: True})
+Search Results
+
+End Search Results
+System: Unfortunately, there are still no restaurants that exactly match the criteria in San Francisco. Would you like to try restaurants with live music and cocktails without any specific cuisine preference, or explore options in a nearby city?
+User: Let's try looking in nearby cities! How about checking out Berkeley or Oakland for some cool spots with live music and cocktails? I'm sure we'll find something exciting there!
+System: I apologize for the inconvenience. Let me try that again. I'll search for restaurants in Berkeley that offer live music and serve cocktails, and I'll choose a random cuisine for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: American, has_live_music: True, serves_alcohol: True})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-843-8277', 'price_range': 'moderate', 'restaurant_name': 'Jupiter', 'serves_alcohol': True, 'street_address': '2181 Shattuck Avenue'}]
+End Search Results
+System: I found a place called Jupiter in Berkeley that matches your criteria. It's an American cuisine spot with live music and serves cocktails. The restaurant is located at 2181 Shattuck Avenue. Would you like more information or assistance with anything else?
+User: Oh, Jupiter sounds awesome! I love the idea of live music and cocktails! Can you help me reserve a table there for this Friday at 7:00 PM for a party of 4? Thanks a bunch!
+System: Certainly! Let me gather the necessary details to make the reservation for you. Could you please confirm if the reservation is for this upcoming Friday?
+User: Yes, it's for this upcoming Friday. Can't wait to enjoy a lively evening with my friends at Jupiter!
+System: Great! Let me confirm the reservation details: a table for 4 at Jupiter in Berkeley on this upcoming Friday at 7:00 PM. Please hold on while I make the reservation. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: Jupiter, city: Berkeley, date: 2023-10-20, time: 19:00, party_size: 4})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-843-8277', 'price_range': 'moderate', 'restaurant_name': 'Jupiter', 'serves_alcohol': True, 'street_address': '2181 Shattuck Avenue', 'date': '2023-10-20', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Jupiter in Berkeley has been successfully made for this Friday at 7:00 PM for a party of 4. Enjoy your evening with live music and cocktails! If you have any more questions or need further assistance, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm super excited to find a fantastic place to eat. I'm in San Francisco and I'm hoping to find a lively spot with some delicious cuisine. Perhaps something with live music or a fun atmosphere? Let me know what you've got!
+System: San Francisco sounds like a great choice for a lively dining experience! Do you have a particular type of cuisine in mind, or are you open to suggestions? Additionally, could you please let me know if you have a preference for the price range? Once I have this information, I can find restaurants that match your preferences.
+User: I'm open to any cuisine as long as it's tasty and exciting! As for the price range, let's keep it moderate to high. I'm really looking forward to a place with a great vibe and maybe some live tunes!
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Jazz Fusion, price_range: moderate, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street'}]
+End Search Results
+System: I found a fantastic spot for you in San Francisco! El Valenciano offers a lively atmosphere with live music and tasty Fusion cuisine. It fits within your moderate price range and serves alcohol. You can find it at 1153 Valencia Street. Is there anything else you'd like to know about this restaurant?
+User: That sounds amazing! Can you reserve a table for me there? I'm thinking about this Saturday evening at around 7:30 PM for a group of four. Can't wait to experience the vibes!
+System: Great choice! Let me confirm the details: You would like to reserve a table for four people at El Valenciano in San Francisco this Saturday at 7:30 PM. Please hold on for a moment while I make the reservation. 
+
+APICall (method='ReserveRestaurant', parameters={'restaurant_name': 'El Valenciano', 'city': 'San Francisco', 'time': '19:30', 'date': '2023-10-21', 'party_size': 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street', 'date': '2023-10-21', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Your reservation at El Valenciano in San Francisco for four people on Saturday at 7:30 PM has been successfully made! Enjoy the lively atmosphere, live music, and delicious Fusion cuisine. If there's anything else you need or any other questions you have, feel free to ask. Have a fantastic evening!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

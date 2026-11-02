@@ -1,0 +1,84 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel in Seattle. Can you help me find something suitable?
+System: What date would you like to check in, and how many nights are you planning to stay in Seattle?
+User: I plan to check in on the 10th and stay for five nights.
+System: How many rooms would you like to book for your stay in Seattle?
+User: One room is enough for me.
+System: Thank you for sharing the details. I will now proceed to find a suitable hotel in Seattle for you. Please give me a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few options for you in Seattle. One option is the Ace Hotel Seattle, which is a 2-star hotel priced at $136 per night. Would you like to know more details about this hotel, or are you interested in other options?
+User: Could you tell me if smoking is allowed in the Ace Hotel Seattle?
+System: Smoking is not allowed in the Ace Hotel Seattle. Would you like to proceed with this hotel, or would you like more information about another option?
+User: I would like to know about another option, please.
+System: Another option is the Belltown Inn, also a 2-star hotel, priced at $186 per night. Smoking is not allowed here either. Would you like more details about this hotel, or would you like to explore the next option?
+User: Can you tell me if there are any other hotels available?
+System: The last option I found is the Days Inn By Wyndham Seattle North Of Downtown. It's a 2-star hotel priced at $84 per night, and smoking is not allowed there either. Would you like to proceed with booking this hotel, or need further assistance?
+User: I think I'd like to go with the Days Inn By Wyndham. Please go ahead and reserve a room for me.
+System: Please confirm that you'd like to book one room at the Days Inn By Wyndham Seattle North Of Downtown, checking in on the 10th and staying for five nights. Once confirmed, I'll proceed with the reservation.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: Days Inn By Wyndham Seattle North Of Downtown, stay_length: 5})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Days Inn By Wyndham Seattle North Of Downtown has been successfully confirmed. The hotel is located at 9100 Aurora Avenue North. If there is anything else you need, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in Vancouver.
+System: Do you have any preferences regarding the star rating or smoking allowance for the hotel in Vancouver, or are you open to any options?
+User: I prefer a non-smoking hotel with a decent star rating, maybe 3 stars or more.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: The search results show several 3-star, non-smoking hotels in Vancouver. One option is the Atrium Inn Vancouver, located at 2889 East Hastings Street, with a price of $228 per night. Another option is the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. at 1100 Granville Street, with a rate of $72 per night. Lastly, the Best Western Plus Sands on 1755 Davie Street is available for $222 per night. Would you like more information on any of these options, or do you have another preference?
+User: Could you tell me more about the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., please?
+System: The Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. is a 3-star, non-smoking hotel located at 1100 Granville Street in Vancouver. The price per night is $72. If you have any more questions or need further assistance, feel free to ask!
+User: Is breakfast included in the price?
+System: I'm sorry, but the information about breakfast being included in the price is not available in the current data. If you have any other questions or need further assistance, feel free to ask!
+User: Could you let me know about the cancellation policy for this hotel?
+System: I'm sorry, but the cancellation policy information is not available in the current data. If you have any other questions or need further assistance, feel free to ask!
+User: Is there another hotel option with more details about amenities and policies?
+System: The available search results do not include detailed information about amenities and policies for the hotels. However, I can provide information about other non-smoking, 3-star hotels in Vancouver from the previous search. Would you like to hear about the Atrium Inn Vancouver or the Best Western Plus Sands, or would you prefer to modify your search criteria?
+User: Could you tell me more about the Atrium Inn Vancouver, please?
+System: The Atrium Inn Vancouver is a 3-star, non-smoking hotel located at 2889 East Hastings Street in Vancouver. The price per night for a room is $228. If you have any more questions or need further assistance regarding this hotel, feel free to ask!
+User: Can you tell me if there are any quieter areas in the hotel or if it's known for being peaceful?
+System: I'm sorry, but the information regarding quieter areas or the peacefulness of the Atrium Inn Vancouver is not available in the current data. If you have any other questions or need further assistance, feel free to ask!
+User: I think I'll go with the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. Could you make a reservation for me?
+System: To proceed with the reservation at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., could you please provide the check-in date, the length of your stay, and the number of rooms you would like to book?
+User: Check-in on the 5th, and I'll stay for five days. I'd like to book one room, please.
+System: Please confirm to book 1 room for 5 days at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver, starting from the 5th.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Vancouver, number_of_rooms: 1, place_name: Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr. in Vancouver has been successfully confirmed. If you need any other assistance or have further questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

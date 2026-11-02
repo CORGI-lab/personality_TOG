@@ -1,0 +1,42 @@
+
+hydra:
+  job:
+    chdir: false   # run from the repository root; all paths are relative to it
+  run:
+    dir: ./output/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+# Config for metrics/llm_metric_trait_score.py (User Trait Score) and
+# metrics/llm_metric_evaluation_SYS.py (aggregation of CS / IR / Truthfulness).
+project_root: .
+dialog_path: ./storage/chatgpt_new
+prompt_name: null
+domain: [Restaurant, Hotel]
+date: null
+
+# Judge prompt: User Trait Score. For system quality use
+# ./LLM_Interaction/prompts/llm_evaluator_prompt_SYS.yml with stages=[judge].
+sys_prompt_path: ./LLM_Interaction/prompts/llm_metric_prompt_USER_evident_trait.yml
+
+# LLM judge (LLM_Interaction/llm_models_api.judge_response)
+#   GPT-5-mini (default): judge_provider: open_route, judge_model: openai/gpt-5-mini, reasoning_effort: low
+#   Gemma:                judge_provider: ollama,     judge_model: gemma4:31b-cloud,  reasoning_effort: null
+judge_provider: open_route
+judge_model: openai/gpt-5-mini
+reasoning_effort: low
+gpt_max_tokens: 4000          # for reasoning models this covers reasoning + answer
+num_workers: 16               # parallel judge requests
+
+# Raw judge responses (one response.txt per dialogue)
+output_path: ./storage/chatgpt_new/metric/llm_metric/hpc/llm_metric_USER/New_1to5_scale/User_trait_score/gpt5_mini
+
+# Stages of metrics/llm_metric_trait_score.py, run in this order:
+#   judge     - call the judge for each dialogue -> <output_path>/.../response.txt
+#   score     - per-cell metrics -> <score_output_path>/<Domain>/<case>/<llm>/accuracy.txt
+#   summarize - per-trait User Trait Score table -> <score_output_path>/user_trait_score_table.json
+stages: [judge, score, summarize]
+# Skip dialogues that already have a response.txt (resume a run; no API calls for released outputs)
+skip_existing: true
+# Where scored metrics go (default: output_path)
+score_output_path: ./storage/chatgpt_new/metric/llm_metric/hpc/llm_evaluation/USER/New_1to5_scale/User_trait_score/gpt5_mini
+# Optional: another judge's score folder to print side by side (null to disable)
+compare_score_path: ./storage/chatgpt_new/metric/llm_metric/hpc/llm_evaluation/USER/New_1to5_scale/User_trait_score/gemma

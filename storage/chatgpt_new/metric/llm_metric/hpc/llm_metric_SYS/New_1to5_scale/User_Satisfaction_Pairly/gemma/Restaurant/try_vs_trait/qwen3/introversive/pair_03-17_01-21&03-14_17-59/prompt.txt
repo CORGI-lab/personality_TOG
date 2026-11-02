@@ -1,0 +1,122 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I'm looking for a restaurant in Danville.
+System: 
+
+Got it! Danville is a great city to explore. What cuisine are you in the mood for? We have options like Italian, Mexican, Japanese, and more.
+User: 
+
+Japanese.
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: Danville, cuisine: Japanese})
+Search Results
+[{'city': 'Danville', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '925-552-5888', 'price_range': 'moderate', 'restaurant_name': 'Akira Bistro', 'serves_alcohol': False, 'street_address': '499 San Ramon Valley Boulevard'}, {'city': 'Danville', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '925-648-7838', 'price_range': 'moderate', 'restaurant_name': 'Blue Gingko Blackhawk', 'serves_alcohol': True, 'street_address': '3496 Blackhawk Plaza Circle'}, {'city': 'Danville', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '925-820-3823', 'price_range': 'moderate', 'restaurant_name': 'Sushi Yokohama', 'serves_alcohol': False, 'street_address': '558 San Ramon Valley Boulevard'}]
+End Search Results
+System: 
+
+I found Akira Bistro in Danville. It's located at 499 San Ramon Valley Boulevard. Would you like to know more about it, or should I suggest another restaurant?
+User: 
+
+Phone number?
+System: 
+
+You can reach Akira Bistro at 925-552-5888.
+User: 
+
+Reserve a table for two.
+System: 
+
+Sure! For what time would you like to reserve a table for two at Akira Bistro in Danville?
+User: 
+
+7:00 PM.
+System: 
+
+Can you please confirm that you want to book a table for 2 at Akira Bistro in Danville at 7:00 PM today?
+User: 
+
+That suits me well.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {city: Danville, restaurant_name: Akira Bistro, time: 19:00, date: 2023-10-05, party_size: 2})
+Search Results
+[{'city': 'Danville', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '925-552-5888', 'price_range': 'moderate', 'restaurant_name': 'Akira Bistro', 'serves_alcohol': False, 'street_address': '499 San Ramon Valley Boulevard', 'date': '2023-10-05', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: 
+
+Your reservation at Akira Bistro for two at 7:00 PM today has been confirmed. Enjoy your meal!
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I'm looking for an American restaurant in Berkeley without live music.
+System: 
+
+APICall (method='FindRestaurants', parameters= {cuisine: American, city: Berkeley, has_live_music: False})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-647-9329', 'price_range': 'moderate', 'restaurant_name': 'B&b Kitchen & Wine Bar', 'serves_alcohol': True, 'street_address': '2116 Shattuck Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-338-3464', 'price_range': 'moderate', 'restaurant_name': 'Beer Baron Bar & Kitchen', 'serves_alcohol': True, 'street_address': '5900 College Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-809-8282', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '2068 Center Street'}]
+End Search Results
+System: 
+
+B&b Kitchen & Wine Bar is at 2116 Shattuck Avenue.
+User: 
+
+Does it have live music?
+System: 
+
+No, it does not have live music.
+User: 
+
+I'd like to reserve this restaurant.
+System: 
+
+For what time would you like to reserve?
+User: 
+
+7 PM.
+System: 
+
+Reservation for B&b Kitchen & Wine Bar in Berkeley at 7 PM today for 2. Is this correct?
+User: 
+
+Yes.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 'B&b Kitchen & Wine Bar', city: 'Berkeley', time: '19:00', date: '2023-10-05', party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-647-9329', 'price_range': 'moderate', 'restaurant_name': 'B&b Kitchen & Wine Bar', 'serves_alcohol': True, 'street_address': '2116 Shattuck Avenue', 'date': '2023-10-05', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: 
+
+Reservation confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

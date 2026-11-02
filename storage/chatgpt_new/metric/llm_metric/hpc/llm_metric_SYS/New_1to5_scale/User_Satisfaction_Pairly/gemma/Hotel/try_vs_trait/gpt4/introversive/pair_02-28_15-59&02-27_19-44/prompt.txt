@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a hotel in Vancouver.
+System: Do you have any specific preferences regarding the star rating or smoking allowance for the hotel in Vancouver?
+User: No smoking, please. A decent star rating would be preferable.
+System: Thank you for sharing your preferences. Let me find a suitable hotel in Vancouver for you. I will look for hotels with a decent star rating that do not allow smoking. Please give me a moment. 
+
+APICall(method='SearchHotel', parameters={location: Vancouver, smoking_allowed: False})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}]
+End Search Results
+System: I found a few options for you in Vancouver. The Shangri-La Hotel and Wedgewood Hotel & Spa Vancouver are both 5-star hotels with no smoking allowed. The price per night for Shangri-La Hotel is $300, and for Wedgewood Hotel & Spa Vancouver, it's $510. Additionally, there's the Coast Coal Harbour Vancouver Hotel By Apa, which is a 4-star hotel with a price of $108 per night. Would you like more information on any of these options?
+User: Could you tell me more about the Coast Coal Harbour Vancouver Hotel By Apa?
+System: The Coast Coal Harbour Vancouver Hotel By Apa is a 4-star hotel located at 1180 West Hastings Street in Vancouver. It offers a non-smoking environment and has rooms available. The price per night is $108. If you have any more questions or would like to proceed with booking, please let me know!
+User: I think the Coast Coal Harbour Vancouver Hotel By Apa sounds suitable. Could you reserve a room for me? I'll need it from the 10th for five nights.
+System: To reserve a room for you at the Coast Coal Harbour Vancouver Hotel By Apa, could you please confirm the number of rooms you would like to book for your stay?
+User: Just one room, please.
+System: Great! Please confirm that you would like to book 1 room at the Coast Coal Harbour Vancouver Hotel By Apa in Vancouver, starting from the 10th for a duration of 5 nights.
+User: Yes, that is correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Coast Coal Harbour Vancouver Hotel By Apa has been successfully confirmed. You'll be staying in Vancouver from November 10th for 5 nights. If there's anything else you need or if you have any questions, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to book a hotel in Seattle. Can you help me find something suitable?
+System: What date would you like to check in, and how many nights are you planning to stay in Seattle?
+User: I plan to check in on the 10th and stay for five nights.
+System: How many rooms would you like to book for your stay in Seattle?
+User: One room is enough for me.
+System: Thank you for sharing the details. I will now proceed to find a suitable hotel in Seattle for you. Please give me a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few options for you in Seattle. One option is the Ace Hotel Seattle, which is a 2-star hotel priced at $136 per night. Would you like to know more details about this hotel, or are you interested in other options?
+User: Could you tell me if smoking is allowed in the Ace Hotel Seattle?
+System: Smoking is not allowed in the Ace Hotel Seattle. Would you like to proceed with this hotel, or would you like more information about another option?
+User: I would like to know about another option, please.
+System: Another option is the Belltown Inn, also a 2-star hotel, priced at $186 per night. Smoking is not allowed here either. Would you like more details about this hotel, or would you like to explore the next option?
+User: Can you tell me if there are any other hotels available?
+System: The last option I found is the Days Inn By Wyndham Seattle North Of Downtown. It's a 2-star hotel priced at $84 per night, and smoking is not allowed there either. Would you like to proceed with booking this hotel, or need further assistance?
+User: I think I'd like to go with the Days Inn By Wyndham. Please go ahead and reserve a room for me.
+System: Please confirm that you'd like to book one room at the Days Inn By Wyndham Seattle North Of Downtown, checking in on the 10th and staying for five nights. Once confirmed, I'll proceed with the reservation.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: Days Inn By Wyndham Seattle North Of Downtown, stay_length: 5})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Days Inn By Wyndham Seattle North Of Downtown has been successfully confirmed. The hotel is located at 9100 Aurora Avenue North. If there is anything else you need, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,66 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to book a hotel in Vancouver. Can you help me find one that matches my preferences?
+System: Do you have any specific preferences, such as the star rating, smoking allowance, or the number of rooms you need? Let me know so I can find the best hotel options for you in Vancouver.
+User: I would prefer a hotel with a 4 or 5 star rating, and I don't need a smoking room. I will need two rooms for my stay.
+System: Let me search for hotels in Vancouver that match your preferences of 4 or 5 star rating, non-smoking, and with two rooms. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 4, smoking_allowed: False, number_of_rooms: 2})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street'}]
+End Search Results
+System: I found a 4-star hotel that matches your preferences: Delta Hotels By Marriott Vancouver Downtown Suites. It offers non-smoking rooms, has availability for two rooms, and is located at 550 West Hastings Street. The price per night is $324. Would you like to proceed with booking this hotel, or do you need more information?
+User: The Delta Hotels By Marriott sounds like a great option. I’d like to go ahead and book it. Could you please reserve two rooms for me? I'll be checking in on the 10th of the month, and I plan to stay for five nights.
+System: Please confirm to book 2 rooms for 5 nights at Delta Hotels By Marriott Vancouver Downtown Suites from the 10th of this month in Vancouver.
+User: Yes, I confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: '2023-10-10', location: 'Vancouver', number_of_rooms: 2, place_name: 'Delta Hotels By Marriott Vancouver Downtown Suites', stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking at Delta Hotels By Marriott Vancouver Downtown Suites has been successfully confirmed for 2 rooms from the 10th of this month for 5 nights. Is there anything else you would like to know or need help with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm planning a trip to Vancouver and would like to find a suitable hotel there. Can you help me with that?
+System: Could you please confirm if you have any specific preferences for the hotel's star rating, or are you open to exploring various options?
+User: I'm open to various options, but I'd prefer a hotel that's comfortable and well-rated.
+System: Let's start by finding a few options for you. I'll look for hotels in Vancouver with different star ratings to give you a range of well-rated and comfortable choices. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel, Vancouver', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found some great options for you in Vancouver. There's the Shangri-La Hotel, which is a 5-star hotel located at 1128 West Georgia Street, and it is priced at $300 per night. Another option is the Wedgewood Hotel & Spa, also a 5-star hotel, located at 845 Hornby Street, priced at $510 per night. If you're considering a 4-star option, the Auberge Vancouver Hotel at 837 West Hastings Street allows smoking and is priced at $296 per night. Would you like more information on any of these, or need help with something specific?
+User: Could you provide more details about the Auberge Vancouver Hotel, like its amenities or any other features that might be of interest?
+System: Unfortunately, the specific amenities or additional features for the Auberge Vancouver Hotel are not available in the current data. However, I can confirm that it is a 4-star hotel that allows smoking and is priced at $296 per night. If there's anything else you would like to know or if you need assistance with a reservation, please let me know!
+User: Thank you for the information. I think the Auberge Vancouver Hotel sounds like a good match for me. Could you go ahead and make a reservation for one room? I'll be checking in on the 15th for a four-night stay.
+System: Please confirm that you'd like to book 1 room at the Auberge Vancouver Hotel from the 15th for a stay of four nights in Vancouver. Once confirmed, I'll proceed with the reservation.
+User: Yes, please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 4 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 84, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-15', 'stay_length': '4'}]
+End Search Results
+System: Your reservation at the Auberge Vancouver Hotel has been successfully confirmed. You will be staying for four nights starting from November 15, 2023. The hotel's address is 837 West Hastings Street, and you can reach them at +1 604-678-8899. If there is anything else you need assistance with, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

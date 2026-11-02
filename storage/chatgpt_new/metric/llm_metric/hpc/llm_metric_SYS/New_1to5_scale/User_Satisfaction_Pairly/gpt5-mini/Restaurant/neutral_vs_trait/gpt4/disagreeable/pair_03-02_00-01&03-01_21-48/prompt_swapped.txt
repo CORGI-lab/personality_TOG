@@ -1,0 +1,114 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in San Francisco, and it better be top-notch. I'm not interested in any mediocre suggestions.
+System: Could you specify the type of cuisine you are interested in, or should I pick one for you?
+User: I want something fancy, maybe French or Italian. And it better have an excellent wine selection, too.
+System: Let me check the options for French or Italian restaurants in San Francisco with a great wine selection. I'll find something that meets your expectations. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: French, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-543-0573', 'price_range': 'expensive', 'restaurant_name': 'Fringale Restaurant', 'serves_alcohol': True, 'street_address': '570 4th Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-391-2233', 'price_range': 'expensive', 'restaurant_name': 'Le Central', 'serves_alcohol': True, 'street_address': '453 Bush Street'}, {'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': False, 'phone_number': '415-795-1422', 'price_range': 'expensive', 'restaurant_name': 'Les Clos', 'serves_alcohol': True, 'street_address': '234 Townsend Street'}]
+End Search Results
+System: I found a few French restaurants in San Francisco that meet your criteria. Here are some options:
+
+1. **Fringale Restaurant**: Located at 570 4th Street, it offers an expensive dining experience with a great wine selection. You can contact them at 415-543-0573.
+   
+2. **Le Central**: Situated at 453 Bush Street, this restaurant also falls in the expensive category with an excellent wine list. You can reach them at 415-391-2233.
+
+3. **Les Clos**: Found at 234 Townsend Street, it provides an upscale dining experience with a focus on wine. Their phone number is 415-795-1422.
+
+Would you like to make a reservation at any of these, or do you need more information?
+User: I don't need their phone numbers, and I'm not impressed yet. What about live music? Do any of these places offer that, or is it just a quiet dinner?
+System: Unfortunately, none of these French restaurants offer live music. However, they each provide an exclusive dining experience with a focus on wine. If you want me to find another option that includes live music, let me know, and I'll continue the search.
+User: Find me a place that has both live music and a top-notch wine selection. I don't want to settle for anything less.
+System: I will search for a restaurant in San Francisco that offers both live music and an excellent wine selection. Since you're open to any cuisine with a preference for top-notch experiences, I'll look for an Italian restaurant that fits your criteria. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, serves_alcohol: True, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: Here are two Italian restaurants in San Francisco that offer both live music and a top-notch wine selection:
+
+1. **Fior D'italia**: Located at 2237 Mason Street, this restaurant provides an expensive dining experience with live music and a great wine list.
+
+2. **Zingari Ristorante + Jazz Bar**: Situated at 501 Post Street, it offers a luxurious setting with live jazz music and an excellent wine selection.
+
+Would you like to make a reservation at one of these places, or do you need additional information?
+User: Zingari Ristorante + Jazz Bar sounds more like it. Make a reservation for two, and it better be at 8 PM sharp.
+System: I will proceed to make a reservation for two at Zingari Ristorante + Jazz Bar in San Francisco for 8 PM. Please hold on for a moment while I confirm the booking.
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, cuisine: Italian, restaurant_name: 'Zingari Ristorante + Jazz Bar', time: '20:00', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: Your reservation for two at Zingari Ristorante + Jazz Bar in San Francisco at 8 PM has been successfully made. Enjoy the live jazz music and excellent wine selection. If you need any further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a restaurant in Fremont. And it better not waste my time with any of those fancy, overpriced places.
+System: What type of cuisine are you interested in for the restaurant in Fremont?
+User: I don't care what type, as long as it's not pretentious and serves decent food at a reasonable price.
+System: Great! I'll look for some budget-friendly options in Fremont. Let me check what's available for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: Fremont, cuisine: dontcare, price_range: inexpensive})
+Search Results
+
+End Search Results
+System: It seems there are no inexpensive options available in Fremont at the moment. Would you like me to search for moderate-priced options instead, or is there another city you'd like me to check?
+User: Fine, look for moderate-priced options in Fremont. Just make sure it's worth my time.
+System: APICall (method='FindRestaurants', parameters= {city: Fremont, cuisine: dontcare, price_range: moderate})
+Search Results
+
+End Search Results
+System: It seems there are no moderate-priced options available in Fremont at the moment. Would you like me to check for restaurants in another nearby city, or perhaps try a different price range?
+User: Check for moderate-priced options in Union City. Make it quick, though. I don't have all day.
+System: APICall (method='FindRestaurants', parameters= {city: Union City, cuisine: dontcare, price_range: moderate})
+Search Results
+
+End Search Results
+System: It appears there are no moderate-priced options available in Union City at the moment. Would you like me to explore options in another nearby city, or would you prefer to try a different price range?
+User: Try looking in Hayward instead. But this is your last chance, so make it count.
+System: Let me check for moderate-priced dining options in Hayward for you. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: Hayward, cuisine: dontcare, price_range: moderate})
+Search Results
+
+End Search Results
+System: Unfortunately, there are currently no moderate-priced options available in Hayward either. Would you like me to search in a different nearby city, or perhaps consider a different price range? Let me know how you'd like to proceed.
+User: Forget it, just look for any place in Pleasanton that isn't going to break the bank. I'm done with this back-and-forth nonsense.
+System: Let me check for budget-friendly dining options in Pleasanton for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: Pleasanton, cuisine: dontcare, price_range: inexpensive})
+Search Results
+
+End Search Results
+System: It appears there are no inexpensive options available in Pleasanton at the moment. Would you like me to look for moderate-priced options there, or would you prefer to explore dining options in a different nearby city?
+User: Fine, try moderate-priced options in Pleasanton. But if you can't find anything this time, I'm done with this.
+System: Let me check for moderate-priced dining options in Pleasanton for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters= {city: Pleasanton, cuisine: dontcare, price_range: moderate})
+Search Results
+
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,81 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. Can you help me find one? I hope it's not too expensive.
+System: Certainly! Do you have a preference for any specific type of cuisine, or are you open to suggestions?
+User: I guess I'm open to suggestions, but I'm a bit worried about finding a place that everyone will like. It shouldn't be too fancy, though.
+System: Let's explore some options that might suit your needs. I'll find restaurants in San Francisco that offer a moderate price range, ensuring they're not too fancy. How about trying a cuisine like Italian or Mexican? I'll check what's available for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that match your preference for a moderate price range. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They serve alcohol and you can contact them at 415-543-5100. Another option is A16, located at 2355 Chestnut Street, which also serves alcohol and can be reached at 415-771-2216. Lastly, there's Allegro Romano at 1701 Jones Street; however, they do not serve alcohol. Is there one that you would like more information about or would you like to make a reservation?
+User: I'm not sure about these options. What if the food isn't good, or they end up being more expensive than expected? Can you tell me a little more about 54 Mint Ristorante Italiano? Do they have good reviews, or is there anything I should be concerned about?
+System: While I don't have access to reviews, I can share that 54 Mint Ristorante Italiano is a moderately priced Italian restaurant located at 16 Mint Plaza in San Francisco. They do serve alcohol, and you can contact them at 415-543-5100. If you're concerned about the experience, I recommend giving them a call to ask any specific questions you might have. Would you like to proceed with a reservation, or is there anything else I can assist you with?
+User: I'm still feeling a bit unsure, but I think I might try 54 Mint Ristorante Italiano. Can you make a reservation for two people at 7:00 pm tonight? I hope it won't be too crowded or stressful.
+System: Certainly! I'll make a reservation for two people at 7:00 pm tonight at 54 Mint Ristorante Italiano in San Francisco. Please hold on for a moment while I confirm the reservation details. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: '54 Mint Ristorante Italiano', city: 'San Francisco', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at 7:00 pm tonight at 54 Mint Ristorante Italiano in San Francisco has been successfully made. The restaurant is located at 16 Mint Plaza, and they do serve alcohol. If you have any further questions or need assistance, feel free to contact them at 415-543-5100. Enjoy your dinner!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a restaurant in San Francisco. I feel like I'm always missing out on good places, and it's stressing me out. Can you help me find something that might have a calming vibe, maybe with some live music or something? I just need a place where I can try to relax and not feel so anxious.
+System: Do you have a preferred type of cuisine you would like to enjoy, or are you open to trying something new? Additionally, would you like the restaurant to serve alcohol?
+User: I think I'd prefer something with Italian cuisine. It might remind me of simpler times and help me feel a bit more grounded. And yes, having some wine might help take the edge off. Can you find something with those options, and maybe with live music to drown out my overthinking?
+System: Let me search for Italian restaurants in San Francisco that serve alcohol and have live music. Please hold on for a moment. 
+
+APICall(method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, serves_alcohol: True, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found a couple of Italian restaurants in San Francisco that match your preferences. "Fior D'italia" is located at 2237 Mason Street, and "Zingari Ristorante + Jazz Bar" is at 501 Post Street. Both serve alcohol and offer live music, which should provide a calming atmosphere. Would you like more details or assistance with anything else?
+User: I really appreciate the options, but I'm feeling a bit uncertain. Can you tell me more about the vibe at each place? Maybe knowing the ambiance will help me decide. I just want to be sure it feels right before I make a choice.
+System: Certainly! "Fior D'italia" is known for its classic Italian charm, offering a traditional and elegant atmosphere that might remind you of an old-world Italian setting. The live music there is soothing, often featuring soft instrumental tunes that can provide a calming backdrop for your meal.
+
+On the other hand, "Zingari Ristorante + Jazz Bar" has a lively yet sophisticated vibe, with jazz performances that create a vibrant yet relaxing environment. It's a great place if you enjoy the combination of good music and a lively atmosphere.
+
+Both places have their unique charm, so it depends on whether you prefer a more classic and serene ambiance or a lively and jazzy one. Let me know if you need any further assistance or if you've decided on a place!
+User: I'm just feeling so overwhelmed with this decision. What if I choose the wrong vibe and it just makes me more anxious? I guess the jazz bar sounds appealing because maybe the music can distract me a bit more. But then again, what if it's too lively and I can't handle it? Do you have any insights on how busy these places usually get or any quieter times to visit? That might help ease my mind a bit.
+System: I understand your concerns, and I'm here to help. Both "Fior D'italia" and "Zingari Ristorante + Jazz Bar" are popular spots, but they can vary in busyness depending on the time and day. Jazz bars like Zingari can be lively, especially during peak dining hours when the performances are scheduled. 
+
+If you're looking for a quieter time to visit Zingari, you might consider going earlier in the evening or later in the night after the dinner rush. Weekdays might also be less crowded compared to weekends. 
+
+On the other hand, "Fior D'italia" tends to maintain a more consistent and serene atmosphere throughout the evening, as it's known for its classic charm. 
+
+I hope this information helps you feel more comfortable in making your decision. Let me know if you'd like me to assist you further or if you're ready to make a reservation.
+User: I suppose going to Zingari Ristorante + Jazz Bar during a quieter time might be worth a shot. I just hope it won't be too overwhelming. Could you help me make a reservation there for a weekday evening, maybe around 7 PM? I'd appreciate it if you could find out if they have any quieter spots or tables available too. I'm just anxious about being too close to the music if it's too loud.
+System: Can you please confirm the date and the number of people for the reservation at Zingari Ristorante + Jazz Bar? Once I have these details, I'll check the availability and try to find a quieter spot for you.
+User: Oh, I forgot about the date! Let's go with next Thursday. It’s just going to be me, so a table for one. I really hope they can accommodate a quieter spot; I'm so worried about it being too noisy and making me more anxious.
+System: Thank you for providing the details. I will check the availability for a quieter spot at Zingari Ristorante + Jazz Bar for next Thursday at 7 PM, for a table for one. Please hold on for a moment. 
+
+APICall(method='ReserveRestaurant', parameters={city: San Francisco, restaurant_name: 'Zingari Ristorante + Jazz Bar', date: '2023-10-19', time: '19:00', party_size: 1})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue', 'date': '2023-10-19', 'party_size': '1', 'time': '19:00'}]
+End Search Results
+System: I have successfully made a reservation for you at Zingari Ristorante + Jazz Bar in San Francisco for next Thursday at 7 PM for one person. Unfortunately, the search results do not provide specific information about quieter spots or tables, but you can mention your preference for a quieter area when you arrive. I'm sure they will do their best to accommodate your request. If there's anything else you need help with, feel free to let me know. Take care and have a lovely evening!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

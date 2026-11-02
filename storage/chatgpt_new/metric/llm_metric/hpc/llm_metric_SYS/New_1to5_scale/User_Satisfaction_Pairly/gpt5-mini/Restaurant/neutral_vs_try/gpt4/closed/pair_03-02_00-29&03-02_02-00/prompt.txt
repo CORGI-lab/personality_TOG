@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Concord.
+System: Do you have a specific type of cuisine in mind, or are you open to suggestions?
+User: Just something simple, like American cuisine.
+System: Great choice! Let me find some American cuisine restaurants in Concord for you. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: Concord, cuisine: American})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-265-2120', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '1975 Diamond Boulevard Ste. C 160'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-309-7774', 'price_range': 'moderate', 'restaurant_name': 'Lima', 'serves_alcohol': True, 'street_address': '2151 Salvio Street Suite I'}]
+End Search Results
+System: I found a few American cuisine restaurants in Concord for you. One option is Claim Jumper Restaurants, located at 1981 Diamond Boulevard. They have a moderate price range and serve alcohol. Would you like more information about this restaurant or any of the others?
+User: I think Claim Jumper Restaurants sounds fine. Can you make a reservation for two people?
+System: Sure! Could you please let me know the date and time you'd like the reservation for at Claim Jumper Restaurants?
+User: Tomorrow at 7:00 pm, please.
+System: To confirm, you'd like to reserve a table for two at Claim Jumper Restaurants in Concord tomorrow at 7:00 pm. Is that correct?
+User: Yes, that's correct.
+System: Great! I will proceed with making your reservation. APICall (method='ReserveRestaurant', parameters={city: Concord, restaurant_name: Claim Jumper Restaurants, date: YYYY-MM-DD, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard', 'date': 'YYYY-MM-DD', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two at Claim Jumper Restaurants in Concord tomorrow at 7:00 pm has been successfully made. If you need the restaurant's phone number for any reason, it's 925-798-4300. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to find a restaurant in Fremont.
+System: What type of cuisine are you interested in for your restaurant search in Fremont?
+User: Something simple, maybe American.
+System: Great choice! Let me find some American restaurants in Fremont for you. Please hold on a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems there are no American restaurants available in Fremont based on the current search results. Would you like to try a different cuisine or perhaps another city?
+User: No, let's look for Italian in Fremont instead.
+System: Let me search for Italian restaurants in Fremont for you. Please hold on a moment.
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant called Massimo's in Fremont. It is located at 5200 Mowry Avenue Ste M. If you need more information or would like to explore other options, feel free to let me know!
+User: Can you make a reservation for me at Massimo's?
+System: For what date and time would you like to make the reservation at Massimo's? Also, could you please let me know the number of people for the reservation?
+User: Tomorrow at 7:00 pm for 2 people.
+System: Can you please confirm that you want to book a table for 2 at 7:00 pm tomorrow at Massimo's in Fremont?
+User: Yes, please confirm the reservation.
+System: Thank you for confirming. I will proceed with the reservation for 2 people at 7:00 pm tomorrow at Massimo's in Fremont. Please hold on a moment while I make the reservation.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Massimo's", city: Fremont, time: 19:00, date: '2023-10-26', party_size: 2})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M', 'date': '2023-10-26', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for 2 people at Massimo's in Fremont at 7:00 pm on October 26, 2023, has been successfully made. If you need further assistance or have any questions, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

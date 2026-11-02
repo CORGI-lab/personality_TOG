@@ -1,0 +1,92 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm thinking of grabbing a bite somewhere in San Francisco. Maybe a place with some Italian food?
+System: Do you have a specific price range in mind for the Italian restaurant in San Francisco, or is that not a concern for you?
+User: Uh, price range? I guess it doesn't really matter. Just something decent, you know?
+System: Great! I'll look for some Italian restaurants in San Francisco for you. Please give me a moment while I find some options. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that you might enjoy. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. It has a moderate price range and serves alcohol, though it doesn't feature live music. Would you like more information on this restaurant or perhaps explore another option?
+User: Hmm, 54 Mint Ristorante Italiano sounds alright, but I wonder if there's a place with live music too?
+System: While 54 Mint Ristorante Italiano doesn't offer live music, I can check for other Italian restaurants in San Francisco that might have live music. Would you like me to do that, or is there another feature you're interested in?
+User: Yeah, let's see if there's an Italian place with live music. That'd be cool.
+System: I'll look for Italian restaurants in San Francisco that offer live music. Please give me a moment while I search for options. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found a couple of Italian restaurants in San Francisco that offer live music. One option is Fior D'italia, located at 2237 Mason Street, and it serves alcohol. Another option is Zingari Ristorante + Jazz Bar at 501 Post Street, which also features live music and serves alcohol. Both have an expensive price range. Would you like more information on either of these, or is there something else you'd like to know?
+User: Zingari Ristorante + Jazz Bar sounds pretty fun. Can you go ahead and make a reservation for me there?
+System: Could you please let me know the date, time, and the number of people for the reservation at Zingari Ristorante + Jazz Bar in San Francisco?
+User: Oh, right! Let's do it for tonight, around 8 PM, and make it for, uh, I don't know, maybe four people? That should work, I guess.
+System: Great! Let me confirm your reservation details: You'd like to reserve a table for four people at Zingari Ristorante + Jazz Bar in San Francisco for tonight at 8 PM. Is that correct? Once you confirm, I'll proceed with the reservation.
+User: Yeah, that sounds about right. Go ahead and book it!
+System: Perfect! I'll go ahead and make the reservation for you. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Zingari Ristorante + Jazz Bar', city: 'San Francisco', date: '2023-10-05', time: '20:00', party_size: 4})
+
+Let's see if the reservation is successful.
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-05', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Your reservation at Zingari Ristorante + Jazz Bar in San Francisco is confirmed for tonight at 8 PM for four people. The restaurant is located at 501 Post Street. If you need to contact them, their phone number is 415-885-8850. Enjoy your evening with live music and great Italian food!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I'm kind of just going with the flow today and feel like finding a place to eat in San Francisco. Can you help me out?
+System: Sure thing! Do you have a particular type of cuisine in mind, or are you open to trying something random today?
+User: I don't really know what I'm in the mood for. Maybe something with a bit of everything?
+System: How about I find a place that serves American cuisine in San Francisco? It often offers a variety of options. Let me know if that works for you, or if you have other preferences.
+User: Yeah, American sounds good. Just make sure it's not too expensive, I guess.
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-775-1800', 'price_range': 'moderate', 'restaurant_name': 'Academy Bar And Kitchen', 'serves_alcohol': False, 'street_address': '1800 Fillmore Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-872-9409', 'price_range': 'moderate', 'restaurant_name': "Alba Ray's", 'serves_alcohol': True, 'street_address': '2293 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-829-2737', 'price_range': 'moderate', 'restaurant_name': 'Aliment', 'serves_alcohol': False, 'street_address': '786 Bush Street'}]
+End Search Results
+System: I found a few options for you in San Francisco. One of them is Academy Bar And Kitchen, located at 1800 Fillmore Street. If you feel like something a bit livelier, Alba Ray's at 2293 Mission Street serves alcohol. Let me know if you'd like more details or if you want to choose one of these places!
+User: I'm not really feeling either of those. Do you have something else, maybe a bit more laid-back and chill?
+System: How about Aliment at 786 Bush Street? It's an American restaurant in San Francisco, and it might have the laid-back vibe you're looking for since it doesn't serve alcohol. Let me know if this works for you or if you'd like other options!
+User: Do they have live music or anything interesting like that?
+System: Unfortunately, Aliment does not feature live music. Would you like to know more about the place, or would you prefer to explore other options?
+User: Nah, I'm not really interested if there's no live music. Can you find something else for me? Maybe a place with some live entertainment or music?
+System: Let's try exploring other options that might offer live music. Are you still interested in American cuisine, or would you like to try a different type? Let me know so I can find a place that matches your vibe!
+User: Yeah, still going with American, but let's make sure there's some live music happening.
+System: Let's see what I can find for you. I will search for American restaurants in San Francisco that have live music. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: American, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-292-2583', 'price_range': 'moderate', 'restaurant_name': 'Biscuits & Blues', 'serves_alcohol': False, 'street_address': '401 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-433-6300', 'price_range': 'expensive', 'restaurant_name': 'Bix', 'serves_alcohol': False, 'street_address': '56 Gold Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-923-1138', 'price_range': 'inexpensive', 'restaurant_name': "Mcdonald's", 'serves_alcohol': False, 'street_address': '1100 Fillmore Street', 'date': '2019-03-01', 'party_size': 2, 'time': '17:00'}]
+End Search Results
+System: I found a few American restaurants in San Francisco with live music. One option is Biscuits & Blues at 401 Mason Street, which has a moderate price range. If you're looking for something more budget-friendly, there's also McDonald's at 1100 Fillmore Street. Let me know if either of these catches your interest, or if you'd like more information!
+User: Biscuits & Blues sounds cool. Can you book a table for me there? Maybe around 7 PM today for like, 3 people?
+System: Sure thing! Let me confirm the details for your reservation at Biscuits & Blues. You'd like to book a table for 3 people at 7 PM today, right?
+User: Yeah, that sounds about right. Go ahead and book it for me.
+System: Great! I'll make the reservation for 3 people at 7 PM today at Biscuits & Blues. Please hold on for a moment while I confirm the booking. APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Biscuits & Blues', city: 'San Francisco', time: '19:00', party_size: 3, date: '2019-03-01'})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-9800', 'price_range': 'moderate', 'restaurant_name': 'B', 'serves_alcohol': False, 'street_address': '720 Howard Street', 'date': '2019-03-01', 'party_size': '3', 'time': '19:00'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '415-292-2583', 'price_range': 'moderate', 'restaurant_name': 'Biscuits & Blues', 'serves_alcohol': False, 'street_address': '401 Mason Street', 'date': '2019-03-01', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your reservation for 3 people at 7 PM today at Biscuits & Blues has been successfully made. Enjoy your time there with some live music at 401 Mason Street! If you need any more help, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

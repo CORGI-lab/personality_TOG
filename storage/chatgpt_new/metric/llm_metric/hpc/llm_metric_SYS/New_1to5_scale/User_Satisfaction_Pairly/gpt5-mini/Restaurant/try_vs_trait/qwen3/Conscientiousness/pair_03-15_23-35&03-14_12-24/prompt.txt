@@ -1,0 +1,102 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need to reserve a restaurant in Palo Alto for four people tonight at 7 PM. American cuisine, moderate price range, and no live music please.
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: American, price_range: moderate, has_live_music: False})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street'}]
+End Search Results
+System: 
+
+I found a few options. Would you like to reserve Bazille at 550 Stanford Shopping Center for four people tonight at 7 PM?
+User: 
+
+Could you confirm if Bazille has live music? I need to ensure it meets my requirement of no live music.
+System: 
+
+Bazille does not have live music, so it meets your requirement. Would you like to proceed with reserving Bazille for four people at 7 PM tonight?
+User: 
+
+Yes, please reserve Bazille for four people at 7 PM tonight.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 'Bazille', city: 'Palo Alto', time: '19:00', party_size: 4, date: '2023-10-05'})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center', 'date': '2023-10-05', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: 
+
+Your reservation at Bazille for four people at 7 PM tonight has been confirmed. The restaurant is located at 550 Stanford Shopping Center. Is there anything else I can assist you with?
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I would like to find and reserve a restaurant in San Francisco for four people at 7 PM tonight. Italian cuisine, moderate price range, and serves alcohol.
+System: 
+
+APICall (method='FindRestaurants', parameters= {cuisine: Italian, city: San Francisco, price_range: moderate, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-282-4969', 'price_range': 'moderate', 'restaurant_name': 'Bacco', 'serves_alcohol': True, 'street_address': '737 Diamond Street'}]
+End Search Results
+System: 
+
+I found three Italian restaurants in San Francisco that meet your criteria. Here are the details:  
+- **54 Mint Ristorante Italiano**: 16 Mint Plaza, phone 415-543-5100  
+- **A16**: 2355 Chestnut Street, phone 415-771-2216  
+- **Bacco**: 737 Diamond Street, phone 415-282-4969  
+
+Please confirm which restaurant you'd like to reserve for four people at 7 PM tonight.
+User: 
+
+I would like to reserve A16 located at 2355 Chestnut Street for four people at 7 PM tonight. Please confirm the reservation details.
+System: 
+
+Your reservation details for A16 are confirmed:  
+- **Restaurant**: A16  
+- **Address**: 2355 Chestnut Street, San Francisco  
+- **Time**: 7:00 PM today  
+- **Party size**: 4  
+Please verify these details are accurate before proceeding.
+User: 
+
+Yes, all details are accurate. Please proceed with the reservation.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: 'A16', city: 'San Francisco', time: '19:00', date: '2023-10-05', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-05', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: 
+
+Your reservation at A16 for 4 people tonight at 7:00 PM has been successfully confirmed. The address is 2355 Chestnut Street, San Francisco, and the phone number is 415-771-2216. Enjoy your meal!
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

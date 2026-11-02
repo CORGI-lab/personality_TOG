@@ -1,0 +1,125 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in London.
+
+System: Okay, I can help with that.
+
+Do you have any preferences for the star rating of the hotel?
+
+User: Maybe a three-star hotel?
+
+System: APICall(method='SearchHotel', parameters={ location: London, star_rating: 3 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7403 4299', 'place_name': 'Accommodation London Bridge', 'price_per_night': 204, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '58 Great Dover Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7834 0205', 'place_name': 'Airways Hotel London Victoria', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': "29-31 Saint George's Drive"}]
+End Search Results
+System: Okay, I found three 3-star hotels in London: Abc Hyde Park Hotel, Accommodation London Bridge, and Airways Hotel London Victoria.
+
+Abc Hyde Park Hotel: £102 per night, no smoking allowed.
+Accommodation London Bridge: £204 per night, no smoking allowed.
+Airways Hotel London Victoria: £279 per night, smoking is allowed.
+
+Do any of these sound good to you?
+
+User: Abc Hyde Park Hotel... that sounds okay. What's the address?
+
+System: Okay, the address for Abc Hyde Park Hotel is 121 Sussex Gardens.
+
+User: Okay. Can you book a room for me there? I need it for... three nights, starting tomorrow.
+
+System: What date would you like to check in?
+
+User: Tomorrow... the 16th.
+
+System: Okay, so you would like to book a room at Abc Hyde Park Hotel for three nights, starting tomorrow, October 16th. Is that correct? Also, how many rooms will you need?
+
+User: Just one room.
+
+System: Okay, please confirm that you want to reserve one room at Abc Hyde Park Hotel in London for three nights starting on October 16th.
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-10-16, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-10-16'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-10-16'}]
+End Search Results
+System: OK. I see two Hotels are available for the mentioned dates. Abc Hyde Park Hotel and Ascot Hyde Park Hotel. Which one do you prefer?
+
+User: Abc Hyde Park Hotel is fine.
+
+System: OK. I have booked 1 room at Abc Hyde Park Hotel for 3 nights, starting on October 16th. The phone number is +44 20 7706 4660 and the address is 121 Sussex Gardens.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in London.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: No, not really. Just something... basic.
+
+System: Okay, I understand. I will search for a hotel in London.
+
+APICall(method='SearchHotel', parameters={location: London})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: Alright, I've found a few options in London. There's Abercorn House, a 1-star hotel at $23 per night. Is that something you'd consider?
+
+User: Okay... maybe. Is it... safe?
+
+System: Given your preference for something basic, I understand safety is a concern. Abercorn House is a budget-friendly option. Could you clarify what you mean by "safe"? Are you concerned about the neighborhood, or are there specific amenities you're looking for that would make you feel more secure?
+
+User: Just... is it in a bad area?
+
+System: I understand your concern about the location. Abercorn House is located at 28-30 Bute Gardens in London. I don't have specific safety ratings for the area, but I can offer you alternatives. Would you feel more comfortable with a 3-star hotel, Abc Hyde Park Hotel, at $102 per night, or a 5-star hotel, 45 Park Lane, at $330 per night?
+
+User: No, I think I'll stick with the first one. Can you book it for me? Just one room.
+
+System: To proceed with the booking at Abercorn House, I'll need a few more details. What date would you like to check in, and how many nights will you be staying?
+
+User: Just... tomorrow. For one night.
+
+System: Please provide the full date for your check-in. I need the year, month, and day to make the reservation.
+
+User: Okay, um... 2024-03-08.
+
+System: Alright, just to confirm, you'd like me to book one room at Abercorn House in London for one night, starting on 2024-03-08?
+
+User: Yes, that's right.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-03-08, location: London, number_of_rooms: 1, place_name: Abercorn House, stay_length: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens', 'check_in_date': '2024-03-08'}]
+End Search Results
+System: Excellent. I have confirmed your booking.
+
+Your reservation at Abercorn House in London for one room, for one night starting on 2024-03-08 is complete. The price is $23 per night.
+
+Is there anything else I can help you with today?
+
+User: No, that's all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

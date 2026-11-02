@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Vancouver.
+System: Sure, I can help with that! Do you have any specific preferences for the star rating, smoking allowance, or number of rooms?
+User: I prefer a non-smoking hotel with a 3-star rating.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: I found a 3-star hotel in Vancouver named Atrium Inn Vancouver, which is non-smoking. Would you like more information about this hotel or should I provide details about another option?
+User: Please provide more information about Atrium Inn Vancouver.
+System: The Atrium Inn Vancouver is located at 2889 East Hastings Street. It offers non-smoking accommodations with a 3-star rating. The price per night is $228. If you need any more details or would like assistance with a reservation, please let me know!
+User: I would like to make a reservation at Atrium Inn Vancouver. Can you help with that?
+System: Certainly! To proceed with the reservation at Atrium Inn Vancouver, could you please let me know the check-in date and the duration of your stay? Additionally, how many rooms would you like to book?
+User: I would like to check in on the 10th and stay for five days. I'll need one room, please.
+System: Just to confirm, you would like to reserve one room at the Atrium Inn Vancouver from the 10th for a duration of five days. Is that correct?
+User: Yes, that's correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 'YYYY-MM-DD', location: 'Vancouver', number_of_rooms: 1, place_name: 'Atrium Inn Vancouver', stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street', 'check_in_date': 'YYYY-MM-DD'}]
+End Search Results
+System: Your reservation at the Atrium Inn Vancouver has been successfully confirmed. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Fresno. Can you help me with that?
+System: Could you please let me know if you have any specific preferences like a star rating or smoking allowance for the hotel in Fresno?
+User: I don't need anything fancy, just a decent place to stay. Smoking isn't important to me.
+System: APICall(method='SearchHotel', parameters={ location: Fresno, star_rating: 3, smoking_allowed: dontcare })
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-268-1000', 'place_name': 'Doubletree By Hilton Hotel Fresno Convention Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2233 Ventura Street'}, {'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-375-7760', 'place_name': 'Piccadilly Inn Airport', 'price_per_night': 126, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '5115 East McKinley Avenue'}, {'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-233-6650', 'place_name': 'Radisson Hotel Fresno Conference Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1055 Van Ness Avenue'}]
+End Search Results
+System: I found a few options for you in Fresno. One of them is the Doubletree By Hilton Hotel Fresno Convention Center, which is a 3-star hotel with a rate of $222 per night. The address is 2233 Ventura Street, and smoking is not allowed. Would you like more details about this hotel, or should I provide information on another option?
+User: Can you tell me if there's a less expensive option available?
+System: The Piccadilly Inn Airport is another 3-star option available for you. It costs $126 per night, and smoking is allowed. The address is 5115 East McKinley Avenue. Would you like more information about this hotel, or would you prefer to hear about another option?
+User: Is there anything even cheaper than that?
+System: The least expensive option I found is the Piccadilly Inn Airport at $126 per night. If you're looking for something cheaper, you may want to consider altering preferences like star rating or location. Would you like to explore different options?
+User: No, I think the Piccadilly Inn Airport will be fine. Can you help me book a room there?
+System: How many rooms would you like to book at the Piccadilly Inn Airport, and what will be your check-in date and length of stay?
+User: I would like to book one room starting on the 5th for five days.
+System: Please confirm that you want to book 1 room at the Piccadilly Inn Airport in Fresno, starting on the 5th, for a stay of 5 days.
+User: Yes, that's correct. Please go ahead and make the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Fresno, number_of_rooms: 1, place_name: Piccadilly Inn Airport, stay_length: 5 })
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-375-7760', 'place_name': 'Piccadilly Inn Airport', 'price_per_night': 126, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '5115 East McKinley Avenue', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Piccadilly Inn Airport in Fresno has been successfully confirmed. You have reserved 1 room starting from November 5th for a duration of 5 days. The hotel address is 5115 East McKinley Avenue, and if you need to contact them, their phone number is +1 559-375-7760. Is there anything else I can assist you with today?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

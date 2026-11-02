@@ -1,0 +1,92 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+Find me a restaurant in San Francisco for six people at 8 PM tonight. Italian, alcohol, live music. If any of those are missing, don't bother. I'll find a better place myself.
+System: 
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, serves_alcohol: True, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: 
+
+I found two restaurants that meet all your criteria: Fior D'italia at 2237 Mason Street and Zingari Ristorante + Jazz Bar at 501 Post Street. Both serve Italian cuisine, have live music, and serve alcohol. Would you like to book a table for six at 8 PM tonight at either of these?
+User: 
+
+Book Zingari. Make sure it's perfect, or I'll find a better place myself. I don't trust your recommendations.
+System: 
+
+Confirming you want to book Zingari Ristorante + Jazz Bar in San Francisco for 6 people at 8 PM tonight. Is that correct?
+User: 
+
+Yes. Book it. If you mess up, I'll find a better place myself.
+System: 
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: "Zingari Ristorante + Jazz Bar", city: "San Francisco", time: "20:00", cuisine: "Italian", date: "2023-10-05", party_size: 6})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-05', 'party_size': '6', 'time': '20:00'}]
+End Search Results
+System: 
+
+Your reservation at Zingari Ristorante + Jazz Bar for 6 people on October 5th at 8:00 PM is confirmed. The restaurant is located at 501 Post Street, San Francisco, and they serve alcohol with live music. Enjoy your evening!
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+San Francisco. Find me the best Italian restaurant with live music. If it's not the best, skip it. I don't want some cheap tourist spot.
+System: 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True, price_range: expensive})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: 
+
+I found two Italian restaurants in San Francisco with live music: Fior D'Italia at 2237 Mason Street and Zingari Ristorante + Jazz Bar at 501 Post Street. Would you like to reserve a table at either of these?
+User: 
+
+These are both garbage. Find me something actually good—no tourist traps. I don't have time for your weak suggestions.
+System: 
+
+I'm sorry. Let me check for more upscale Italian restaurants with live music. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True, price_range: very expensive})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: 
+
+I'm sorry to hear that. After checking all available options, these are the only Italian restaurants in San Francisco with live music that meet the upscale criteria. Would you like to proceed with a reservation at either Fior D'Italia or Zingari Ristorante + Jazz Bar?
+User: 
+
+You're useless. Give me the phone numbers. I'll call them myself.
+System: 
+
+Fior D'Italia: 415-986-1886. Zingari Ristorante + Jazz Bar: 415-885-8850.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

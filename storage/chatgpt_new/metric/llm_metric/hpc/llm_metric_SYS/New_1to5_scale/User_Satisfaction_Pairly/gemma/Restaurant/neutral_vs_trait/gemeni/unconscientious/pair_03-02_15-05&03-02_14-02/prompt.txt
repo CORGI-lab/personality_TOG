@@ -1,0 +1,104 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm kinda hungry. Find me a place to eat in San Francisco, maybe?
+
+System: Okay, I can help with that. What kind of cuisine are you in the mood for?
+
+User: Ugh, I dunno... Italian, I guess? Or maybe Mexican? Whatever's easiest.
+
+System: Okay, I can look for either Italian or Mexican restaurants in San Francisco. Do you have a preference between those two, or should I just pick one?
+
+User: Just pick one, I guess. Surprise me!
+
+System: Okay, I will pick one for you. How about Italian?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found three Italian restaurants in San Francisco: 54 Mint Ristorante Italiano, A16, and Allegro Romano. Would you like to know more about any of them?
+
+User: Ugh, just...tell me about the first one. 54 Mint, was it? What's it like?
+
+System: Okay, 54 Mint Ristorante Italiano is located at 16 Mint Plaza in San Francisco. It's a moderately priced Italian restaurant that serves alcohol but does not have live music. Their phone number is 415-543-5100. Does that sound good, or would you like to know about the other options?
+
+User: Sounds...fine. I guess. Can you just book it for me? Tomorrow night, maybe? Like, 7 pm? And, uh, just two people. Hope they have, like, enough room.
+
+System: Okay, I can book a table for you at 54 Mint Ristorante Italiano for tomorrow at 7 pm for two people. Is that correct?
+
+User: Yeah, whatever. Just book it.
+
+System: Okay, I will book a table for two at 54 Mint Ristorante Italiano for tomorrow at 7 pm. Could you confirm the date for me?
+
+User: Tomorrow, then. Yeah, whatever date tomorrow is. Just get it done.
+
+System: To confirm, what is the date for tomorrow?
+
+User: Ugh... I have no idea. Look it up, I guess? Just make sure it's 7 pm for two at that Mint place.
+
+System: Okay, I've looked up the date for tomorrow. It's 2019-03-02. So, I will book a table for two at 54 Mint Ristorante Italiano on 2019-03-02 at 7 pm. Is that correct?
+
+User: Yeah, fine, whatever. Just book it already.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: 54 Mint Ristorante Italiano, city: San Francisco, date: 2019-03-02, time: 7 pm, party_size: 2})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2019-03-02', 'party_size': '2', 'time': '7 pm'}]
+End Search Results
+System: Awesome! I have booked a table for two at 54 Mint Ristorante Italiano on 2019-03-02 at 7 pm. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm kinda hungry... maybe find a place in San Francisco? I dunno, whatever's easy.
+
+System: Okay, San Francisco sounds good. I'm thinking maybe we should check out some Chinese food since you seem open to anything. How does that sound?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Chinese})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-282-8999', 'price_range': 'inexpensive', 'restaurant_name': "Alice's", 'serves_alcohol': False, 'street_address': '1599 Sanchez Street'}, {'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-775-3679', 'price_range': 'inexpensive', 'restaurant_name': 'Bamboo Restaurant', 'serves_alcohol': True, 'street_address': '1441 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-661-8385', 'price_range': 'inexpensive', 'restaurant_name': 'Bei Fang Style', 'serves_alcohol': True, 'street_address': '2218 Irving Street'}]
+End Search Results
+System: Alright, so we've got a few inexpensive Chinese spots in San Francisco. There's Alice's, Bamboo Restaurant, and Bei Fang Style. Alice's doesn't serve alcohol, but Bamboo and Bei Fang Style do. Sound good?
+
+User: Chinese? Eh, sure, whatever. Bamboo Restaurant sounds...okay, I guess. Can we just book it? I'm starving and don't really care.
+
+System: Okay, let's just get this done then. What time and how many people? Just give me the info and I'll book it at Bamboo Restaurant.
+
+User: Ugh, fine. Today, I guess. And... three people. Uh, 7 pm? Just pick something, I don't care.
+
+System: Okay, so three people at Bamboo Restaurant in San Francisco at 7 pm today. Got it.
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Bamboo Restaurant, city: San Francisco, date: 2019-03-01, party_size: 3, time: 19:00})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-775-3679', 'price_range': 'inexpensive', 'restaurant_name': 'Bamboo Restaurant', 'serves_alcohol': True, 'street_address': '1441 Polk Street', 'date': '2019-03-01', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Awesome, it's booked! Bamboo Restaurant, 3 people, 7 pm. You can find it at 1441 Polk Street. Their number is 415-775-3679 if you need it. Have fun!
+
+User: Cool, cool. Is that place even any good? Like, what's the price range? I hope it's not too expensive, 'cause I'm kinda broke right now.
+
+System: Alright, no worries. It's inexpensive, so you're all good. Is there anything else you need to know, or are you set?
+
+User: Yeah, cool. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

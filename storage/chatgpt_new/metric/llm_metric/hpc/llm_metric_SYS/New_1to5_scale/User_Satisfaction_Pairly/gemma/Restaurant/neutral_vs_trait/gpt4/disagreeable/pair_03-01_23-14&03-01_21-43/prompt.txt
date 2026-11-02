@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in San Francisco. Make sure it's exclusive and not the usual garbage.
+System: What type of cuisine are you interested in? Some exclusive options include French, Japanese, or Italian, but I'm happy to look for any other preferences you might have.
+User: I want to try something Japanese. But it better be top-notch, not some run-of-the-mill place.
+System: Let me find some exclusive Japanese restaurants for you in San Francisco. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-655-3738', 'price_range': 'expensive', 'restaurant_name': 'Izakaya Sushi Ran', 'serves_alcohol': True, 'street_address': '2223 Market Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-484-1206', 'price_range': 'expensive', 'restaurant_name': 'Motze', 'serves_alcohol': True, 'street_address': '983 Valencia Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-552-4400', 'price_range': 'expensive', 'restaurant_name': 'Nihon Whisky Lounge', 'serves_alcohol': True, 'street_address': '1779 Folsom Street'}]
+End Search Results
+System: I found some exclusive Japanese restaurants for you in San Francisco. One option is Izakaya Sushi Ran, located at 2223 Market Street. They serve alcohol and the price range is expensive. Would you like more information about this restaurant or perhaps details on another option like Motze or Nihon Whisky Lounge?
+User: Is that the best you can do? Tell me about Motze, and it better be worth my time.
+System: Motze is an exclusive Japanese restaurant located at 983 Valencia Street in San Francisco. It offers an expensive dining experience and serves alcohol. Would you like to know anything else about Motze, or would you like me to assist with reservations or details about another restaurant?
+User: I suppose Motze sounds alright. Make a reservation for me, but it better be a prime spot. I don't want to be shoved in some corner. Make it for tomorrow at 7:00 pm for two people.
+System: To confirm your reservation at Motze, I'll need to gather some information. Can you please provide the exact date for tomorrow's reservation?
+User: Tomorrow's date is the 15th. Make sure you get a good table for me at 7:00 pm for two people.
+System: Thank you for providing the date. Let me confirm your reservation at Motze for two people on 2023-09-15 at 7:00 pm. Please hold on while I make the reservation. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: Motze, city: San Francisco, date: 2023-09-15, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-484-1206', 'price_range': 'expensive', 'restaurant_name': 'Motze', 'serves_alcohol': True, 'street_address': '983 Valencia Street', 'date': '2023-09-15', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Motze for two people on September 15, 2023, at 7:00 pm has been successfully confirmed. The restaurant is located at 983 Valencia Street, and they serve alcohol. If you need further assistance or have any other questions, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. Make sure it’s not too expensive, and it better serve alcohol. What do you have?
+System: Could you let me know what type of cuisine you're interested in, or are you open to any suggestions? If you don't have a preference, I'll go ahead and choose a cuisine for you.
+User: I don't care what cuisine it is, just find something that fits what I asked for. Don't make me wait.
+System: I'll find a restaurant for you. Let's go with a competitive choice like Japanese cuisine. Let me search for a Japanese restaurant in San Francisco that serves alcohol and isn't too expensive. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese, price_range: moderate, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-292-9997', 'price_range': 'moderate', 'restaurant_name': '2g Japanese Brasserie', 'serves_alcohol': True, 'street_address': '601 Van Ness Avenue'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-800-8498', 'price_range': 'moderate', 'restaurant_name': 'Akira Japanese Restaurant', 'serves_alcohol': True, 'street_address': '1634 Bush Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-530-2466', 'price_range': 'moderate', 'restaurant_name': 'Ginto', 'serves_alcohol': True, 'street_address': '658 Market Street'}]
+End Search Results
+System: I found a few Japanese restaurants in San Francisco that serve alcohol and are moderately priced. One option is 2g Japanese Brasserie located at 601 Van Ness Avenue. If you need their contact, it's 415-292-9997. Would you like to know about another one, or does this meet your needs?
+User: Is there a reason you picked Japanese? I don't have all day, so just book it if there's nothing better.
+System: I selected Japanese as a competitive choice based on your preference for something fitting and efficient. Let's proceed with making a reservation at 2g Japanese Brasserie if that suits you. Could you please confirm the number of people and the time for your reservation?
+User: Make it for two people at 7:00 pm. And don't screw it up.
+System: Confirming your reservation for two people at 7:00 pm at 2g Japanese Brasserie in San Francisco. Let me proceed with the booking. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: '2g Japanese Brasserie', city: 'San Francisco', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-292-9997', 'price_range': 'moderate', 'restaurant_name': '2g Japanese Brasserie', 'serves_alcohol': True, 'street_address': '601 Van Ness Avenue', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two people at 7:00 pm at 2g Japanese Brasserie in San Francisco has been successfully made. If you need to contact the restaurant, you can reach them at 415-292-9997. Enjoy your evening.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

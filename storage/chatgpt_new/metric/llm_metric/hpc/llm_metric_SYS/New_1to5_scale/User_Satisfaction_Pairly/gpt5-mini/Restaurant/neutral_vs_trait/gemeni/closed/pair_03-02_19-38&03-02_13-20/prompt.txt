@@ -1,0 +1,118 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in San Mateo.
+
+System: What type of cuisine would you prefer?
+
+User: Um, maybe American?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: American})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-212-2643', 'price_range': 'moderate', 'restaurant_name': 'Qube Bar & Grill', 'serves_alcohol': True, 'street_address': '4000 South El Camino Real'}, {'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-522-7526', 'price_range': 'expensive', 'restaurant_name': 'Poplar Creek Grill', 'serves_alcohol': True, 'street_address': '1700 Coyote Point Drive'}]
+End Search Results
+System: I found three American restaurants in San Mateo: Central Park Bistro, Qube Bar & Grill, and Poplar Creek Grill. Would you like to know more about any of them?
+
+User: Maybe Central Park Bistro?
+
+System: Central Park Bistro is located at 181 East 4th Avenue. The phone number is 650-558-8401. It has a moderate price range and does not serve alcohol. Does that sound good?
+
+User: Okay, um, can you check if they have another one?
+
+System: Okay, I found two other American restaurants in San Mateo. One is Qube Bar & Grill, and the other is Poplar Creek Grill. Do you have any preferences between them?
+
+User: No preference. Just tell me about one.
+
+System: Qube Bar & Grill is located at 4000 South El Camino Real. The phone number is 650-212-2643. It has a moderate price range and serves alcohol. Does that sound good?
+
+User: Okay, um, can you just find one that doesn't serve alcohol?
+
+System: ```tool_code
+APICall (method='FindRestaurants', parameters= {city: San Mateo, cuisine: American, serves_alcohol: False})
+```
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue'}]
+End Search Results
+System: Central Park Bistro is located at 181 East 4th Avenue. The phone number is 650-558-8401. It has a moderate price range and does not serve alcohol. Would you like to know more?
+
+User: Um, okay, can you make a reservation there?
+
+System: What time would you like to make a reservation for and how many people?
+
+User: Um, maybe for two people, at 7 pm?
+
+System: What date would you like to make the reservation for?
+
+User: Um, today?
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Central Park Bistro, city: San Mateo, date: 2024-05-02, party_size: 2, time: 7:00 PM})
+
+Search Results
+[{'city': 'San Mateo', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-558-8401', 'price_range': 'moderate', 'restaurant_name': 'Central Park Bistro', 'serves_alcohol': False, 'street_address': '181 East 4th Avenue', 'date': '2024-05-02', 'party_size': '2', 'time': '7:00 PM'}]
+End Search Results
+System: Okay, I have a reservation for you at Central Park Bistro for today, May 2, 2024, at 7:00 PM for a party of 2. Is that correct?
+
+User: Yes, that's correct.
+
+System: Great! Your reservation at Central Park Bistro is confirmed. Is there anything else I can help you with?
+
+User: Um, no. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Jose.
+
+System: Okay. Is there any particular type of food you would prefer?
+
+User: Um, maybe just American food.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Jose, cuisine: American})
+
+Search Results
+[{'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-971-8523', 'price_range': 'moderate', 'restaurant_name': '71 Saint Peter', 'serves_alcohol': True, 'street_address': '71 North San Pedro Street'}, {'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-261-5787', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '2400 Forest Avenue'}, {'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-292-4300', 'price_range': 'moderate', 'restaurant_name': "Billy Berk's", 'serves_alcohol': True, 'street_address': '99 South 1st Street'}]
+End Search Results
+System: I found three American restaurants in San Jose: 71 Saint Peter, Bazille, and Billy Berk's. All are moderately priced. Would you like to know more about any of them?
+
+User: Um, maybe just tell me about 71 Saint Peter.
+
+System: 71 Saint Peter is located at 71 North San Pedro Street in San Jose. They serve alcohol and the price range is moderate. Does that sound suitable?
+
+User: Okay, that sounds… fine. Can you just make a reservation there?
+
+System: Okay. I will make a reservation at 71 Saint Peter. What time and date would you like to reserve a table for? And how many people will be in your party?
+
+User: Um, tomorrow at 7pm for two people.
+
+System: Okay, so that's a reservation for 71 Saint Peter in San Jose for tomorrow, March 2nd, at 7pm for a party of two. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: 71 Saint Peter, city: San Jose, date: 2019-03-02, time: 19:00, party_size: 2})
+
+Search Results
+[{'city': 'San Jose', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-971-8523', 'price_range': 'moderate', 'restaurant_name': '71 Saint Peter', 'serves_alcohol': True, 'street_address': '71 North San Pedro Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Okay, your reservation at 71 Saint Peter for tomorrow, March 2nd, at 7pm for two people has been made. Is there anything else I can help you with?
+
+User: Um, no, I think that's all. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

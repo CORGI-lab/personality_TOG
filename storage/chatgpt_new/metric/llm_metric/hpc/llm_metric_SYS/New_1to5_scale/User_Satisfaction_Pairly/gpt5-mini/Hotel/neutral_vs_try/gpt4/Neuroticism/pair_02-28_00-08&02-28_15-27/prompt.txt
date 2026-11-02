@@ -1,0 +1,172 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in New York. Can you help me with that?
+System: Certainly! Do you have any preferences for the star rating or whether smoking is allowed in the hotel?
+User: I'm feeling a bit anxious about finding the right place. Can you please check for a hotel with at least a 4-star rating? And, um, smoking isn't allowed, right? That would be ideal.
+System: Let me find a suitable hotel for you in New York with at least a 4-star rating and where smoking is not allowed. I'll check the options now. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 646-744-3100', 'place_name': 'Aka Central Park', 'price_per_night': 232, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '42 West 58th Street'}]
+End Search Results
+System: I found a few great options for you in New York. The Ac Hotel New York Times Square is a 4-star hotel where smoking is not allowed. It costs $176 per night and is located at 260 West 40th Street. Would you like more information or to hear about other options?
+User: Can you please tell me if they have any rooms available and the number of nights I can book? I'm really worried about not finding a place. Also, are there any hidden charges or fees I should know about?
+System: I understand your concern about finding the right place. Based on the information available, the Ac Hotel New York Times Square has 2 rooms available. The price per night is $176, but the search results do not mention any hidden charges or fees. 
+
+If you'd like to proceed with a reservation, please let me know your check-in date and the number of nights you wish to stay, so I can help you further.
+User: Okay, um, I guess I'll need to reserve one of those rooms. Can you book it for me starting from the 10th? I'm planning to stay for five nights. I'm just really nervous about everything going smoothly.
+System: Please confirm that you would like to reserve 1 room at the Ac Hotel New York Times Square from the 10th for a stay of 5 nights in New York. Once confirmed, I'll proceed with the reservation for you.
+User: Yes, please confirm the reservation. I really hope everything works out without any issues.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: New York, number_of_rooms: 1, place_name: Ac Hotel New York Times Square, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street', 'check_in_date': '2023-11-10'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street', 'check_in_date': '2023-11-10'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-764-5700', 'place_name': 'Aka Times Square', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '123 West 44th Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Ac Hotel New York Times Square has been successfully confirmed. You will be staying for 5 nights starting from November 10, 2023. If you have any other questions or need further assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm interested in finding a hotel in Seattle. Can you help me with that?
+System: Sure! Do you have any preferences for the star rating of the hotel, or if smoking is allowed?
+User: Uh, I'm not really sure. I guess I'd prefer a higher star rating just to be safe, but the smoking thing isn't a big deal for me. Can you just find something that's generally well-reviewed? I really don't want to end up in a terrible place.
+System: Great! Let me search for a hotel with a higher star rating in Seattle for you. Please give me a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 5 })
+Search Results
+
+End Search Results
+System: It seems there were no results for hotels with a 5-star rating in Seattle. Would you like me to look for a 3-star or 4-star hotel instead?
+User: Could you check for 4-star hotels, please? I'm getting anxious thinking about ending up somewhere that's not up to the mark.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-448-8600', 'place_name': 'Hotel Andra', 'price_per_night': 372, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2000 4th Avenue'}]
+End Search Results
+System: I found several 4-star hotels in Seattle for you. Here are some options:
+
+1. **Crowne Plaza Seattle Downtown**  
+   - Price per night: $120  
+   - Smoking allowed: No  
+   - Address: 1113 6th Avenue  
+   - Phone number: +1 206-464-1980
+
+2. **Grand Hyatt Seattle**  
+   - Price per night: $456  
+   - Smoking allowed: No  
+   - Address: 721 Pine Street  
+   - Phone number: +1 206-774-1234
+
+3. **Hotel Andra**  
+   - Price per night: $372  
+   - Smoking allowed: No  
+   - Address: 2000 4th Avenue  
+   - Phone number: +1 206-448-8600
+
+Please let me know if you need more information about any of these hotels or if you'd like to proceed with a reservation.
+User: I'm feeling a bit overwhelmed with the options. Can you tell me more about the Crowne Plaza Seattle Downtown? Like, is it in a safe area? I'm just worried about ending up somewhere sketchy.
+System: I'm sorry, but I don't have information about the safety of the area surrounding Crowne Plaza Seattle Downtown. However, here are some details about the hotel itself:
+
+- **Star Rating**: 4 stars
+- **Price per Night**: $120
+- **Smoking Allowed**: No
+- **Address**: 1113 6th Avenue
+- **Phone Number**: +1 206-464-1980
+
+If you have any other questions about the hotel itself or if you want to proceed with a reservation, please let me know!
+User: I guess it sounds okay, but I'm still not completely sure. Do you have any reviews or ratings from previous guests? I just want to make sure I'm not making a mistake here.
+System: I'm sorry, but I don't have access to guest reviews or ratings for Crowne Plaza Seattle Downtown. However, if you decide to proceed, I can help you with the reservation process. Let me know if you'd like to book a room or if you need more information about any other options.
+User: I'm feeling really uncertain about this. Can we check another hotel, maybe the Grand Hyatt Seattle? I just need a bit more reassurance before making a decision.
+System: Certainly! Here are the details for the Grand Hyatt Seattle:
+
+- **Star Rating**: 4 stars
+- **Price per Night**: $456
+- **Smoking Allowed**: No
+- **Address**: 721 Pine Street
+- **Phone Number**: +1 206-774-1234
+
+Please let me know if you need more information or if you're ready to proceed with a reservation.
+User: The price for the Grand Hyatt Seattle seems really high. I'm not sure if I can justify spending that much. Can we check the Hotel Andra next? Maybe it's a better fit.
+System: Certainly! Here are the details for Hotel Andra:
+
+- **Star Rating**: 4 stars
+- **Price per Night**: $372
+- **Smoking Allowed**: No
+- **Address**: 2000 4th Avenue
+- **Phone Number**: +1 206-448-8600
+
+Please let me know if you need more information or if you'd like to proceed with a reservation at Hotel Andra.
+User: The price for Hotel Andra is still quite high, and I'm getting worried about going over budget. Is there any chance we could find a 4-star hotel that's a bit more affordable? I just want to make sure I'm making the right choice without breaking the bank.
+System: I understand your concern about staying within budget. Let me try searching for more affordable 4-star hotels in Seattle for you. Please hold on for a moment.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4, price_per_night: 'less_than' })
+Search Results
+
+End Search Results
+System: It seems there are no additional 4-star hotels within a lower price range in Seattle available at the moment. Would you like me to search for 3-star hotels that might be more budget-friendly, or would you like to consider one of the previously mentioned hotels?
+User: I'm really anxious about spending too much, so let's look for a 3-star hotel instead. I just hope I won't regret it. Can you find something decent but more affordable?
+System: Certainly! Let me search for 3-star hotels in Seattle that might be more affordable. Please give me a moment.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 3 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found several 3-star hotels in Seattle that might be more affordable. Here are some options:
+
+1. **Best Western Plus Pioneer Square Hotel Downtown**  
+   - Price per Night: $63  
+   - Smoking Allowed: No  
+   - Address: 77 Yesler Way  
+   - Phone Number: +1 206-340-1234
+
+2. **Courtyard By Marriott Seattle Downtown/Lake Union**  
+   - Price per Night: $168  
+   - Smoking Allowed: No  
+   - Address: 925 Westlake Avenue North  
+   - Phone Number: +1 206-213-0100
+
+3. **Embassy Suites By Hilton Seattle Downtown Pioneer Square**  
+   - Price per Night: $342  
+   - Smoking Allowed: Yes  
+   - Address: 255 South King Street  
+   - Phone Number: +1 206-859-4400
+
+Please let me know if you need more information about any of these hotels or if you'd like to proceed with a reservation.
+User: I'm feeling a bit apprehensive about the whole situation, but the Best Western Plus Pioneer Square Hotel Downtown seems like a more affordable option. Could you tell me if it's in a safe area? I'm just really anxious about ending up somewhere unsafe.
+System: I'm sorry, but I don't have information about the safety of the area surrounding Best Western Plus Pioneer Square Hotel Downtown. However, here are the details about the hotel itself:
+
+- **Star Rating**: 3 stars
+- **Price per Night**: $63
+- **Smoking Allowed**: No
+- **Address**: 77 Yesler Way
+- **Phone Number**: +1 206-340-1234
+
+If you have any other questions about the hotel itself or if you want to proceed with a reservation, please let me know!
+User: I guess I need to take a leap of faith here. Can you help me reserve a room at the Best Western Plus Pioneer Square Hotel Downtown? I hope I'm making the right choice. So, I’d like to check in on the 15th and stay for 5 nights.
+System: Please confirm that you would like to book a room at the Best Western Plus Pioneer Square Hotel Downtown in Seattle, checking in on the 15th and staying for 5 nights. Once confirmed, I'll proceed with the reservation.
+User: Yes, please proceed with the reservation. I just hope everything goes smoothly.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Seattle, number_of_rooms: 1, place_name: Best Western Plus Pioneer Square Hotel Downtown, stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Best Western Plus Pioneer Square Hotel Downtown in Seattle has been successfully confirmed. You'll be checking in on the 15th for 5 nights. If you need any further assistance, please let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

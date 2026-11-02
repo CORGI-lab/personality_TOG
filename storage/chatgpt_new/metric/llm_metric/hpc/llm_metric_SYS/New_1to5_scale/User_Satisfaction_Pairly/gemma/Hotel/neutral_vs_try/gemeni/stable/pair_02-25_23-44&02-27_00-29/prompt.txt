@@ -1,0 +1,122 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to book a hotel in San Francisco.
+
+System: Okay, I can help you with that. What star rating are you looking for?
+
+User: I would prefer a 4-star hotel.
+
+System: Okay, let me check for 4-star hotels in San Francisco.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 4})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-200-4977', 'place_name': 'Hotel Via', 'price_per_night': 208, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '138 King Street'}]
+End Search Results
+System: I found three 4-star hotels in San Francisco: Argonaut Hotel, Hotel Spero, and Hotel Via. Argonaut Hotel does not allow smoking and the price per night is $408. Hotel Spero does not allow smoking and the price per night is $80. Hotel Via allows smoking and the price per night is $208. Which one would you prefer?
+
+User: Hotel Spero sounds reasonable for the price. Could you tell me more about it?
+
+System: Okay, Hotel Spero is located at 405 Taylor Street in San Francisco. The price per night is $80, and smoking is not allowed. It has 1 room available and the phone number is +1 415-885-2500. Would you like to reserve a room at Hotel Spero?
+
+User: Yes, that seems suitable. I'd like to reserve a room at Hotel Spero.
+
+System: Great! To confirm, you'd like to reserve a room at Hotel Spero in San Francisco. How many nights will you be staying, and what date would you like to check in?
+
+User: I'd like to book a room starting tomorrow for three nights.
+
+System: Okay, I need to confirm a few details before I make the reservation. To clarify, you want to book a room at Hotel Spero in San Francisco, checking in tomorrow for a stay of three nights. Could you please confirm the exact date you'd like to check in?
+
+User: Yes, that is correct. Please book it for the 19th.
+
+System: Okay, just to confirm, you want to book a room at Hotel Spero in San Francisco for 3 nights, starting on 2024-07-19. Is that correct?
+
+User: Yes, that is perfectly correct.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-19, location: San Francisco, number_of_rooms: 1, place_name: Hotel Spero, stay_length: 3})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street', 'check_in_date': '2024-07-19'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street', 'check_in_date': '2024-07-19'}]
+End Search Results
+System: Okay, I have successfully reserved a room for you at Hotel Spero in San Francisco for 3 nights, starting on 2024-07-19. The hotel's phone number is +1 415-885-2500. Is there anything else I can assist you with?
+
+User: That's all in order. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Diego, please.
+
+System: Okay! Do you have any preferences for the star rating of the hotel?
+
+User: I'm open to suggestions. Perhaps something around a 3- or 4-star rating?
+
+System: Okay, I will search for hotels in San Diego with a 3 or 4 star rating.
+
+APICall(method='SearchHotel', parameters={location: San Diego, star_rating: dontcare})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found a few hotels in San Diego. There's the Bahia Resort Hotel, a 3-star hotel with a price of $225 per night. Another option is the Best Western Plus Bayside Inn, also 3 stars, priced at $234 per night and smoking is allowed. Finally, there's the Best Western Plus Hacienda Hotel Old Town, a 3-star hotel that costs $198 per night. Which of these sounds best to you?
+
+User: The Best Western Plus Hacienda Hotel Old Town sounds reasonable. Can you tell me more about it? Perhaps its location and if it has any amenities like free breakfast or parking?
+
+System: Okay, regarding the Best Western Plus Hacienda Hotel Old Town, it's located at 4041 Harney Street in San Diego. I can also confirm that it is a 3-star hotel and the price is $198 per night.
+Unfortunately, I don't have information about amenities like free breakfast or parking in my database. However, can I help you with booking it, or would you like to explore other options?
+
+User: I'd prefer to explore other options for now. Are there any 4-star hotels available? A slightly higher rating might offer a better experience.
+
+System: Okay, let me check for 4-star hotels in San Diego.
+
+APICall(method='SearchHotel', parameters={location: San Diego, star_rating: 4})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-488-1081', 'place_name': 'Catamaran Resort Hotel And Spa', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '3999 Mission Boulevard'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 855-430-7503', 'place_name': 'Estancia La Jolla Hotel & Spa', 'price_per_night': 248, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '9700 North Torrey Pines Road, La Jolla, California 92037, United States'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 888-828-5498', 'place_name': 'Grande Colonial La Jolla', 'price_per_night': 248, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '910 Prospect Street, La Jolla, CA 92037, USA'}]
+End Search Results
+System: Certainly! I found three 4-star hotels in San Diego. The first is the Catamaran Resort Hotel And Spa, priced at $136 per night. The second is the Estancia La Jolla Hotel & Spa and the third is Grande Colonial La Jolla, both priced at $248 per night. All three hotels do not allow smoking. Would you like more details on any of these options?
+
+User: The Catamaran Resort Hotel And Spa sounds interesting at that price. Can you tell me more about its location?
+
+System:  System: Certainly! The Catamaran Resort Hotel And Spa is conveniently located at 3999 Mission Boulevard, San Diego. It's a 4-star hotel, and the price is $136 per night. Would you like to know anything else about it, or perhaps proceed with a booking?
+
+User: That sounds like a good option. If there is no smoking allowed at that hotel, let's go ahead and book it. I'd like to reserve a room there.
+
+System: Great! To finalize the reservation at the Catamaran Resort Hotel And Spa, I'll need a few more details. Could you please tell me the dates you'd like to check in and how many nights you plan to stay? Also, how many rooms would you like to reserve?
+
+User: I'd like to book it for 2 nights, checking in tomorrow. Just one room will be fine.
+
+System: Okay, just to confirm, you'd like to book one room at the Catamaran Resort Hotel And Spa in San Diego, checking in tomorrow for a 2-night stay. Can you please provide the exact date for your check-in?
+
+User: Let's say the exact date is October 27th. Yes, please confirm the booking for one room, checking in on October 27th for two nights.
+
+System:  System: Alright, to confirm, you'd like to book one room at the Catamaran Resort Hotel And Spa in San Diego, checking in on October 27th for a 2-night stay.
+
+APICall(method='ReserveHotel', parameters={place_name: Catamaran Resort Hotel And Spa, check_in_date: 2024-10-27, stay_length: 2, location: San Diego, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-488-1081', 'place_name': 'Catamaran Resort Hotel And Spa', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '3999 Mission Boulevard', 'check_in_date': '2024-10-27'}]
+End Search Results
+System: Excellent! Your booking at the Catamaran Resort Hotel And Spa in San Diego is confirmed for one room, checking in on October 27th for a 2-night stay. Is there anything else I can assist you with today?
+
+User: No, that will be all for today. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

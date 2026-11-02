@@ -1,0 +1,115 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: Okay, I can help with that! Are you in the mood for any particular type of cuisine?
+
+User: Um, maybe Italian?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found three Italian restaurants in San Francisco: 54 Mint Ristorante Italiano, A16, and Allegro Romano. Would you like to know more about any of them?
+
+User: Could you just pick one?
+
+System: Alright, I'll suggest A16. It's an Italian restaurant located at 2355 Chestnut Street in San Francisco. The price range is moderate, and they serve alcohol. Does that sound good?
+
+User: Okay. Can you reserve a table there?
+
+System: What time and for how many people would you like to reserve a table at A16?
+
+User: Just two people, tomorrow at 7pm.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: A16, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 2})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Great! I have a table for two at A16 in San Francisco for tomorrow, March 2nd, at 7:00 PM. Is that correct?
+
+User: Yes, that's correct.
+
+System: Wonderful! Your table is reserved. Just to confirm, it's for two people at A16 tomorrow at 7 PM. Their number is 415-771-2216 if you need to contact them. Enjoy your meal!
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a restaurant in Berkeley.
+
+System: Okay, I can help with that. Do you have any preferences for the type of cuisine you'd like?
+
+User: Maybe something simple, like American food.
+
+System: APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: American})
+
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-647-9329', 'price_range': 'moderate', 'restaurant_name': 'B&b Kitchen & Wine Bar', 'serves_alcohol': True, 'street_address': '2116 Shattuck Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-338-3464', 'price_range': 'moderate', 'restaurant_name': 'Beer Baron Bar & Kitchen', 'serves_alcohol': True, 'street_address': '5900 College Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-809-8282', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '2068 Center Street'}]
+End Search Results
+System: I found three American restaurants in Berkeley. B&b Kitchen & Wine Bar, Beer Baron Bar & Kitchen, and Eureka! Would you like to know more about any of them?
+
+User: Perhaps Eureka! What's their price range?
+
+System: Their price range is moderate. Would you like any other information about Eureka!?
+
+User: No, that's okay. Can you just find me another American restaurant in Berkeley?
+
+System: Okay. How about B&b Kitchen & Wine Bar?
+
+User: Tell me a bit about Beer Baron Bar & Kitchen.
+
+System: They are in the moderate price range, serve alcohol, and their phone number is 510-338-3464. Does that sound like a place you'd be interested in?
+
+User: Yes, that sounds okay. Could you make a reservation for me there?
+
+System: What time would you like to reserve a table for?
+
+User: Uhm, maybe 7 pm?
+
+System: And for what date and how many people?
+
+User: Just two people, today.
+
+System: Could you please provide the date?
+
+User: Just make it today, whatever today is.
+
+System: ```tool_code
+today = datetime.today().strftime('%Y-%m-%d')
+print(today)
+```
+
+User: Okay, I have a reservation for 2 at Beer Baron Bar & Kitchen for today, 2024-04-29, at 7 pm. Is that correct?
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Beer Baron Bar & Kitchen, city: Berkeley, date: 2024-04-29, time: 7 pm, party_size: 2})
+
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-338-3464', 'price_range': 'moderate', 'restaurant_name': 'Beer Baron Bar & Kitchen', 'serves_alcohol': True, 'street_address': '5900 College Avenue', 'date': '2024-04-29', 'party_size': '2', 'time': '7 pm'}]
+End Search Results
+System: Okay, your reservation at Beer Baron Bar & Kitchen for today, April 29, 2024, at 7 pm for 2 people has been made.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

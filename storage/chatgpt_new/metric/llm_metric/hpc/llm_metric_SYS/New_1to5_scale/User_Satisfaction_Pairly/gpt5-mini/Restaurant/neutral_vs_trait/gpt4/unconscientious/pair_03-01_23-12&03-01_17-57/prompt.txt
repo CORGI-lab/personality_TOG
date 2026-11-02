@@ -1,0 +1,88 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in San Francisco. Maybe something with Italian food?
+System: Is there a specific price range you have in mind for the Italian restaurant in San Francisco, or should I look for all options available?
+User: Uh, I haven't really thought about the price. Just show me whatever's out there.
+System: APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no available search results for Italian restaurants in San Francisco at the moment. Would you like to try another cuisine or perhaps a different city?
+User: I guess we could try looking for Mexican food instead.
+System: Let me search for Mexican restaurants in San Francisco for you. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mexican, price_range: dontcare})
+Search Results
+
+End Search Results
+System: It appears there are no available search results for Mexican restaurants in San Francisco either. Would you like to explore another cuisine or consider a different city altogether?
+User: Alright, let's just see what you can find for Chinese food in San Francisco.
+System: Let me search for Chinese restaurants in San Francisco for you. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Chinese, price_range: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no available search results for Chinese restaurants in San Francisco at the moment. Would you like to try a different cuisine or perhaps explore options in another city?
+User: Okay, let's switch things up and look for any restaurant in San Francisco, doesn't matter the cuisine.
+System: Let's find a restaurant for you in San Francisco, regardless of the cuisine. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: dontcare, price_range: dontcare})
+Search Results
+
+End Search Results
+System: It appears there are still no available search results for any restaurants in San Francisco at the moment. Would you like to consider looking for restaurants in a different city, or perhaps specify additional preferences?
+User: Eh, let's just try looking for anything in Oakland then. I'm not too picky right now.
+System: Let's search for any restaurant in Oakland for you. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: dontcare, price_range: dontcare})
+Search Results
+
+End Search Results
+System: It seems there are no available search results for any restaurants in Oakland at the moment. Would you like to try another city, or perhaps provide more specific preferences such as a particular cuisine or price range?
+User: How about we just try Berkeley? I'm not really sure what I want, so anything's fine.
+System: Let's search for any restaurant in Berkeley for you. Please hold on a moment. APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: dontcare, price_range: dontcare})
+Search Results
+
+End Search Results
+
+Dialogue B:
+  User: I'm feeling kinda hungry. Can you find me a place to eat in San Francisco?
+System: Do you have a specific type of cuisine in mind, or should I pick a random one for you?
+User: I don't really care. Just find something that's not too expensive.
+System: Let's go with a random cuisine for you. How about trying some Vietnamese food? I'll find a place for you in San Francisco. Please hold on. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese, price_range: inexpensive})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-724-2325', 'price_range': 'expensive', 'restaurant_name': 'Khai', 'serves_alcohol': False, 'street_address': '655 Townsend Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-668-8080', 'price_range': 'inexpensive', 'restaurant_name': 'La Vie', 'serves_alcohol': False, 'street_address': '5830 Geary Boulevard'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-397-2290', 'price_range': 'inexpensive', 'restaurant_name': 'Lai Hong Lounge', 'serves_alcohol': False, 'street_address': '1416 Powell Street'}]
+End Search Results
+System: I found a couple of Vietnamese restaurants in San Francisco that fit your preference for something not too expensive. One option is "La Vie," which is located at 5830 Geary Boulevard. If you're interested, you can give them a call at 415-668-8080. Would you like more information about another restaurant, or does this one work for you?
+User: I guess that works. Can you reserve a table for me there?
+System: What time would you like to reserve the table for, and how many people will be in your party?
+User: Oh, let's say around 7 pm for... I don't know, maybe 4 people.
+System: Just to confirm, you'd like to reserve a table for 4 people at "La Vie" in San Francisco at 7 pm. Is that correct?
+User: Yeah, sure, that sounds fine.
+System: Great! I'll make the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'La Vie', city: 'San Francisco', time: '19:00', date: '2023-10-05', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-668-8080', 'price_range': 'inexpensive', 'restaurant_name': 'La Vie', 'serves_alcohol': False, 'street_address': '5830 Geary Boulevard', 'date': '2023-10-05', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at "La Vie" in San Francisco for 4 people at 7 pm has been successfully made. If you need to contact them, their phone number is 415-668-8080. Enjoy your meal!
+User: Alright, cool. Can you also tell me if they have live music or something like that?
+System: "La Vie" does not have live music. If there's anything else you'd like to know or need help with, feel free to ask!
+User: Nah, that's all good. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

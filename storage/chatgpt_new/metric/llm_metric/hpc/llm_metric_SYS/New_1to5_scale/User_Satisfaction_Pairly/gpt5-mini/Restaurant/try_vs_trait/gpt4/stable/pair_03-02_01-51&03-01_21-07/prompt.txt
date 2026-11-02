@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Alameda. Could you help me find one that serves Italian cuisine?
+System: Could you please let me know your preferred price range for the Italian restaurant in Alameda? The options are 'inexpensive', 'moderate', 'expensive', or 'very expensive'.
+User: Moderate would be perfect.
+System: APICall (method='FindRestaurants', parameters={city: Alameda, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'Alameda', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-769-4828', 'price_range': 'moderate', 'restaurant_name': "C'era Una Volta", 'serves_alcohol': False, 'street_address': '1332 Park Street D'}, {'city': 'Alameda', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-521-2141 ext. 1', 'price_range': 'moderate', 'restaurant_name': "Linguini's Restaurant", 'serves_alcohol': True, 'street_address': '1506 Park Street'}, {'city': 'Alameda', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-864-7427', 'price_range': 'moderate', 'restaurant_name': 'Pasta Pelican Restaurant', 'serves_alcohol': False, 'street_address': '2455 Mariner Square Drive'}]
+End Search Results
+System: I found a few Italian restaurants in Alameda that match your preference for a moderate price range. One option is "C'era Una Volta" located at 1332 Park Street D. They don't serve alcohol, but if that's not a concern, it might be a good fit. Would you like more details about this or any other restaurant from the list?
+User: Could you provide more details about any other Italian restaurants in Alameda?
+System: Certainly! Another Italian restaurant in Alameda is "Linguini's Restaurant," located at 1506 Park Street. They serve alcohol, which might enhance your dining experience. Would you like the contact number or any more information about this restaurant?
+User: Linguini's Restaurant sounds like a good option. Could you please make a reservation for me? I'd like a table for two this Saturday at 7:00 pm.
+System: Could you please confirm if we're making the reservation for "Linguini's Restaurant" at 1506 Park Street in Alameda for two people this Saturday at 7:00 pm? Once confirmed, I'll proceed with the reservation.
+User: Yes, please confirm the reservation for Linguini's Restaurant this Saturday at 7:00 pm for two people. Thank you.
+System: Great! I will proceed with making your reservation at "Linguini's Restaurant" for two people this Saturday at 7:00 pm. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={city: Alameda, cuisine: Italian, restaurant_name: "Linguini's Restaurant", time: 19:00, date: 2023-11-04, party_size: 2})
+Search Results
+[{'city': 'Alameda', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-521-2141 ext. 1', 'price_range': 'moderate', 'restaurant_name': "Linguini's Restaurant", 'serves_alcohol': True, 'street_address': '1506 Park Street', 'date': '2023-11-04', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at "Linguini's Restaurant" in Alameda for two people this Saturday, November 4th, at 7:00 pm has been successfully made. If you need any further assistance, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. Could you help me find something nice?
+System: Certainly! Do you have a particular type of cuisine in mind, or are you open to suggestions? If you have any preferences regarding the price range or other features like live music or alcohol service, feel free to let me know!
+User: I'm open to suggestions, but I usually enjoy Italian cuisine. A moderate price range would be ideal.
+System: Great! Let me find some Italian restaurants in San Francisco within a moderate price range for you. I'll just take a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that fit your criteria. How about trying 54 Mint Ristorante Italiano located at 16 Mint Plaza? It offers a moderate price range and serves alcohol. Alternatively, you might consider A16 at 2355 Chestnut Street, which also serves alcohol. If you prefer a place without alcohol service, Allegro Romano on 1701 Jones Street could be a good option. Let me know if any of these sound appealing to you!
+User: I'm interested in 54 Mint Ristorante Italiano. Could you please go ahead and make a reservation for me?
+System: Certainly! To proceed with the reservation at 54 Mint Ristorante Italiano, could you please provide me with the date, time, and the number of people for the reservation?
+User: Sure, I would like to make a reservation for three people at 7:00 pm tomorrow.
+System: To confirm, you would like to book a table for three at 7:00 pm tomorrow at 54 Mint Ristorante Italiano in San Francisco. I'll go ahead and make the reservation for you. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: '54 Mint Ristorante Italiano', city: 'San Francisco', time: '19:00', date: '2023-11-02', party_size: 3})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2023-11-02', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your reservation at 54 Mint Ristorante Italiano in San Francisco has been successfully made for three people at 7:00 pm on November 2nd. If you have any further questions or need assistance, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

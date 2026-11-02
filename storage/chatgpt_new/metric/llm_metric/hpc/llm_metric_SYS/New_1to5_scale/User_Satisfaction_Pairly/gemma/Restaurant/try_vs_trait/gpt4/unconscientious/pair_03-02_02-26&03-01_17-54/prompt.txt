@@ -1,0 +1,78 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in San Francisco. Got any suggestions?
+System: Do you have a preference for a specific type of cuisine, or are you open to recommendations?
+User: Uh, not really sure. Maybe something with a lot of variety so I can just pick whatever looks good when I get there.
+System: How about trying some Asian cuisine? It offers a wide variety of flavors and dishes. Do you have a specific price range in mind for the restaurant?
+User: I don't really have a price range in mind. Just show me some options, and I'll figure it out.
+System: Great! Let me find some Asian restaurants in San Francisco for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Asian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '415-731-5515', 'price_range': 'inexpensive', 'restaurant_name': '8 Immortals Restaurant', 'serves_alcohol': False, 'street_address': '1433 Taraval'}, {'city': 'San Francisco', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '415-863-9335', 'price_range': 'moderate', 'restaurant_name': 'Bai Thong Thai', 'serves_alcohol': False, 'street_address': '298 Gough Street'}, {'city': 'San Francisco', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '415-474-5569', 'price_range': 'moderate', 'restaurant_name': 'Burmese Kitchen', 'serves_alcohol': False, 'street_address': '(between 2nd & 3rd Ave)'}]
+End Search Results
+System: Here are some Asian restaurants in San Francisco you might want to consider:
+
+1. **8 Immortals Restaurant**: Located at 1433 Taraval. It's an inexpensive option and doesn't serve alcohol.
+   
+2. **Bai Thong Thai**: Situated at 298 Gough Street. It offers a moderate price range and also doesn't serve alcohol.
+
+3. **Burmese Kitchen**: Found between 2nd & 3rd Ave, also at a moderate price range with no alcohol service.
+
+Would you like more information on any of these, or perhaps need help with a reservation?
+User: I'm not sure. Maybe tell me more about the Bai Thong Thai? Like, do they have live music or anything?
+System: Bai Thong Thai does not have live music. However, it's a cozy spot in San Francisco with a moderate price range. If you need more information or want to make a reservation, just let me know!
+User: Eh, I guess Bai Thong Thai sounds alright. Can you just go ahead and make a reservation for me? Maybe for tonight, around like 7 pm or something. Oh, and it's for two people.
+System: Sure! I'll make a reservation for two people tonight at 7 pm at Bai Thong Thai in San Francisco. Please hold on for a moment while I confirm that for you. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: Bai Thong Thai, city: San Francisco, time: 19:00, party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Asian', 'has_live_music': False, 'phone_number': '415-863-9335', 'price_range': 'moderate', 'restaurant_name': 'Bai Thong Thai', 'serves_alcohol': False, 'street_address': '298 Gough Street', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two at Bai Thong Thai in San Francisco tonight at 7 pm has been successfully confirmed. If you need the address, it's located at 298 Gough Street. If there's anything else I can assist you with, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Uh, I'm kinda hungry and I feel like finding a place to eat. Maybe somewhere in Oakland?
+System: Do you have a particular cuisine in mind, or are you open to trying something new? If you're open, I can suggest a random cuisine for you.
+User: I dunno, maybe something with Italian food? But I'm not really sure. Just surprise me with something, I guess.
+System: Let's keep it interesting! How about trying some Mexican cuisine in Oakland? Let me find some options for you. APICall (method='FindRestaurants', parameters={city: Oakland, cuisine: Mexican})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-288-3668', 'price_range': 'moderate', 'restaurant_name': 'Agave Uptown', 'serves_alcohol': False, 'street_address': '2135 Franklin Street'}, {'city': 'Oakland', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-985-1200', 'price_range': 'moderate', 'restaurant_name': 'Bar Cesar', 'serves_alcohol': True, 'street_address': '4039 Piedmont Avenue'}, {'city': 'Oakland', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-338-3273', 'price_range': 'moderate', 'restaurant_name': 'Calavera', 'serves_alcohol': True, 'street_address': '2337 Broadway'}]
+End Search Results
+System: I found a few Mexican restaurants in Oakland that might be interesting for you. How about trying Agave Uptown located at 2135 Franklin Street? It's a moderate-priced option, but they do not serve alcohol. Would you like more information about any of these options or have a preference for another restaurant?
+User: Hmm, Mexican sounds different. Can you tell me if there's live music there?
+System: Agave Uptown doesn't feature live music. If you're interested in another option, Bar Cesar and Calavera also offer Mexican cuisine in Oakland, and they both serve alcohol. Would you like to know more about them or have a preference for any specific features?
+User: Uh, let's go with Bar Cesar then. Does it have live music?
+System: Bar Cesar does not feature live music. If you're still interested, it's located at 4039 Piedmont Avenue and serves alcohol. Would you like to proceed with this choice or explore other options?
+User: Eh, let's just go with Bar Cesar. Can you reserve a table for like, I don't know, tomorrow evening? Maybe around 7 pm or something. For three people, I guess.
+System: I'll go ahead and make a reservation for three people at Bar Cesar in Oakland for tomorrow evening at 7 pm. Let me confirm the details with you: a table for three at Bar Cesar, located at 4039 Piedmont Avenue, Oakland. Is there anything else you'd like to know before I finalize the reservation?
+User: Nah, that should be fine. Just go ahead with it.
+System: Great! I'm finalizing the reservation for you. APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Bar Cesar', city: 'Oakland', time: '19:00', date: '2023-10-12', party_size: 3})
+Search Results
+[{'city': 'Oakland', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '510-985-1200', 'price_range': 'moderate', 'restaurant_name': 'Bar Cesar', 'serves_alcohol': True, 'street_address': '4039 Piedmont Avenue', 'date': '2023-10-12', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Bar Cesar in Oakland is confirmed for tomorrow evening at 7 pm for three people. The restaurant is located at 4039 Piedmont Avenue, and they do serve alcohol. If you have any other questions or need further assistance, feel free to ask. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,230 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need a hotel.
+System: 
+
+Sure! Could you please tell me which city you'd like to search for a hotel in?
+User: 
+
+London.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: 
+
+Found a 5 star hotel named 45 Park Lane.
+User: 
+
+What's the price per night?
+System: 
+
+The price per night for 45 Park Lane is £330.
+User: 
+
+Is smoking allowed?
+System: 
+
+No, smoking is not allowed at 45 Park Lane. All available hotels in London are non-smoking. Would you like to proceed with one of them?
+User: 
+
+What's the address?
+System: 
+
+The address is 45 Park Lane, London.
+User: 
+
+Yes, please reserve it.
+System: 
+
+Sure! Could you please tell me the check-in date and how many days you'd like to stay?
+User: 
+
+15th for three days.
+System: 
+
+Could you please provide the check-in date in YYYY-MM-DD format? For example, 2023-10-15.
+User: 
+
+2023-10-15
+System: 
+
+Please confirm: you want to reserve 45 Park Lane in London for 3 days starting on 2023-10-15.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: '45 Park Lane', check_in_date: '2023-10-15', stay_length: 3, location: 'London' })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I need a hotel in London.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: 
+
+Found a 5-star hotel named 45 Park Lane.
+User: 
+
+Is smoking allowed?
+System: 
+
+None of the available hotels in London allow smoking. Would you like me to search for hotels that permit smoking?
+User: 
+
+No, book 45 Park Lane.
+System: 
+
+Sure! To book 45 Park Lane, I'll need your check-in date and the number of nights you'll be staying. Could you please share those details?
+User: 
+
+from the 15th for three nights.
+System: 
+
+Could you please provide your check-in date in YYYY-MM-DD format (e.g., 2023-10-15) and how many rooms you'd like to book?
+User: 
+
+2023-10-15, one room.
+System: 
+
+Please confirm to book 1 room at 45 Park Lane in London from 2023-10-15 for 3 nights.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: '2023-10-15', location: 'London', number_of_rooms: 1, place_name: '45 Park Lane', stay_length: 3 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your booking at 45 Park Lane in London is confirmed! Check-in date: 2023-10-15 for 2 rooms. The address is 45 Park Lane, and the price per night is $330. Let me know if you need anything else.
+User: 
+
+One room.
+System: 
+
+I noticed there might be a discrepancy—the system shows 2 rooms for this booking, but you mentioned one room. Could you please confirm whether you'd like to book 1 room or 2 rooms?
+User: 
+
+One room.
+System: 
+
+Please confirm: booking 1 room at 45 Park Lane in London from 2023-10-15 for 3 nights. Is this correct?
+User: 
+
+Yes.
+System: 
+
+Your booking at 45 Park Lane in London is confirmed! Check-in date: 2023-10-15 for 3 nights. The address is 45 Park Lane, and the price per night is $330. The booking includes 2 rooms. Let me know if you need anything else.
+User: 
+
+One room.
+System: 
+
+Your booking shows 2 rooms, but you mentioned wanting 1 room. Could you please confirm whether you'd like to book 1 room or 2 rooms?
+User: 
+
+One room.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: '2023-10-15', location: 'London', number_of_rooms: 1, place_name: '45 Park Lane', stay_length: 3 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your booking shows 2 rooms, but you mentioned wanting 1 room. Could you please confirm whether you'd like to book 1 room or 2 rooms?
+User: 
+
+One room.
+System: 
+
+I see that your booking shows 2 rooms, but you've requested 1 room. Could you please confirm if you'd like to book 1 room or 2 rooms for 45 Park Lane?
+User: 
+
+One room.
+System: 
+
+Your booking shows 2 rooms, but you've requested 1 room. Please confirm whether you'd like to book 1 room or 2 rooms for 45 Park Lane.
+User: 
+
+One room.
+System: 
+
+I see that the booking shows 2 rooms, but you've requested 1 room. Could you please confirm whether you'd like to book 1 room or 2 rooms for 45 Park Lane?
+User: 
+
+Yes, one room.
+System: 
+
+Your booking at 45 Park Lane is confirmed for 2 rooms. Check-in date: 2023-10-15 for 3 nights. The address is 45 Park Lane, and the price per night is $330. Let me know if you need any adjustments.
+User: 
+
+One room.
+System: 
+
+I apologize for the confusion. The system shows your booking as 2 rooms, but you've requested 1 room. Could you please confirm whether you'd like to proceed with 1 room or 2 rooms for 45 Park Lane?
+User: 
+
+One room.
+System: 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: '2023-10-15', location: 'London', number_of_rooms: 1, place_name: '45 Park Lane', stay_length: 3 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your booking is currently confirmed for 2 rooms. If you'd like to adjust it to 1 room, please confirm and I'll update it for you.
+User: 
+
+Yes, one room.
+System: 
+
+Your booking at 45 Park Lane is confirmed for 2 rooms. Check-in date: 2023-10-15 for 3 nights. The address is 45 Park Lane, and the price per night is $330. Let me know if you need any adjustments.
+User: 
+
+One room.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

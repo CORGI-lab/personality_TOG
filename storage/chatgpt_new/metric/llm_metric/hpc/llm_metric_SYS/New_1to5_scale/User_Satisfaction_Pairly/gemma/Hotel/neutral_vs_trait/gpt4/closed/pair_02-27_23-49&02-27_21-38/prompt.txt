@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I am looking for a hotel in Philadelphia. Can you help me find one?
+System: Do you have any preferences for the star rating of the hotel, or whether smoking is allowed?
+User: I would prefer a non-smoking room, and I'm okay with a 3-star hotel.
+System: APICall(method='SearchHotel', parameters={ location: Philadelphia, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 267-298-1700', 'place_name': 'Aloft Philadelphia Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4301 Island Avenue'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-607-2020', 'place_name': 'Aloft Philadelphia Downtown', 'price_per_night': 297, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '101 North Broad Street'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-398-3080', 'place_name': 'Best Western Plus Philadelphia Convention Center Hotel', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1225 Vine Street'}]
+End Search Results
+System: I have found several 3-star, non-smoking hotels in Philadelphia for you. The first option is Aloft Philadelphia Airport, located at 4301 Island Avenue, with a price of $216 per night. Another option is Aloft Philadelphia Downtown, located at 101 North Broad Street, priced at $297 per night. Lastly, there's the Best Western Plus Philadelphia Convention Center Hotel at 1225 Vine Street, available for $180 per night. Would you like more details on any of these hotels or assistance with a reservation?
+User: Can you tell me more about the Best Western Plus Philadelphia Convention Center Hotel?
+System: The Best Western Plus Philadelphia Convention Center Hotel is a 3-star, non-smoking hotel located at 1225 Vine Street in Philadelphia. The price per night is $180. If you need more information or would like to proceed with a reservation, please let me know!
+User: I'd like to reserve a room at the Best Western Plus Philadelphia Convention Center Hotel. Can you help with the booking?
+System: Sure, I can help you with that. Could you please let me know your check-in date and how many days you plan to stay?
+User: I plan to check in on the 10th and stay for three days.
+System: Please confirm that you would like to reserve 1 room for 3 days at the Best Western Plus Philadelphia Convention Center Hotel starting from the 10th in Philadelphia.
+User: Yes, that is correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Philadelphia, number_of_rooms: 1, place_name: Best Western Plus Philadelphia Convention Center Hotel, stay_length: 3 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-398-3080', 'place_name': 'Best Western Plus Philadelphia Convention Center Hotel', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1225 Vine Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Best Western Plus Philadelphia Convention Center Hotel has been successfully confirmed. Enjoy your stay from November 10th for three days. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Philadelphia. Can you help me with that?
+System: Certainly. Do you have a specific star rating in mind for the hotel in Philadelphia, or are you open to any options?
+User: I would prefer a 3-star hotel, please.
+System: Let me find a 3-star hotel for you in Philadelphia. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Philadelphia, star_rating: 3 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-372-9000', 'place_name': 'Aka University City', 'price_per_night': 138, 'smoking_allowed': True, 'star_rating': 3, 'street_address': 'Cira Centre South, 2929 Walnut Street'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 267-298-1700', 'place_name': 'Aloft Philadelphia Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4301 Island Avenue'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-607-2020', 'place_name': 'Aloft Philadelphia Downtown', 'price_per_night': 297, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '101 North Broad Street'}]
+End Search Results
+System: I found a 3-star hotel named Aka University City in Philadelphia. Would you like to know more details about this hotel, or are you interested in any other options?
+User: Is smoking allowed in this hotel?
+System: Smoking is allowed in the Aka University City hotel. Would you like to proceed with this option or do you need more information?
+User: Yes, I would like to proceed with this option. Can you make a reservation for me?
+System: How many rooms will you need, and what will be your check-in date and length of stay at the Aka University City hotel in Philadelphia?
+User: I will need one room, checking in on the 15th for five nights.
+System: Please confirm that you want to book 1 room at the Aka University City hotel in Philadelphia, checking in on the 15th for a stay of 5 nights.
+User: Yes, I confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Philadelphia, number_of_rooms: 1, place_name: Aka University City, stay_length: 5 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-372-9000', 'place_name': 'Aka University City', 'price_per_night': 138, 'smoking_allowed': True, 'star_rating': 3, 'street_address': 'Cira Centre South, 2929 Walnut Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Aka University City hotel in Philadelphia has been successfully confirmed for one room, checking in on November 15th for a stay of 5 nights. Is there anything else you need assistance with?
+User: No, that's all I need. Thanks a lot!
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

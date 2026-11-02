@@ -1,0 +1,115 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to book a hotel in San Diego, please.
+
+System: Okay, I can help with that. What is the check-in date and how many days will you be staying?
+
+User: I'm thinking of checking in on the 15th and staying for three nights.
+
+System: Okay, I need to know the year and month of your check-in date. Could you please specify that?
+
+User: Ah, yes, good point. I'm looking at checking in on March 15th.
+
+System: And how many rooms do you need?
+
+User: Just one room, please. I'm planning a solo trip for a bit of relaxation.
+
+System: Okay, I have all the details. To confirm, you're looking for a hotel in San Diego, checking in on March 15th, for a three-night stay, and you need one room. Is that correct?
+
+User: Yes, that is absolutely correct.
+
+System: Okay, I will now search for available hotels for you.
+
+APICall(method='SearchHotel', parameters={location: San Diego, check_in_date: 2024-03-15, stay_length: 3, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-03-15'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street', 'check_in_date': '2024-03-15'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street', 'check_in_date': '2024-03-15'}]
+End Search Results
+System: I found three hotels that match your criteria: Bahia Resort Hotel, Best Western Plus Bayside Inn, and Best Western Plus Hacienda Hotel Old Town. All are 3-star hotels. Would you like to know more about any of them?
+
+User: That's a good start. Could you tell me a little more about the Bahia Resort Hotel? Perhaps its location and price per night?
+
+System: The Bahia Resort Hotel is located at 998 West Mission Bay Drive and costs $225 per night. Does that sound good?
+
+User: That sounds reasonable. Is smoking allowed at the Bahia Resort Hotel?
+
+System: Smoking is not allowed at the Bahia Resort Hotel.
+User: That's perfectly alright. I am fine with that; please go ahead and book me a room at the Bahia Resort Hotel for those dates.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-03-15, location: San Diego, number_of_rooms: 1, place_name: Bahia Resort Hotel, stay_length: 3})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-03-15'}]
+End Search Results
+System: Okay, I've booked one room at the Bahia Resort Hotel in San Diego for three nights, starting on March 15th. Is that correct?
+
+User: Yes, that is all correct. Thank you.
+
+System: Great! Your reservation is confirmed. The Bahia Resort Hotel is located at 998 West Mission Bay Drive, and their phone number is +1 858-539-8666. The price is $225 per night. Is there anything else I can help you with today?
+
+User: No, that is all perfectly fine. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in San Francisco.
+
+System: Okay! I can help with that.
+
+SYSTEM: Do you have any preferences on star rating or smoking allowance?
+
+User: Not particularly. Just something decent and reliable. What are the options available?
+
+System: APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Alright, I see a few options in San Francisco. There's Amsterdam Hostel San Francisco, a 1-star hotel at $24 per night. Then there's Argonaut Hotel, a 4-star hotel at $408 per night. And finally, Beck'S Motor Lodge, a 2-star hotel at $60 per night. Which of these sounds most appealing to you?
+
+User: The Argonaut sounds a bit pricey. Let's stick with something more moderate. Tell me more about Beck's Motor Lodge.
+
+System: Okay, Beck'S Motor Lodge is a 2-star hotel located at 2222 Market Street in San Francisco. It has rooms available for $60 per night and the phone number is +1 415-621-8212. Smoking is not allowed. Does this sound like a good fit for you, or would you like to explore other options?
+
+User: That sounds reasonable. Does it have a good reputation, or is it generally considered a safe and clean place to stay?
+
+System: I don't have access to reputation or cleanliness information. However, I can tell you that Beck'S Motor Lodge is a 2-star hotel. Would you like to know more about the available rooms or perhaps make a reservation?
+
+User: I think I'll trust my instincts. Let's go ahead and book a room at Beck's Motor Lodge. I need it for two nights, starting tomorrow.
+
+System: Okay, I can help you with that. To confirm, you'd like to book a room at Beck's Motor Lodge in San Francisco for two nights, starting tomorrow. Could you please provide the exact date you'd like to check in, and how many rooms you'll need?
+
+User: Yes, that's correct. Check-in date is tomorrow, October 7th, and I'll need one room.
+
+System: Okay, great! Just to confirm, you want to book one room at Beck's Motor Lodge in San Francisco for two nights starting on October 7th?
+
+User: Yes, that is all correct. Please proceed with the booking.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-10-07, location: San Francisco, number_of_rooms: 1, place_name: "Beck'S Motor Lodge", stay_length: 2})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street', 'check_in_date': '2024-10-07'}]
+End Search Results
+System: Fantastic! I've successfully booked one room for you at Beck's Motor Lodge in San Francisco for two nights, starting tomorrow, October 7th. The total price will be $120. Is there anything else I can help you with?
+
+User: No, that's perfect. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

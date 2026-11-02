@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm looking to find an awesome restaurant in San Francisco. I love trying new things and having a good time, so something fun and lively would be great. Any recommendations?
+System: Are you open to trying any particular type of cuisine, or do you have something specific in mind? Also, do you prefer a certain price range for this outing? Let me know so I can find the best options for you in San Francisco!
+User: I'm open to any type of cuisine, really! As long as it's delicious and the place has a lively atmosphere, I'm in. Let's keep it in the moderate price range. Can't wait to hear what you've got!
+System: Great! I'll look for a lively place in San Francisco with a moderate price range. Let's start with a bit of adventure in your dining experience. How about trying something like Vietnamese cuisine? Let me fetch some options for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street'}]
+End Search Results
+System: Here are a few Vietnamese restaurant options in San Francisco with a moderate price range that you might enjoy:
+
+1. **Anh Hong** - Located at 808 Geary Street, this restaurant serves alcohol. You can contact them at 415-885-5180.
+
+2. **Aux Delices** - Found at 2327 Polk Street, this spot does not serve alcohol. Their phone number is 415-928-4977.
+
+3. **Co Nam** - Situated at 1653 Polk Street, this place serves alcohol. You can reach them at 415-292-6161.
+
+Unfortunately, none of these options offer live music, but they all promise a delicious dining experience. Would you like more information on any of these, or is there anything else I can assist you with?
+User: I'm definitely intrigued by Co Nam! I love that they serve alcohol. Could you help me make a reservation there for tomorrow evening? Let's go for around 7:00 PM, and we'll be a party of four. Can't wait to enjoy a lively night out!
+System: Sure thing! Let me confirm the details with you: You'd like to make a reservation for four people at Co Nam in San Francisco for tomorrow at 7:00 PM. Is that correct? Once confirmed, I'll proceed to make the reservation for you.
+User: Yes, that's absolutely correct! Please go ahead and make the reservation. I'm super excited for a fun night out at Co Nam!
+System: Fantastic! I'll make the reservation for you now. 
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, restaurant_name: Co Nam, time: 19:00, date: 2023-10-19, party_size: 4})
+
+Once the reservation is confirmed, I'll let you know.
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street', 'date': '2023-10-19', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Co Nam for a party of four on October 19th at 7:00 PM has been successfully confirmed! Get ready for an exciting and delicious night out. If you need any more help or information, feel free to ask. Enjoy your evening!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm looking to find a fun and lively restaurant experience in San Francisco. Ideally, I'd love a place with some live music and a vibrant atmosphere. Any recommendations?
+System: Could you let me know which type of cuisine you prefer, such as Mexican, Italian, or any other? This will help me find a restaurant that suits your preferences.
+User: I'm open to trying anything exciting and new, but let's go with something like Italian for now. I just love the idea of pasta with some live music in the background!
+System: Great! Let me find an Italian restaurant in San Francisco that offers live music. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found two Italian restaurants in San Francisco that offer live music. One option is Fior D'italia located at 2237 Mason Street, and the other is Zingari Ristorante + Jazz Bar at 501 Post Street. Both provide a lively atmosphere with live music. Would you like the phone number or any other details about these places?
+User: Oh, they both sound amazing! Could you tell me if either of them serves alcohol? And also, what are their price ranges? I want to make sure it's a fun night out!
+System: Both Fior D'italia and Zingari Ristorante + Jazz Bar serve alcohol. As for the price range, both restaurants are considered expensive. If you need any more details or would like to make a reservation, feel free to let me know!
+User: Let's go with Zingari Ristorante + Jazz Bar! Can you make a reservation for me? I'm planning for a party of 4, and we'd love to be there around 7:30 PM this Saturday. How does that sound?
+System: Could you please confirm the date for the reservation this Saturday? Once I have that, I'll proceed to make the reservation for a party of 4 at Zingari Ristorante + Jazz Bar at 7:30 PM.
+User: The date for this Saturday is the 14th. Please go ahead and make the reservation! I'm super excited for a fun night out!
+System: Perfect! I'll make a reservation for a party of 4 at Zingari Ristorante + Jazz Bar on the 14th at 7:30 PM. Please give me a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Zingari Ristorante + Jazz Bar', city: 'San Francisco', date: '2023-10-14', time: '19:30', party_size: 4})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-14', 'party_size': '4', 'time': '19:30'}]
+End Search Results
+System: Your reservation for a party of 4 at Zingari Ristorante + Jazz Bar on October 14th at 7:30 PM has been successfully made. If you need any further assistance or details, feel free to ask. Enjoy your night out with live music and delicious Italian cuisine!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

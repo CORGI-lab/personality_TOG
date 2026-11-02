@@ -1,0 +1,90 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find an upscale restaurant in San Francisco. Make sure it serves alcohol and has live music.
+System: Could you please specify the type of cuisine you prefer, or are you open to trying something new?
+User: Why do you need to know the cuisine? Just find me the best option that fits my criteria.
+System: I apologize for the oversight. To better assist you, I'll select a cuisine that might suit your taste. Let's try with 'French' cuisine for an upscale dining experience. Allow me to search again for restaurants in San Francisco that meet your criteria. APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: French, price_range: very expensive, serves_alcohol: True, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': True, 'phone_number': '415-771-1140', 'price_range': 'expensive', 'restaurant_name': 'The Big 4', 'serves_alcohol': True, 'street_address': '1075 California Street'}]
+End Search Results
+System: Based on your criteria, I found "The Big 4" restaurant in San Francisco. It's a French cuisine spot with live music, serves alcohol, and offers an upscale dining experience. You can find it at 1075 California Street. Would you like the phone number to make a reservation, or is there anything else I can assist you with?
+User: I don't need the phone number. Just go ahead and book a table for me. Make it for two people at 8:00 PM tomorrow.
+System: To proceed with the reservation, could you please confirm if you would like to book a table for two people at "The Big 4" restaurant in San Francisco at 8:00 PM tomorrow?
+User: Yes, that's correct. Just make sure it's done without any issues.
+System: Great! I will now make the reservation for you. Please hold on for a moment. APICall (method='ReserveRestaurant', parameters={restaurant_name: "The Big 4", city: "San Francisco", time: "20:00", date: "2023-10-05", party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'French', 'has_live_music': True, 'phone_number': '415-771-1140', 'price_range': 'expensive', 'restaurant_name': 'The Big 4', 'serves_alcohol': True, 'street_address': '1075 California Street', 'date': '2023-10-05', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: Your reservation for two people at "The Big 4" restaurant in San Francisco has been successfully made for 8:00 PM on October 5th. If there's anything else you need or any changes to be made, feel free to let me know. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. I don't really care about the cuisine, as long as it's not overpriced. What do you have?
+System: Let's narrow it down a bit. Are you looking for something moderate, inexpensive, or just not very expensive? Once we have that, I'll find a restaurant for you in San Francisco.
+User: I said not overpriced, didn't I? Just find something reasonable.
+System: Alright, I'll find something that fits your criteria. Let's go with a moderate price range. I'll randomly select a cuisine that matches your style. Please hold on a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Ethiopian, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': 5, 'time': '11:30'}]
+End Search Results
+System: I found a restaurant for you. Sheba Piano Lounge is an Ethiopian place located at 1419 Fillmore Street in San Francisco. It offers a moderate price range, features live music, and serves alcohol. If you need the phone number, it's 415-440-7414. Let me know if you need any more information or if you'd like to make a reservation.
+User: Do they have any other options? I want something different, maybe with a different vibe or menu.
+System: I can look for another option with a different cuisine. Let's try something else in the moderate price range. Please hold on while I search for another restaurant in San Francisco. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-292-9997', 'price_range': 'moderate', 'restaurant_name': '2g Japanese Brasserie', 'serves_alcohol': True, 'street_address': '601 Van Ness Avenue'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-567-4903', 'price_range': 'moderate', 'restaurant_name': 'Ace Wasabi Rock-n-roll Sushi', 'serves_alcohol': False, 'street_address': '3339 Steiner Street'}, {'city': 'San Francisco', 'cuisine': 'Japanese', 'has_live_music': False, 'phone_number': '415-800-8498', 'price_range': 'moderate', 'restaurant_name': 'Akira Japanese Restaurant', 'serves_alcohol': True, 'street_address': '1634 Bush Street'}]
+End Search Results
+System: Here are a few more options for you. If you're interested in Japanese cuisine, you can try 2g Japanese Brasserie located at 601 Van Ness Avenue. They have a moderate price range and serve alcohol. If you're looking for something else, Ace Wasabi Rock-n-roll Sushi is on 3339 Steiner Street and does not serve alcohol. Lastly, there's Akira Japanese Restaurant at 1634 Bush Street, which also serves alcohol. Let me know if any of these sound appealing, or if you need more options.
+User: Got anything less mainstream? Something that's not the usual Japanese fare? I'm not settling for the ordinary.
+System: Let's explore a unique option for you. I'll search for a Japanese restaurant in San Francisco with a distinct menu or atmosphere. Please hold on while I find something that stands out. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Fusion, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Fusion', 'has_live_music': True, 'phone_number': '415-826-9561', 'price_range': 'moderate', 'restaurant_name': 'El Valenciano', 'serves_alcohol': True, 'street_address': '1153 Valencia Street'}]
+End Search Results
+System: El Valenciano might be just what you're looking for. It's a Fusion restaurant with a unique vibe located at 1153 Valencia Street in San Francisco. They offer a moderate price range, feature live music, and serve alcohol. If you need to reach them, their phone number is 415-826-9561. Let me know if this suits your taste or if there's anything else you need!
+User: Is that the best you can do? I want something even more unique, maybe a hidden gem or somewhere with an unusual menu. Can’t you find a place that stands out more?
+System: I understand you're looking for something truly distinctive. Let's try exploring another unique cuisine that might offer the hidden gem you're after. Please hold on while I search for another option in San Francisco. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Moroccan, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Moroccan', 'has_live_music': False, 'phone_number': '415-751-2312', 'price_range': 'moderate', 'restaurant_name': 'El Mansour', 'serves_alcohol': False, 'street_address': '3119 Clement Street'}, {'city': 'San Francisco', 'cuisine': 'Moroccan', 'has_live_music': False, 'phone_number': '628-233-1503', 'price_range': 'moderate', 'restaurant_name': 'Khamsa', 'serves_alcohol': False, 'street_address': '1503 15th Street'}, {'city': 'San Francisco', 'cuisine': 'Moroccan', 'has_live_music': True, 'phone_number': '415-776-1538', 'price_range': 'moderate', 'restaurant_name': 'Marrakech', 'serves_alcohol': False, 'street_address': "419 O'Farrell Street"}]
+End Search Results
+System: How about trying a Moroccan experience? El Mansour, located at 3119 Clement Street, offers a moderate price range without the usual crowd. If you're looking for live music, Marrakech at 419 O'Farrell Street might interest you. They both have distinct menus and are not your standard choices. Let me know if any of these catch your eye or if you need more options.
+User: Are you sure these places aren't just tourist traps? I want something genuinely unique. Maybe a place where reservations are hard to get? I don't want to waste my time on just another average spot.
+System: I understand your quest for exclusivity and something truly unique. Let me search for a place that offers an extraordinary experience, perhaps with limited availability. Hold on while I find a restaurant that stands out in San Francisco. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Contemporary, price_range: moderate})
+Search Results
+
+End Search Results
+System: It seems there are no results for a Contemporary restaurant in San Francisco that fits your criteria. Let's try an alternative approach. How about I search for another unique cuisine that may offer that exclusive experience you're seeking? Please hold on while I find a compelling option for you. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Vietnamese, price_range: moderate})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-885-5180', 'price_range': 'moderate', 'restaurant_name': 'Anh Hong', 'serves_alcohol': True, 'street_address': '808 Geary Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-928-4977', 'price_range': 'moderate', 'restaurant_name': 'Aux Delices', 'serves_alcohol': False, 'street_address': '2327 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '415-292-6161', 'price_range': 'moderate', 'restaurant_name': 'Co Nam', 'serves_alcohol': True, 'street_address': '1653 Polk Street'}]
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

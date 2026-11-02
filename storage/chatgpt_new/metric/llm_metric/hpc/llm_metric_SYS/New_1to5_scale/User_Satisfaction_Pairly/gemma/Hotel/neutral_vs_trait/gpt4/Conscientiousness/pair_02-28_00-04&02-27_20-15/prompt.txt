@@ -1,0 +1,97 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to book a hotel in Berlin. Could you help me find one?
+System: Do you have any specific preferences for the hotel, such as a star rating or smoking allowance?
+User: I prefer a hotel with a high star rating, ideally 4 stars or above. Also, I would prefer a non-smoking environment. Could you find such options in Berlin for me?
+System: APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: I found several non-smoking 4-star hotels in Berlin for you:
+
+1. **Ameron Hotel Abion Spreebogen Waterside**
+   - Price per night: $360
+   - Address: Alt-Moabit 99, 10559
+   - Phone number: +49 30 399200
+
+2. **Holiday Inn Berlin City East-Landsberger**
+   - Price per night: $432
+   - Address: Landsberger Allee 203, 13055
+   - Phone number: +49 30 978080
+
+3. **Hotel Novotel Berlin Mitte**
+   - Price per night: $280
+   - Address: Fischerinsel 12, 10179
+   - Phone number: +49 30 206740
+
+Would you like to make a reservation at any of these hotels? If so, please let me know your check-in date and the length of your stay.
+User: I'd like to book a room at the Hotel Novotel Berlin Mitte. Please reserve it for me starting from the 15th of next month for a duration of five days.
+System: Please confirm that you would like to book a room at the Hotel Novotel Berlin Mitte starting from the 15th of next month for a duration of five days in Berlin. How many rooms would you like to reserve?
+User: I would like to reserve one room, please.
+System: Please confirm that you want to reserve 1 room at the Hotel Novotel Berlin Mitte, starting from the 15th of next month for a duration of five days in Berlin.
+User: Yes, that is correct. Please go ahead with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Berlin, number_of_rooms: 1, place_name: Hotel Novotel Berlin Mitte, stay_length: 5 })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Hotel Novotel Berlin Mitte has been successfully confirmed. You have reserved 1 room starting from the 15th of November for a duration of five days. If you need any further assistance or details, please let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to book a hotel in Vancouver. Could you help me find a suitable option?
+System: Could you please specify your check-in date and the length of your stay in Vancouver? This information will help me find the best options for you.
+User: I plan to check in on November 10th and stay for five nights. Could you also ensure that the hotel meets a minimum of a four-star rating and is non-smoking?
+System: Thank you for providing the details. I'll search for a hotel in Vancouver that meets your requirements. Please hold on while I perform the search.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 4, smoking_allowed: False})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street'}]
+End Search Results
+System: I found a few options for you in Vancouver. The first option is the Coast Coal Harbour Vancouver Hotel By Apa, which is a 4-star, non-smoking hotel. The price per night is $108, and it's located at 1180 West Hastings Street. Would you like more information about this hotel, or would you prefer to hear about another option?
+User: Could you provide details about another option? I want to ensure I pick the best one suited to my needs.
+System: The next option is the Delta Hotels By Marriott Vancouver Downtown Suites. It's also a 4-star, non-smoking hotel, with a price per night of $324. The hotel is located at 550 West Hastings Street. Would you like to know more about this hotel, or should I provide details about another option?
+User: Could you tell me about another option? I want to make a well-informed decision before finalizing my choice.
+System: The third option is the Georgian Court Hotel, a 4-star, non-smoking hotel. The price per night is $108, and it is located at 773 Beatty Street. Would you like to proceed with booking this hotel, or do you need any more information about it?
+User: Could you please provide more information about the Georgian Court Hotel, like the amenities and services they offer? I want to ensure it aligns with my preferences before making a decision.
+System: Unfortunately, I don't have specific information about the amenities and services offered by the Georgian Court Hotel. However, it is a 4-star, non-smoking hotel with a reasonable price per night of $108, located at 773 Beatty Street. If you would like to proceed with this option or need details about any other aspect, please let me know.
+User: Thank you for the information. Could you let me know about the availability of rooms at the Georgian Court Hotel for my specified dates? I want to make sure they have availability before proceeding.
+System: Certainly, I will check the availability of rooms at the Georgian Court Hotel for your specified dates. Please hold on while I perform the search.
+
+APICall(method='ReserveHotel', parameters={location: Vancouver, place_name: Georgian Court Hotel, check_in_date: 2023-11-10, stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: The Georgian Court Hotel has availability for your specified dates, starting from November 10th for five nights. Would you like me to proceed with booking this hotel for you?
+User: Yes, please proceed with booking the Georgian Court Hotel for my stay.
+System: Great! Just to confirm, I'll proceed with booking one room at the Georgian Court Hotel in Vancouver for your stay from November 10th for five nights. Please confirm if all the details are correct before I finalize the reservation.
+User: Yes, I confirm that all the details are correct. Please go ahead and finalize the reservation.
+System: Thank you for confirming. I will now proceed to finalize your reservation at the Georgian Court Hotel in Vancouver. Please hold on for a moment while I complete the booking.
+
+APICall(method='ReserveHotel', parameters={location: Vancouver, place_name: Georgian Court Hotel, check_in_date: 2023-11-10, stay_length: 5, number_of_rooms: 1})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Georgian Court Hotel in Vancouver has been successfully confirmed. You will be staying in one room from November 10th for five nights. If you need any further assistance or have any other questions, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

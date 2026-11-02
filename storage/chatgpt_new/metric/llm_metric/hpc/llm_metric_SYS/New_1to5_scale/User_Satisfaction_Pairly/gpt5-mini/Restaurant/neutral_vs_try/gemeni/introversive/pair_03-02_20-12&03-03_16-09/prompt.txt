@@ -1,0 +1,93 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Palo Alto.
+
+System: Okay, I can help with that. Do you have a particular type of cuisine in mind?
+
+User: No preference.
+
+System: Given you're open to anything, how about we explore some American cuisine in Palo Alto?
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: American})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street'}]
+End Search Results
+System: Alright, I see three American restaurants in Palo Alto: Bazille, Bird Dog, and Bistro Elan. Bazille is located at 550 Stanford Shopping Center and they serve alcohol. Bird Dog is at 420 Ramona Street, and Bistro Elan is at 2363 Birch Street. Which one sounds good to you?
+
+User: Perhaps Bird Dog. Can you reserve a table there?
+
+System: What time and for how many people would you like to reserve a table at Bird Dog?
+
+User: Just two people, tomorrow at 7pm.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Bird Dog, city: Palo Alto, date: 2019-03-02, time: 19:00, party_size: 2})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Okay, I've made a reservation for you at Bird Dog in Palo Alto for tomorrow, March 2nd, at 7pm for a party of two. Just to confirm, Bird Dog is an American restaurant located at 420 Ramona Street. Is that correct?
+
+User: Yes, that's correct. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a restaurant in San Francisco.
+
+System: Okay, I can help with that. What type of cuisine are you interested in?
+
+User: Um, maybe Italian?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found three Italian restaurants in San Francisco: 54 Mint Ristorante Italiano, A16, and Allegro Romano. 54 Mint Ristorante Italiano is located at 16 Mint Plaza, A16 is at 2355 Chestnut Street, and Allegro Romano is at 1701 Jones Street. Do any of these sound good?
+
+User: Maybe A16. Can you tell me more about it?
+
+System: A16 is an Italian restaurant in San Francisco located at 2355 Chestnut Street. The price range is moderate, and they serve alcohol. Their phone number is 415-771-2216. Is there anything else you'd like to know about A16?
+
+User: No, that sounds fine. Can you make a reservation for me?
+
+System: Okay, I can help with that. What date and time would you like to make a reservation for, and how many people will be in your party?
+
+User: Just two people, tomorrow at 7pm.
+
+System: What is the date for tomorrow?
+User: Uh, March 2nd.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: A16, city: San Francisco, date: 2019-03-02, time: 19:00, party_size: 2})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Great, I have a table for two at A16 in San Francisco for tomorrow, March 2nd, at 7pm. Is that correct?
+
+User: Yes, that's correct.
+
+System: Okay, your reservation has been made. The restaurant's phone number is 415-771-2216 and their address is 2355 Chestnut Street. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

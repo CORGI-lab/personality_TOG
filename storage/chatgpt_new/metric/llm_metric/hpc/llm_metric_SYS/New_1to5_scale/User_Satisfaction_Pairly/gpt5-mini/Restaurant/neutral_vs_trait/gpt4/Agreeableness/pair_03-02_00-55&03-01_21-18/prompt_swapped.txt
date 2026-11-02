@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I’d like to find a restaurant in San Francisco, please.
+System: Do you have a specific type of cuisine in mind, or are you open to trying something new? If you need suggestions, I'm here to help!
+User: I'm open to suggestions, but I usually enjoy Italian cuisine. Do you have any recommendations?
+System: Let me find some Italian restaurants in San Francisco for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that you might enjoy. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They offer a moderate price range and serve alcohol. If you need more information or have any other preferences, feel free to let me know!
+User: That sounds lovely! Could you please make a reservation for 2 people at 54 Mint Ristorante Italiano for tomorrow evening around 7:00 pm? Thank you so much!
+System: To ensure your reservation is made smoothly, could you please confirm the date for tomorrow's reservation? Once confirmed, I'll proceed with making the booking for 2 people at 54 Mint Ristorante Italiano around 7:00 pm.
+User: Tomorrow's date is perfect for the reservation. Thank you for helping with this!
+System: Great! I'll proceed with making the reservation for 2 people at 54 Mint Ristorante Italiano in San Francisco for tomorrow evening at 7:00 pm. Please hold on for a moment while I finalize the booking.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: '54 Mint Ristorante Italiano', city: 'San Francisco', time: '19:00', date: '2023-10-20', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2023-10-20', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: The reservation for 2 people at 54 Mint Ristorante Italiano in San Francisco is confirmed for tomorrow evening at 7:00 pm. The restaurant is located at 16 Mint Plaza, and their contact number is 415-543-5100. Enjoy your dining experience, and if you need further assistance, feel free to reach out!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hello! I hope you're having a wonderful day. I'm looking for a restaurant in San Francisco. Could you help me find one that serves Italian cuisine?
+System: Certainly! Let me check for Italian restaurants in San Francisco for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco for you. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They have a moderate price range and serve alcohol. Would you like more information about this restaurant or perhaps another option?
+User: That sounds lovely, but could you also tell me if they have any live music? If not, do you have any other Italian restaurants that do?
+System: Unfortunately, 54 Mint Ristorante Italiano does not feature live music. However, let me check if there are any other Italian restaurants in San Francisco that offer live music. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found a couple of Italian restaurants in San Francisco that feature live music. One option is Fior D'Italia, located at 2237 Mason Street. It has an expensive price range and serves alcohol. Another option is Zingari Ristorante + Jazz Bar, located at 501 Post Street, which also has an expensive price range and serves alcohol. Would you like more information about either of these options?
+User: Zingari Ristorante + Jazz Bar sounds wonderful with the jazz music. Could you please reserve a table for two there? I'd prefer a reservation for tomorrow evening around 7:00 pm. Thank you so much for your help!
+System: To reserve a table for you at Zingari Ristorante + Jazz Bar, I will need to confirm a few details. Could you please let me know the date for your reservation? And just to confirm, you would like the reservation for two people at 7:00 pm, correct?
+User: Yes, that's right. I'd like the reservation for tomorrow evening at 7:00 pm for two people. Thank you!
+System: Great, thank you for confirming. I'll proceed with reserving a table for two at Zingari Ristorante + Jazz Bar for tomorrow evening at 7:00 pm. Please hold on for a moment while I make the reservation. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Zingari Ristorante + Jazz Bar', city: 'San Francisco', date: '2023-10-14', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-14', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Zingari Ristorante + Jazz Bar has been successfully made for tomorrow evening at 7:00 pm for two people. The restaurant is located at 501 Post Street, and they do have live jazz music. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

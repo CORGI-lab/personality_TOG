@@ -1,0 +1,108 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in San Francisco; nothing too fancy, just a reliable place to stay.
+
+System: Okay, I can help with that. Do you have any preferences on the star rating for the hotel?
+
+User: Something around 3 stars would be perfectly acceptable.
+
+System: Okay, searching for 3-star hotels in San Francisco.
+
+APICall(method='SearchHotel', parameters={location: San Francisco, star_rating: 3})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: Okay, I found three 3-star hotels in San Francisco: Bei Hotel San Francisco, Beresford Arms Hotel, and Chancellor Hotel On Union Square. Bei Hotel allows smoking and offers rooms starting at $351 per night. Beresford Arms and Chancellor Hotel do not allow smoking, with prices at $132 and $189 per night, respectively. Which one sounds best to you?
+
+User: The Chancellor Hotel On Union Square sounds like a good option. Can you tell me more about it?
+
+System: Okay, the Chancellor Hotel On Union Square is a 3-star hotel located at 433 Powell Street in San Francisco. They do not allow smoking. The price per night is $189, and they have 3 rooms. Is there anything specific you'd like to know?
+
+User: That sounds quite suitable. I'd like to book it. I'll be arriving on the 15th and staying for three nights.
+
+System: Do you need one room or more?
+
+User: One room will be sufficient, thank you.
+
+System: Okay, to confirm, you'd like to reserve one room at the Chancellor Hotel On Union Square in San Francisco, checking in on the 15th for a stay of three nights. Could you please specify the full date, including the year, for your check-in?
+
+User: Certainly, that's correct. The full date is March 15, 2024.
+
+System: Okay, just to be absolutely sure, you want to book 1 room at the Chancellor Hotel On Union Square in San Francisco, checking in on March 15, 2024, for a 3-night stay. Is that correct?
+
+User: Yes, that is correct.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-03-15, location: San Francisco, number_of_rooms: 1, place_name: Chancellor Hotel On Union Square, stay_length: 3})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street', 'check_in_date': '2024-03-15'}]
+End Search Results
+System: Great! I've reserved you a room at the Chancellor Hotel On Union Square for three nights, starting March 15, 2024. If you need to modify or cancel it, please call +1 415-362-2004. Is there anything else I can help you with today?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Diego, please.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: I'm open to suggestions. Perhaps something in the 3 to 4 star range would be suitable.
+
+System: Okay, I will search for hotels in San Diego with a star rating of 3 or 4.
+
+APICall(method='SearchHotel', parameters={ location: San Diego, star_rating: dontcare })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found a few options for you in San Diego. There's the Bahia Resort Hotel, a 3-star hotel, with rooms available. Alternatively, there's the Best Western Plus Bayside Inn, also a 3-star hotel, and the Best Western Plus Hacienda Hotel Old Town, another 3-star option. Would you like more details on any of these, or perhaps have a preference?
+
+User: The Bahia Resort Hotel sounds like a good starting point. Can you tell me more about it? Perhaps the price per night and if smoking is allowed?
+
+System: Certainly. The Bahia Resort Hotel costs $225 per night, and smoking is not allowed. Is there anything else you'd like to know about it?
+
+User: That sounds reasonable. I think that price is acceptable. And it's good to know they don't allow smoking. What's the address?
+
+System: The Bahia Resort Hotel is located at 998 West Mission Bay Drive, San Diego. Does that address work for you?
+
+User: Yes, that's a good location. I'd like to book a room there. I'll be arriving on the 15th of next month and staying for three nights.
+
+System: Okay, let's proceed with booking a room at the Bahia Resort Hotel. To confirm, you'd like to book a room at Bahia Resort Hotel in San Diego, arriving on the 15th of next month (2024-07-15) and staying for three nights. Is that correct?
+
+To finalize this booking, I need to know the exact check-in date (YYYY-MM-DD format) and the number of rooms you'd like to reserve.
+
+User: Yes, that is correct. I'd like to book one room for the dates you mentioned: check-in date is 2024-07-15.
+
+System: Okay, to finalize your reservation at the Bahia Resort Hotel in San Diego, which is located at 998 West Mission Bay Drive, for one room, checking in on 2024-07-15 and staying for three nights, I'll go ahead and process that for you.
+
+APICall(method='ReserveHotel', parameters={ place_name: Bahia Resort Hotel, check_in_date: 2024-07-15, stay_length: 3, location: San Diego, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Alright, I've confirmed your reservation for one room at the Bahia Resort Hotel in San Diego, checking in on 2024-07-15 and staying for three nights. Is there anything else I can assist you with regarding this booking or any other requests?
+
+User: No, I think that's all in order. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

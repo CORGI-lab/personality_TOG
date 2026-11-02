@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Fremont. Can you help me find one?
+System: Certainly! Do you have a preference for any specific type of cuisine, or are you open to suggestions?
+User: I'm not sure. Maybe something simple like American food.
+System: Great choice! Let me find some American cuisine options in Fremont for you. Please hold on for a moment. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems we don't have any American cuisine options available in Fremont at the moment. Would you be open to trying a different type of cuisine? Perhaps something like Italian or Mexican? Let me know your preference, and I'll be happy to assist further.
+User: No, I would prefer to stick with American cuisine. Can you check if there are any nearby cities that have an American restaurant?
+System: Sure, let's expand our search to nearby cities to find an American restaurant for you. Could you please specify which nearby city you have in mind, or would you like me to suggest one for you?
+User: Could you check for an American restaurant in Newark?
+System: Sure, let's look for an American restaurant in Newark. Please hold on for a moment while I find some options for you. APICall (method='FindRestaurants', parameters={city: Newark, cuisine: American})
+Search Results
+[{'city': 'Newark', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-445-0660', 'price_range': 'moderate', 'restaurant_name': "Chuck E. Cheese's", 'serves_alcohol': True, 'street_address': '39839 Mowry School Road', 'date': '2019-03-07', 'party_size': 2, 'time': '17:30'}]
+End Search Results
+System: I found an American restaurant in Newark called Chuck E. Cheese's. It's located at 39839 Mowry School Road. The restaurant offers a moderate price range and serves alcohol. Would you like more information or assistance with a reservation?
+User: I think that will work. Can you make a reservation for two people at Chuck E. Cheese's? 
+System: Certainly! Could you please let me know the date and time you'd like to make the reservation for at Chuck E. Cheese's?
+User: For tomorrow at 6:00 pm, please.
+System: Great! Let me confirm the details: you would like to make a reservation for two people at Chuck E. Cheese's in Newark for tomorrow at 6:00 pm. Is that correct?
+User: Yes, that's correct.
+System: Perfect, I'll proceed with making the reservation for you. Please hold on for a moment. APICall (method='ReserveRestaurant', parameters={restaurant_name: "Chuck E. Cheese's", city: Newark, date: 2019-03-08, time: 18:00, party_size: 2})
+Search Results
+[{'city': 'Newark', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-445-0660', 'price_range': 'moderate', 'restaurant_name': "Chuck E. Cheese's", 'serves_alcohol': True, 'street_address': '39839 Mowry School Road', 'date': '2019-03-08', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Your reservation for two people at Chuck E. Cheese's in Newark has been successfully made for tomorrow at 6:00 pm. If you need any more assistance or have any questions, feel free to let me know. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a restaurant in Cupertino.
+System: Do you have a preference for a specific type of cuisine, or should I select one for you?
+User: Something simple like American food would be fine.
+System: APICall(method='FindRestaurants', parameters={city: Cupertino, cuisine: American})
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130'}, {'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '408-359-4690', 'price_range': 'moderate', 'restaurant_name': 'Lazy Dog Restaurant & Bar', 'serves_alcohol': True, 'street_address': '19359 Stevens Creek Boulevard'}]
+End Search Results
+System: I found two American restaurants in Cupertino: Eureka! and Lazy Dog Restaurant & Bar. Both are located on Stevens Creek Boulevard and offer a moderate price range. They serve alcohol but don't have live music. Would you like more details about either of these options?
+User: Eureka! sounds okay. Can I make a reservation there?
+System: For what date, time, and how many people would you like the reservation at Eureka! in Cupertino?
+User: I need a table for two, tomorrow at 7:00 pm.
+System: To confirm, you would like to reserve a table for two at Eureka! in Cupertino tomorrow at 7:00 pm. Is that correct?
+User: Yes, that's correct.
+System: APICall(method='ReserveRestaurant', parameters={restaurant_name: 'Eureka!', city: 'Cupertino', date: '2023-10-02', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Cupertino', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '669-266-6752', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '19369 Stevens Creek Boulevard Suite 130', 'date': '2023-10-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Eureka! in Cupertino for two people on October 2nd at 7:00 pm has been successfully made. The restaurant is located at 19369 Stevens Creek Boulevard Suite 130. If you need to contact them, their phone number is 669-266-6752. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

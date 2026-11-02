@@ -1,0 +1,98 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in New York. Let's see what you can find.
+System: Do you have any specific preferences for the star rating or smoking allowance for the hotel in New York?
+User: I want the absolute best, so it better be a 5-star. And smoking? It better be allowed.
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5, smoking_allowed: True })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I found several 5-star hotels in New York that allow smoking. Here are your options:
+
+1. **1 Hotel Central Park** - Located at 1414 6th Avenue, priced at $330 per night.
+2. **Baccarat Hotel** - Located at 28 West 53rd Street, priced at $525 per night.
+3. **1 Hotel Brooklyn Bridge** - Located at 60 Furman Street, Brooklyn, priced at $465 per night.
+
+Please let me know if you would like more information about any of these hotels or if you wish to proceed with a reservation.
+User: Why would I pay $525 for a room? Give me a break. Tell me more about the 1 Hotel Central Park, but it better be worth my time.
+System: 1 Hotel Central Park is located at 1414 6th Avenue in New York. It is a 5-star hotel that allows smoking, and the price per night is $330. If you have any specific questions about the hotel or if you're considering making a reservation, please let me know how I can assist you further.
+User: $330 is still steep, but whatever. Just reserve it for me. I need it from the 10th for 5 days, and make sure I get a room with a view.
+System: Please confirm that you want to book 1 room at 1 Hotel Central Park in New York, starting from the 2023-10-10 for 5 days. Also, I will note your preference for a room with a view, although I can't guarantee it as it's not specified in the available data.
+User: Yes, whatever, just do it. Confirm the reservation and make sure they understand my preference for the view.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-10, location: New York, number_of_rooms: 1, place_name: 1 Hotel Central Park, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your reservation at 1 Hotel Central Park in New York has been successfully confirmed for 5 days starting from 2023-10-10. The hotel is located at 1414 6th Avenue. I've noted your preference for a room with a view, but please be aware that this preference is subject to availability. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in New York. Find me something good.
+System: Do you have any specific preferences for the star rating or smoking allowance in the hotel? Or should I proceed with searching for any available hotel in New York?
+User: Why are you asking me? Just find the best one you can. If it's not up to my standards, I'll let you know.
+System: APICall(method='SearchHotel', parameters={ location: New York })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: I found a few options for you in New York. One option is 11 Howard, a 3-star hotel that allows smoking and is priced at $270 per night. Would you like more details on this or any other options, or should I assist you with something else?
+User: What's the point of these ridiculous suggestions? Find me a 5-star hotel, and don't waste my time with anything less.
+System: Let me search for a 5-star hotel in New York for you. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I found some excellent 5-star hotel options for you in New York. One of them is the Baccarat Hotel, which allows smoking and is priced at $525 per night. Would you like more details about this hotel, or is there anything else I can assist you with?
+User: $525 per night? That better include some world-class service. Tell me about this Baccarat Hotel, and make it quick.
+System: The Baccarat Hotel is located at 28 West 53rd Street in New York. It offers a 5-star experience with smoking rooms available. If you need more information or have specific questions about your stay, feel free to let me know!
+User: Is that all you got? I need to know what else this hotel offers. What's included in that steep price?
+System: Unfortunately, the specific amenities and services included in the price at the Baccarat Hotel are not detailed in the current information I have. You might want to contact the hotel directly for a comprehensive list of their offerings. If there is anything else I can help with or if you'd like to explore other options, please let me know!
+User: This is absurd. How can you expect me to make a decision without knowing what I'm paying for? Find another 5-star hotel and make sure you have all the details this time.
+System: Certainly, let me find another 5-star hotel for you in New York. Please hold on for a moment.
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: Another excellent 5-star option is the 1 Hotel Central Park, located at 1414 6th Avenue. It offers smoking rooms and is priced at $330 per night. While I don't have specific details on amenities included in the price, I recommend contacting the hotel for more comprehensive information. Would you like me to assist you with anything else or explore other options?
+User: Fine, let's hear about this 1 Hotel Central Park. But if you're going to waste my time with half-baked information again, don't bother.
+System: The 1 Hotel Central Park is situated at 1414 6th Avenue in New York, offering a luxurious 5-star experience with smoking rooms available. The cost is $330 per night. While I don't have specific details on the amenities included, contacting the hotel directly may provide you with a comprehensive list of their offerings. Should you need further assistance or wish to consider other options, feel free to let me know!
+User: So, you still can't give me a straight answer about what I'm getting for $330 a night? It's like I'm talking to a wall. Find another 5-star hotel, and this time, make sure you actually have the details.
+System: Certainly, let me search for another 5-star hotel in New York for you. Please hold on for a moment.
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I understand you're seeking comprehensive details for your stay. Another option is the 1 Hotel Brooklyn Bridge, located at 60 Furman Street, Brooklyn. It offers a 5-star experience with smoking rooms available at $465 per night. Unfortunately, I don't have specific details on what's included in the price, but I advise reaching out to the hotel directly for more detailed information. If there's anything else you'd like to explore, please let me know!
+User: This is getting ridiculous. How hard is it to find a hotel that actually tells you what you're paying for? Just book the 1 Hotel Central Park for me. I'll deal with them directly if I have to. Make it for one room, check-in on the 5th, and I'll stay for a week.
+System: Please confirm to book 1 room for 7 days at 1 Hotel Central Park in New York, with a check-in date of the 5th.
+User: Yes, confirm the booking. And make sure it's done without any more hassle.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: New York, number_of_rooms: 1, place_name: 1 Hotel Central Park, stay_length: 7 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking for 1 room at the 1 Hotel Central Park in New York has been successfully confirmed for 7 days, starting from November 5th, 2023. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

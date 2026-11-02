@@ -1,0 +1,98 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to find a restaurant in San Francisco. What's the fanciest place you can recommend?
+System: Could you please specify the type of cuisine you're interested in, or are you open to any cuisine? Also, it would help to know your preferences regarding price range, live music, or alcohol service, if any.
+User: I don't really care about the cuisine, as long as it's not some cheap joint. I want a place that screams luxury and has a good selection of alcohol. Live music would be a bonus, but not a dealbreaker.
+System: Let's go with a random cuisine for you. How about Italian? I'll find an upscale Italian restaurant in San Francisco that serves alcohol. Let me check that for you. 
+
+SYSTEM: APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, price_range: upscale, serves_alcohol: True})
+Search Results
+
+End Search Results
+System: It seems there are no results matching your criteria for an upscale Italian restaurant in San Francisco that serves alcohol. Would you like me to try with a different cuisine or adjust any other preferences?
+User: Why didn't you find any options? Are you sure you're checking the right places? Try again and this time make sure it's the fanciest place you can find, regardless of cuisine.
+System: Let's select a random cuisine for you. How about French? I'll find an upscale French restaurant in San Francisco that serves alcohol. Let me check that for you.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: French, price_range: upscale, serves_alcohol: True})
+Search Results
+
+End Search Results
+System: Unfortunately, there are no results matching your criteria for an upscale French restaurant in San Francisco that serves alcohol. Would you like me to try another random cuisine or adjust any other preferences, such as considering places that do not necessarily serve alcohol?
+User: Why do you keep messing this up? Just find me the absolute best restaurant in San Francisco, with or without alcohol. Get it right this time.
+System: Let's go with a random cuisine for you. How about Japanese? I'll find the absolute best Japanese restaurant in San Francisco. Let me check that for you.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Japanese, price_range: upscale})
+Search Results
+
+End Search Results
+System: It seems there are no results matching your criteria for an upscale Japanese restaurant in San Francisco. Would you like me to try another random cuisine or adjust any other preferences, such as considering a broader price range or different features?
+User: This is getting ridiculous. Just find me the most luxurious restaurant you can, regardless of the cuisine or anything else. I don't care about the details, just make sure it's top-notch.
+System: Let's go with a random cuisine for you. How about Seafood? I'll find the most luxurious Seafood restaurant in San Francisco. Let me check that for you.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Seafood, price_range: upscale})
+Search Results
+
+End Search Results
+System: It seems there are no results matching your criteria for an upscale Seafood restaurant in San Francisco. To better assist you, would you like me to consider a broader price range or perhaps any specific features like live music? This way, I can provide you with some great options.
+User: Just find the most expensive place, period. I don't care about live music or anything else anymore. Just make it happen.
+System: Let's try a random cuisine for you. How about Mediterranean? I'll search for the most expensive Mediterranean restaurant in San Francisco. Let me check that for you.
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Mediterranean, price_range: upscale})
+Search Results
+
+End Search Results
+System: It appears there are no results matching your criteria for an upscale Mediterranean restaurant in San Francisco. Perhaps broadening the price range or considering a different area might provide more options. Would you like me to explore any other city or adjust any other preferences?
+User: Forget about San Francisco. Try finding me the most expensive restaurant in Palo Alto instead. It's not that hard, is it?
+System: Let's choose a random cuisine for you. How about Sushi? I'll search for the most expensive Sushi restaurant in Palo Alto. Let me check that for you.
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Sushi, price_range: upscale})
+Search Results
+
+End Search Results
+
+Dialogue B:
+  User: I want to book a restaurant in San Francisco. Make sure it's the best one you can find, and don't waste my time with anything less. I want Italian cuisine, and it better have live music.
+System: To ensure I find the best Italian restaurant with live music in San Francisco, could you please let me know what date and time you have in mind for the reservation? Also, how many people will be joining you?
+User: I need a table for two, tomorrow at 7 PM. Don't mess it up.
+System: Thank you for the details. Let's find the perfect Italian restaurant with live music for you. Please hold on for a moment while I make the search. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian, has_live_music: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-986-1886', 'price_range': 'expensive', 'restaurant_name': "Fior D'italia", 'serves_alcohol': True, 'street_address': '2237 Mason Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street'}]
+End Search Results
+System: I found two excellent Italian restaurants with live music in San Francisco for you. Would you prefer Fior D'Italia at 2237 Mason Street, or Zingari Ristorante + Jazz Bar at 501 Post Street? Both offer a great atmosphere and serve alcohol. Let me know which one you'd like to proceed with for your reservation.
+User: Zingari Ristorante + Jazz Bar better be worth my time. Reserve it for me.
+System: Great choice! I'll go ahead and reserve a table for two at Zingari Ristorante + Jazz Bar for tomorrow at 7 PM. Please hold on while I confirm the reservation. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Zingari Ristorante + Jazz Bar', city: 'San Francisco', cuisine: 'Italian', date: '2023-10-19', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '415-885-8850', 'price_range': 'expensive', 'restaurant_name': 'Zingari Ristorante + Jazz Bar', 'serves_alcohol': True, 'street_address': '501 Post Street', 'date': '2023-10-19', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation has been successfully made for two people at Zingari Ristorante + Jazz Bar in San Francisco for tomorrow at 7 PM. Enjoy the live music and the wonderful Italian cuisine. If you need anything else, feel free to let me know.
+User: Make sure they actually have a good table for us. I don't want to be stuck in some corner.
+System: I'll make sure to note your preference for a good table. While I can't guarantee specific seating arrangements, I'll mention your request to the restaurant. If you have any other questions or need further assistance, please let me know.
+User: I hope they've got a decent wine selection. And don't even think about messing up my plans.
+System: The restaurant has an excellent reputation for its wine selection, so you should be in for a treat. Your reservation is all set, and everything should go smoothly. If you have any more requests or need further assistance, feel free to let me know. Enjoy your evening!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

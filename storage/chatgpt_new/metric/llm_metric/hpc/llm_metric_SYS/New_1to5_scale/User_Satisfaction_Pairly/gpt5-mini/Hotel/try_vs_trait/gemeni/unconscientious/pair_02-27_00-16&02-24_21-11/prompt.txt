@@ -1,0 +1,113 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I need a hotel somewhere... uh... maybe Las Vegas? I haven't really thought about it.
+
+System: Okay, Las Vegas sounds... good! To start this, are you looking for anything specific, like a certain star rating or maybe if they allow smoking? Or should we just see what's available?
+
+User: Nah, just see what's available. Whatever's cheapest, I guess. Don't really care about stars or smoking or anything.
+
+System: Alright, let's see what we can find in Las Vegas then. I'll just pull up whatever is available, and hopefully something catches our eye.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: dontcare, smoking_allowed: dontcare })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: Okay, so we've got a few options in Las Vegas. There's the Best Western Plus Las Vegas West, it's a 3-star place, and it's $117 a night. Then there's the Budget Suites Of America, which is only $44 a night, but it's just
+User: Oh, Budget Suites sounds... fine. Tell me more about that one. Is it, like, totally gross or something?
+
+System: Well, Budget Suites of America is a 1-star hotel, and it's $44 a night. They do allow smoking, if that matters. Want me to tell you the address and the phone number, or are you good with that?
+
+User: Smoking allowed, huh? Eh, might be nice to have the option. Okay, yeah, give me the address. And maybe the phone number, just in case I feel like calling... or not. Whatever.
+
+System: Sure thing
+User: , the address is 4240 S Decatur Blvd. And the phone number is +1 702-362-0880. So, does this sound like the one? Should I go ahead and try to book it for you?
+
+System: Okay, great! Before I try to book it, just to make sure I'm not messing things up, when are you planning to check in and how long will you be staying? Don't worry if you haven't figured it out yet, we can always wing it.
+
+User: Uh... check-in? Whenever. I guess tomorrow? And... I don't know, a few days? Maybe three? Just book it, whatever.
+
+System: Okay, got it. So, we're looking at checking in tomorrow, and staying for about three days at the Budget Suites of America in Las Vegas. Just to be clear, can you give me the exact date you'd like to check in? And to confirm, you want to book one room?
+
+User: Ugh, dates... Fine, let's say I need it from the 12th. And yeah, one room is enough. Just get it done, please.
+
+System: Okay, so that's checking in on the 12th for one room. Let's hope it's still available!
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-12, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 3 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2024-07-12'}]
+End Search Results
+System: Alright
+User: , I've got one room at Budget Suites of America in Las Vegas, checking in on the 12th for three nights. Can you confirm this is correct?
+
+System: Yep, that's what I asked for. Just... confirm it, I guess. Whatever.
+
+User: Okay, I've booked one room at Budget Suites of America in Las Vegas for three nights starting on the 12th. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, I need to find a hotel, like, now. Somewhere… easy.
+
+System: Okay, I can help with that. To start, could you tell me which location you're interested in?
+
+User: Ugh, location… uh, surprise me? How about... Vegas? Yeah, Vegas sounds good.
+
+System: Okay, great choice! Las Vegas it is. To narrow down the search, do you have any preferences regarding star rating, smoking allowance, or the number of rooms you might need?
+
+User: Star rating? Eh, whatever's cheapest. Smoking? Sure, why not. And just one room, I guess. Don't really care about the rest.
+
+System: Okay, I understand. So, you're looking for a hotel in Las Vegas, with one room, smoking allowed, and the cheapest star rating available. I'll run a quick search based on those preferences.
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, number_of_rooms: 1, smoking_allowed: True, star_rating: 1})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-380-6902', 'place_name': 'Hostel Cat', 'price_per_night': 24, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '1236 South Las Vegas Boulevard'}]
+End Search Results
+System: Alright, I found a couple of options for you in Las Vegas that fit your criteria. There's the "Budget Suites Of America" and "Hostel Cat," both are 1-star hotels and allow smoking. "Hostel Cat" is cheaper at $24 per night. What do you think?
+
+User: Hostel Cat... sounds kinda sketchy. But hey, it's Vegas, right? What's the address? And, uh, is it, like, *really* sketchy?
+
+System: Okay, so "Hostel Cat" is located at 1236 South Las Vegas Boulevard. As for the sketchiness, well, it's a 1-star hostel, so it's pretty basic. But hey, it's cheap and allows smoking, just like you asked. Do you want to proceed with booking it?
+
+User: Uh, yeah, sure, whatever. Book it. I'm too tired to look for anything else. What dates do you need? I guess... tomorrow? For, like, two nights?
+
+System: Okay, I can book "Hostel Cat" for you. Just to confirm, that's 1 room, smoking allowed, at 1236 South Las Vegas Boulevard, starting tomorrow for two nights. Could you please provide the exact date you'd like to check in?
+
+User: Tomorrow... uh, is that the 28th? Yeah, book it for the 28th. Just get it done, please.
+
+System: Okay, got it. So, you want me to book "Hostel Cat" in Las Vegas for one room, smoking allowed, checking in on the 28th for two nights. To confirm, is the year 2024?
+
+User: Yeah, whatever, 2024. Just book the damn thing.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-03-28, location: Las Vegas, number_of_rooms: 1, place_name: Hostel Cat, stay_length: 2})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-380-6902', 'place_name': 'Hostel Cat', 'price_per_night': 24, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '1236 South Las Vegas Boulevard', 'check_in_date': '2024-03-28'}]
+End Search Results
+System: Alright, your booking at "Hostel Cat" in Las Vegas is confirmed for one room, smoking allowed, checking in on March 28, 2024, for two nights. The address is 1236 South Las Vegas Boulevard. Is there anything else I can help you with?
+
+User: Nah, I'm good. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

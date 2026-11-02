@@ -1,0 +1,94 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in San Francisco. I'm open to suggestions.
+
+System: Okay, I can help with that. Since you're open to suggestions, how about we try a Sushi restaurant?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Sushi})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Sushi', 'has_live_music': False, 'phone_number': '415-614-1958', 'price_range': 'moderate', 'restaurant_name': 'Atami Sushi Bar & Grill', 'serves_alcohol': True, 'street_address': '1662 Lombard Street'}, {'city': 'San Francisco', 'cuisine': 'Sushi', 'has_live_music': False, 'phone_number': '415-776-5822', 'price_range': 'moderate', 'restaurant_name': 'Juban Yakiniku House Japanese', 'serves_alcohol': True, 'street_address': '1581 Webster Street'}, {'city': 'San Francisco', 'cuisine': 'Sushi', 'has_live_music': False, 'phone_number': '415-861-6438', 'price_range': 'moderate', 'restaurant_name': 'Live Sushi Bar', 'serves_alcohol': False, 'street_address': '2001 17th Street'}]
+End Search Results
+System: Alright, I see a few options for Sushi in San Francisco. There's Atami Sushi Bar & Grill, Juban Yakiniku House Japanese, and Live Sushi Bar. Atami and Juban Yakiniku House both serve alcohol, while Live Sushi Bar does not. Are any of those sounding good to you?
+
+User: That's helpful. Juban Yakiniku House Japanese sounds interesting. Could you tell me the price range?
+
+System: Okay, Juban Yakiniku House Japanese is in the moderate price range. Does that work for you?
+
+User: Yes, that's perfectly fine. I'd like to make a reservation there.
+
+System: Okay, great! Let's make that reservation. What time would you like to book a table for at Juban Yakiniku House Japanese?
+
+User: How about 7:00 PM?
+
+System: And for how many people?
+
+User: For two people, please.
+
+System: Okay, let's confirm: You'd like a table for two at Juban Yakiniku House Japanese in San Francisco at 7:00 PM?
+APICall (method='ReserveRestaurant', parameters= {city: San Francisco, restaurant_name: Juban Yakiniku House Japanese, time: 19:00, party_size: 2, date: 2019-03-01, cuisine: Sushi})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Sushi', 'has_live_music': False, 'phone_number': '415-776-5822', 'price_range': 'moderate', 'restaurant_name': 'Juban Yakiniku House Japanese', 'serves_alcohol': True, 'street_address': '1581 Webster Street', 'date': '2019-03-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Excellent! I've got you a table for two at Juban Yakiniku House Japanese in San Francisco for 7:00 PM. Just to double-check, the date is March 1, 2019, correct?
+
+User: Yes, March 1, 2019, at 7:00 PM for two people is correct.
+
+System: Okay, perfect! Your reservation at Juban Yakiniku House Japanese is confirmed for March 1, 2019, at 7:00 PM for two people. Their address is 1581 Webster Street, and their phone number is 415-776-5822. Is there anything else I can help you with regarding your reservation?
+
+User: No, that all sounds right. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in San Francisco. Somewhere reliable and not too flashy.
+
+System: Okay, I can help with that. Do you have any cuisine preferences?
+
+User: How about Italian? It's usually a safe bet.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I see three Italian restaurants in San Francisco that might suit you: 54 Mint Ristorante Italiano, A16, and Allegro Romano. All are moderately priced. Would you like to know more about any of them?
+
+User: Tell me more about 54 Mint Ristorante Italiano. What's their address?
+
+System: 54 Mint Ristorante Italiano is located at 16 Mint Plaza in San Francisco. They serve alcohol and are moderately priced. Their phone number is 415-543-5100. Does this sound like a good option for you?
+
+User: Yes, that sounds promising. Do they have any availability for a reservation this evening? I'd like to book a table for two around 7:30 PM.
+
+System: Okay, let's check the availability. To confirm, you'd like to reserve a table for two at 54 Mint Ristorante Italiano in San Francisco for today at 7:30 PM?
+
+User: Yes, that's correct. Please proceed with the reservation.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: 54 Mint Ristorante Italiano, city: San Francisco, date: 2019-03-01, party_size: 2, time: 19:30})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2019-03-01', 'party_size': '2', 'time': '19:30'}]
+End Search Results
+System: Great. I have a table for two at 54 Mint Ristorante Italiano in San Francisco for 7:30 PM this evening. Is there anything else I can help you with?
+
+User: That sounds perfect. I appreciate you taking care of the reservation. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,140 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a restaurant in Napa. I want to make damn sure it's worth my time.
+
+System: What type of cuisine are you interested in?
+
+User: Anything but that pretentious French crap. Give me something real, like Italian.
+
+System: APICall (method='FindRestaurants', parameters= {city: Napa, cuisine: Italian})
+
+Search Results
+[{'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-224-3300', 'price_range': 'expensive', 'restaurant_name': 'Bistro Don Giovanni', 'serves_alcohol': False, 'street_address': '4110 Howard Lane'}, {'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-252-1022', 'price_range': 'expensive', 'restaurant_name': 'Oenotri', 'serves_alcohol': False, 'street_address': '1425 1st Street'}, {'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '707-254-8006', 'price_range': 'moderate', 'restaurant_name': 'Allegria', 'serves_alcohol': False, 'street_address': '1026 1st Street'}]
+End Search Results
+System: I found three Italian restaurants in Napa: Bistro Don Giovanni, Oenotri, and Allegria. Bistro Don Giovanni and Oenotri are in the expensive price range, while Allegria is in the moderate price range. Which one are you interested in?
+
+User: Expensive, huh? Alright, give me the address and phone number for Bistro Don Giovanni. I'll decide if it's worth my money.
+
+System: Okay, the address for Bistro Don Giovanni is 4110 Howard Lane, and their phone number is 707-224-3300.
+
+User: Hold on, before I waste my time calling them, tell me, does Bistro Don Giovanni have live music?
+
+System: Bistro Don Giovanni does not have live music.
+
+User: Figures. Alright, what about Oenotri? Does it have live music, and what's the damn address?
+
+System: Oenotri does not have live music either. The address is 1425 1st Street.
+
+User: Fine, is there *any* Italian place in Napa with live music?
+
+System: ```tool_code
+APICall(method='FindRestaurants', parameters={'city': Napa, 'cuisine': Italian, 'has_live_music': True})
+```
+Search Results
+[{'city': 'Napa', 'cuisine': 'Italian', 'has_live_music': True, 'phone_number': '707-224-6664', 'price_range': 'moderate', 'restaurant_name': "Ca' Momi Osteria", 'serves_alcohol': False, 'street_address': '1141 1st Street'}]
+End Search Results
+System: Yes, Ca' Momi Osteria has live music. It is in the moderate price range and is located at 1141 1st Street. The phone number is 707-224-6664.
+
+User: Yeah, yeah, live music is nice, but does Ca' Momi Osteria at least serve alcohol? I'm not wasting my time on some dry joint.
+
+System: Ca' Momi Osteria does not serve alcohol.
+
+User: Unbelievable. Alright, forget the music. Just give me the most expensive Italian restaurant in Napa that actually serves alcohol. I'm not dealing with these amateurs.
+
+System: ```tool_code
+APICall(method='FindRestaurants', parameters={'city': Napa, 'cuisine': Italian, 'serves_alcohol': True, 'price_range': 'expensive'})
+```
+Search Results
+
+End Search Results
+System: I am unable to find an Italian restaurant that serves alcohol and is in the expensive price range. Would you like me to search for restaurants in a different price range?
+
+User: Yeah, whatever. Search for restaurants that serve alcohol, but they better be good. I want the best you can find, got it?
+
+System: ```tool_code
+APICall(method='FindRestaurants', parameters={'city': Napa, 'cuisine': Italian, 'serves_alcohol': True})
+```
+Search Results
+
+End Search Results
+System: I am unable to find any Italian restaurants that serve alcohol. Would you like me to search for a different cuisine?
+
+User: Fine, search for American cuisine then, and make sure they serve alcohol. I'm not settling for less.
+
+System: ```tool_code
+APICall(method='FindRestaurants', parameters={'city': Napa, 'cuisine': American, 'serves_alcohol': True})
+```
+Search Results
+[{'city': 'Napa', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '707-226-7821', 'price_range': 'expensive', 'restaurant_name': 'The Thomas', 'serves_alcohol': True, 'street_address': '813 Main Street'}, {'city': 'Napa', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '707-260-1600', 'price_range': 'moderate', 'restaurant_name': 'City Winery Napa', 'serves_alcohol': True, 'street_address': '1030 Main Street'}, {'city': 'Napa', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '707-258-2337', 'price_range': 'moderate', 'restaurant_name': "Downtown Joe's", 'serves_alcohol': True, 'street_address': '902 Main Street'}]
+End Search Results
+System: Okay, I found three American restaurants in Napa that serve alcohol: The Thomas, City Winery Napa, and Downtown Joe's. The Thomas is in the expensive price range, while City Winery Napa and Downtown Joe's are in the moderate price range. Would you like more information about any of these?
+
+User: The Thomas, huh? Give me the address and phone number. And don't leave anything out.
+
+System: Okay, The Thomas is located at 813 Main Street, and their phone number is 707-226-7821.
+
+User: Does that dump even have live music? I need something to make the overpriced meal worthwhile.
+
+System: The Thomas does not have live music.
+
+User: Look, just book me a table for four there, tonight at 8 PM. And it better be a good table.
+
+System: ```tool_code
+APICall(method='ReserveRestaurant', parameters={'restaurant_name': 'The Thomas', 'city': 'Napa', 'date': '2024-07-18', 'time': '8:00 PM', 'party_size': 4})
+```
+Search Results
+[{'city': 'Napa', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '707-226-7821', 'price_range': 'expensive', 'restaurant_name': 'The Thomas', 'serves_alcohol': True, 'street_address': '813 Main Street', 'date': '2024-07-18', 'party_size': '4', 'time': '8:00 PM'}]
+End Search Results
+
+Dialogue B:
+  User: I need to find a restaurant in San Francisco. Make sure it's worth my time.
+
+System: Okay, I can help with that. Do you have a particular cuisine in mind, or any preferences for price range, live music, or alcohol service?
+
+User: What do you think I care about live music? Just find me a decent Italian place that doesn't cost a fortune.
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Italian, price_range: moderate})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: Alright, I found three Italian restaurants in San Francisco that fit the bill. 54 Mint Ristorante Italiano, A16, and Allegro Romano. All are moderately priced. 54 Mint is located at 16 Mint Plaza, and their number is 415-543-5100. A16 is at 2355 Chestnut Street, phone 415-771-2216. Allegro Romano is at 1701 Jones Street, phone number is 415-928-4002. Do any of these strike your fancy?
+
+User: Why should I trust your recommendations? Give me the address of the fanciest one.
+
+System: ```system
+Okay, I'll bite. "Fanciest" translates to the most expensive, right? Since none of those are particularly expensive, I'll stick with the ones I already found. Between 54 Mint Ristorante Italiano, A16, and Allegro Romano, 54 Mint Ristorante Italiano seems like the best bet. It's at 16 Mint Plaza.
+```
+User: Fine, book a table for me at 54 Mint Ristorante Italiano, tomorrow night at 8 pm for two people. And it better be a good table.
+
+System: ```system
+APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2019-03-02, party_size: 2, restaurant_name: 54 Mint Ristorante Italiano, time: 20:00, cuisine: Italian})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza', 'date': '2019-03-02', 'party_size': '2', 'time': '20:00'}]
+End Search Results
+System: Alright, your table for two at 54 Mint Ristorante Italiano is booked for tomorrow, March 2nd, at 8 pm. You can find it at 16 Mint Plaza. And yes, they do serve alcohol, so you can relax.
+
+User: Whatever. I hope you didn't screw it up. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Fremont.
+System: What type of cuisine are you interested in, such as Italian, Mexican, or something else?
+User: American cuisine.
+System: Thank you for providing the information. I will search for American cuisine restaurants in Fremont for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: It seems like there are no available results for American cuisine restaurants in Fremont at the moment. Would you like to try a different cuisine or perhaps explore restaurants in a nearby city?
+User: No, I would prefer to stay with American cuisine. Can you try looking in a nearby city like Union City?
+System: Sure, I will search for American cuisine restaurants in Union City for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Union City, cuisine: American})
+Search Results
+[{'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-429-6860', 'price_range': 'moderate', 'restaurant_name': "Chaplin's Sports Bistro", 'serves_alcohol': True, 'street_address': '29200 Kohoutek Way'}, {'city': 'Union City', 'cuisine': 'American', 'has_live_music': True, 'phone_number': '510-489-6080', 'price_range': 'inexpensive', 'restaurant_name': "Mcdonald's", 'serves_alcohol': False, 'street_address': '27 Union Square'}, {'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-489-2797', 'price_range': 'moderate', 'restaurant_name': 'Tgi Fridays', 'serves_alcohol': True, 'street_address': '31900 Dyer Street'}]
+End Search Results
+System: In Union City, I found a few American cuisine restaurants that you might like. Chaplin's Sports Bistro is a moderate-priced venue, located at 29200 Kohoutek Way, and they serve alcohol. If you're interested in a place with live music, McDonald's offers an inexpensive option at 27 Union Square, though they do not serve alcohol. Lastly, TGI Fridays on 31900 Dyer Street is another moderate-priced restaurant that does serve alcohol but doesn't have live music. Would you like more details on any of these options?
+User: Tell me more about Chaplin's Sports Bistro.
+System: Chaplin's Sports Bistro is located at 29200 Kohoutek Way in Union City. It's a moderately priced American cuisine restaurant that serves alcohol but does not feature live music. If you need their contact, you can reach them at 510-429-6860. Would you like to make a reservation or need any other information?
+User: I'd like to make a reservation there.
+System: For what date and time would you like to make the reservation at Chaplin's Sports Bistro, and for how many people?
+User: For tomorrow, around 6:00 PM, and for 2 people.
+System: Please confirm that you'd like to book a table for 2 people at Chaplin's Sports Bistro in Union City for tomorrow at 6:00 PM.
+User: Yes, that’s correct. Please go ahead and make the reservation.
+System: Great! I will proceed with making the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Chaplin's Sports Bistro", city: "Union City", time: "18:00", date: "2023-10-26", party_size: 2})
+Search Results
+[{'city': 'Union City', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-429-6860', 'price_range': 'moderate', 'restaurant_name': "Chaplin's Sports Bistro", 'serves_alcohol': True, 'street_address': '29200 Kohoutek Way', 'date': '2023-10-26', 'party_size': '2', 'time': '18:00'}]
+End Search Results
+System: Your reservation at Chaplin's Sports Bistro in Union City for 2 people tomorrow at 6:00 PM has been successfully made. If you have any further questions or need additional assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Walnut Creek. Can you help me find one?
+System: Sure, I can help with that. Do you have a specific type of cuisine in mind, or would you like me to suggest one for you?
+User: I prefer something simple, like American cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Walnut Creek, cuisine: American})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-927-1149', 'price_range': 'moderate', 'restaurant_name': "A'trio", 'serves_alcohol': False, 'street_address': '2355 North Main Street'}, {'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-932-2828', 'price_range': 'moderate', 'restaurant_name': 'Benvenuti Ristorante', 'serves_alcohol': True, 'street_address': '1627 North Broadway'}, {'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-945-6960', 'price_range': 'moderate', 'restaurant_name': 'Broderick Roadhouse', 'serves_alcohol': False, 'street_address': '1548 Bonanza Street'}]
+End Search Results
+System: I found a few American cuisine options in Walnut Creek. One of them is A'trio, located at 2355 North Main Street. It's a moderate price range restaurant, and they don't serve alcohol. Would you like more information on this, or perhaps details on another restaurant?
+User: Can you tell me if they have live music?
+System: A'trio does not have live music. If you would like information about another restaurant, I can assist with that as well.
+User: Do you have any other American restaurants with live music?
+System: Unfortunately, none of the American restaurants I found in Walnut Creek feature live music. Would you like information on a different restaurant, or is there another way I can assist you?
+User: Can you find an American restaurant in Walnut Creek that serves alcohol instead?
+System: I found Benvenuti Ristorante, an American restaurant in Walnut Creek that serves alcohol. It's located at 1627 North Broadway and falls under the moderate price range. Would you like more information on this restaurant, or is there anything else I can assist you with?
+User: That sounds fine. I would like to make a reservation at Benvenuti Ristorante.
+System: For what time and date would you like to make the reservation at Benvenuti Ristorante? Additionally, could you please confirm the number of people for the reservation?
+User: I would like to reserve a table for two at Benvenuti Ristorante for tomorrow at 7:00 pm.
+System: Thank you for the details. To confirm, you would like to reserve a table for two at Benvenuti Ristorante in Walnut Creek for tomorrow at 7:00 pm. I'll proceed with making the reservation. APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Benvenuti Ristorante', city: 'Walnut Creek', date: '2023-10-27', time: '19:00', party_size: 2})
+Search Results
+[{'city': 'Walnut Creek', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-932-2828', 'price_range': 'moderate', 'restaurant_name': 'Benvenuti Ristorante', 'serves_alcohol': True, 'street_address': '1627 North Broadway', 'date': '2023-10-27', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation for two at Benvenuti Ristorante in Walnut Creek has been successfully made for tomorrow at 7:00 pm. If you need the restaurant's phone number, it is 925-932-2828. Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

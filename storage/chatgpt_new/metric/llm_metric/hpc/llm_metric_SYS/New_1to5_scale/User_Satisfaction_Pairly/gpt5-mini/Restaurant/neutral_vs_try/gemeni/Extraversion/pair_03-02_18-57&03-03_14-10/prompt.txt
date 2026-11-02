@@ -1,0 +1,154 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm super hungry and in the mood for something fun. Let's find a great restaurant in San Francisco!
+
+System: Do you have any preferences on the cuisine you'd like to have?
+
+User: Oh, surprise me! I'm open to anything exciting and new. Maybe something with a lively atmosphere?
+
+System: Okay, how about American cuisine?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: I found three restaurants in San Francisco that serve American cuisine: 1760, 25 Lusk, and 3rd Cousin. Would you like more information about any of them?
+
+User: Ooh, American sounds great! Tell me more about 25 Lusk – what's the vibe like there? Is it a happening spot?
+
+System: 25 Lusk is an expensive American restaurant that serves alcohol. The phone number is 415-495-5875 and it's located at 25 Lusk Street. Would you like to know anything else?
+
+User: Expensive is fine by me! Does 25 Lusk have a lively atmosphere, maybe with music or a happening bar scene?
+
+System: I don't have information about the atmosphere or bar scene. I can only confirm that it serves alcohol. Would you like to know anything else about 25 Lusk or perhaps explore other options?
+
+User: Hmm, that's a bit of a bummer about the atmosphere info. Okay, let's try something different! How about suggesting another place, but this time, make sure it's known for being lively and fun. Bonus points if they have live music!
+
+System: Okay, let's find a lively restaurant with live music in San Francisco. Since you're open to different cuisines, I'll need to make a few API calls to check for live music. How about we start with Mexican cuisine?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mexican, has_live_music: True})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue'}]
+End Search Results
+System: Great news! I found one restaurant that fits the bill: Los Yaquis. It's a Mexican restaurant in San Francisco with live music. It's in the moderate price range, and the phone number is 415-252-8204. It's located at 324 South Van Ness Avenue. Does this sound like what you're looking for?
+
+User: Mexican with live music? Yes, that sounds like a party! Let's book a table there! How about tomorrow night? Say, around 8 PM for four people? Can you check if they have availability then?
+
+System: Okay, let me check if Los Yaquis has availability for four people tomorrow night at 8 PM.
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Los Yaquis, city: San Francisco, date: 2024-03-16, party_size: 4, time: 20:00})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': True, 'phone_number': '415-252-8204', 'price_range': 'moderate', 'restaurant_name': 'Los Yaquis', 'serves_alcohol': False, 'street_address': '324 South Van Ness Avenue', 'date': '2024-03-16', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Excellent! I've made a reservation for you at Los Yaquis for tomorrow, March 16, at 8 PM for a party of four. Is that correct? Just want to make sure everything is perfect!
+
+User: Perfect! Sounds like a blast!
+
+System: Alright, your table at Los Yaquis is reserved for tomorrow, March 16th, at 8 PM for four people. Just so you know, Los Yaquis does not serve alcohol. Is there anything else I can help you with?
+
+User: No alcohol? Oh no! That's a deal-breaker for our group. Could you check for a similar place – Mexican with live music – but where they also serve alcohol?
+
+System: Okay, let's find another Mexican restaurant in San Francisco with live music that also serves alcohol.
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mexican, has_live_music: True, serves_alcohol: True})
+
+Search Results
+
+End Search Results
+System: I'm sorry, but I couldn't find any Mexican restaurants with live music that serve alcohol in San Francisco. Would you be interested in broadening your search to include other cuisines or removing the live music requirement?
+
+User: Hmm, that's a tough one! How about we ditch the live music for now, but keep the Mexican cuisine and alcohol? Any recommendations for a fun, lively Mexican spot in San Francisco that serves alcohol?
+
+System: APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mexican, serves_alcohol: True})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-660-7701', 'price_range': 'expensive', 'restaurant_name': 'Cala', 'serves_alcohol': True, 'street_address': '149 Fell Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-431-1826', 'price_range': 'expensive', 'restaurant_name': 'Fenix', 'serves_alcohol': True, 'street_address': '1077 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-926-5630', 'price_range': 'expensive', 'restaurant_name': 'Hecho', 'serves_alcohol': True, 'street_address': '2200 Market Street'}]
+End Search Results
+System: I found three Mexican restaurants in San Francisco that serve alcohol: Cala, Fenix, and Hecho. Would you like more information about any of them?
+
+User: Tell me more about Hecho. What's the atmosphere like? Is it a fun place to hang out with friends?
+
+System: Hecho is an expensive Mexican restaurant that serves alcohol. The phone number is 415-926-5630 and it's located at 2200 Market Street. I don't have information about the atmosphere, but I can help you with other details or explore other options if you'd like.
+
+User: Expensive is alright! Let's go with Hecho! Can you book a table for four tomorrow night at 8 PM? Hoping it's a lively place!
+
+System: Okay, let me check if Hecho has availability for four people tomorrow night at 8 PM.
+
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Hecho, city: San Francisco, date: 2024-03-16, party_size: 4, time: 20:00})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-926-5630', 'price_range': 'expensive', 'restaurant_name': 'Hecho', 'serves_alcohol': True, 'street_address': '2200 Market Street', 'date': '2024-03-16', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+
+Dialogue B:
+  User: Hey there! I'm super hungry and in the mood for a fun night out in San Francisco. Let's find a great restaurant, and then book it, alright?
+
+System: Okay, I can help with that! To start, is there a particular type of cuisine you're interested in tonight?
+
+User: Oh, I'm so open to anything! Surprise me! Something lively, maybe Italian or Mexican? As long as it's got a great vibe and maybe some good drinks, I'm in!
+
+System: Given your openness to cuisines and desire for a lively atmosphere, how about we explore some Mexican options in San Francisco?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Mexican, serves_alcohol: True})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-660-7701', 'price_range': 'expensive', 'restaurant_name': 'Cala', 'serves_alcohol': True, 'street_address': '149 Fell Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-431-1826', 'price_range': 'expensive', 'restaurant_name': 'Fenix', 'serves_alcohol': True, 'street_address': '1077 Mission Street'}, {'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-926-5630', 'price_range': 'expensive', 'restaurant_name': 'Hecho', 'serves_alcohol': True, 'street_address': '2200 Market Street'}]
+End Search Results
+System: Alright, I see three Mexican restaurants in San Francisco that serve alcohol: Cala, Fenix, and Hecho. All are in the expensive price range. Which one sounds the most exciting to you?
+
+User: Ooh, expensive sounds promising! Tell me more about Hecho – what's the atmosphere like? Is it a happening place?
+
+System: Hecho is located at 2200 Market Street and they serve alcohol. I don't have information about the atmosphere, but with an expensive price range, it's likely a popular spot. Does that sound good, or would you like to explore the other options, Cala or Fenix?
+
+User: Hecho sounds like it could be a blast! Let's go with that. Can you book a table for me and three friends for, say, Friday night around 8 PM?
+
+System: Alright, let's book a table at Hecho for you and three friends this Friday at 8 PM. Could you please provide the date for this Friday?
+
+User: Sure, this Friday is the 15th.
+
+System: Okay, so that's Hecho in San Francisco for four people on March 15th at 8 PM. Just to confirm, is that correct?
+
+User: Perfect! Let's lock that in!
+
+System: ```system
+APICall (method='ReserveRestaurant', parameters= {city: San Francisco, date: 2019-03-15, party_size: 4, restaurant_name: Hecho, time: 20:00, cuisine: Mexican})
+```
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Mexican', 'has_live_music': False, 'phone_number': '415-926-5630', 'price_range': 'expensive', 'restaurant_name': 'Hecho', 'serves_alcohol': True, 'street_address': '2200 Market Street', 'date': '2019-03-15', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System:  Excellent! I've booked a table for four at Hecho on March 15th at 8 PM. Just to confirm, their address is 2200 Market Street, and their phone number is 415-926-5630 if you need to contact them. Enjoy your lively night out!
+
+User: Woo-hoo! That sounds absolutely perfect! Thanks a bunch for setting that up for me!
+
+System:  System: You're very welcome! I'm glad I could help. Is there anything else I can assist you with regarding your reservation at Hecho, or are you all set for your exciting Friday night?
+
+User: Oh, actually, one last thing! Does Hecho have a bar area where we could grab a drink before being seated? Knowing that would totally help us plan our pre-dinner mingling!
+
+System: ```system
+I don't have that information for Hecho, but you could try calling them at 415-926-5630 to ask about their bar area. Would you like me to look for details about Cala or Fenix instead?
+```
+User: Nah, that's alright! I'll give them a quick call to check. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

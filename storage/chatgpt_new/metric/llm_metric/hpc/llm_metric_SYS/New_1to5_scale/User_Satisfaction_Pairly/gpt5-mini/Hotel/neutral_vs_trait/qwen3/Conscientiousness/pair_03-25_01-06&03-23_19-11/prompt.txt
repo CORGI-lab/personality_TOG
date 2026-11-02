@@ -1,0 +1,97 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need to book a hotel in London with a 4-star rating or higher, non-smoking, and at least two rooms available. Please check available options.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 4, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 800 330 8523', 'place_name': 'Amba Hotel Marble Arch', 'price_per_night': 444, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Bryanston Street'}]
+End Search Results
+System: 
+
+Here are the available options matching your criteria in London:  
+1. **Ace Hotel London**: 4-star, £176 per night, 100 Shoreditch High Street (2 rooms available).  
+2. **Amba Hotel Charing Cross**: 4-star, £312 per night, Strand (3 rooms available).  
+3. **Amba Hotel Marble Arch**: 4-star, £444 per night, Bryanston Street (3 rooms available).  
+
+Please confirm which hotel you'd like to proceed with, or if you'd like to adjust any preferences.
+User: 
+
+Please reserve Ace Hotel London for two rooms.
+System: 
+
+To complete your reservation for Ace Hotel London with 2 rooms, please provide the check-in date (in YYYY-MM-DD format) and the number of nights you plan to stay.
+User: 
+
+Check-in date 2023-10-15 for three nights.
+System: 
+
+Confirming your reservation for Ace Hotel London: check-in date 2023-10-15, 3-night stay, 2 rooms, non-smoking. Please confirm to proceed.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Ace Hotel London', check_in_date: '2023-10-15', stay_length: 3, location: 'London', number_of_rooms: 2 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your reservation at Ace Hotel London has been successfully confirmed for 2 rooms with check-in on 2023-10-15 for a 3-night stay. Thank you for your booking.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+Could you help me find a hotel in London with a 4-star or higher rating, non-smoking, two rooms, check-in on October 15th for a five-night stay?
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 4, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 800 330 8523', 'place_name': 'Amba Hotel Marble Arch', 'price_per_night': 444, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Bryanston Street'}]
+End Search Results
+System: 
+
+I found Ace Hotel London, a 4-star non-smoking hotel with 2 rooms available. The price is £176 per night and the address is 100 Shoreditch High Street. Would you like to proceed with this option?
+User: 
+
+Yes, please reserve two rooms at Ace Hotel London for check-in on October 15th for a five-night stay.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: "Ace Hotel London", check_in_date: "2023-10-15", stay_length: 5, location: "London", number_of_rooms: 2 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your reservation for 2 rooms at Ace Hotel London from October 15th for five nights has been successfully confirmed. The price per night is £176, and the address is 100 Shoreditch High Street. Is there anything else I can assist you with?
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

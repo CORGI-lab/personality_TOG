@@ -1,0 +1,64 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Berlin. Can you assist me with that?
+System: Certainly! To help you find a hotel in Berlin, could you please let me know if you have a preferred star rating, or if you have any specific requirements such as smoking allowance?
+User: I'm looking for a hotel with a 4 or 5-star rating, and I prefer a non-smoking room. Could you also let me know the number of rooms available in each option?
+System: APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 978080', 'place_name': 'Holiday Inn Berlin City East-Landsberger', 'price_per_night': 432, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Landsberger Allee 203, 13055'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179'}]
+End Search Results
+System: I found several 4-star, non-smoking hotels in Berlin for you. Here are a few options:
+
+1. Ameron Hotel Abion Spreebogen Waterside: Located at Alt-Moabit 99, 10559, with a price of 360 per night. It has 2 rooms available. Contact: +49 30 399200.
+
+2. Holiday Inn Berlin City East-Landsberger: Situated at Landsberger Allee 203, 13055, priced at 432 per night. There are 2 rooms available. Contact: +49 30 978080.
+
+3. Hotel Novotel Berlin Mitte: Found at Fischerinsel 12, 10179, with a price of 280 per night. It also has 2 rooms available. Contact: +49 30 206740.
+
+Please let me know if any of these options meet your requirements or if you'd like more information about them.
+User: Could you provide more information about the Hotel Novotel Berlin Mitte? Specifically, I would like to know about any additional amenities they offer and the total cost for a 3-night stay.
+System: I'm sorry, but the information about additional amenities for the Hotel Novotel Berlin Mitte is not available in the current data set. However, I can help you calculate the total cost for a 3-night stay. The price per night is 280, so the total cost for a 3-night stay would be 840. If you need any further assistance or would like to make a reservation, please let me know!
+User: Thank you for calculating the total cost. I would like to proceed with booking a room at Hotel Novotel Berlin Mitte. Please book it for a 3-night stay starting from the 15th of this month.
+System: Please confirm that you would like to book 1 room for a 3-night stay at Hotel Novotel Berlin Mitte, starting from the 15th of this month in Berlin. Once confirmed, I'll proceed with the reservation.
+User: Yes, I confirm that I would like to book 1 room for a 3-night stay at Hotel Novotel Berlin Mitte, starting from the 15th of this month in Berlin.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Berlin, number_of_rooms: 1, place_name: Hotel Novotel Berlin Mitte, stay_length: 3})
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 206740', 'place_name': 'Hotel Novotel Berlin Mitte', 'price_per_night': 280, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Fischerinsel 12, 10179', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Hotel Novotel Berlin Mitte has been successfully confirmed for a 3-night stay starting from the 15th of this month. If there's anything else you need assistance with, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I am interested in booking a hotel in Vancouver. Could you assist me with that?
+System: Do you have a specific check-in date and duration for your stay in Vancouver? Additionally, how many rooms would you like to book?
+User: I plan to check in on the 15th of next month and stay for seven nights. I will need one room for this duration.
+System: Please confirm that you want to reserve one room for seven nights at a hotel in Vancouver, starting from the 15th of next month. Once confirmed, I will proceed with the reservation.
+User: Yes, please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, stay_length: 7, place_name: any_available })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': '1', 'phone_number': '+1 604-697-0202', 'place_name': 'any_available', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-15', 'stay_length': '7'}]
+End Search Results
+System: Your reservation in Vancouver has been successfully booked at a hotel with a 4-star rating. You will be staying for seven nights starting from November 15th, 2023. The hotel is located at 1180 West Hastings Street. If there's anything else you need assistance with, please let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

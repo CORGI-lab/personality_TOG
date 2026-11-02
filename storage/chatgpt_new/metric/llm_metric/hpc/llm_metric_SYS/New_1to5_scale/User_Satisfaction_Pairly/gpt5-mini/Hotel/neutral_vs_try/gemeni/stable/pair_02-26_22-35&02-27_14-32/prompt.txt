@@ -1,0 +1,123 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I’d like to find a hotel in San Diego, please.
+
+System: Okay, I can help with that. Do you have any preferences for star rating?
+
+User: I don't have a strong preference, but perhaps something in the 3 to 4 star range would be suitable.
+
+System: Okay, searching for hotels in San Diego with a star rating between 3 and 4.
+
+APICall(method='SearchHotel', parameters={ location: San Diego, star_rating: dontcare })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-233-7500', 'place_name': 'Best Western Plus Bayside Inn', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '555 West Ash Street'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 619-298-4707', 'place_name': 'Best Western Plus Hacienda Hotel Old Town', 'price_per_night': 198, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4041 Harney Street'}]
+End Search Results
+System: I found three hotels in San Diego. Bahia Resort Hotel, Best Western Plus Bayside Inn, and Best Western Plus Hacienda Hotel Old Town. All are 3-star hotels.
+
+User: Those sound reasonable. Could you tell me a bit more about the Bahia Resort Hotel?
+
+System: The Bahia Resort Hotel has a price of $225 per night and their phone number is +1 858-539-8666. The address is 998 West Mission Bay Drive. Is there anything else you'd like to know about it?
+
+User: That sounds pleasant enough. Does the Bahia Resort Hotel allow smoking?
+
+System: Smoking is not allowed at the Bahia Resort Hotel. Would you like to know about the other hotels?
+
+User: No, that's alright. I'm comfortable with a non-smoking hotel. Let's proceed with the Bahia Resort Hotel. I'd like to reserve a room there.
+
+System: Great. What date would you like to check in and how many nights will you be staying?
+
+User: I'd like to check in on the 15th and stay for three nights.
+
+System: Okay, so you want to book a room at the Bahia Resort Hotel in San Diego, checking in on the 15th for a 3-night stay. Is that correct?
+
+User: Yes, that's all correct. Please proceed with the reservation.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-15, location: San Diego, number_of_rooms: 1, place_name: Bahia Resort Hotel, stay_length: 3 })
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-539-8666', 'place_name': 'Bahia Resort Hotel', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '998 West Mission Bay Drive', 'check_in_date': '2024-07-15'}]
+End Search Results
+System: Okay, I have reserved a room at the Bahia Resort Hotel for you. The check-in date is July 15th for three nights. Is that correct?
+
+User: Yes, that is all correct and confirmed.
+
+System: Perfect! Your reservation at Bahia Resort Hotel in San Diego, checking in on July 15th for three nights, is confirmed. You can reach them at +1 858-539-8666. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in San Diego, please.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating of the hotel?
+
+User: I'm open to suggestions. Perhaps something mid-range, like a 3 or 4-star hotel would be suitable.
+
+System: Okay, searching for hotels in San Diego. I'll start with 4-star hotels.
+
+APICall(method='SearchHotel', parameters={location: San Diego, star_rating: 4})
+
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-488-1081', 'place_name': 'Catamaran Resort Hotel And Spa', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '3999 Mission Boulevard'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 855-430-7503', 'place_name': 'Estancia La Jolla Hotel & Spa', 'price_per_night': 248, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '9700 North Torrey Pines Road, La Jolla, California 92037, United States'}, {'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 888-828-5498', 'place_name': 'Grande Colonial La Jolla', 'price_per_night': 248, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '910 Prospect Street, La Jolla, CA 92037, USA'}]
+End Search Results
+System: Alright, I found three 4-star hotels in San Diego.
+
+*   **Catamaran Resort Hotel And Spa** at 3999 Mission Boulevard, phone number +1 858-488-1081, priced at $136 per night.
+*   **Estancia La Jolla Hotel & Spa** at 9700 North Torrey Pines Road, La Jolla, California 92037, United States, phone number +1 855-430-7503, priced at $248 per night.
+*   **Grande Colonial La Jolla** at 910 Prospect Street, La Jolla, CA 92037, USA, phone number +1 888-828-5498, also priced at $248 per night.
+
+All three hotels do not allow smoking.
+
+Which one sounds most appealing to you?
+
+User: The Catamaran Resort Hotel And Spa sounds reasonable. Can you tell me more about it? What amenities does it offer?
+
+System: Okay, regarding the Catamaran Resort Hotel And Spa, I can tell you that it's located at 3999 Mission Boulevard in San Diego. It's a 4-star hotel with rooms that go for $136 per night. Their phone number is +1 858-488-1081. Smoking is not allowed.
+
+Unfortunately, I don't have details on specific amenities. Would you like to proceed with booking a room, or would you like me to search for hotels with specific amenities listed?
+
+User: Let's proceed with the Catamaran Resort Hotel And Spa. I'd like to book a room there.
+
+System: Okay, I can help with that. To book a room at the Catamaran Resort Hotel And Spa, I'll need a little more information. Could you please provide the check-in date and the length of your stay?
+
+User: I'd like to check in on the 15th of next month and stay for five nights.
+
+System: Got it. And for how many rooms will you be making the reservation?
+
+User: Just one room, please.
+
+System: Okay, just to confirm, you'd like to book one room at the Catamaran Resort Hotel And Spa in San Diego, checking in on November 15th for five nights. Is that correct?
+
+User: Yes, that's correct. Please proceed with the booking.
+
+System: ```tool_code
+APICall(method='ReserveHotel', parameters={'place_name': 'Catamaran Resort Hotel And Spa', 'location': 'San Diego', 'check_in_date': '2023-11-15', 'stay_length': 5, 'number_of_rooms': 1})
+```
+Search Results
+[{'location': 'San Diego', 'number_of_rooms': 1, 'phone_number': '+1 858-488-1081', 'place_name': 'Catamaran Resort Hotel And Spa', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '3999 Mission Boulevard', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Excellent! I've successfully booked one room for you at the Catamaran Resort Hotel And Spa in San Diego, checking in on November 15th for five nights. Is there anything else I can help you with today?
+
+User: No, everything seems to be in order. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

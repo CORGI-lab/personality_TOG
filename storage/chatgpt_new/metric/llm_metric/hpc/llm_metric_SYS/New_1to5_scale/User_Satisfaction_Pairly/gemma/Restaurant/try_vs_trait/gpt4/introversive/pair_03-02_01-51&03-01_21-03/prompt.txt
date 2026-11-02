@@ -1,0 +1,108 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Palo Alto. Can you help me find one?
+System: Do you have a specific type of cuisine in mind, or are you open to exploring different options?
+User: I'm open to different options, but I prefer something quiet and not too crowded.
+System: Let's explore a few options for you. I'll look for restaurants in Palo Alto that might offer a quieter atmosphere. How about trying Vietnamese cuisine? Let me check for available options. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Vietnamese})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Vietnamese', 'has_live_music': False, 'phone_number': '650-325-8500', 'price_range': 'expensive', 'restaurant_name': 'Tamarine Restaurant & Gallery', 'serves_alcohol': True, 'street_address': '546 University Avenue', 'date': '2019-03-01', 'party_size': 2, 'time': '11:30'}]
+End Search Results
+System: I found a Vietnamese restaurant called Tamarine Restaurant & Gallery in Palo Alto. It offers a quieter atmosphere without live music, and it's located at 546 University Avenue. It's an expensive option and they do serve alcohol. Would you like more details or help with a reservation?
+User: I'm not really interested in expensive places. Do you have something more affordable?
+System: Let me check for more affordable options in Palo Alto. Please hold on while I find some restaurants that fit your preference. 
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Vietnamese, price_range: moderate})
+Search Results
+
+End Search Results
+System: It seems there are no moderate-priced Vietnamese options available in Palo Alto at the moment. Would you like me to search for a different cuisine or adjust the price range slightly to see if other options appear?
+User: Let's try a different cuisine and see what comes up.
+System: Let's explore another cuisine option for you. How about trying Italian cuisine? I'll check for available options in Palo Alto. Please hold on for a moment.
+
+APICall (method='FindRestaurants', parameters={city: Palo Alto, cuisine: Italian, price_range: moderate})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-329-0665', 'price_range': 'moderate', 'restaurant_name': 'Buca Di Beppo Italian Restaurant', 'serves_alcohol': True, 'street_address': '643 Emerson Street'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-326-1626', 'price_range': 'moderate', 'restaurant_name': 'Cafe Pro Bono', 'serves_alcohol': False, 'street_address': '2437 Birch Street'}, {'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-324-8033', 'price_range': 'moderate', 'restaurant_name': 'La Strada Ristorante Italiano', 'serves_alcohol': False, 'street_address': '335 University Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Palo Alto that are moderately priced and might suit your preference for a quieter atmosphere. Here are some options:
+
+1. **Buca Di Beppo Italian Restaurant**: Located at 643 Emerson Street, it offers a moderate price range and serves alcohol. You can contact them at 650-329-0665.
+
+2. **Cafe Pro Bono**: Situated at 2437 Birch Street, it's also moderately priced but does not serve alcohol. Their contact number is 650-326-1626.
+
+3. **La Strada Ristorante Italiano**: Found at 335 University Avenue, it offers a moderate price range as well and does not serve alcohol. You can reach them at 650-324-8033.
+
+Would you like more details on any of these, or assistance with making a reservation?
+User: Could you tell me more about Cafe Pro Bono?
+System: Cafe Pro Bono is located at 2437 Birch Street in Palo Alto. It's a moderately priced Italian restaurant that offers a quieter atmosphere, as it does not have live music. However, they do not serve alcohol. If you need further details or assistance with making a reservation, feel free to ask!
+User: I'd like to make a reservation at Cafe Pro Bono. Could you book a table for me?
+System: Certainly! For what date, time, and party size would you like to make the reservation at Cafe Pro Bono?
+User: Tomorrow, around 7 pm, for two people, please.
+System: Great! Let me confirm the details: You would like to make a reservation for two people at Cafe Pro Bono in Palo Alto, tomorrow at 7 pm. Is that correct?
+User: Yes, that's correct.
+System: Perfect! I'll proceed with making the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={city: Palo Alto, date: 2019-03-02, party_size: 2, cuisine: Italian, restaurant_name: Cafe Pro Bono, time: 19:00})
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '650-326-1626', 'price_range': 'moderate', 'restaurant_name': 'Cafe Pro Bono', 'serves_alcohol': False, 'street_address': '2437 Birch Street', 'date': '2019-03-02', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Cafe Pro Bono in Palo Alto for two people tomorrow at 7 pm has been successfully made. The restaurant is located at 2437 Birch Street, and you can reach them at 650-326-1626 if you have any questions. Enjoy your dining experience! If there's anything else you need, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a place to eat in Berkeley.
+System: Do you have a particular type of cuisine in mind, or would you like me to suggest one for you?
+User: I prefer Italian cuisine.
+System: APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Berkeley for you. One option is Cugini Restaurant, located at 1556 Solano Avenue. They offer a moderate price range, and unfortunately, they do not serve alcohol. Another choice is Donato & Co., on 2635 Ashby Avenue, also in the moderate price range and without alcohol service. Lastly, Filippo's Berkeley Elmwood on 2930 College Avenue offers a moderate price range and does serve alcohol. Would you like more details on any of these, or do you have another preference in mind?
+User: Could you tell me if any of these places have live music?
+System: None of the Italian restaurants I found in Berkeley offer live music. If you have any other preferences or would like more information about these options, feel free to let me know.
+User: Do any of these restaurants have a cozy or quiet atmosphere?
+System: I'm sorry, but I don't have information on the atmosphere of the restaurants. If there's anything else you'd like to know or another preference you have, please let me know.
+User: Are any of these restaurants open for lunch?
+System: I'm sorry, but I don't have information about the specific opening hours of these restaurants. If there's anything else you'd like to know or any other preference you have, please let me know.
+User: Could you suggest any other Italian restaurants in Berkeley that might be open for lunch?
+System: I currently don't have access to the specific opening hours of restaurants. However, I can look for other Italian restaurants in Berkeley for you. Would you like me to proceed with that search?
+User: Yes, please look for other Italian restaurants in Berkeley.
+System: APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found the same Italian restaurants in Berkeley: Cugini Restaurant, Donato & Co., and Filippo's Berkeley Elmwood. Unfortunately, I don't have information on whether they are open for lunch. If you have a preference for any of these options or need further assistance, please let me know.
+User: Could you help me make a reservation at Filippo's Berkeley Elmwood for two people?
+System: For which date and time would you like to make the reservation at Filippo's Berkeley Elmwood for two people?
+User: I'd like to reserve a table for two on Friday at 1:00 PM.
+System: Thank you for providing the details. Let me confirm: you would like to reserve a table for two at Filippo's Berkeley Elmwood in Berkeley on Friday at 1:00 PM. Is that correct before I proceed with the reservation?
+User: Yes, that's correct.
+System: APICall (method='ReserveRestaurant', parameters={city: Berkeley, restaurant_name: "Filippo's Berkeley Elmwood", date: 2023-10-13, time: 13:00, party_size: 2})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': '2023-10-13', 'party_size': '2', 'time': '13:00'}]
+End Search Results
+System: Your reservation for two at Filippo's Berkeley Elmwood in Berkeley on Friday, October 13th at 1:00 PM has been successfully made. If you need any more information or assistance, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

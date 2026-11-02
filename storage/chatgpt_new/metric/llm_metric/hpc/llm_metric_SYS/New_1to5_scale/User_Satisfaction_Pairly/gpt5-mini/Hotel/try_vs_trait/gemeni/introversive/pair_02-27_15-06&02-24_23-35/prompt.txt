@@ -1,0 +1,145 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences for the hotel's star rating?
+
+User: Not really. Just something quiet.
+
+System: Given your preference for a quiet place, I will search for hotels in Seattle.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: dontcare })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few hotels in Seattle. There's the Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown, all with 2-star ratings. Would you like to know more about any of these?
+
+User: Tell me about Ace Hotel Seattle.
+
+System: The Ace Hotel Seattle has rooms available, and the price is $136 per night. The address is 2423 1st Avenue, and their phone number is +1 206-448-4721. They do not allow smoking. Does this sound like a fit for you?
+
+User: No, not really. Are there any others?
+
+System: Okay, I will check for other options.
+
+APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: dontcare })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: Okay, I see the same hotels are showing up again. Perhaps we could adjust the search a bit to see if anything else comes up. Would you prefer a different star rating, or perhaps a place that allows smoking?
+
+User: No, I don't want smoking. How about the Belltown Inn?
+
+System: Alright. The Belltown Inn has rooms available. It's a 2-star hotel with a price of $186 per night. The address is 2301 3rd Avenue, and their phone number is +1 866-525-4704. They do not allow smoking. Would you like to consider this one?
+
+User: Okay, that sounds… acceptable. Can you check if they have rooms available for the 20th of this month for three nights?
+
+System: Okay. Could you please confirm the year, and also let me know how many rooms you will need?
+
+User: Just one room, please. And the year is 2024.
+
+System: Okay, I will check for availability at the Belltown Inn for one room, starting on 2024-07-20 for a stay of three nights. Could you confirm the name of the hotel is Belltown Inn and the location is Seattle?
+
+User: Yes, that's correct. Belltown Inn in Seattle.
+
+System: APICall(method='ReserveHotel', parameters={ place_name: Belltown Inn, location: Seattle, check_in_date: 2024-07-20, stay_length: 3, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue', 'check_in_date': '2024-07-20'}]
+End Search Results
+System: Okay, I have the Belltown Inn in Seattle available for you. The booking is for one room, starting on 2024-07-20 for three nights. The price is $186 per night. Does that sound right to you?
+
+User: Yes, that sounds right. Please go ahead and make the reservation.
+
+System: Okay, one moment while I finalize the reservation.
+
+APICall(method='ReserveHotel', parameters={ place_name: Belltown Inn, location: Seattle, check_in_date: 2024-07-20, stay_length: 3, number_of_rooms: 1 })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue', 'check_in_date': '2024-07-20'}]
+End Search Results
+System: Okay, the reservation at Belltown Inn in Seattle for one room, starting on 2024-07-20 for three nights, has been made. The price is $186 per night. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I want to book a hotel.
+
+System: Okay, I can help with that. First, could you please tell me the location where you'd like to book a hotel?
+
+User: Vancouver, please.
+
+System: And how many rooms would you like to book in Vancouver?
+
+User: Two rooms, please.
+
+System: Okay, and do you have any preferences for the hotel's star rating?
+
+User: Not really. Just something… quiet.
+
+System: Okay, I understand. Since you prefer something quiet and don't have a specific star rating in mind, I'll look for a hotel in Vancouver with two rooms.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, number_of_rooms: 2})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: Alright, I found a few options for you in Vancouver with two rooms. There's the Shangri-La Hotel, a 5-star hotel, at $300 per night. Also, there's the Auberge Vancouver Hotel, a 4-star hotel, at $296 per night. Does either of those sound appealing?
+
+User: Are smoking rooms available?
+
+System: Okay, I can check that for you.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, number_of_rooms: 2, smoking_allowed: True})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-563-4693', 'place_name': 'Exchange Hotel Vancouver', 'price_per_night': 304, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '475 Howe Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-9888', 'place_name': 'Gec Granville Suites Hotel', 'price_per_night': 63, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '718 Drake Street'}]
+End Search Results
+System: Okay, I found a few hotels in Vancouver with smoking rooms available and two rooms. There's the Auberge Vancouver Hotel, a 4-star hotel at $296 per night, and the Exchange Hotel Vancouver, also a 4-star hotel, at $304 per night. Would you like to know more about either of these options?
+
+User: Auberge... is it quiet there?
+
+System: I don't have information regarding how quiet Auberge Vancouver Hotel is. However, I can tell you that it is a 4-star hotel at $296 per night, and smoking is allowed. Would you like to know anything else about it, or perhaps explore other options?
+
+User: No, that's okay. Just book Auberge Vancouver Hotel.
+
+System: Okay, I can help you book the Auberge Vancouver Hotel. To finalize the reservation, could you please provide the check-in date and the length of your stay?
+
+User: October 20th, for two nights.
+
+System: Okay, so you'd like to book two rooms at the Auberge Vancouver Hotel, checking in on October 20th for a two-night stay. Is that correct?
+
+User: Yes.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Auberge Vancouver Hotel, location: Vancouver, check_in_date: 2024-10-20, stay_length: 2, number_of_rooms: 2})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2024-10-20'}]
+End Search Results
+System: Excellent! I've confirmed your reservation for two rooms at the Auberge Vancouver Hotel, checking in on October 20th for a two-night stay. Is there anything else I can assist you with today?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

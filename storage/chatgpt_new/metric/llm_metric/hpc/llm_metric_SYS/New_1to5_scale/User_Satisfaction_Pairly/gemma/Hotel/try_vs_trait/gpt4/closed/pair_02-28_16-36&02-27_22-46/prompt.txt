@@ -1,0 +1,60 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Washington D.C.
+System: Do you have any specific preferences, such as star rating or smoking allowance, for your hotel in Washington D.C.?
+User: I prefer a hotel with at least a 3-star rating. Smoking allowance isn't necessary.
+System: APICall(method='SearchHotel', parameters={ location: Washington D.C., star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Washington D.C.', 'number_of_rooms': 1, 'phone_number': '+1 202-337-6620', 'place_name': 'Arc The.Hotel', 'price_per_night': 87, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '824 New Hampshire Avenue Northwest, Washington, District of Columbia 20037, United States'}, {'location': 'Washington D.C.', 'number_of_rooms': 2, 'phone_number': '+1 202-299-1188', 'place_name': 'Cambria Hotel Washington, D.C. Convention Center', 'price_per_night': 162, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '899 O Street Northwest, Washington, District of Columbia 20001, United States'}, {'location': 'Washington D.C.', 'number_of_rooms': 2, 'phone_number': '+1 202-543-6000', 'place_name': 'Capitol Hill Hotel', 'price_per_night': 126, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '200 C Street Southeast, Washington, DC 20003, USA'}]
+End Search Results
+System: I found a few options for you in Washington D.C. that match your preferences. The Arc The.Hotel is a 3-star hotel priced at $87 per night. Would you like more details about this hotel, or should I provide information about another option?
+User: Can you tell me if there's another hotel option available?
+System: The Cambria Hotel Washington, D.C. Convention Center is another 3-star option, priced at $162 per night. Would you like more details about this hotel or any other options?
+User: Can you provide more details about the Cambria Hotel, like the address and if they have non-smoking rooms?
+System: The Cambria Hotel Washington, D.C. Convention Center is located at 899 O Street Northwest, Washington, District of Columbia 20001, United States. They do offer non-smoking rooms, as smoking is not allowed. Is there anything else you would like to know about this hotel?
+User: No, that's all I need about the Cambria Hotel. Can you reserve a room for me there?
+
+Dialogue B:
+  User: I'm looking for a hotel in Fresno. Can you help me with that?
+System: Could you please specify any preferences regarding the star rating or smoking allowance for the hotel in Fresno?
+User: No smoking allowed. A decent star rating would be fine.
+System: APICall(method='SearchHotel', parameters={ location: Fresno, smoking_allowed: False })
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-268-1000', 'place_name': 'Doubletree By Hilton Hotel Fresno Convention Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2233 Ventura Street'}, {'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-233-6650', 'place_name': 'Radisson Hotel Fresno Conference Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1055 Van Ness Avenue'}, {'location': 'Fresno', 'number_of_rooms': 1, 'phone_number': '+1 888-287-9400', 'place_name': 'Springhill Suites By Marriott Fresno', 'price_per_night': 87, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '6844 North Fresno Street'}]
+End Search Results
+System: I found a few options in Fresno with no smoking allowed and a decent star rating. Would you like more details about the Doubletree By Hilton Hotel Fresno Convention Center, Radisson Hotel Fresno Conference Center, or Springhill Suites By Marriott Fresno?
+User: Doubletree By Hilton Hotel Fresno Convention Center sounds okay. Can you give me more details about it?
+System: The Doubletree By Hilton Hotel Fresno Convention Center in Fresno is a 3-star hotel. The price per night is $222, and they do not allow smoking. The hotel is located at 2233 Ventura Street. Would you like to proceed with a reservation?
+User: Yes, please make a reservation for me.
+System: How many rooms would you like to reserve, and when would you like to check in? Additionally, please let me know how many days you plan to stay.
+User: I need one room, checking in on the 5th, and I'll stay for five days.
+System: Please confirm that you would like to book 1 room at the Doubletree By Hilton Hotel Fresno Convention Center for 5 days, starting from the 5th of the month.
+User: Yes, that's correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Fresno, number_of_rooms: 1, place_name: Doubletree By Hilton Hotel Fresno Convention Center, stay_length: 5 })
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-268-1000', 'place_name': 'Doubletree By Hilton Hotel Fresno Convention Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2233 Ventura Street', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your reservation at the Doubletree By Hilton Hotel Fresno Convention Center has been successfully confirmed for 1 room, starting from the 5th of November for 5 days. Is there anything else you need assistance with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

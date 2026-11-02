@@ -1,0 +1,148 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Palo Alto for dinner. I'd like to find a place and, if it meets my criteria, make a reservation.
+
+System: Okay, I can help with that. Do you have any preferences for the type of cuisine you'd like, or a price range you're interested in?
+
+User: I'm open to suggestions for cuisine, but I'd prefer something moderately priced. Also, does the restaurant need to be located in a specific part of Palo Alto?
+
+System: Okay, I can help with that. Since you're open to suggestions, let's try American cuisine.
+
+APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street'}]
+End Search Results
+System: I found three moderately priced American restaurants in Palo Alto: Bazille, Bird Dog, and Bistro Elan. Bazille is located at 550 Stanford Shopping Center and serves alcohol. Bird Dog is at 420 Ramona Street and Bistro Elan is at 2363 Birch Street. Neither Bird Dog nor Bistro Elan serves alcohol. Which of these sounds best to you?
+
+User: Given that I value thoroughness, I'd like to review each option more carefully. Could you provide their phone numbers so I can potentially call and inquire about their menus and ambiance?
+
+System: Okay, here are the phone numbers for each restaurant: Bazille's phone number is 650-688-2614, Bird Dog's is 650-656-8180, and Bistro Elan's is 650-327-0284. Is there anything else I can help you with while you decide?
+
+User: Thank you. Before I make a decision, could you please confirm whether each of these restaurants takes reservations, and if so, what their typical reservation lead time is?
+
+System: I do not have access to the specific reservation lead times for each restaurant. However, I can confirm that all three restaurants—Bazille, Bird Dog, and Bistro Elan—likely take reservations. Would you like to proceed with making a reservation at one of these restaurants, or would you like me to look for other options?
+
+User: Given that I prefer to have all the necessary information upfront, could you check if they take reservations through your system, and if so, what times are available for tonight for a party of two? That would help me make a more informed decision.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {city: Palo Alto, date: 2019-03-01, party_size: 2, restaurant_name: Bazille, time: 19:00 })
+```
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center', 'date': '2019-03-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Okay, I checked for reservations at Bazille for tonight, March 1, 2019, for a party of two at 7:00 PM. Is this the restaurant and time you would like to proceed with?
+
+User: Before confirming, could you also check the availability at Bird Dog and Bistro Elan for the same time and party size? I want to ensure I'm making the most suitable choice.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {city: Palo Alto, date: 2019-03-01, party_size: 2, restaurant_name: Bird Dog, time: 19:00 })
+```
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street', 'date': '2019-03-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {city: Palo Alto, date: 2019-03-01, party_size: 2, restaurant_name: Bistro Elan, time: 19:00 })
+```
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street', 'date': '2019-03-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Okay, I've checked the availability for all three restaurants for tonight, March 1, 2019, at 7:00 PM for a party of two. It looks like Bazille, Bird Dog, and Bistro Elan all have availability at that time. To recap:
+
+*   **Bazille:** Located at 550 Stanford Shopping Center, serves alcohol. Phone number is 650-688-2614.
+*   **Bird Dog:** Located at 420 Ramona Street, does not serve alcohol. Phone number is 650-656-8180.
+*   **Bistro Elan:** Located at 2363 Birch Street, does not serve alcohol. Phone number is 650-327-0284.
+
+Which of these restaurants would you like to reserve?
+
+User: Alright, based on the information, I think Bazille is the most suitable option. Please proceed with making a reservation there for tonight, March 1, 2019, at 7:00 PM for a party of two.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {city: Palo Alto, date: 2019-03-01, party_size: 2, restaurant_name: Bazille, time: 19:00 })
+```
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center', 'date': '2019-03-01', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Excellent! I have now confirmed your reservation at Bazille, located at 550 Stanford Shopping Center in Palo Alto, for tonight, March 1, 2019, at 7:00 PM for a party of two. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to find and reserve a restaurant in Palo Alto for a business lunch. I want to make sure it's a reliable choice.
+
+System: Okay, I understand. To ensure I find a suitable and reliable restaurant for your business lunch in Palo Alto, could you please specify the cuisine you'd prefer? This will help me narrow down the options and find a place that meets your expectations for a successful meeting.
+
+User: I think American cuisine would be a safe and generally well-received choice for a business lunch. Do you have a list of American restaurants in Palo Alto that you can share with me? I'd like to review their menus and perhaps some customer reviews to ensure they are suitable for a professional setting.
+
+System: APICall (method='FindRestaurants', parameters= {city: Palo Alto, cuisine: American})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-656-8180', 'price_range': 'moderate', 'restaurant_name': 'Bird Dog', 'serves_alcohol': False, 'street_address': '420 Ramona Street'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-327-0284', 'price_range': 'moderate', 'restaurant_name': 'Bistro Elan', 'serves_alcohol': False, 'street_address': '2363 Birch Street'}]
+End Search Results
+System: I've found three American restaurants in Palo Alto that might be suitable for your business lunch. Bazille, Bird Dog, and Bistro Elan are all moderately priced. Would you like me to provide you with more details on each, such as their addresses and phone numbers, to help you decide which one aligns best with your requirements for a professional setting?
+
+User: Yes, please. I'd like the addresses and phone numbers for each. Also, could you tell me if they serve alcohol? It's important to know if we'll have the option for wine or beer, depending on the preferences of my guests.
+
+System: Certainly. Here are the details for each restaurant:
+
+*   **Bazille** is located at 550 Stanford Shopping Center, and their phone number is 650-688-2614. They do serve alcohol.
+*   **Bird Dog** is located at 420 Ramona Street, and their phone number is 650-656-8180. They do not serve alcohol.
+*   **Bistro Elan** is located at 2363 Birch Street, and their phone number is 650-327-0284. They do not serve alcohol.
+
+Considering your need for a reliable choice and the potential preference for alcohol service, Bazille might be a suitable option. Does this information assist you in making a decision, or would you like further details on any of these restaurants?
+
+User: Thank you for providing the details. Given the options, Bazille seems the most suitable due to its alcohol service. Before I commit, could you tell me a bit more about the ambiance and typical customer reviews for Bazille? I want to ensure it's conducive to a professional and productive business lunch.
+
+System: I understand your need for a suitable ambiance for a business lunch. While I don't have specific details about the ambiance or customer reviews, I can share other information from the search results. Bazille is an American restaurant in the moderate price range, located at 550 Stanford Shopping Center, and their phone number is 650-688-2614.
+
+To ensure it meets your requirements, I suggest checking online review platforms for recent customer feedback or contacting the restaurant directly to inquire about their ambiance during lunchtime. Would you like me to help you with a reservation at Bazille, or do you need more time to consider?
+
+User: I appreciate the suggestion. I'll check online reviews for Bazille to get a better sense of the ambiance. In the meantime, could you check if they have availability for a reservation on Tuesday at 12:30 PM for a party of four?
+
+System: Okay, I will check the availability for you. To confirm, you're looking to reserve a table at Bazille in Palo Alto for Tuesday at 12:30 PM for four people. Is that correct?
+
+User: Yes, that's correct. Please confirm the reservation details and let me know if there are any potential issues or if an alternative time is needed.
+
+System: Could you please provide the date for the reservation? This will help me ensure the booking is made accurately for Tuesday at 12:30 PM for a party of four at Bazille in Palo Alto.
+
+User: My apologies, I should have included the date. Please check for availability on Tuesday, November 7th, at 12:30 PM for a party of four.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Bazille, city: Palo Alto, date: 2023-11-07, time: 12:30, party_size: 4})
+
+Search Results
+[{'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center', 'date': '2023-11-07', 'party_size': '4', 'time': '12:30'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center', 'date': '2023-11-07', 'party_size': '4', 'time': '12:30'}, {'city': 'Palo Alto', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '650-688-2614', 'price_range': 'moderate', 'restaurant_name': 'Bazille', 'serves_alcohol': True, 'street_address': '550 Stanford Shopping Center', 'date': '2023-11-07', 'party_size': '4', 'time': '12:30'}]
+End Search Results
+System: Excellent. I have confirmed the availability and have a reservation for you at Bazille in Palo Alto on Tuesday, November 7th, at 12:30 PM for a party of four. Is there anything else I can assist you with to ensure your business lunch goes smoothly?
+
+User: Perfect. Please send me the confirmation details to my email address, if possible, to ensure I have a reliable record of the reservation. Also, could you provide the cancellation policy in case our plans change unexpectedly?
+
+System: I understand the importance of having a reliable record. Unfortunately, I don't have the capability to send confirmation details to your email address or directly provide the cancellation policy. However, I can provide you with Bazille's phone number, which is 650-688-2614. I recommend calling them directly to confirm your reservation and inquire about their cancellation policy. Would you like me to repeat the reservation details for your records?
+
+User: Yes, please repeat the reservation details for my records. I will contact them directly to confirm and inquire about their policy.
+
+System: Okay, for your records, the reservation is at Bazille in Palo Alto on Tuesday, November 7th, at 12:30 PM for a party of four. Their phone number is 650-688-2614, should you need to contact them. Is there anything else I can assist you with to ensure your business lunch is well-prepared?
+
+User: No, that's all the information I need. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

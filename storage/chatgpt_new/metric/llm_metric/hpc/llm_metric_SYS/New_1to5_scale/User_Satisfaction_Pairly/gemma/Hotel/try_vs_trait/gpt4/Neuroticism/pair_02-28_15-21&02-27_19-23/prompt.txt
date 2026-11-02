@@ -1,0 +1,78 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Vancouver. Can you help me with that?
+System: Do you have any specific preferences for the star rating or smoking allowance in the hotel?
+User: I’m not sure. What if I choose a hotel that's too expensive or not comfortable enough? Could you maybe find something with at least a 4-star rating and that allows smoking? I’m really anxious about this decision.
+System: I understand your concern, and I'm here to help make this process as smooth as possible. Let me find a 4-star hotel in Vancouver that allows smoking. I'll get back to you with the options shortly. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4, smoking_allowed: True })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-563-4693', 'place_name': 'Exchange Hotel Vancouver', 'price_per_night': 304, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '475 Howe Street'}]
+End Search Results
+System: I found two 4-star hotels in Vancouver that allow smoking. The first option is Auberge Vancouver Hotel, located at 837 West Hastings Street, with a price of $296 per night. The second option is Exchange Hotel Vancouver, located at 475 Howe Street, with a price of $304 per night. Would you like more details on either of these hotels or need help with booking?
+User: Can you tell me more about the amenities and services they offer? I'm really worried about making the wrong choice.
+System: The information regarding amenities and services isn't available in the current data set. However, both hotels are 4-star and allow smoking, which usually indicates a range of quality services and amenities. If you need further assistance with your decision or have any other specific questions, feel free to ask. I'm here to help ease your worries.
+User: I guess I'll have to make a decision sooner or later... Can you tell me which of these hotels has the best reviews or is more popular among guests? I just want to make sure I'm not making a terrible choice.
+System: I'm sorry, but the current data set does not include information about reviews or popularity among guests. However, both Auberge Vancouver Hotel and Exchange Hotel Vancouver are highly rated 4-star hotels, which generally indicates a good level of service and guest satisfaction. If you have any other criteria or questions that might help you decide, please let me know. I'm here to assist you in making the best choice for your stay.
+User: I guess I'll go with the Auberge Vancouver Hotel. It sounds slightly less expensive, and I hope it meets my expectations. Can you please reserve a room for me? I need it from the 15th for a stay of 5 days.
+System: Please confirm that you would like to reserve a room at the Auberge Vancouver Hotel from the 15th for a stay of 5 days in Vancouver. Let me know how many rooms you need for the reservation.
+User: Yes, please reserve one room for me. I'm really hoping everything will turn out okay with this choice.
+System: Thank you for confirming. I'll proceed to reserve one room at the Auberge Vancouver Hotel from the 15th for a stay of 5 days in Vancouver. 
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Auberge Vancouver Hotel has been successfully confirmed for one room from November 15th for a stay of 5 days. The hotel is located at 837 West Hastings Street, Vancouver. If you need further assistance or have any questions, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in San Francisco. Can you help me find a nice one, please?
+System: Certainly. Let's start by finding some options for you. Do you have a preferred star rating, or would you like me to select one for you? Also, do you have any preferences regarding smoking allowance?
+User: I'm feeling really overwhelmed right now, so I just want to make sure everything is perfect. Could you look for a 4-star or higher hotel that doesn't allow smoking? I hope that's not too much to ask.
+System: I understand you're looking for a 4-star or higher hotel in San Francisco that doesn't allow smoking. Let me search for suitable options for you. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: San Francisco, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-885-2500', 'place_name': 'Hotel Spero', 'price_per_night': 80, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '405 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-348-1111', 'place_name': 'Hotel Zelos San Francisco', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '12 4th Street'}]
+End Search Results
+System: I found some options for you in San Francisco. One option is the Argonaut Hotel, which is a 4-star hotel, priced at $408 per night, located at 495 Jefferson Street. Another option is Hotel Spero, also a 4-star hotel, priced at $80 per night and located at 405 Taylor Street. Lastly, there's Hotel Zelos San Francisco, also 4-star, at $96 per night, located at 12 4th Street. All these hotels do not allow smoking. Let me know if any of these options work for you, or if you'd like more information on any of them.
+User: I can't help but feel anxious about making the right choice. Can you tell me more about the Argonaut Hotel? Like, does it have good reviews or any special amenities? I just need to be sure before making a decision.
+System: The Argonaut Hotel is a 4-star hotel located at 495 Jefferson Street in San Francisco. Unfortunately, I don't have access to reviews or specific amenities in my current dataset to provide further details. However, considering your preference for a non-smoking environment and the hotel's high rating, it could be a promising choice. If you feel comfortable with the location and price, I can assist you in reserving a room there. Let me know how you'd like to proceed.
+User: I don't know, I'm still feeling a bit uncertain. Maybe I should go with Hotel Spero since it's significantly cheaper, but I'm worried there might be a catch. Can you confirm if it's in a safe area of San Francisco? That would ease my mind a bit before deciding.
+System: I understand your concern, and while I don't have specific information about the safety of the area around Hotel Spero at 405 Taylor Street, it is a 4-star hotel in San Francisco, which generally indicates a reputable location. If you decide to proceed with Hotel Spero, I can assist you with making a reservation. Please let me know how you'd like to proceed or if there's anything else you'd like to know.
+User: I'm still feeling really unsure about Hotel Spero. What if it's not in a safe area? But then again, the price difference is significant. I just don't want to end up regretting my choice. Is there any other option that might offer a compromise between price and peace of mind, or should I just go ahead with the Argonaut Hotel?
+System: Considering your need for both peace of mind and a reasonable price, Hotel Zelos San Francisco might be a good compromise. It's a 4-star hotel like the others, priced at $96 per night, and located at 12 4th Street. While I can't provide specific safety details, it's another reputable option in San Francisco. If you prefer, I can help you reserve a room at Hotel Zelos, or we can proceed with your initial choice of the Argonaut Hotel. Let me know what you decide.
+User: I still feel a bit uneasy about making the wrong decision, but I think I should go with Hotel Zelos San Francisco. It seems like a reasonable compromise between cost and quality. Can you help me reserve a room there? I hope I'm making the right choice.
+System: Certainly. Let's proceed with reserving a room at Hotel Zelos San Francisco. Could you please let me know the check-in date, how long you plan to stay, and how many rooms you will need? This information will help ensure your reservation is just right.
+User: Okay, I'm feeling a bit nervous about this, but let's go ahead. I'd like to check in on the 10th and stay for 5 nights. I think I just need one room. I really hope this works out well.
+System: Thank you for providing the details. To confirm, I'll reserve one room at Hotel Zelos San Francisco, with a check-in date of the 10th and a stay of 5 nights. Let me proceed with the reservation now.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: San Francisco, number_of_rooms: 1, place_name: Hotel Zelos San Francisco, stay_length: 5 })
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-348-1111', 'place_name': 'Hotel Zelos San Francisco', 'price_per_night': 96, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '12 4th Street', 'check_in_date': '2023-11-10'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 877-828-4478', 'place_name': 'Hotel G', 'price_per_night': 312, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '386 Geary Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at Hotel Zelos San Francisco has been successfully confirmed. You'll be checking in on the 10th for a duration of 5 nights. If you need any further assistance or have more questions, feel free to ask. I hope your stay brings you comfort and a sense of ease.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

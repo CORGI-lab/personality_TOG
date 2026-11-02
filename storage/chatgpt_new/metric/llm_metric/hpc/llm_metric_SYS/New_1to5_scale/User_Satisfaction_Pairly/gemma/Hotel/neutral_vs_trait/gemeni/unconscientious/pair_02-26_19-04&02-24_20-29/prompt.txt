@@ -1,0 +1,134 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, I need a hotel, I guess. Somewhere... easy. How about Las Vegas?
+
+System: Okay, I can help with that. How many rooms do you need?
+
+User: Uh, I don't know... maybe two? Or one big one? Whatever's cheaper, I guess.
+
+System: Okay, and are you looking for hotels that allow smoking or non-smoking?
+
+User: Smoking? Sure, why not? Doesn't really matter to me, whatever's available.
+
+System: Okay, I will search for hotels in Las Vegas with either one or two rooms and smoking allowed. What star rating are you looking for?
+
+User: Star rating? Hmm, not sure. Something decent, I suppose? Three stars maybe? Or is that too picky? Whatever you find first, really.
+
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, number_of_rooms: 2, smoking_allowed: True, star_rating: 3 })
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: Okay, I found one hotel that matches your criteria: Hampton Inn Las Vegas/Summerlin, a 3-star hotel. Would you like to know more about it?
+
+User: Yeah, sure. Tell me about it. What's the damage per night? And, uh, where is it exactly?
+
+System: The price per night at Hampton Inn Las Vegas/Summerlin is $279. The address is 7100 Cascade Valley Court. Is there anything else I can help you with?
+
+User: $279? Ouch. Okay, um, maybe check for something... cheaper? Star rating doesn't matter *that* much, I guess. Just... something in Las Vegas that won't break the bank and, yeah, smoking is still fine.
+
+System: Okay, I will search for hotels in Las Vegas that allow smoking, with either one or two rooms, and without a specific star rating.
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, number_of_rooms: 2, smoking_allowed: True})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court'}]
+End Search Results
+System: Okay, I found a few options for you in Las Vegas that allow smoking. Budget Suites Of America is $44 per night, La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech is $72 per night, and Hampton Inn Las Vegas/Summerlin is $279 per night. Would you like more details on any of these?
+
+User: Budget Suites... $44? That sounds... doable. Tell me about that one. Is it, like, totally gross or something?
+
+System: Okay, Budget Suites Of America is a 1-star hotel. The price per night is $44, the phone number is +1 702-638-1800, and the address is 2219 North Rancho Drive. Would you like to book a room there?
+
+User: Book a room? Uh, yeah, maybe. What's the catch? One star... is it even clean? I guess... what's the check-in date and how long can I stay? I haven't really thought about that.
+
+System: Okay, to book the room, I need to know the check-in date and how many nights you'll be staying. Can you provide me with that information?
+
+User: Check-in date... uh... today, I guess? And stay length... how about, like, five nights? Is that enough? I haven't really planned anything.
+
+System: Okay, I can help you book a room at Budget Suites Of America for five nights starting today. Could you please confirm the year?
+
+User: The year? Oh, right. Uh... 2024. Yeah, book it for 2024. Hope it's not a dump.
+
+System: Okay, let me confirm your booking details. You want to book a room at Budget Suites Of America in Las Vegas for 5 nights starting today, October 14, 2024. Is that correct?
+
+User: Yeah, sounds about right. Just... go for it, I guess.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-10-14, location: Las Vegas, number_of_rooms: 2, place_name: Budget Suites Of America, stay_length: 5})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2024-10-14'}]
+End Search Results
+System: Okay, I have reserved 2 rooms at Budget Suites Of America in Las Vegas for 5 nights starting today, October 14, 2024. The phone number is +1 702-638-1800, and the address is 2219 North Rancho Drive. Is there anything else I can help you with?
+
+User: Two rooms? I didn't say two rooms, did I? Oh well, whatever. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey, uh, find me a hotel... somewhere. I don't really care where.
+
+System: Okay, no worries! How about we look for something in London? It's as good a place as any, right?
+APICall(method='SearchHotel', parameters={ location: London })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: Alright, London it is! Check this out: there's a fancy 5-star place called 45 Park Lane. Sounds kinda posh, huh?
+
+User: Ugh, 5-star? Sounds expensive. What else ya got? Something... cheaper? Maybe in London still, I guess, since you already picked it.
+
+System: Okay, no problem! How about Abercorn House? It's just a 1-star, so it should be pretty cheap. Does that sound like a good option for you?
+
+User: Yeah, whatever. Is it, like, actually in London? And does it even matter if it's got, like, a bathroom?
+
+System: Yeah, Abercorn House is in London. As for the bathroom, I'm sure it's got one, but I don't have details on that. You wanna just book it and hope for the best? Or should we check if they allow smoking, since you don't seem to care much either way?
+
+User: Smoking? Hmm, I guess it doesn't matter that much. Sure, check if they allow smoking. If not, whatever, I'll just deal with it.
+
+System: Alright, checking if Abercorn House allows smoking... Just a sec.
+
+Based on the hotel info, smoking is not allowed at Abercorn House. Should we just go ahead and book it anyway since it doesn't matter to you?
+
+User: Yeah, fine, whatever. Book it. I guess.
+
+System: Okay, cool. So, how many days will you be staying and what date would you like to check in? Let's just get this over with, haha.
+
+User: Uh, I don't know... a week? Starting... whenever. Just pick a date, I guess.
+
+System: Alright, a week it is! Since you don't have a preference, how about we start the booking from tomorrow, 2024-03-22? And how many rooms do you need?
+
+User: Rooms? Uh, just one, I guess. Is that all I gotta tell you?
+
+System: Okay, just one room it is! So, to quickly recap and finalize this, you want me to book one room at Abercorn House in London for a week starting tomorrow, 2024-03-22. Is that all correct?
+
+User: Yeah, whatever, sounds right. Just do it.
+
+System: Alright, cool. APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-22, location: London, number_of_rooms: 1, place_name: Abercorn House, stay_length: 7 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens', 'check_in_date': '2024-03-22'}]
+End Search Results
+System: Okay, great! Your booking at Abercorn House for one room, starting tomorrow (2024-03-22) for 7 days is confirmed. Just so you know, their address is 28-30 Bute Gardens, and their phone number is +44 20 8563 8692 if you need to call them for anything. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,130 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to book a hotel in Berlin. I'd like to start by specifying some key requirements to ensure a suitable selection.
+
+System: Okay, I can help with that. What are your key requirements for the hotel in Berlin? For example, what star rating are you looking for?
+
+User: I'm looking for a hotel with a minimum of 4 stars. It's also important that the hotel has a high cleanliness rating and offers complimentary breakfast. What options are available that meet these criteria?
+
+System: I can search for hotels in Berlin with a minimum of 4 stars. Unfortunately, I do not have access to cleanliness ratings or information on complimentary breakfast. Would you like me to proceed with searching for hotels with at least 4 stars?
+
+User: Yes, please proceed with searching for hotels with at least 4 stars. I understand you don't have access to cleanliness ratings, but could you at least tell me if they have non-smoking rooms available? That's crucial.
+
+System: Okay, I will search for hotels in Berlin with at least 4 stars and check for smoking allowance.
+
+APICall(method='SearchHotel', parameters={ location: Berlin, star_rating: 4, smoking_allowed: dontcare })
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+System: Okay, I found three 4-star hotels in Berlin. Adina Apartment Hotel Berlin Mitte and Arcotel John F Berlin allow smoking, while Ameron Hotel Abion Spreebogen Waterside does not. Would you like to know more about any of these hotels?
+
+User: Yes, please provide more details on the Ameron Hotel Abion Spreebogen Waterside. I want to make sure it fits my needs before considering a reservation. Specifically, what is the price per night and what is the exact street address?
+
+System: The price per night at Ameron Hotel Abion Spreebogen Waterside is $360, and the street address is Alt-Moabit 99, 10559. Does this information suffice, or would you like to know more?
+
+User: That seems reasonable, though a bit pricey. Before I commit, can you confirm if they offer a business center and high-speed internet access? It's important for me to have those amenities available.
+
+System: I am sorry, I do not have access to information about business center and internet access.
+
+User: Okay, I will check that myself. Please go ahead and book a room for me at the Ameron Hotel Abion Spreebogen Waterside. I need it for 3 nights, starting on December 15th.
+
+System: How many rooms would you like to reserve?
+
+User: Just one room, please.
+
+System: To confirm, you would like to reserve 1 room at the Ameron Hotel Abion Spreebogen Waterside in Berlin for 3 nights, starting on December 15th. Is that correct?
+
+User: Yes, that is correct. Please proceed with the reservation.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-12-15, location: Berlin, number_of_rooms: 1, place_name: Ameron Hotel Abion Spreebogen Waterside, stay_length: 3 })
+
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559', 'check_in_date': '2023-12-15'}]
+End Search Results
+System: Okay, your booking at Ameron Hotel Abion Spreebogen Waterside is confirmed for one room, starting on December 15th for 3 nights.
+
+User: Can you please send the confirmation details to my email address: example@email.com?
+
+System: I am sorry, I do not have access to your email address. However, the confirmation details are as follows: 1 room at Ameron Hotel Abion Spreebogen Waterside in Berlin, check-in date is December 15th for 3 nights. The hotel phone number is +49 30 399200. Is there anything else I can help you with?
+
+User: No, that's everything I need. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in London, please. I'd like to start planning my trip meticulously.
+
+System: Okay, I can help you with that. To ensure I find the most suitable hotel for you in London, do you have any preferences regarding the star rating or smoking allowance? Knowing this will help me narrow down the options and present you with the best choices.
+
+User: I'd prefer a hotel with a minimum of 4 stars. And definitely non-smoking, please. I also want to know about the price per night, so I can factor that into my budget accurately.
+
+System: APICall(method='SearchHotel', parameters={location: London, star_rating: 4, smoking_allowed: False})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 800 330 8523', 'place_name': 'Amba Hotel Marble Arch', 'price_per_night': 444, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Bryanston Street'}]
+End Search Results
+System: I found three 4-star, non-smoking hotels in London. Ace Hotel London is priced at $176 per night, Amba Hotel Charing Cross at $312, and Amba Hotel Marble Arch at $444. Would you like a more detailed comparison to help you decide?
+
+User: Yes, please. Could you provide a brief overview of each hotel, focusing on aspects like guest reviews, nearby attractions, and perhaps the number of rooms available? This will help me make a well-informed decision.
+
+System: I can provide some additional details, although I don't have guest reviews or information on nearby attractions.
+
+Ace Hotel London has 2 rooms available, phone number +44 20 7613 9800, and is located at 100 Shoreditch High Street.
+
+Amba Hotel Charing Cross has 3 rooms available, phone number +44 871 376 9012, and is located at Strand.
+
+Amba Hotel Marble Arch has 3 rooms available, phone number +44 800 330 8523, and is located at Bryanston Street.
+
+Would knowing the street addresses and phone numbers assist you in making a decision?
+
+User: The Amba Hotel Charing Cross seems promising, given its central location. Before I commit, could you confirm the check-in date availability and whether they offer any discounts for extended stays? I'm planning to stay for 7 nights, starting on the 15th of next month.
+
+System: I can check availability for you. However, I do not have access to any information on discounts for extended stays. To proceed with a reservation, I need to know the full check-in date (year, month, and day) and the number of rooms you'll require. Could you please provide that information?
+
+User: Okay, I'd like to book one room at the Amba Hotel Charing Cross for 7 nights, starting on October 15, 2024. Please confirm the total price for the stay, including any applicable taxes or fees, before finalizing the reservation. I want to be absolutely sure about the costs.
+
+System: To ensure complete accuracy, I need to confirm that you wish to book one room at the Amba Hotel Charing Cross in London, checking in on October 15, 2024, for a stay of 7 nights. Also, please note that I do not have information regarding taxes or fees.
+
+Once you confirm, I will proceed with the reservation.
+
+User: Yes, please proceed with the reservation as specified: one room at the Amba Hotel Charing Cross in London, check-in on October 15, 2024, for 7 nights.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Amba Hotel Charing Cross, location: London, check_in_date: 2024-10-15, stay_length: 7, number_of_rooms: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand', 'check_in_date': '2024-10-15'}]
+End Search Results
+System: Okay, I've processed your request to book one room at the Amba Hotel Charing Cross in London for 7 nights, starting on October 15, 2024. Just to reiterate and ensure all details are correct:
+
+The Amba Hotel Charing Cross is located at Strand, and the phone number is +44 871 376 9012. The price per night is $312.
+
+Could you please confirm that all of this information is correct before I finalize the process?
+
+User: Yes, all the information is correct. Please finalize the reservation.
+
+System: Okay, your reservation has been processed. The Amba Hotel Charing Cross in London is booked for one room, with check-in on October 15, 2024, for a stay of 7 nights. The hotel is located at Strand, and their phone number is +44 871 376 9012.
+
+Is there anything else I can assist you with to help further refine your travel plans or provide additional details?
+
+User: No, that's perfect. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

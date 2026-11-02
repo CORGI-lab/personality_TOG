@@ -1,0 +1,104 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in Seattle.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel or whether smoking is allowed?
+
+User: No preference, just something quiet.
+
+System: Okay, I understand. I will search for hotels in Seattle.
+
+APICall(method='SearchHotel', parameters={location: Seattle, smoking_allowed: dontcare, star_rating: dontcare})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: Okay, I found three hotels in Seattle. Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown. All three are 2-star hotels and do not allow smoking. Ace Hotel Seattle is $136 per night, Belltown Inn is $186 per night, and Days Inn By Wyndham Seattle North Of Downtown is $84 per night. Which one sounds best for a quiet stay?
+
+User: Days Inn By Wyndham Seattle North Of Downtown, please. Less expensive.
+
+System: Okay, great choice! It is located at 9100 Aurora Avenue North. Would you like to reserve a room at the Days Inn By Wyndham Seattle North Of Downtown? If so, I'll need a bit more information. What date would you like to check in, and how many nights will you be staying? Also, how many rooms will you need?
+
+User: The 22nd, for two nights, one room.
+
+System: Okay, I can help with that. And what month and year would you like to book for? Also, could you confirm the place name, is it "Days Inn By Wyndham Seattle North Of Downtown"?
+
+User: Yes, that's correct. Book it for this month, please.
+
+System: Okay, just to confirm, you'd like to book one room at the Days Inn By Wyndham Seattle North Of Downtown for two nights starting on 2024-05-22?
+
+User: Yes, please.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Days Inn By Wyndham Seattle North Of Downtown, check_in_date: 2024-05-22, stay_length: 2, location: Seattle, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North', 'check_in_date': '2024-05-22'}]
+End Search Results
+System: Excellent! I've successfully booked one room for you at the Days Inn By Wyndham Seattle North Of Downtown for two nights, starting on May 22nd. The phone number for the hotel is +1 800-615-3107, and the address is 9100 Aurora Avenue North. Is there anything else I can help you with today?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: No preference for smoking. Maybe 3 stars?
+
+System: Okay, searching for 3-star hotels in Vancouver.
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 3, smoking_allowed: dontcare })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-7070', 'place_name': 'Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr.', 'price_per_night': 72, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1100 Granville Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-682-1831', 'place_name': 'Best Western Plus Sands', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1755 Davie Street'}]
+End Search Results
+System: OK. I found three 3-star hotels in Vancouver: Atrium Inn Vancouver, Best Western Plus Chateau Granville Hotel & Suites & Conference Ctr., and Best Western Plus Sands. All of them do not allow smoking. Would you like to know more about any of these hotels?
+
+User: Maybe the first one. Tell me about it.
+
+System: OK. The first hotel, Atrium Inn Vancouver, has 2 rooms available, and the price per night is $228. The address is 2889 East Hastings Street and the phone number is +1 604-254-1000. Would you like to know anything else about this hotel, or perhaps explore the other options?
+
+User: No, that's fine. Can you reserve it for me? I'd like to book it for one night, starting tomorrow.
+
+System: What date would you like to book it for? Please provide the year, month, and day (YYYY-MM-DD).
+
+User: 2024-03-10
+
+System: How many rooms would you like to reserve?
+
+User: Just one room, please.
+
+System: Okay, let me confirm. You would like to reserve one room at the Atrium Inn Vancouver for one night, starting on 2024-03-10. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-03-10, location: Vancouver, number_of_rooms: 1, place_name: Atrium Inn Vancouver, stay_length: 1 })
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-254-1000', 'place_name': 'Atrium Inn Vancouver', 'price_per_night': 228, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2889 East Hastings Street', 'check_in_date': '2024-03-10'}]
+End Search Results
+System: OK. I have reserved one room at the Atrium Inn Vancouver for one night starting on 2024-03-10. The phone number is +1 604-254-1000 and the address is 2889 East Hastings Street. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

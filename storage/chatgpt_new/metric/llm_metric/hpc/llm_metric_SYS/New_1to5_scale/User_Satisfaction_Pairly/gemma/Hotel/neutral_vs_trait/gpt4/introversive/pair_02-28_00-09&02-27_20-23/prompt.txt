@@ -1,0 +1,88 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Vancouver. Can you help me with that?
+System: Do you have any specific preferences for the hotel's star rating, or should I look for any available options?
+User: Any available options are fine.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few hotels in Vancouver for you. The Shangri-La Hotel is a 5-star hotel with a price of $300 per night. It is located at 1128 West Georgia Street and does not allow smoking. Would you like more details on this or any other hotel from the search results?
+User: Could you tell me about another hotel option, please?
+System: The Wedgewood Hotel & Spa Vancouver is another 5-star option. It offers rooms at a price of $510 per night, located at 845 Hornby Street, and does not allow smoking. Would you like to proceed with this one or explore another option?
+User: Can you tell me about any other hotels with a lower price range?
+System: The Auberge Vancouver Hotel is a 4-star hotel with rooms priced at $296 per night. It is located at 837 West Hastings Street and allows smoking. Would you like to proceed with this option or need more information?
+User: The Auberge Vancouver Hotel sounds fine. Can you reserve it for me?
+System: To proceed with the reservation at the Auberge Vancouver Hotel, could you please provide the check-in date and the number of days you plan to stay?
+User: I'll be checking in on the 15th, and I'd like to stay for eight days.
+System: Please confirm to book 2 rooms for 8 days at the Auberge Vancouver Hotel from the 15th in Vancouver.
+User: Yes, that's confirmed.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 2, place_name: Auberge Vancouver Hotel, stay_length: 8 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at the Auberge Vancouver Hotel has been successfully confirmed. The hotel is located at 837 West Hastings Street, and you have reserved 2 rooms for 8 days starting from November 15, 2023. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Berlin. Can you help me find one?
+System: Do you have any specific preferences, such as the star rating or smoking allowance, for the hotel in Berlin?
+User: I prefer a hotel that allows smoking and has at least a 3-star rating.
+System: Thank you for sharing your preferences. Let me search for hotels in Berlin that meet your criteria. Please give me a moment.
+
+APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 3, smoking_allowed: True})
+Search Results
+
+End Search Results
+System: I'm sorry, it seems that there are no hotels in Berlin that match your preferences of allowing smoking and having at least a 3-star rating. Would you like to adjust your criteria, perhaps by considering a different star rating or a non-smoking hotel?
+User: Can you check if there are 2-star hotels that allow smoking?
+System: APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 2, smoking_allowed: True})
+Search Results
+
+End Search Results
+System: It seems there are no 2-star hotels in Berlin that allow smoking. Would you like to try searching for non-smoking hotels, or perhaps consider a different location?
+User: Can you find any 3-star non-smoking hotels?
+System: APICall(method='SearchHotel', parameters={location: Berlin, star_rating: 3, smoking_allowed: False})
+Search Results
+
+End Search Results
+System: It appears that there are no 3-star non-smoking hotels available in Berlin either. Would you like to explore hotels with a different star rating or perhaps expand your search to include hotels that allow smoking?
+User: Let's try looking for any available hotels regardless of star rating or smoking allowance.
+System: APICall(method='SearchHotel', parameters={location: Berlin, star_rating: dontcare, smoking_allowed: dontcare})
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 399200', 'place_name': 'Ameron Hotel Abion Spreebogen Waterside', 'price_per_night': 360, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Alt-Moabit 99, 10559'}, {'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 4050460', 'place_name': 'Arcotel John F Berlin', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Werderscher Markt 11, 10117'}]
+End Search Results
+System: I found a few options for you in Berlin. One of them is the Adina Apartment Hotel Berlin Mitte, which is a 4-star hotel allowing smoking. The price per night is 160, and it's located at Platz vor dem Neuen Tor 6, 10115. Would you like more information about this hotel or explore other options?
+User: I think the Adina Apartment Hotel sounds fine. Can you reserve a room for me?
+System: Certainly. How many days will you be staying, and when would you like to check in?
+User: I'll be staying for five days, starting from the 15th of next month.
+System: Please confirm that you would like to reserve a room at the Adina Apartment Hotel Berlin Mitte for five days, checking in on the 15th of next month. Once you confirm, I'll proceed with the reservation.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={check_in_date: YYYY-MM-15, location: Berlin, number_of_rooms: 1, place_name: Adina Apartment Hotel Berlin Mitte, stay_length: 5})
+Search Results
+[{'location': 'Berlin', 'number_of_rooms': 2, 'phone_number': '+49 30 2000320', 'place_name': 'Adina Apartment Hotel Berlin Mitte', 'price_per_night': 160, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Platz vor dem Neuen Tor 6, 10115', 'check_in_date': 'YYYY-MM-15'}]
+End Search Results
+System: Your reservation has been successfully confirmed at the Adina Apartment Hotel Berlin Mitte for five days, starting from the 15th of next month. If you need any more assistance or information, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

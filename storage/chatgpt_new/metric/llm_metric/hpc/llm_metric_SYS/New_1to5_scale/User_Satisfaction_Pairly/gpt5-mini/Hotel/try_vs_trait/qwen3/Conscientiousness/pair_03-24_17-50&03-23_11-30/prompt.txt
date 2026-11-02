@@ -1,0 +1,125 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: 
+
+I need to find a hotel. Can you help me search for one?
+System: 
+
+Certainly. To begin, could you please specify the city where you'd like to search for hotels?
+User: 
+
+Yes, Chicago, please search there.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: Chicago })
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street'}, {'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street'}, {'location': 'Chicago', 'number_of_rooms': 2, 'phone_number': '+1 312-894-0800', 'place_name': 'Acme Hotel Company Chicago', 'price_per_night': 222, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '15 East Ohio Street'}]
+End Search Results
+System: 
+
+I found three hotels in Chicago. Here are the details:  
+1. **Ace Hotel Chicago**: 4 stars, $132/night, no smoking. Address: 311 North Morgan Street.  
+2. **Ac Hotel By Marriott Chicago Downtown**: 3 stars, $342/night, no smoking. Address: 630 North Rush Street.  
+3. **Acme Hotel Company Chicago**: 3 stars, $222/night, smoking allowed. Address: 15 East Ohio Street.  
+
+Would you like to proceed with any of these, or do you have specific preferences (e.g., star rating, smoking policy) to refine the search?
+User: 
+
+Confirming the Ace Hotel Chicago has no smoking allowed and the address is 311 North Morgan Street. Could you also provide the phone number?
+System: 
+
+Ace Hotel Chicago details confirmed: 4 stars, $132 per night, no smoking allowed, address 311 North Morgan Street, phone number +1 312-764-1919. Would you like to proceed with booking this hotel?
+User: 
+
+Yes, please book two rooms for check-in on June 15th for a 5-night stay.
+System: 
+
+To confirm your reservation details: 2 rooms, 5-night stay at Ace Hotel Chicago in Chicago. Please provide the check-in date in YYYY-MM-DD format (e.g., 2024-06-15).
+User: 
+
+2024-06-15
+System: 
+
+Your reservation details are confirmed: 2 rooms at Ace Hotel Chicago in Chicago, check-in on 2024-06-15 for a 5-night stay. Please confirm to proceed with the booking.
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: 'Ace Hotel Chicago', check_in_date: '2024-06-15', stay_length: 5, location: 'Chicago', number_of_rooms: 2 })
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street', 'check_in_date': '2024-06-15'}]
+End Search Results
+System: 
+
+Your reservation has been successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: 
+
+I need to book a hotel in London with a 4-star rating, non-smoking rooms, two rooms, check-in on October 15th for seven nights.
+System: 
+
+APICall(method='SearchHotel', parameters={ location: London, star_rating: 4, smoking_allowed: False, number_of_rooms: 2 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 871 376 9012', 'place_name': 'Amba Hotel Charing Cross', 'price_per_night': 312, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Strand'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 800 330 8523', 'place_name': 'Amba Hotel Marble Arch', 'price_per_night': 444, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Bryanston Street'}]
+End Search Results
+System: 
+
+I found three 4-star hotels in London with non-smoking rooms for two rooms: Ace Hotel London at £176 per night, Amba Hotel Charing Cross at £312 per night, and Amba Hotel Marble Arch at £444 per night. Which one would you like to book?
+User: 
+
+Could you please provide the street addresses for each of these hotels so I can evaluate their locations?
+System: 
+
+Here are the street addresses for each hotel:  
+- Ace Hotel London: 100 Shoreditch High Street  
+- Amba Hotel Charing Cross: Strand  
+- Amba Hotel Marble Arch: Bryanston Street  
+Would you like to proceed with one of these options?
+User: 
+
+Please reserve two rooms at Ace Hotel London at 100 Shoreditch High Street for seven nights starting October 15th.
+System: 
+
+Confirming reservation for 2 rooms at Ace Hotel London, check-in on October 15th for 7 nights. Is this correct?
+User: 
+
+Yes, that is confirmed.
+System: 
+
+APICall(method='ReserveHotel', parameters={ place_name: Ace Hotel London, check_in_date: 2023-10-15, stay_length: 7, location: London, number_of_rooms: 2 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7613 9800', 'place_name': 'Ace Hotel London', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '100 Shoreditch High Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: 
+
+Your booking was successfully confirmed.
+User: 
+
+Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

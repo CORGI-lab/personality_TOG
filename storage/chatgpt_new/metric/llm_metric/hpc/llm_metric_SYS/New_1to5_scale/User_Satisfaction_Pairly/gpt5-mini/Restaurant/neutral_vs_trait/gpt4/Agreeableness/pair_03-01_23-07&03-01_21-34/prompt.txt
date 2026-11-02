@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hello! I would like to find a restaurant in Berkeley.
+System: What type of cuisine are you interested in, like Italian, Mexican, or something else?
+User: I'm open to trying new things, so maybe something with a variety of options. Do you have any recommendations?
+System: Let's explore some options! How about trying a restaurant with a diverse menu like Fusion cuisine? Let me find some restaurants for you. Please hold on. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Fusion})
+Search Results
+
+End Search Results
+System: It seems there were no results for Fusion cuisine in Berkeley. Would you like to try a different type of cuisine or perhaps a different location?
+User: Sure, I'd be happy to consider a different type of cuisine. How about we try Italian cuisine in Berkeley?
+System: Great choice! Let me find some Italian restaurants in Berkeley for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: I found a few Italian restaurants in Berkeley for you. How about Cugini Restaurant, located at 1556 Solano Avenue, or Donato & Co. at 2635 Ashby Avenue? Another option is Filippo's Berkeley Elmwood on 2930 College Avenue. Would you like more information on any of these places?
+User: Thank you for the suggestions! Can you tell me more about Donato & Co.?
+System: Certainly! Donato & Co. is an Italian restaurant located at 2635 Ashby Avenue in Berkeley. The restaurant has a moderate price range and does not feature live music or serve alcohol. If you need their contact, you can reach them at 510-838-1131. Let me know if there's anything else you'd like to know or if you're ready to make a reservation!
+User: Donato & Co. sounds like a lovely option. I'd love to make a reservation there, please. Could you book a table for 4 people this Saturday at 7:00 pm? Thank you so much!
+System: To confirm your reservation at Donato & Co. for 4 people this Saturday at 7:00 pm, can you please provide the date for this Saturday in the format YYYY-MM-DD?
+User: This Saturday is [insert date in YYYY-MM-DD format]. Thank you for helping with the reservation!
+System: Thank you for providing the date. I will now proceed to reserve a table for 4 people at Donato & Co. on [insert date in YYYY-MM-DD format] at 7:00 pm. Please hold on for a moment while I make the reservation.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: Donato & Co., city: Berkeley, time: 19:00, date: [insert date in YYYY-MM-DD format], party_size: 4})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue', 'date': '[insert date in YYYY-MM-DD format]', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Donato & Co. for 4 people on [insert date in YYYY-MM-DD format] at 7:00 pm has been successfully made. If you have any other questions or need further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would love to find a restaurant in San Francisco. Could you help me with that?
+System: Certainly! Do you have a specific type of cuisine in mind, or are you open to any suggestions? If you're open, I could recommend something that aligns with your preferences.
+User: I'm open to any suggestions, but if there's a place that offers Italian cuisine, that would be wonderful. Thank you so much for your help!
+System: Let's look for an Italian restaurant in San Francisco for you. Give me a moment. APICall(method='FindRestaurants', parameters={city: San Francisco, cuisine: Italian})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-543-5100', 'price_range': 'moderate', 'restaurant_name': '54 Mint Ristorante Italiano', 'serves_alcohol': True, 'street_address': '16 Mint Plaza'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street'}, {'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-928-4002', 'price_range': 'moderate', 'restaurant_name': 'Allegro Romano', 'serves_alcohol': False, 'street_address': '1701 Jones Street'}]
+End Search Results
+System: I found a few Italian restaurants in San Francisco that you might enjoy. One option is 54 Mint Ristorante Italiano, located at 16 Mint Plaza. They have a moderate price range and serve alcohol. Would you like more information about this restaurant or any other suggestions from the list?
+User: Could you please tell me if 54 Mint Ristorante Italiano has live music? And if there are any other Italian restaurants you recommend, I'd love to hear about them too. Thank you!
+System: The 54 Mint Ristorante Italiano does not feature live music. Another option you might consider is A16, which is situated at 2355 Chestnut Street. It also offers a moderate price range and serves alcohol. If you would like more details or need further assistance with your choice, feel free to let me know!
+User: A16 sounds lovely! Could you please make a reservation for me there? I'd like to book a table for two this Friday at 7:00 pm. Thank you so much for your assistance!
+System: Could you please confirm that you want to reserve a table for two at A16 in San Francisco this Friday at 7:00 pm? Once confirmed, I'll proceed with the reservation for you.
+User: Yes, that's correct. Please go ahead with the reservation. Thank you for your help!
+System: Thank you for confirming. I'll proceed with the reservation at A16 for two people this Friday at 7:00 pm in San Francisco. APICall(method='ReserveRestaurant', parameters={restaurant_name: 'A16', city: 'San Francisco', time: '19:00', date: '2023-10-13', party_size: 2})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '415-771-2216', 'price_range': 'moderate', 'restaurant_name': 'A16', 'serves_alcohol': True, 'street_address': '2355 Chestnut Street', 'date': '2023-10-13', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at A16 for two people this Friday at 7:00 pm in San Francisco has been successfully made. If there's anything else you need or if you have any other questions, feel free to let me know. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

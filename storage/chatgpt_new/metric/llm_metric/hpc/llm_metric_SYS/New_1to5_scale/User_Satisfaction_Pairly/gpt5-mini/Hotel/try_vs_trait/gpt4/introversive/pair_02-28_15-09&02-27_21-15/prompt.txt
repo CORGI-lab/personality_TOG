@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Vancouver.
+System: Could you please let me know if you have any preference for the star rating of the hotel? If not, I can proceed to find a hotel for you in Vancouver.
+User: I don't have a preference for star rating. Please go ahead and find a hotel.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few options for you in Vancouver. One option is the Shangri-La Hotel, which is a 5-star hotel at 1128 West Georgia Street, with a price of $300 per night and no smoking allowed. Another option is the Wedgewood Hotel & Spa Vancouver, also 5-star, located at 845 Hornby Street, priced at $510 per night, and also non-smoking. Lastly, there's the Auberge Vancouver Hotel, a 4-star hotel at 837 West Hastings Street, which allows smoking and is priced at $296 per night. Let me know if you would like more details or if you have any other preferences.
+User: Could you give me more information about the Auberge Vancouver Hotel?
+System: The Auberge Vancouver Hotel is a 4-star establishment located at 837 West Hastings Street. It offers smoking rooms and has a price of $296 per night. If you need any additional details or have specific questions, feel free to let me know.
+User: Is the location of the Auberge Vancouver Hotel close to any public transport?
+System: I'm sorry, but I don't have information about the hotel's proximity to public transport. If you have any other questions or need further assistance, feel free to ask.
+User: That's alright. Could you please check if there are any other hotels that allow smoking and are reasonably priced?
+System: Let me search for more hotels in Vancouver that allow smoking. I'll check for those options now. Please hold on. 
+
+APICall(method='SearchHotel', parameters={location: Vancouver, smoking_allowed: True})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-563-4693', 'place_name': 'Exchange Hotel Vancouver', 'price_per_night': 304, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '475 Howe Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-9888', 'place_name': 'Gec Granville Suites Hotel', 'price_per_night': 63, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '718 Drake Street'}]
+End Search Results
+System: I found a few more hotels in Vancouver that allow smoking. There's the Exchange Hotel Vancouver, a 4-star hotel at 475 Howe Street, priced at $304 per night. Another option is the Gec Granville Suites Hotel, a 3-star hotel at 718 Drake Street, with a price of $63 per night. Let me know if you need more information or if you'd like to proceed with any of these options.
+User: Could you provide more details about the Gec Granville Suites Hotel?
+System: The Gec Granville Suites Hotel is a 3-star hotel located at 718 Drake Street in Vancouver. It offers smoking rooms and is priced at $63 per night. If you have any more questions or need further assistance, feel free to let me know.
+User: I think the Gec Granville Suites Hotel sounds suitable. Could you go ahead and make a reservation for me? I'd like to stay for five nights, starting from the 10th of next month.
+System: Could you please confirm the number of rooms you'd like to book for your stay at the Gec Granville Suites Hotel? Once I have that information, I'll proceed with the reservation.
+User: I'll need just one room, please.
+System: Thank you for confirming. I'll proceed with booking 1 room at the Gec Granville Suites Hotel for a stay of 5 nights, starting from the 10th of next month. Please hold on while I complete the reservation for you.
+
+APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Gec Granville Suites Hotel, stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-669-9888', 'place_name': 'Gec Granville Suites Hotel', 'price_per_night': 63, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '718 Drake Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Gec Granville Suites Hotel has been successfully confirmed. You'll be staying in Vancouver at 718 Drake Street for 5 nights, starting from November 10th. If there is anything else you need or any other questions, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Vancouver. Can you help me find one?
+System: Do you have any specific preferences for the star rating or whether smoking is allowed?
+User: I prefer a hotel with a high star rating, and smoking isn't an issue for me.
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 5, smoking_allowed: dontcare })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: I found two 5-star hotels in Vancouver. The first option is Shangri-La Hotel, located at 1128 West Georgia Street, with a price of $300 per night. The second option is Wedgewood Hotel & Spa Vancouver, located at 845 Hornby Street, with a price of $510 per night. Both hotels do not allow smoking. Would you like more information about either of these hotels or to proceed with a reservation?
+User: I would like more information about the Shangri-La Hotel, please.
+System: The Shangri-La Hotel in Vancouver is a luxurious 5-star hotel located at 1128 West Georgia Street. It offers two rooms and has a price of $300 per night. Although smoking is not allowed, the hotel provides a high level of comfort and service. Is there anything else you would like to know about this hotel, or are you ready to proceed with a reservation?
+User: I think I'm ready to proceed with a reservation at the Shangri-La Hotel.
+System: How many rooms would you like to reserve at the Shangri-La Hotel, and what will be your check-in date along with the length of your stay?
+User: I'll need just one room. My check-in date will be the 10th of next month, and I'd like to stay for five nights.
+System: Please confirm that you would like to book one room at the Shangri-La Hotel in Vancouver from the 10th of next month for a stay of five nights.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: Shangri-La Hotel, stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Shangri-La Hotel in Vancouver has been successfully confirmed. You'll be staying in one room from November 10th for five nights. If there's anything else you need or any other questions you have, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

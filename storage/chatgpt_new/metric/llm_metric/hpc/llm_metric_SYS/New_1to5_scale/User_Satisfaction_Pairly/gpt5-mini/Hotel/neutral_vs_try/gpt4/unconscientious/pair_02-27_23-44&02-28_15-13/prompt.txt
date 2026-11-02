@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking to find a hotel in Las Vegas. Can you help me out with that?
+System: Do you have any preference for the star rating of the hotel in Las Vegas?
+User: I don't really care about star ratings. Just find something that's available.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: dontcare })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found a few options for you in Las Vegas. Here are some available hotels:
+
+1. Best Western Plus Las Vegas West: This is a 3-star hotel located at 8669 West Sahara Avenue. The price per night is $117, and smoking is not allowed.
+
+2. Budget Suites Of America: This is a 1-star hotel located at 2219 North Rancho Drive. The price per night is $44, and smoking is allowed.
+
+3. Hampton Inn Las Vegas/Summerlin: Another 3-star option located at 7100 Cascade Valley Court. The price per night is $279, and smoking is allowed.
+
+Please let me know if any of these options work for you or if you have any specific preferences.
+User: I'm feeling pretty chill about it. Let's go with the Budget Suites Of America since it's the cheapest and allows smoking. Can you book it for me?
+System: How many rooms would you like to book, and what is your desired check-in date and stay length at the Budget Suites Of America in Las Vegas?
+User: Let's go with just one room. I'll check in on the 15th and stay for, like, five days or something.
+System: Please confirm to book 1 room for 5 days at the Budget Suites Of America in Las Vegas starting from the 15th.
+User: Yeah, sure, go ahead and book it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 5 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Budget Suites Of America in Las Vegas has been successfully confirmed. The hotel is located at 2219 North Rancho Drive, and the price per night is $44. If you need any further assistance or information, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm thinking of checking out some hotels in Las Vegas. Can you help me find something there?
+System: Sure! Do you have any specific preferences, such as star rating or smoking allowance, for the hotel in Las Vegas? Let me know so I can find the best options for you.
+User: I don't really have any specific preferences. Just find me something that seems decent, I guess.
+System: Alright! I'll find some hotel options for you in Las Vegas. Let's see what's available. 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: I found a few options for you in Las Vegas. One is the Best Western Plus Las Vegas West, which has a 3-star rating with rooms starting at $117 per night. Another option is the Budget Suites Of America, a 1-star hotel with rooms available for $44 per night, and they do allow smoking. Lastly, there's the Hampton Inn Las Vegas/Summerlin, also rated 3 stars, with a price of $279 per night and smoking is allowed. Let me know if any of these options interest you, or if you need more information.
+User: Can you just book me a room at the Budget Suites Of America? I think the smoking allowance will be nice. I don't really care about the star rating.
+System: How many rooms would you like to book at the Budget Suites Of America, and what is your check-in date and length of stay? Once I have these details, I'll proceed with the reservation for you.
+User: I guess just one room is fine. I'll check in tomorrow and probably stay for, like, three days. Let's go with that.
+System: Please confirm that you would like to book 1 room at the Budget Suites Of America in Las Vegas, starting tomorrow for a stay of 3 days. Once confirmed, I will proceed with the reservation.
+User: Yeah, go ahead and book it. Sounds good to me.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-28, location: Las Vegas, number_of_rooms: 1, place_name: Budget Suites Of America, stay_length: 3 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-10-28'}]
+End Search Results
+System: Your booking has been successfully confirmed at the Budget Suites Of America in Las Vegas. You'll have 1 room reserved, starting from October 28, 2023, for a duration of 3 days. If you need further assistance or have any questions, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

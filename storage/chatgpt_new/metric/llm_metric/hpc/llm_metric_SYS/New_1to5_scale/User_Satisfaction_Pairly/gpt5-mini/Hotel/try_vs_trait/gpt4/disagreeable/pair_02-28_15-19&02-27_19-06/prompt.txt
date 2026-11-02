@@ -1,0 +1,96 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in New York. What have you got?
+System: Do you have any specific star rating or preferences, like smoking allowed, that you'd like for the hotel in New York?
+User: I don't care about the star rating, but I want a place where I can smoke. If you can't find that, then what's the point?
+System: I understand that smoking permission is important for you. I'll search for hotels in New York that allow smoking. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: New York, smoking_allowed: True })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 855-781-0088', 'place_name': 'Amsterdam Court Hotel', 'price_per_night': 216, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '226 West 50th Street'}]
+End Search Results
+System: I've found a few hotels in New York that allow smoking. One option is the 11 Howard, a 3-star hotel priced at $270 per night. Another one is the Adria Hotel & Conference Center, also 3-star, priced at $234 per night. Lastly, there's the Amsterdam Court Hotel, a 3-star option at $216 per night. Do any of these meet your needs, or is there anything else you'd like to know?
+User: I don't see why I should pay so much for a 3-star hotel. Aren't there any cheaper options? I want to smoke without burning a hole in my pocket.
+System: I understand you're looking for a more budget-friendly option that allows smoking. Unfortunately, based on the current search results, those are the available 3-star hotels in New York that permit smoking. You might consider adjusting the location slightly or checking if any promotions are available directly with the hotel. Would you like me to look for hotels without the smoking allowance to see if there are cheaper options available?
+User: No, I don't want to compromise on the smoking allowance. Just keep searching for a cheaper option that allows smoking. I know there has to be something out there.
+System: I understand your priority for smoking allowance, and I'll search again to find more budget-friendly options in New York. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: New York, smoking_allowed: True, star_rating: 1 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 646-490-7348', 'place_name': 'Central Park West Hostel', 'price_per_night': 30, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '201 West 87th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-647-0010', 'place_name': 'Chelsea International Hostel', 'price_per_night': 68, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '251 West 20th Street'}, {'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 212-912-2504', 'place_name': 'Vanderbilt Ymca', 'price_per_night': 32, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '224 East 47th Street'}]
+End Search Results
+System: I've found some more budget-friendly options in New York that allow smoking. One option is the Central Park West Hostel, a 1-star hotel priced at $30 per night. Another option is the Chelsea International Hostel, also 1-star, priced at $68 per night. Lastly, there's the Vanderbilt Ymca, a 1-star option at $32 per night. Do any of these suit your needs, or would you like more information on any of them?
+User: Let's go with the Central Park West Hostel. It's the cheapest, and I'm all about saving money. Make a reservation for me.
+System: Great choice! I will proceed with making a reservation for you at the Central Park West Hostel. Could you please let me know your check-in date and the length of your stay? Additionally, how many rooms would you like to book?
+User: Check me in from the 15th for a week, and make it just one room.
+System: Please confirm that you'd like to book 1 room at the Central Park West Hostel in New York, starting from the 15th for a 7-night stay.
+User: Yes, that's correct. Confirm the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: New York, number_of_rooms: 1, place_name: Central Park West Hostel, stay_length: 7 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 1, 'phone_number': '+1 646-490-7348', 'place_name': 'Central Park West Hostel', 'price_per_night': 30, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '201 West 87th Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Central Park West Hostel in New York has been successfully confirmed for 1 room starting from October 15th for a 7-night stay. The hostel is located at 201 West 87th Street. If you have any further questions or need assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Find me a hotel in Las Vegas.
+System: Do you have a preference for the star rating of the hotel in Las Vegas, or should I select one based on availability?
+User: I want the best, obviously. Find me something with at least 5 stars. And don't give me any rubbish about availability.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5 })
+Search Results
+
+End Search Results
+System: The search for a 5-star hotel in Las Vegas returned no results. You might want to consider adjusting your star rating preference or other criteria to find available hotels. Would you like me to search for hotels with a 3 or 4-star rating instead?
+User: Why should I settle for less? Try harder. I want a 5-star hotel in Las Vegas. Look again.
+System: I understand you're looking for a top-tier experience in Las Vegas. However, based on the current data, there are no available 5-star hotels. To ensure we find something exceptional, would you like me to explore options with a 4-star rating instead? This could still provide a luxurious stay. Let me know how you'd like to proceed.
+User: Fine, show me the 4-star options then, but they better be worth it.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4 })
+Search Results
+
+End Search Results
+System: The search for a 4-star hotel in Las Vegas returned no results. It seems we're facing a bit of a challenge with availability. Would you like me to expand the search to include 3-star hotels as well, or perhaps adjust other preferences like smoking allowance to see if that yields better results?
+User: Forget it. Just give me a list of whatever's available. I don't care about the stars anymore.
+System: Let's find some available options for you in Las Vegas, regardless of star rating. APICall(method='SearchHotel', parameters={ location: Las Vegas })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: Here are some available options in Las Vegas: 
+
+1. Best Western Plus Las Vegas West, a 3-star hotel located at 8669 West Sahara Avenue, with a price of $117 per night. Smoking is not allowed.
+
+2. Budget Suites Of America, a 1-star hotel located at 2219 North Rancho Drive, with a price of $44 per night. Smoking is allowed.
+
+3. Hampton Inn Las Vegas/Summerlin, another 3-star hotel located at 7100 Cascade Valley Court, with a price of $279 per night. Smoking is allowed.
+
+Please let me know if any of these options interest you or if you'd like to adjust any preferences.
+User: Those options are all pretty underwhelming, but I suppose I'll have to make do. Book me a room at the Hampton Inn Las Vegas/Summerlin. Just make sure it's two rooms for a week starting on the 10th. Let's get this over with.
+System: Please confirm that you would like to book 2 rooms at the Hampton Inn Las Vegas/Summerlin for 7 days, starting from the 10th in Las Vegas. Once confirmed, I'll proceed with the reservation.
+User: Yes, confirm the booking. Let's just get this done.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-10, location: Las Vegas, number_of_rooms: 2, place_name: Hampton Inn Las Vegas/Summerlin, stay_length: 7 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking for 2 rooms at the Hampton Inn Las Vegas/Summerlin has been successfully confirmed for a 7-day stay starting on October 10th. The hotel is located at 7100 Cascade Valley Court. If there's anything else you need, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

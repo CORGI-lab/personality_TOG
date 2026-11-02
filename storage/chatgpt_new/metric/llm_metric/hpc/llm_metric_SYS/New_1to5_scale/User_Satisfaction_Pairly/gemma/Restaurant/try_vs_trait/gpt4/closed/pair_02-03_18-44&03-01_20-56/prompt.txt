@@ -1,0 +1,72 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Concord. Can you help me find one?
+System: Sure! Do you have a preference for a specific type of cuisine, or are you open to trying something new?
+User: I prefer to stick with something familiar, like American cuisine.
+System: Great! Let's find some American cuisine restaurants for you in Concord. Please hold on for a moment while I look up some options. 
+
+APICall (method='FindRestaurants', parameters={city: Concord, cuisine: American})
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-265-2120', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '1975 Diamond Boulevard Ste. C 160'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-309-7774', 'price_range': 'moderate', 'restaurant_name': 'Lima', 'serves_alcohol': True, 'street_address': '2151 Salvio Street Suite I'}]
+End Search Results
+System: I found a few American cuisine options for you in Concord. How about trying Claim Jumper Restaurants, located at 1981 Diamond Boulevard? They offer a moderate price range and serve alcohol. Would you like more information about this restaurant, or do you want to hear about other options like Eureka! or Lima?
+User: Can you tell me more about the Claim Jumper Restaurants?
+System: Certainly! Claim Jumper Restaurants is located at 1981 Diamond Boulevard in Concord. They offer American cuisine with a moderate price range and serve alcohol. Unfortunately, they do not have live music. If you need anything else or want to make a reservation, just let me know!
+User: I'd like to make a reservation at Claim Jumper Restaurants. Can you book a table for two tonight at 7:00 pm?
+System: Sure, I can help with that. Just to confirm, you want to book a table for two tonight at 7:00 pm at Claim Jumper Restaurants, located at 1981 Diamond Boulevard in Concord. Is that correct?
+User: Yes, that's correct. Please go ahead and make the reservation.
+System: Great! I'll make the reservation for you. Please hold on for a moment while I process the booking. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Claim Jumper Restaurants', city: 'Concord', time: '19:00', date: '2023-10-09', party_size: 2})
+
+Once the reservation is confirmed, I'll let you know.
+Search Results
+[{'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard', 'date': '2023-10-09', 'party_size': '2', 'time': '19:00'}, {'city': 'Concord', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '925-798-4300', 'price_range': 'moderate', 'restaurant_name': 'Claim Jumper Restaurants', 'serves_alcohol': True, 'street_address': '1981 Diamond Boulevard', 'date': '2023-10-09', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Claim Jumper Restaurants for two people tonight at 7:00 pm has been successfully confirmed. If you have any other questions or need further assistance, feel free to ask. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I am looking to find a restaurant in Concord.
+System: Do you have a specific type of cuisine in mind, or would you like me to suggest something based on your preferences?
+User: I would like a place that serves Italian food.
+System: APICall (method='FindRestaurants', parameters={city: Concord, cuisine: Italian})
+Search Results
+[{'city': 'Concord', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-687-5520', 'price_range': 'moderate', 'restaurant_name': 'Pasta Primavera Cafe', 'serves_alcohol': False, 'street_address': '4425-F Treat Boulevard'}, {'city': 'Concord', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-680-6888', 'price_range': 'moderate', 'restaurant_name': "Skipolini's Pizza", 'serves_alcohol': False, 'street_address': '2001 Salvio Street'}, {'city': 'Concord', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-521-9010', 'price_range': 'moderate', 'restaurant_name': 'Toscana Ristorante', 'serves_alcohol': True, 'street_address': '2151 Salvio Street'}]
+End Search Results
+System: I found some Italian restaurants in Concord that might suit your needs. One option is Pasta Primavera Cafe, located at 4425-F Treat Boulevard. They have a moderate price range and do not serve alcohol. Would you like more information about this restaurant, or would you prefer to hear about another option?
+User: Do you have another option that serves alcohol?
+System: Another option is Toscana Ristorante, located at 2151 Salvio Street. They serve alcohol and have a moderate price range. Would you like more information about this restaurant or explore other options?
+User: I would like to make a reservation at Toscana Ristorante.
+System: For what date and time would you like to make the reservation at Toscana Ristorante? Also, could you please let me know the number of people in your party?
+User: The reservation should be for two people at 7:00 pm tomorrow.
+System: Just to confirm, you would like to reserve a table for two at Toscana Ristorante in Concord for tomorrow at 7:00 pm. I'll proceed with making the reservation. Please hold on a moment. 
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: 'Toscana Ristorante', city: 'Concord', time: '19:00', date: '2023-10-27', party_size: 2})
+Search Results
+[{'city': 'Concord', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '925-521-9010', 'price_range': 'moderate', 'restaurant_name': 'Toscana Ristorante', 'serves_alcohol': True, 'street_address': '2151 Salvio Street', 'date': '2023-10-27', 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Toscana Ristorante in Concord has been successfully made for two people tomorrow at 7:00 pm. If you need to contact them, their phone number is 925-521-9010. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

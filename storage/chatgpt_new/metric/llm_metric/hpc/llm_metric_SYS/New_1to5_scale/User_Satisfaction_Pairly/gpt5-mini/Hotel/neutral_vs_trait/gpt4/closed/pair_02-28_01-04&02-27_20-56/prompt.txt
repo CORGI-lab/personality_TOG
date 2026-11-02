@@ -1,0 +1,74 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Fresno. Can you help me with that?
+System: Could you please let me know if you have any specific preferences like a star rating or smoking allowance for the hotel in Fresno?
+User: I don't need anything fancy, just a decent place to stay. Smoking isn't important to me.
+System: APICall(method='SearchHotel', parameters={ location: Fresno, star_rating: 3, smoking_allowed: dontcare })
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-268-1000', 'place_name': 'Doubletree By Hilton Hotel Fresno Convention Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2233 Ventura Street'}, {'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-375-7760', 'place_name': 'Piccadilly Inn Airport', 'price_per_night': 126, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '5115 East McKinley Avenue'}, {'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-233-6650', 'place_name': 'Radisson Hotel Fresno Conference Center', 'price_per_night': 222, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1055 Van Ness Avenue'}]
+End Search Results
+System: I found a few options for you in Fresno. One of them is the Doubletree By Hilton Hotel Fresno Convention Center, which is a 3-star hotel with a rate of $222 per night. The address is 2233 Ventura Street, and smoking is not allowed. Would you like more details about this hotel, or should I provide information on another option?
+User: Can you tell me if there's a less expensive option available?
+System: The Piccadilly Inn Airport is another 3-star option available for you. It costs $126 per night, and smoking is allowed. The address is 5115 East McKinley Avenue. Would you like more information about this hotel, or would you prefer to hear about another option?
+User: Is there anything even cheaper than that?
+System: The least expensive option I found is the Piccadilly Inn Airport at $126 per night. If you're looking for something cheaper, you may want to consider altering preferences like star rating or location. Would you like to explore different options?
+User: No, I think the Piccadilly Inn Airport will be fine. Can you help me book a room there?
+System: How many rooms would you like to book at the Piccadilly Inn Airport, and what will be your check-in date and length of stay?
+User: I would like to book one room starting on the 5th for five days.
+System: Please confirm that you want to book 1 room at the Piccadilly Inn Airport in Fresno, starting on the 5th, for a stay of 5 days.
+User: Yes, that's correct. Please go ahead and make the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Fresno, number_of_rooms: 1, place_name: Piccadilly Inn Airport, stay_length: 5 })
+Search Results
+[{'location': 'Fresno', 'number_of_rooms': 2, 'phone_number': '+1 559-375-7760', 'place_name': 'Piccadilly Inn Airport', 'price_per_night': 126, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '5115 East McKinley Avenue', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your booking at the Piccadilly Inn Airport in Fresno has been successfully confirmed. You have reserved 1 room starting from November 5th for a duration of 5 days. The hotel address is 5115 East McKinley Avenue, and if you need to contact them, their phone number is +1 559-375-7760. Is there anything else I can assist you with today?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in New York. Can you help me with that?
+System: Do you have any specific preferences for the hotel, such as star rating or smoking allowance, or should I proceed with a general search in New York?
+User: A general search is fine.
+System: APICall(method='SearchHotel', parameters={ location: New York })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: I found a few options for you in New York. One option is the 11 Howard, a 3-star hotel located at 11 Howard Street, which allows smoking and has rooms priced at $270 per night. Would you like more information about this hotel or are you interested in another option?
+User: Can you tell me about another option?
+System: Another option is the Adria Hotel & Conference Center, which is also a 3-star hotel. It is located at 221-17 Northern Boulevard, Bayside, and allows smoking. The rooms are priced at $234 per night. Let me know if you need more information or if you are interested in this hotel.
+User: Are there any hotels with a lower price than these options?
+System: Yes, there is another option with a lower price. The Aloft Harlem is a 3-star hotel located at 2296 Frederick Douglass Boulevard. It does not allow smoking, and the rooms are priced at $243 per night. Would you like more details about this hotel, or are you interested in making a reservation?
+User: Can you find something even cheaper than $243 per night?
+System: I'm sorry, but based on the current search results, there are no hotels available in New York with a price lower than $243 per night. Would you like me to search again with different preferences, such as a different star rating or smoking allowance, to try and find a more budget-friendly option?
+User: No, that's okay. Please go ahead and book a room at the Adria Hotel & Conference Center for me.
+System: How many rooms would you like to book, and what is your intended check-in date and stay length at the Adria Hotel & Conference Center?
+User: I need one room, checking in on the 15th, and I'll stay for five nights.
+System: Please confirm that I should proceed to book 1 room for 5 nights at the Adria Hotel & Conference Center, starting from the 15th in New York.
+User: Yes, please proceed with the booking.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: New York, number_of_rooms: 1, place_name: Adria Hotel & Conference Center, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Adria Hotel & Conference Center in New York has been successfully confirmed for 1 room starting from October 15th for 5 nights. If you need any more assistance or information, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

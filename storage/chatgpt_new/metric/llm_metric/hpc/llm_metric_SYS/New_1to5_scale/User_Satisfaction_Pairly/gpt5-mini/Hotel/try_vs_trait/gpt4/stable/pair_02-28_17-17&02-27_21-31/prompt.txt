@@ -1,0 +1,64 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to find a hotel in Vancouver, please.
+System: Do you have any specific preferences for the hotel, such as star rating or whether smoking is allowed? This will help me refine the search for you.
+User: I prefer a non-smoking hotel with a decent star rating, maybe around 4 stars. Could you find something like that, please?
+System: APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 800-663-1155', 'place_name': 'Georgian Court Hotel', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '773 Beatty Street'}]
+End Search Results
+System: I found a few options for you. We have the Coast Coal Harbour Vancouver Hotel By Apa and the Georgian Court Hotel, both offering non-smoking accommodations at a rate of $108 per night. Additionally, there's the Delta Hotels By Marriott Vancouver Downtown Suites, priced at $324 per night. All of these options have a 4-star rating. Would you like more details on any of these hotels, or do you have any other preferences?
+User: Could you provide more details on the Coast Coal Harbour Vancouver Hotel By Apa, please?
+System: The Coast Coal Harbour Vancouver Hotel By Apa is located at 1180 West Hastings Street in Vancouver. It offers non-smoking accommodations with a 4-star rating. The price per night is $108. If you need the phone number for the hotel, it is +1 604-697-0202. Is there anything else you'd like to know, or would you like to proceed with a reservation?
+User: Yes, please proceed with making a reservation at the Coast Coal Harbour Vancouver Hotel By Apa. I would like to book one room starting from the 15th for a stay of five days.
+System: To confirm your reservation at the Coast Coal Harbour Vancouver Hotel By Apa, I'll book one room starting from the 15th for a five-day stay. Please confirm that these details are correct before I proceed with the reservation.
+User: Yes, those details are correct. Please go ahead with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Coast Coal Harbour Vancouver Hotel By Apa, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Coast Coal Harbour Vancouver Hotel By Apa has been successfully confirmed. You will be staying for five days starting from November 15, 2023. If you need any further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to search for a hotel in Vancouver, please.
+System: Do you have a preferred star rating for the hotel, or should I look for any available options in Vancouver?
+User: I'm looking for a hotel with a 4-star rating, please.
+System: Great! I'll search for 4-star hotels in Vancouver for you. Please hold on for a moment while I gather the information. APICall(method='SearchHotel', parameters={ location: Vancouver, star_rating: 4 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street'}]
+End Search Results
+System: I found a few 4-star hotels in Vancouver for you. The Auberge Vancouver Hotel allows smoking and is located at 837 West Hastings Street with a price of $296 per night. The Coast Coal Harbour Vancouver Hotel By Apa does not allow smoking and is located at 1180 West Hastings Street with a price of $108 per night. Lastly, the Delta Hotels By Marriott Vancouver Downtown Suites also does not allow smoking and is located at 550 West Hastings Street with a price of $324 per night. Would you like more details on any of these options or need assistance with anything else?
+User: I would like to know if the Delta Hotels By Marriott Vancouver Downtown Suites has any specific amenities or services that stand out. Could you provide more information on that, please?
+System: I'm sorry, but the specific amenities or services for the Delta Hotels By Marriott Vancouver Downtown Suites are not available in the current data I have. Would you like assistance with any other aspect of your hotel search or perhaps consider booking a room there?
+User: Thank you for the information. I think I'll go with the Delta Hotels By Marriott Vancouver Downtown Suites. Could you help me reserve a room there? I plan to check in on the 10th and stay for five days.
+System: Please confirm if you would like to book one room at the Delta Hotels By Marriott Vancouver Downtown Suites from the 10th for a five-day stay in Vancouver.
+User: Yes, that's correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-10-10, location: Vancouver, number_of_rooms: 1, place_name: Delta Hotels By Marriott Vancouver Downtown Suites, stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 844-254-5048', 'place_name': 'Delta Hotels By Marriott Vancouver Downtown Suites', 'price_per_night': 324, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '550 West Hastings Street', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your reservation at the Delta Hotels By Marriott Vancouver Downtown Suites has been successfully confirmed for a five-day stay starting from October 10th. Is there anything else you need help with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

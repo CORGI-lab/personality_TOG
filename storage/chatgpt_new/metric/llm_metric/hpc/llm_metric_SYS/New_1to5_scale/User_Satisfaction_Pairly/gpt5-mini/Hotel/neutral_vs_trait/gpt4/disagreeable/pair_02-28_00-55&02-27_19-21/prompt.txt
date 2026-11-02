@@ -1,0 +1,104 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need a hotel in Las Vegas. Make it quick.
+System: Do you have any specific preferences for the hotel, such as star rating or smoking allowance, or should I search for any available options in Las Vegas?
+User: Just find me a top-rated hotel that allows smoking. I don't want to waste time on mediocre options.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: It seems there were no results found for a 5-star hotel in Las Vegas that allows smoking. Would you like me to search for hotels with a different star rating or without the smoking allowance preference?
+User: Try searching for a 4-star hotel that allows smoking. I’m not interested in anything less than that.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: It appears there are no results for a 4-star hotel in Las Vegas that allows smoking. Would you like me to search for hotels with a different star rating or perhaps without the smoking allowance preference?
+User: Forget the smoking allowance then. Just give me the best 4-star hotel you can find.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4 })
+Search Results
+
+End Search Results
+System: Unfortunately, there are no available 4-star hotels in Las Vegas at the moment. Would you like me to search for hotels with a different star rating?
+User: Fine, look for a 3-star hotel then. But it better be worth my time.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: I found a few 3-star hotels in Las Vegas for you. One option is the Best Western Plus Las Vegas West, priced at $117 per night. Another option is the Hampton Inn Las Vegas/Summerlin, which allows smoking and costs $279 per night. Lastly, there's the Oasis At Gold Spike, priced at $63 per night. Would you like more details on any of these hotels or assistance with a reservation?
+User: I guess the Hampton Inn is the only one that allows smoking, but it's way overpriced. Give me more details about the Oasis At Gold Spike, and it better have something good to offer.
+System: The Oasis At Gold Spike is a 3-star hotel located at 217 Las Vegas Boulevard North. It offers rooms at a price of $63 per night. However, please note that smoking is not allowed at this hotel. If you need any further details or assistance with a reservation, feel free to let me know!
+User: What a joke. Fine, let's just book the Oasis At Gold Spike. But if they don't have a room with a view, it's going to be your fault. Get it done for three nights starting from the 5th.
+System: Please confirm that you would like to book a room at the Oasis At Gold Spike in Las Vegas for three nights starting from the 5th. Once confirmed, I'll proceed with the reservation.
+User: Yes, confirm the booking. But if there are any issues, I'm holding you responsible.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-05, location: Las Vegas, number_of_rooms: 1, place_name: Oasis At Gold Spike, stay_length: 3 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North', 'check_in_date': '2023-11-05'}]
+End Search Results
+System: Your reservation at the Oasis At Gold Spike in Las Vegas has been successfully confirmed for three nights starting from November 5th. If you have any other questions or need further assistance, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Las Vegas. What can you find for me? And don't waste my time with anything below 4 stars.
+System: Please hold on while I search for available 4-star or higher hotels in Las Vegas. 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4 })
+Search Results
+
+End Search Results
+System: It seems there were no results for 4-star hotels in Las Vegas. Would you like me to search for hotels with a different star rating or adjust any other preferences, such as smoking allowance, to find available options?
+User: Try searching again. I doubt you looked hard enough. Maybe include smoking-allowed hotels this time.
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4, smoking_allowed: True })
+Search Results
+
+End Search Results
+System: Unfortunately, there are still no results for 4-star smoking-allowed hotels in Las Vegas. Would you like to consider other star ratings, or is there anything else you'd like to adjust in your search criteria?
+User: Find me a 5-star hotel then. I'll pay for luxury if it means getting what I want.
+System: Understood. Let me search for 5-star hotels in Las Vegas for you. Please hold on. 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5 })
+Search Results
+
+End Search Results
+System: It appears there are no results for 5-star hotels in Las Vegas either. Would you like me to expand the search to include 3-star or lower-rated hotels, or perhaps reconsider any other preferences like the smoking allowance?
+User: Forget it. Just find me the best hotel you can, regardless of the stars, and make sure they allow smoking. I'm tired of this.
+System: I'll search for hotels in Las Vegas that allow smoking, regardless of their star rating. Please hold on. 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, smoking_allowed: True })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-360-1200', 'place_name': 'La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech', 'price_per_night': 72, 'smoking_allowed': True, 'star_rating': 2, 'street_address': '7101 Cascade Valley Court'}]
+End Search Results
+System: I've found a few options for smoking-allowed hotels in Las Vegas. The Budget Suites Of America is a 1-star hotel at $44 per night, located at 2219 North Rancho Drive. There's also the Hampton Inn Las Vegas/Summerlin, a 3-star hotel at $279 per night, located at 7100 Cascade Valley Court. Lastly, La Quinta Inn & Suites By Wyndham Las Vegas Summerlin Tech is a 2-star hotel at $72 per night, located at 7101 Cascade Valley Court. Which one would you like to proceed with?
+User: The Hampton Inn Las Vegas/Summerlin. At least it's somewhat decent. Book it for me.
+System: How many rooms would you like to reserve at the Hampton Inn Las Vegas/Summerlin, and what are your check-in date and stay length?
+User: One room. Check-in on the 15th, and I'll be staying for six nights.
+System: Please confirm that you would like to reserve 1 room at the Hampton Inn Las Vegas/Summerlin in Las Vegas, with a check-in date of 2023-11-15 for a stay of 6 nights.
+User: Yes, confirm it. Get it done.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Las Vegas, number_of_rooms: 1, place_name: Hampton Inn Las Vegas/Summerlin, stay_length: 6 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Hampton Inn Las Vegas/Summerlin has been successfully confirmed. You'll be staying for 6 nights starting from November 15, 2023. If you have any further requests or need additional information, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

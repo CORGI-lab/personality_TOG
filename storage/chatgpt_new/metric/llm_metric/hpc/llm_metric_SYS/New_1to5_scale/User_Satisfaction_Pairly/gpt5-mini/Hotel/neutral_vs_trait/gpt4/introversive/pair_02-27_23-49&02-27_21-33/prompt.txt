@@ -1,0 +1,93 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in Vancouver. Can you help me with that?
+System: Of course. Let me start by checking for available hotels in Vancouver. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: I found a few options for hotels in Vancouver. One of them is the Shangri-La Hotel, a 5-star hotel located at 1128 West Georgia Street. It costs $300 per night, and smoking is not allowed. If you're interested in more options, there's also the Wedgewood Hotel & Spa Vancouver, another 5-star option, priced at $510 per night, also non-smoking. Lastly, the Auberge Vancouver Hotel is a 4-star hotel that allows smoking, with a price of $296 per night. Would you like more information on any of these hotels, or is there a specific one you're interested in?
+User: Can you tell me more about the Auberge Vancouver Hotel, like the number of rooms available?
+System: The Auberge Vancouver Hotel has 2 rooms available. Would you like to proceed with booking this hotel or need more information?
+User: Can you also tell me the amenities offered at the Auberge Vancouver Hotel?
+System: I'm sorry, but I don't have information on the specific amenities offered at the Auberge Vancouver Hotel. Would you like to proceed with booking this hotel, or is there anything else I can assist you with?
+User: I think I'll go with the Auberge Vancouver Hotel. Can you reserve it for me?
+System: How many days would you like to stay at the Auberge Vancouver Hotel, and when would you like to check in? Additionally, please confirm the number of rooms you'd like to reserve.
+User: I would like to reserve one room for five days, starting from the 15th.
+System: Please confirm that you'd like to book 1 room at the Auberge Vancouver Hotel for 5 days, starting from the 15th, in Vancouver.
+User: Yes, please go ahead and make the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Vancouver, number_of_rooms: 1, place_name: Auberge Vancouver Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Auberge Vancouver Hotel has been successfully confirmed. You'll be staying for 5 days, starting from November 15th. If you need the hotel's contact details, the phone number is +1 604-678-8899 and the address is 837 West Hastings Street. Is there anything else you would like assistance with?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'd like to find a hotel in Seattle, please.
+System: Do you have a specific star rating in mind for the hotel in Seattle, or are you open to any rating?
+User: I'm open to any rating, but I prefer a quiet place.
+System: Could you please let me know if you have any preferences regarding smoking allowance in the hotel? This will help me narrow down the options for you.
+User: I prefer non-smoking hotels.
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 5, smoking_allowed: False })
+Search Results
+
+End Search Results
+System: It seems there were no results found for a 5-star, non-smoking hotel in Seattle. Would you like me to search for hotels with a different star rating or modify your preferences to find available options?
+User: Could you try searching for 4-star non-smoking hotels in Seattle instead?
+System: APICall(method='SearchHotel', parameters={ location: Seattle, star_rating: 4, smoking_allowed: False })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-774-1234', 'place_name': 'Grand Hyatt Seattle', 'price_per_night': 456, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '721 Pine Street'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-448-8600', 'place_name': 'Hotel Andra', 'price_per_night': 372, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '2000 4th Avenue'}]
+End Search Results
+System: I found a few 4-star, non-smoking hotels in Seattle for you:
+
+1. **Crowne Plaza Seattle Downtown**  
+   - Price per night: $120  
+   - Address: 1113 6th Avenue  
+   - Phone: +1 206-464-1980  
+
+2. **Grand Hyatt Seattle**  
+   - Price per night: $456  
+   - Address: 721 Pine Street  
+   - Phone: +1 206-774-1234  
+
+3. **Hotel Andra**  
+   - Price per night: $372  
+   - Address: 2000 4th Avenue  
+   - Phone: +1 206-448-8600  
+
+Would you like more information about any of these hotels, or is there anything else I can assist you with?
+User: Could you tell me more about the Crowne Plaza Seattle Downtown, please?
+System: The Crowne Plaza Seattle Downtown is a 4-star, non-smoking hotel located at 1113 6th Avenue, Seattle. The price per night is $120, and you can contact them at +1 206-464-1980. If you need further details or wish to proceed with a reservation, please let me know how I can assist you!
+User: I think I'll go with Crowne Plaza Seattle Downtown. Can you make a reservation for one room? I'll check in on the 10th and stay for five nights.
+System: Please confirm that you would like to reserve 1 room at the Crowne Plaza Seattle Downtown, checking in on the 10th and staying for 5 nights in Seattle.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Seattle, number_of_rooms: 1, place_name: "Crowne Plaza Seattle Downtown", stay_length: 5 })
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-464-1980', 'place_name': 'Crowne Plaza Seattle Downtown', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1113 6th Avenue', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Crowne Plaza Seattle Downtown has been successfully confirmed for 1 room, starting from November 10th for a stay of 5 nights. If there is anything else you need or any other details you require, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

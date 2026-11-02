@@ -1,0 +1,141 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in San Francisco.
+
+System: Okay, I can help with that. Just to confirm, you are looking for a hotel in San Francisco?
+
+User: Yes, please.
+
+System: Okay. I will search for hotels in San Francisco.
+
+APICall(method='SearchHotel', parameters={ location: San Francisco })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: I found a few hotels in San Francisco. There's Amsterdam Hostel San Francisco, a 1-star hotel; Argonaut Hotel, a 4-star hotel; and Beck'S Motor Lodge, a 2-star hotel. Would any of these be of interest to you?
+
+User: Perhaps the Argonaut Hotel. What is the price per night?
+
+System: The Argonaut Hotel costs $408 per night. Would you like any further details about it, or perhaps to consider one of the other options?
+
+User: No, I think I'd like to book the Argonaut Hotel.
+
+System: Okay. To proceed with the booking, I'll need a little more information. What date would you like to check in, and how many nights will you be staying? Also, how many rooms will you need?
+
+User: I'd like to book a room for one night, starting tomorrow. Just one room, please.
+
+System: Could you please specify the full date for your check-in? I need the year, month, and day to proceed.
+
+User: Okay, I'd like to book for tomorrow, March 9, 2019.
+
+System: Okay, so you'd like to book one room at the Argonaut Hotel in San Francisco, checking in on March 9, 2019, for a one-night stay. Is that correct?
+
+User: Yes, that's correct. Please proceed with the booking.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2019-03-09, location: San Francisco, number_of_rooms: 1, place_name: Argonaut Hotel, stay_length: 1 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': '1', 'phone_number': '+1 415-673-3277', 'place_name': 'Argonaut Hotel', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street', 'check_in_date': '2019-03-09', 'stay_length': '1'}]
+End Search Results
+System: There may have been a misunderstanding. The search results show a different hotel, 'Amsterdam Hostel San Francisco', with a different phone number and address than the Argonaut Hotel. It seems the reservation details do not match your request. Could you please confirm if you'd like to proceed with a reservation at the Amsterdam Hostel San Francisco instead?
+
+User: No, I'd prefer the Argonaut Hotel if possible.
+
+System: I understand. It seems there was an issue with the reservation. Let me reconfirm the details and try again. You want to book one room at the Argonaut Hotel in San Francisco for one night, starting March 9, 2019. Is that correct?
+
+User: Yes, please try booking the Argonaut Hotel again.
+
+System: Okay, I will try booking the Argonaut Hotel again with the information you provided.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2019-03-09, location: San Francisco, number_of_rooms: 1, place_name: Argonaut Hotel, stay_length: 1 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': '1', 'phone_number': '+1 415-673-3277', 'place_name': 'Argonaut Hotel', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street', 'check_in_date': '2019-03-09', 'stay_length': '1'}]
+End Search Results
+System: It seems like there's still an issue with the booking. The result keeps returning Amsterdam Hostel San Francisco instead of the Argonaut Hotel. Unfortunately, I am unable to book the Argonaut Hotel with the current information. Would you be willing to consider the Amsterdam Hostel San Francisco, or perhaps try a different date or search for hotels with a different star rating?
+
+User: I suppose I could consider the Amsterdam Hostel San Francisco.
+
+System:  System: Okay. Just to confirm, you would like to book one room at the Amsterdam Hostel San Francisco for one night, starting March 9, 2019?
+
+User: Yes, please.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2019-03-09, location: San Francisco, number_of_rooms: 1, place_name: Amsterdam Hostel San Francisco, stay_length: 1 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': '1', 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street', 'check_in_date': '2019-03-09', 'stay_length': '1'}]
+End Search Results
+System: Okay, I've booked one room at the Amsterdam Hostel San Francisco for you, checking in on March 9, 2019, for one night. The price is $24 per night. Is there anything else I can assist you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Vancouver.
+
+System: Okay, I can help with that. Do you have any preferences for star rating or smoking allowance?
+
+User: No preference on smoking. Maybe something with a lower star rating.
+
+System: Okay, searching for hotels in Vancouver with a lower star rating and no preference on smoking.
+
+APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: Alright, I found a few options in Vancouver. There's the Shangri-La Hotel and the Wedgewood Hotel & Spa Vancouver, both with 5 stars, and the Auberge Vancouver Hotel with 4 stars. Since you preferred something with a lower star rating, would you like to consider the Auberge Vancouver Hotel? It also allows smoking.
+
+User: Perhaps. What is the price per night at the Auberge Vancouver Hotel?
+
+System: Okay, the price per night at the Auberge Vancouver Hotel is $296. Does that sound good, or would you like me to look for something else?
+
+User: That's a bit expensive. Are there any hotels with a lower price?
+
+System: Okay, let me check for hotels with a lower price in Vancouver. How about we try looking at hotels with a 3-star rating or lower? Would you be open to that?
+
+User: Yes, please.
+
+System: APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: It seems like there are no hotels with a 3-star rating or lower in my database. Perhaps we could broaden the search to include all star ratings again and see if there are any other hotels with a lower price than the Auberge Vancouver Hotel?
+
+User: Okay, broaden the search. Just the lowest price available, please.
+
+System: APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: Okay, I've broadened the search in Vancouver, but it appears the Auberge Vancouver Hotel still has the lowest price at $296 per night among the options available. Would you like me to provide you with the address and phone number for the Auberge Vancouver Hotel, or would you like to explore other options, perhaps in a different location?
+
+User: Just give me the address for Auberge Vancouver Hotel.
+
+System: Okay, the address for the Auberge Vancouver Hotel is 837 West Hastings Street.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

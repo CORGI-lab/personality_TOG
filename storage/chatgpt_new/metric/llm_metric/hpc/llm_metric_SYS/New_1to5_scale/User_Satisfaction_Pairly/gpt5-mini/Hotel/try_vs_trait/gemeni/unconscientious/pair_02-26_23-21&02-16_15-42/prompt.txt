@@ -1,0 +1,173 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Okay, uh, let's find a hotel in... maybe Las Vegas? I guess that sounds fun right now.
+
+System: Okay, Las Vegas sounds like a plan! Any preference on the star rating for the hotel? Or should we just see what pops up?
+
+User: Ugh, whatever. Just show me what's there. I don't really care about the stars or anything.
+
+System: APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: dontcare })
+
+Search Results
+
+End Search Results
+System: Okay, so here's what we've got in Las Vegas. 
+APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: dontcare, smoking_allowed: dontcare})
+
+Search Results
+
+End Search Results
+System: Since you don't really care about the details, I'll just pull up whatever's available in Las Vegas. One sec...
+APICall(method='SearchHotel', parameters={location: Las Vegas})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 2, 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 44, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}]
+End Search Results
+System: Alright, so we've got a few options in Las Vegas. There's the Best Western Plus Las Vegas West, a 3-star place, the Budget Suites Of America which is 1-star and allows smoking, and the Hampton Inn Las Vegas/Summerlin, another 3-star that also allows smoking. Wanna just pick one at random, or do you want to know a bit more about them?
+
+User: Smoking allowed, huh? Okay, tell me about that Budget Suites place. Sounds... cheap, I guess. What's the damage per night? And, uh, is it, like, totally gross or something?
+
+System: Okay, so for Budget Suites Of America, it's $44 per night. Can't promise it's not gross, though! It's got one-star. Anything else you wanna know, or should we just roll with it?
+
+User: $44? Eh, that's probably fine. What's the address? And, uh, can we just book it? I'm too lazy to look at other options.
+
+System: Alright, the address for Budget Suites Of America is 2219 North Rancho Drive. So, you want to book it then? How many nights and what date are we looking at? Just give me the rough details, no need to be too precise.
+
+User: Uh, yeah, book it. Like, 5 nights? Starting... whenever. Today, I guess? Does it matter?
+
+System: Okay, got it. So, 5 nights at Budget Suites Of America, starting today, in Las Vegas. How many rooms do you want?
+
+User: Just one, I guess. Unless...are they big enough for, like, two people? Whatever, just book one.
+
+System: Okay, one room for 5 nights starting today at Budget Suites Of America in Las Vegas. Just to confirm, that's the one-star place where smoking is allowed. Ready to lock it in?
+
+User: Yeah, whatever. Just book it. I'm sure it'll be fine.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-07-03, location: Las Vegas, number_of_rooms: 1, place_name: 'Budget Suites Of America', stay_length: 5})
+
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': '1', 'phone_number': '+1 702-638-1800', 'place_name': 'Budget Suites Of America', 'price_per_night': 93, 'smoking_allowed': True, 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2024-07-03', 'stay_length': '5'}]
+End Search Results
+System: Alright, all booked! Just so you know, it's $93 a night, not the $44 we saw earlier, but hey, five nights at the Budget Suites Of America starting today, smoking allowed. You're all set! Want me to repeat any of the details?
+
+User: Uh, no, that's fine. What's the address again, just in case I forget?
+
+System: Okay, no problem. It's 2219 North Rancho Drive. Don't lose it! Anything else I can help you with? Or are we good to go?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Okay, I need to book a hotel, I guess. Somewhere... easy. How about San Francisco?
+
+System: Okay, I can help with that. To book a hotel in San Francisco, I'll need a little more information. Could you please tell me the check-in date and how many nights you'll be staying? Also, how many rooms will you need?
+
+User: Uh, check-in date... whatever's soonest, I suppose. Like, tomorrow? And just one night, maybe? One room is fine. I'm not really planning this out, am I?
+
+System: Okay, I understand. So you're looking to book a single room in San Francisco for one night, starting tomorrow. To proceed, I'll need the exact date. Could you please provide the full date for check-in?
+
+User: Ugh, fine. Tomorrow is... November 9th. Just get me something cheap, okay? I don't really care.
+
+System: Okay, I've got it. You want a cheap hotel in San Francisco for one night, checking in on November 9th, with one room. I'll search for something suitable.
+
+APICall(method='SearchHotel', parameters={location: San Francisco})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Alright, I've found a few options in San Francisco. The Amsterdam Hostel San Francisco is the cheapest at $24 per night. It's a 1-star hotel. Would you like to know more about it, or perhaps consider a slightly nicer place? There's also Beck'S Motor Lodge, a 2-star hotel at $60 a night.
+
+User: Eh, just book the cheap one. Amsterdam Hostel, whatever. November 9th, one night, one room. Let's just get this over with.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Amsterdam Hostel San Francisco, check_in_date: 2023-11-09, stay_length: 1, location: San Francisco, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street', 'check_in_date': '2023-11-09'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street', 'check_in_date': '2023-11-09'}]
+End Search Results
+System: Okay, your booking at Amsterdam Hostel San Francisco for November 9th, one night, one room, is confirmed. The total will be $24. Is there anything else I can help you with today?
+
+User: Wait, really? Already booked? Ugh, I don't even know where that is. What's the address? I guess I should probably know that, huh?
+
+System: The address for Amsterdam Hostel San Francisco is 749 Taylor Street. Is there anything else you need to know, or can I help you with anything else today?
+
+User: Taylor Street, huh? Sounds...busy. Actually, is there anything closer to the water? Maybe I'd rather be near the bay. Can you just, like, cancel that last one and find something else?
+
+System: Okay, I can cancel that last booking and search for something closer to the bay. Give me a moment.
+
+APICall(method='SearchHotel', parameters={location: San Francisco})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Okay, I see a couple of options. Argonaut Hotel is located at 495 Jefferson Street, which is closer to the bay. It's a 4-star hotel and the price is $408 per night. Would you like to book that instead?
+
+User: $408?! Seriously? That's...a lot. Is there anything cheaper near the water? I don't need fancy, just... not a dump. Maybe something like half that price? I don't know, surprise me, I guess.
+
+System: Okay, let's see if we can find something more reasonably priced near the bay. How about Beck'S Motor Lodge? It's located at 2222 Market Street and costs $60 per night. It's not directly on the water, but it's closer than the previous one. Would you like to know more about it?
+
+User: Market Street? Ugh, still not the water. Fine, is there anything else? Maybe just a little further out, but still… not too far? And, like, under $200? I'm already regretting this trip.
+
+System: I understand you're looking for a hotel near the water in San Francisco for under $200, but it seems difficult to find hotels that meet your expectations. Let's try broadening the search a little. Would you be willing to consider hotels that aren't necessarily right on the water but are still in a convenient location? Also, are you flexible with the star rating?
+
+User: Star rating? Eh, whatever. Just… show me what you've got. I'm too tired to care anymore. As long as it's not, like, a total roach motel.
+
+System: Okay, I'll show you what's available. It looks like we're having trouble finding something that perfectly matches your criteria. Let's try this: How about I search for hotels under $200 in San Francisco, regardless of their proximity to the water or star rating? This will give us a broader range of options to consider. Would you be okay with that?
+
+User: Yeah, whatever. Just find something, I guess. As long as it's not, like, completely disgusting. Hurry up, though, I haven't got all day.
+
+System: Okay, I'll focus on finding something quickly. Let's try these parameters: hotels under $200 in San Francisco, any star rating.
+
+APICall(method='SearchHotel', parameters={location: San Francisco})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+System: Alright, it seems the options are still limited. Given your budget and willingness to skip the waterfront view, the Amsterdam Hostel San Francisco at $24 a night is still the cheapest option. Would you like to just book that one again for November 9th? We can get it done quickly and be done with it.
+
+User: Ugh, fine. Book it. Again. Amsterdam Hostel, November 9th. Just... get it over with. Can we be done after this?
+
+System: Okay, let's get this done. I'll book the Amsterdam Hostel San Francisco for you for November 9th, one night, one room. Just to confirm, that's what you want?
+
+
+User: Yeah, yeah, just book it. Whatever. November 9th, Amsterdam Hostel. Just make it happen so I can stop thinking about this.
+
+System: Okay, booking it is.
+
+APICall(method='ReserveHotel', parameters={place_name: Amsterdam Hostel San Francisco, check_in_date: 2023-11-09, stay_length: 1, location: San Francisco, number_of_rooms: 1})
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street', 'check_in_date': '2023-11-09'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street', 'check_in_date': '2023-11-09'}]
+End Search Results
+System: Okay, the Amsterdam Hostel San Francisco is booked for you on November 9th for one night. You're all set. The total is $24. Anything else I can help you with before we wrap this up?
+
+User: Wait, seriously? Is that even near anything? Like, food? Or… I don't know, something fun? What's close to that place?
+
+System: Okay, one moment. Let me check what's nearby the Amsterdam Hostel San Francisco.
+
+```tool_code
+APICall(method='SearchHotel', parameters={location: San Francisco})
+```
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-673-3277', 'place_name': 'Amsterdam Hostel San Francisco', 'price_per_night': 24, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '749 Taylor Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-563-0800', 'place_name': 'Argonaut Hotel', 'price_per_night': 408, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '495 Jefferson Street'}, {'location': 'San Francisco', 'number_of_rooms': 1, 'phone_number': '+1 415-621-8212', 'place_name': "Beck'S Motor Lodge", 'price_per_night': 60, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2222 Market Street'}]
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

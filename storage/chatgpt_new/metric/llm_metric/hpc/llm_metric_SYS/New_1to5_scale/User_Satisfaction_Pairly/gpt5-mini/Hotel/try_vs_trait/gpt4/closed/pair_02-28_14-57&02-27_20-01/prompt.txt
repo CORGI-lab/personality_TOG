@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'd like to find a hotel in Seattle, please.
+System: Do you have any specific star rating in mind for the hotel in Seattle?
+User: Three stars would be fine.
+System: APICall(method='SearchHotel', parameters={location: Seattle, star_rating: 3})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: I found a 3-star hotel named "Best Western Plus Pioneer Square Hotel Downtown" in Seattle. It costs $63 per night and is located at 77 Yesler Way. Would you like more information or to hear about another option?
+User: Is smoking allowed in this hotel?
+System: Smoking is not allowed at the "Best Western Plus Pioneer Square Hotel Downtown." Would you like to know about another hotel option or any other details?
+User: No, that's fine. Can you reserve a room for me at this hotel?
+System: How many rooms would you like to reserve, and what would be your check-in date and stay length at the "Best Western Plus Pioneer Square Hotel Downtown" in Seattle?
+User: I need one room, checking in on the 15th for a stay of five days.
+System: Please confirm to book 1 room for 5 days at the "Best Western Plus Pioneer Square Hotel Downtown," starting from the 15th in Seattle.
+User: Yes, please confirm the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Seattle, number_of_rooms: 1, place_name: 'Best Western Plus Pioneer Square Hotel Downtown', stay_length: 5})
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your booking at "Best Western Plus Pioneer Square Hotel Downtown" in Seattle has been successfully confirmed for 1 room from November 15th for a stay of 5 days. Is there anything else you need?
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Chicago. Can you help me with that?
+System: Sure! Do you have any specific star rating or amenities like smoking preferences that you'd like in the hotel?
+User: I would prefer a non-smoking hotel, please.
+System: Great! Let me search for non-smoking hotels in Chicago for you. APICall(method='SearchHotel', parameters={ location: Chicago, smoking_allowed: False })
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-981-6600', 'place_name': 'Ac Hotel By Marriott Chicago Downtown', 'price_per_night': 342, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '630 North Rush Street'}, {'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street'}, {'location': 'Chicago', 'number_of_rooms': 3, 'phone_number': '+1 312-661-1000', 'place_name': 'Aloft Chicago Downtown River North', 'price_per_night': 225, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '515 North Clark Street'}]
+End Search Results
+System: I found a few non-smoking hotels in Chicago for you. One option is the Ace Hotel Chicago, which is a 4-star hotel located at 311 North Morgan Street, with a price of $132 per night. Would you like more information on this hotel or explore other options?
+User: Can you find something with a lower star rating and price?
+System: I found a 3-star hotel option for you: the Aloft Chicago Downtown River North. It's located at 515 North Clark Street, and the price per night is $225. Would you like more details about this hotel or explore another option?
+User: Could you find something less expensive?
+System: Sure! Another option is the Ac Hotel By Marriott Chicago Downtown, which is also a 3-star hotel. It's located at 630 North Rush Street, and the price per night is $342. However, if you're looking for something less expensive, Ace Hotel Chicago is still the most affordable option at $132 per night. Would you like to proceed with any of these options or explore other possibilities?
+User: I think I'll go with the Ace Hotel Chicago. Can you reserve it for me?
+System: How many rooms would you like to book at the Ace Hotel Chicago, and what are your check-in date and stay duration?
+User: I need one room, checking in on the 15th, and staying for five days.
+System: Please confirm that you would like to book 1 room at the Ace Hotel Chicago, checking in on the 15th and staying for 5 days.
+User: Yes, please confirm the reservation.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Chicago, number_of_rooms: 1, place_name: Ace Hotel Chicago, stay_length: 5})
+Search Results
+[{'location': 'Chicago', 'number_of_rooms': 1, 'phone_number': '+1 312-764-1919', 'place_name': 'Ace Hotel Chicago', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '311 North Morgan Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Ace Hotel Chicago has been successfully confirmed. You have booked 1 room, checking in on 2023-11-15 and staying for 5 days. If there's anything else you need, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a place to eat in San Francisco. Can you suggest something?
+System: What type of cuisine are you interested in? For example, American, Italian, or any other specific preference?
+User: I'm not really sure. Just anything that sounds interesting or fun. Maybe something with a good vibe or cool atmosphere?
+System: Is there a specific price range you're considering, such as economical, moderate, or upscale? Additionally, do you have any preferences regarding live music or alcohol availability at the restaurant?
+User: I'm honestly not too worried about the price, and having live music or alcohol available sounds cool. Just find me something that's got a fun vibe, and I'll be happy.
+System: Great! Let me find a restaurant with a fun vibe in San Francisco that offers live music and serves alcohol. I'll check for a random cuisine to make it interesting. Please give me a moment. 
+
+APICall (method='FindRestaurants', parameters={city: San Francisco, cuisine: Ethiopian, has_live_music: True, serves_alcohol: True})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': 5, 'time': '11:30'}]
+End Search Results
+System: I found a great option for you. Sheba Piano Lounge is an Ethiopian restaurant in San Francisco that offers live music and serves alcohol. It's located at 1419 Fillmore Street. Would you like the phone number to contact them or any additional information?
+User: Do they have a table available for tonight? If so, can you make a reservation for me? Not sure what time, though. Maybe around 7-ish?
+System: To make a reservation for you at Sheba Piano Lounge, I'll need to confirm the party size and the exact time you'd like for the reservation. Could you please provide these details?
+User: Um, let's go with a party of 4, I guess. And sure, 7 pm sounds good. 
+System: Thank you for confirming. I'll proceed to make the reservation for a party of 4 at Sheba Piano Lounge in San Francisco at 7:00 pm. Please hold on for a moment. 
+
+APICall (method='ReserveRestaurant', parameters={city: San Francisco, date: 2019-03-01, party_size: 4, restaurant_name: Sheba Piano Lounge, time: 19:00})
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Ethiopian', 'has_live_music': True, 'phone_number': '415-440-7414', 'price_range': 'moderate', 'restaurant_name': 'Sheba Piano Lounge', 'serves_alcohol': True, 'street_address': '1419 Fillmore Street', 'date': '2019-03-01', 'party_size': '4', 'time': '19:00'}]
+End Search Results
+System: Your reservation for a party of 4 at Sheba Piano Lounge in San Francisco at 7:00 pm has been successfully made. If you need to contact them, their phone number is 415-440-7414. Enjoy your evening with live music and a great atmosphere!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm in the mood to grab a bite somewhere in Berkeley. Not sure what kind of food I want, though. What do you suggest?
+System: What about trying some Vietnamese cuisine? It's a great choice with a variety of flavors. Let me know if that sounds good to you, or if you have another preference in mind.
+User: Hmm, Vietnamese sounds interesting, but I'm not sure if it's what I want. Do you have any other suggestions? Maybe something a bit more familiar like Italian or American?
+System: How about we explore some Italian options in Berkeley? If that sounds good, I can look up a few places for you. Let me know if you'd like to go ahead with that, or if there's anything else you're considering!
+User: Yeah, Italian sounds good. Go ahead and find some places for me. Let's see what we got.
+System: Great choice! Let me find some Italian restaurants in Berkeley for you. Please hold on a moment while I make the search. APICall (method='FindRestaurants', parameters={city: Berkeley, cuisine: Italian})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-558-9000', 'price_range': 'moderate', 'restaurant_name': 'Cugini Restaurant', 'serves_alcohol': False, 'street_address': '1556 Solano Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-838-1131', 'price_range': 'moderate', 'restaurant_name': 'Donato & Co.', 'serves_alcohol': False, 'street_address': '2635 Ashby Avenue'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue'}]
+End Search Results
+System: Here are some Italian restaurants in Berkeley you might enjoy:
+
+1. **Cugini Restaurant** at 1556 Solano Avenue, with a moderate price range. Their phone number is 510-558-9000.
+
+2. **Donato & Co.** located at 2635 Ashby Avenue, also with a moderate price range. You can reach them at 510-838-1131.
+
+3. **Filippo's Berkeley Elmwood** at 2930 College Avenue, known for serving alcohol. Their contact number is 510-644-3848.
+
+Let me know if any of these catch your interest or if you need more information!
+User: Uh, I guess Filippo's Berkeley Elmwood sounds alright. Can you book a table for me there? I don't know, maybe for this evening around 7 PM? Let's say for 3 people.
+System: Sure, I can help with that. Just to confirm, you would like to book a table for 3 people at Filippo's Berkeley Elmwood this evening at 7 PM. Is that correct?
+User: Yeah, that sounds about right. Go ahead and book it.
+System: Great, let me proceed with the reservation at Filippo's Berkeley Elmwood for 3 people at 7 PM this evening. Please hold on for a moment. APICall (method='ReserveRestaurant', parameters={restaurant_name: "Filippo's Berkeley Elmwood", city: Berkeley, time: 19:00, date: 2023-10-12, party_size: 3})
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': '2023-10-12', 'party_size': '3', 'time': '19:00'}, {'city': 'Berkeley', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-644-3848', 'price_range': 'moderate', 'restaurant_name': "Filippo's Berkeley Elmwood", 'serves_alcohol': True, 'street_address': '2930 College Avenue', 'date': '2023-10-12', 'party_size': '3', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Filippo's Berkeley Elmwood has been successfully made for 3 people at 7 PM this evening. If you need any further assistance or have any other questions, feel free to let me know. Enjoy your meal!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

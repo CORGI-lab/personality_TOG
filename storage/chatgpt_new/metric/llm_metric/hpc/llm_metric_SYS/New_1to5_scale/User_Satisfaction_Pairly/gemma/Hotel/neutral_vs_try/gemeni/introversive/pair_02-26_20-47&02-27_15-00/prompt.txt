@@ -1,0 +1,106 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in San Francisco.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Not really, but maybe nothing too fancy.
+
+System: Okay, I will search for hotels in San Francisco. How many rooms do you need?
+
+User: Just one, please.
+
+System: APICall(method='SearchHotel', parameters={ location: San Francisco, number_of_rooms: 1, star_rating: 3 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street'}, {'location': 'San Francisco', 'number_of_rooms': 2, 'phone_number': '+1 415-673-2600', 'place_name': 'Beresford Arms Hotel', 'price_per_night': 132, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '701 Post Street'}, {'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-362-2004', 'place_name': 'Chancellor Hotel On Union Square', 'price_per_night': 189, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '433 Powell Street'}]
+End Search Results
+System: I found three 3-star hotels in San Francisco. Bei Hotel San Francisco, Beresford Arms Hotel, and Chancellor Hotel On Union Square. Would you like to know more about any of these?
+
+User: Tell me about Bei Hotel San Francisco.
+
+System: Bei Hotel San Francisco is located at 50 8th Street. The price per night is $351, and smoking is allowed. Their phone number is +1 415-626-6103. Would you like to know about the other hotels?
+
+User: No, that will be all. Can you book a room for me at Bei Hotel San Francisco?
+
+System: Okay, I can help you with that. What date would you like to check in, and how many nights will you be staying?
+
+User: I need to check in on the 27th and stay for two nights.
+
+System: Okay, let me confirm. You want to book 1 room at Bei Hotel San Francisco in San Francisco, checking in on the 27th for two nights. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-07-27, location: San Francisco, number_of_rooms: 1, place_name: Bei Hotel San Francisco, stay_length: 2 })
+
+Search Results
+[{'location': 'San Francisco', 'number_of_rooms': 3, 'phone_number': '+1 415-626-6103', 'place_name': 'Bei Hotel San Francisco', 'price_per_night': 351, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '50 8th Street', 'check_in_date': '2024-07-27'}]
+End Search Results
+System: Okay, I have confirmed your booking. One room at Bei Hotel San Francisco, San Francisco, checking in on July 27th for two nights. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Vancouver.
+
+System: Okay, I can help with that! Do you have any preferences for the star rating of the hotel?
+
+User: Not really. What are my options?
+
+System: Okay, I will search for hotels in Vancouver with various star ratings.
+APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: dontcare})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}, {'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street'}]
+End Search Results
+System: Alright, I found a few options for you in Vancouver. There's the Shangri-La Hotel and the Wedgewood Hotel & Spa Vancouver, both with 5-star ratings. Or, there's the Auberge Vancouver Hotel, which has a 4-star rating. Do any of those sound appealing?
+
+User: Just the 4-star one, please.
+
+System: Okay, let's focus on the Auberge Vancouver Hotel. Just to confirm, you're interested in the 4-star hotel on 837 West Hastings Street, phone number +1 604-678-8899. It has rooms available and smoking is allowed. Is that correct?
+
+User: Yes, that's correct. Can you book it for me? I need it from tomorrow for three nights.
+
+System: Okay, I can help you with that. Before I make the reservation, could you please specify how many rooms you'd like to book?
+
+User: Just one room, please.
+
+System: Okay, just to confirm, you would like me to book one room at the Auberge Vancouver Hotel, located on 837 West Hastings Street, for three nights starting tomorrow?
+
+User: Yes, please.
+
+System: Okay, I will book one room at the Auberge Vancouver Hotel for you. Could you please provide the exact date you would like to check in?
+
+User: The 17th, please.
+
+System: Okay, I have all the information needed.
+APICall(method='ReserveHotel', parameters={place_name: Auberge Vancouver Hotel, check_in_date: 2024-05-17, stay_length: 3, location: Vancouver, number_of_rooms: 1})
+
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-678-8899', 'place_name': 'Auberge Vancouver Hotel', 'price_per_night': 296, 'smoking_allowed': True, 'star_rating': 4, 'street_address': '837 West Hastings Street', 'check_in_date': '2024-05-17'}]
+End Search Results
+System: Wonderful! I've booked one room at the Auberge Vancouver Hotel for you, checking in on May 17th for a three-night stay. Is there anything else I can assist you with regarding this reservation or anything else?
+
+User: No, thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

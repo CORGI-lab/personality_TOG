@@ -1,0 +1,142 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey, find me a place to eat in San Francisco... or maybe Oakland? I don't know, somewhere around here.
+
+System: Do you have any preferences for the type of cuisine you'd like?
+
+User: Uh, I guess... Italian? Or maybe not. Surprise me.
+
+System: Okay, I can help with that! Since you're open to suggestions, how about I look for restaurants serving American cuisine in either San Francisco or Oakland?
+
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: American})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-359-1212', 'price_range': 'expensive', 'restaurant_name': '1760', 'serves_alcohol': False, 'street_address': '1760 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-495-5875', 'price_range': 'expensive', 'restaurant_name': '25 Lusk', 'serves_alcohol': True, 'street_address': '25 Lusk Street'}, {'city': 'San Francisco', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '415-814-3709', 'price_range': 'expensive', 'restaurant_name': '3rd Cousin', 'serves_alcohol': False, 'street_address': '919 Cortland Avenue'}]
+End Search Results
+System: Okay, I found a few American restaurants in San Francisco. 1760 is located at 1760 Polk Street, 25 Lusk at 25 Lusk Street, and 3rd Cousin at 919 Cortland Avenue. All are in the expensive price range. Would you like to know more about any of them?
+
+User: Expensive, huh? Maybe not. How about something cheaper, like, in Berkeley? American sounds fine, I guess.
+
+System: Okay, let me search for American restaurants in Berkeley with a moderate price range.
+
+APICall (method='FindRestaurants', parameters= {city: Berkeley, cuisine: American, price_range: moderate})
+
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-647-9329', 'price_range': 'moderate', 'restaurant_name': 'B&b Kitchen & Wine Bar', 'serves_alcohol': True, 'street_address': '2116 Shattuck Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-338-3464', 'price_range': 'moderate', 'restaurant_name': 'Beer Baron Bar & Kitchen', 'serves_alcohol': True, 'street_address': '5900 College Avenue'}, {'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-809-8282', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '2068 Center Street'}]
+End Search Results
+System: I found three American restaurants in Berkeley that fit your criteria. B&b Kitchen & Wine Bar is located at 2116 Shattuck Avenue, Beer Baron Bar & Kitchen is at 5900 College Avenue, and Eureka! is at 2068 Center Street. All of them are in the moderate price range and serve alcohol. Would you like more details about any of these?
+
+User: Sounds good! Eureka!, huh? Can you book a table for, like, six people... tomorrow? I think? Around 7 pm? Yeah, 7 pm.
+
+System: Alright! Just to confirm, you want to book a table for 6 people at Eureka! in Berkeley for tomorrow, around 7 pm? What date would that be?
+
+User: Uh... tomorrow. Just book it. Whatever date that is, I guess.
+
+System: ```tool_code
+APICall (method='ReserveRestaurant', parameters= {restaurant_name: Eureka!, city: Berkeley, date: 2024-07-01, time: 19:00, party_size: 6})
+```
+Search Results
+[{'city': 'Berkeley', 'cuisine': 'American', 'has_live_music': False, 'phone_number': '510-809-8282', 'price_range': 'moderate', 'restaurant_name': 'Eureka!', 'serves_alcohol': True, 'street_address': '2068 Center Street', 'date': '2024-07-01', 'party_size': '6', 'time': '19:00'}]
+End Search Results
+System: Okay, I have booked a table for 6 at Eureka! in Berkeley for tomorrow, July 1st, at 7 pm. Is there anything else I can help you with?
+
+User: Wait, Eureka! serves alcohol, right? Just checking.
+
+System:  System: Yes, Eureka! in Berkeley serves alcohol.
+
+User: Cool, that's fine. I guess. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm hungry. Find me something in San Francisco, I guess.
+
+System: Okay, San Francisco it is! Um, any type of food you're in the mood for? Or should I just pick something random?
+
+User: Whatever, just surprise me.
+
+System: Okay, how about we try a Chinese place? You in the mood for that?
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Chinese})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-282-8999', 'price_range': 'inexpensive', 'restaurant_name': "Alice's", 'serves_alcohol': False, 'street_address': '1599 Sanchez Street'}, {'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-775-3679', 'price_range': 'inexpensive', 'restaurant_name': 'Bamboo Restaurant', 'serves_alcohol': True, 'street_address': '1441 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-661-8385', 'price_range': 'inexpensive', 'restaurant_name': 'Bei Fang Style', 'serves_alcohol': True, 'street_address': '2218 Irving Street'}]
+End Search Results
+System: Alright, so there are a few Chinese spots in San Francisco. Alice's is inexpensive and on Sanchez Street, or there's Bamboo Restaurant and Bei Fang Style, both also inexpensive but on Polk and Irving Streets, respectively. Both of the latter serve alcohol. Which sounds easiest to get to or best to you?
+
+User: Uh, Alice's sounds... fine? Can you, like, book it for... tonight?
+
+System: Okay, so you want to book Alice's for tonight. What time and how many people? Just give me a rough idea, whatever's easiest.
+
+User: Ugh, tonight? I don't know... eight-ish? And, like, four people maybe? Or five? Just... book it.
+
+System: Okay, so I'll try to book Alice's for around 8 PM for maybe 4 or 5 people. Is there a specific date you want me to book it for? Or should I just pick today?
+
+User: Just pick today.
+
+System: Okay, so I'm trying to book Alice's for you, sometime around 8 PM, and for around 4 or 5 people, for today. Does that sound about right?
+
+User: Yeah, whatever. Just do it.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Alice's, city: San Francisco, date: 2024-03-01, time: 20:00, party_size: 4})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-282-8999', 'price_range': 'inexpensive', 'restaurant_name': "Alice's", 'serves_alcohol': False, 'street_address': '1599 Sanchez Street', 'date': '2024-03-01', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Okay, so I have a booking for Alice's at 8 PM tonight, March 1, 2024, for 4 people. Does that sound right?
+
+User: Yeah, sounds... good enough.
+
+System: Alright, cool. If you need anything else, just shout. Oh, and just so you know, Alice's is at 1599 Sanchez Street, and their number is 415-282-8999, just in case you need to call 'em for something.
+
+User: Cool, cool. That's probably all I need. Thanks a lot!
+
+System:  System: No problem! Just a heads up, they don't serve alcohol there, so maybe plan ahead if that's your thing. Later!
+
+User: Oh, damn, no booze? Uh, find another place? Same deal, San Francisco, Chinese, whatever. Just, like, somewhere with drinks, I guess.
+
+System: Okay, so you want another Chinese place in San Francisco, but this time with alcohol, right? Let me see what's available.
+APICall (method='FindRestaurants', parameters= {city: San Francisco, cuisine: Chinese, serves_alcohol: True})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-775-3679', 'price_range': 'inexpensive', 'restaurant_name': 'Bamboo Restaurant', 'serves_alcohol': True, 'street_address': '1441 Polk Street'}, {'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-661-8385', 'price_range': 'inexpensive', 'restaurant_name': 'Bei Fang Style', 'serves_alcohol': True, 'street_address': '2218 Irving Street'}, {'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-387-2658', 'price_range': 'moderate', 'restaurant_name': 'Chili House Sf', 'serves_alcohol': True, 'street_address': '726 Clement Street'}]
+End Search Results
+System: Okay, so we have Bamboo Restaurant on Polk Street, Bei Fang Style on Irving Street, and Chili House Sf on Clement Street. They all serve alcohol. Bamboo and Bei Fang are inexpensive, while Chili House Sf is moderate. Any of those sound good, or should I just pick one?
+
+User: Just pick one.
+
+System: Okay, how about Bamboo Restaurant? It's inexpensive and serves alcohol. Does that sound good enough?
+
+User: Yeah, sure, book it. Same time, same people, I guess?
+
+System: Okay, so same as before, Bamboo Restaurant, around 8 PM, 4 people, and for today, March 1, 2024. Sound right?
+
+User: Yeah, yeah, just do it.
+
+System: APICall (method='ReserveRestaurant', parameters= {restaurant_name: Bamboo Restaurant, city: San Francisco, date: 2024-03-01, time: 20:00, party_size: 4})
+
+Search Results
+[{'city': 'San Francisco', 'cuisine': 'Chinese', 'has_live_music': False, 'phone_number': '415-775-3679', 'price_range': 'inexpensive', 'restaurant_name': 'Bamboo Restaurant', 'serves_alcohol': True, 'street_address': '1441 Polk Street', 'date': '2024-03-01', 'party_size': '4', 'time': '20:00'}]
+End Search Results
+System: Alright, so it's Bamboo Restaurant, 8 PM tonight, March 1, 2024, party of 4. You got it. Just a heads up, it's at 1441 Polk Street, and their number is 415-775-3679. You all set?
+
+User: Yeah, whatever. Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

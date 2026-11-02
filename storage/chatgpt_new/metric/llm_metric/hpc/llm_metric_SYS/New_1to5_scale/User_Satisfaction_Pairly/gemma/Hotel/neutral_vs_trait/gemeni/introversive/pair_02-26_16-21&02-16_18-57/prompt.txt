@@ -1,0 +1,120 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to book a hotel in London.
+
+System: Okay, how many rooms do you need and what date would you like to check in? Also, how long will you be staying?
+
+User: Just one room, please. Check-in on the 10th, for three nights.
+
+System: Okay, I need the year and month of your check-in date. Could you please provide that?
+
+User: This December.
+
+System: Okay, to confirm, you need one room in London, checking in on December 10th for three nights. Could you please specify the year for your check-in date?
+
+User: 2024, please.
+
+System: You are missing the required parameters in the API call, please generate the API call again. If user is open to any cuisine, select a random cuisine from list based on user's trait.
+SYSTEM: My apologies, I should have performed a search first.
+
+APICall(method='SearchHotel', parameters={location: London})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7493 4545', 'place_name': '45 Park Lane', 'price_per_night': 330, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '45 Park Lane'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 8563 8692', 'place_name': 'Abercorn House', 'price_per_night': 23, 'smoking_allowed': False, 'star_rating': 1, 'street_address': '28-30 Bute Gardens'}]
+End Search Results
+System: Okay, I have a few hotels in London. 45 Park Lane is a 5-star hotel, Abc Hyde Park Hotel is a 3-star hotel, and Abercorn House is a 1-star hotel. Do you have a preference?
+
+User: Perhaps the Abc Hyde Park Hotel. What's the price?
+
+System: The price per night at Abc Hyde Park Hotel is $102. Would you like to proceed with booking a room there for December 10, 2024, for three nights?
+
+User: Yes, please.
+
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2024-12-10, location: London, number_of_rooms: 1, place_name: Abc Hyde Park Hotel, stay_length: 3})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': '1', 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': '', 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-12-10', 'stay_length': '3'}]
+End Search Results
+System: Okay, your booking at Abc Hyde Park Hotel for one room, checking in on December 10, 2024, for three nights is confirmed. The phone number is +44 20 7706 4660 and the address is 121 Sussex Gardens. Is there anything else I can assist you with?
+
+User: No, that will be all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in Seattle.
+
+System: Okay. I can help with that.
+
+APICall(method='SearchHotel', parameters={ location: Seattle })
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-448-4721', 'place_name': 'Ace Hotel Seattle', 'price_per_night': 136, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2423 1st Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 866-525-4704', 'place_name': 'Belltown Inn', 'price_per_night': 186, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '2301 3rd Avenue'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 800-615-3107', 'place_name': 'Days Inn By Wyndham Seattle North Of Downtown', 'price_per_night': 84, 'smoking_allowed': False, 'star_rating': 2, 'street_address': '9100 Aurora Avenue North'}]
+End Search Results
+System: I found a few hotels in Seattle. Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown. They all have a 2-star rating. Would you like to know more about any of these, or perhaps consider a different star rating?
+
+User: Are there any with a higher star rating?
+
+System: Let me check for hotels with a higher star rating in Seattle.
+APICall(method='SearchHotel', parameters={location: Seattle, star_rating: dontcare})
+
+Search Results
+
+End Search Results
+System: I found the following hotels in Seattle: Ace Hotel Seattle, Belltown Inn, and Days Inn By Wyndham Seattle North Of Downtown. They all have a 2-star rating. What do you think about these hotels?
+
+User: Perhaps something with 3 stars or more?
+
+System: APICall(method='SearchHotel', parameters={location: Seattle, star_rating: 3})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '77 Yesler Way'}, {'location': 'Seattle', 'number_of_rooms': 2, 'phone_number': '+1 206-213-0100', 'place_name': 'Courtyard By Marriott Seattle Downtown/Lake Union', 'price_per_night': 168, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '925 Westlake Avenue North'}, {'location': 'Seattle', 'number_of_rooms': 3, 'phone_number': '+1 206-859-4400', 'place_name': 'Embassy Suites By Hilton Seattle Downtown Pioneer Square', 'price_per_night': 342, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '255 South King Street'}]
+End Search Results
+System: Okay, I found a few options with 3 stars. There's the Best Western Plus Pioneer Square Hotel Downtown, Courtyard By Marriott Seattle Downtown/Lake Union, and Embassy Suites By Hilton Seattle Downtown Pioneer Square. Would you like more details on any of these?
+
+User: Just the first one, please.
+
+System: Okay. The Best Western Plus Pioneer Square Hotel Downtown is located at 77 Yesler Way. The price per night is $63, and their phone number is +1 206-340-1234. Smoking is not allowed. Does this sound suitable for your needs?
+
+User: Okay, sounds... adequate. Can I book a room there?
+
+System: Do you have a preferred check-in date and how many nights would you like to stay?
+
+User: I'd like to book it starting tomorrow for two nights.
+
+System: Okay. And for the booking, could you please confirm the full name of the hotel: Best Western Plus Pioneer Square Hotel Downtown?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Best Western Plus Pioneer Square Hotel Downtown, check_in_date: 2024-07-08, stay_length: 2, location: Seattle})
+
+Search Results
+[{'location': 'Seattle', 'number_of_rooms': 1, 'phone_number': '+1 206-340-1234', 'place_name': 'Best Western Plus Pioneer Square Hotel Downtown', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': '3', 'street_address': '77 Yesler Way', 'check_in_date': '2024-07-08', 'stay_length': '2'}]
+End Search Results
+System: Alright. I have a room for you at the Best Western Plus Pioneer Square Hotel Downtown, starting tomorrow for two nights. Is that correct?
+
+User: Yes, that is correct.
+
+System: Okay, your reservation at the Best Western Plus Pioneer Square Hotel Downtown in Seattle, starting tomorrow for two nights, is confirmed. If you require any further assistance, feel free to ask.
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

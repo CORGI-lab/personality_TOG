@@ -1,0 +1,68 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I would like to book a hotel in Vancouver. Could you help me find a suitable option?
+System: Do you have any specific preferences for the hotel's star rating or whether smoking is allowed? If not, I can provide a random selection for you.
+User: I prefer a non-smoking hotel, and a 4 or 5-star rating would be great. Could you find some options like that?
+System: APICall(method='SearchHotel', parameters={location: Vancouver, star_rating: 5, smoking_allowed: False})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street'}]
+End Search Results
+System: I found two 5-star, non-smoking hotels in Vancouver. The first option is the Shangri-La Hotel, located at 1128 West Georgia Street, with a price of $300 per night. The second option is the Wedgewood Hotel & Spa Vancouver, situated at 845 Hornby Street, with a price of $510 per night. Would you like to proceed with booking one of these hotels, or do you need more information?
+User: Could you provide more information about the Shangri-La Hotel, please? I'm interested in knowing more about its amenities and services.
+System: I'm sorry, but I don't have information about specific amenities and services for the Shangri-La Hotel. However, I can assist you with booking a room or provide details like its location, price per night, and contact information. Would you like to proceed with the booking, or is there anything else you need?
+User: Could you let me know if breakfast is included in the price for the Shangri-La Hotel? If it is, I'd like to book a room there.
+System: I'm sorry, I don't have information about whether breakfast is included in the price for the Shangri-La Hotel. However, I can proceed with booking a room for you if you'd like. Could you please let me know your check-in date, stay length, and the number of rooms you would like to book?
+User: I'll go ahead and book a room at the Shangri-La Hotel. I'd like to check in on the 15th and stay for 5 nights. Could you reserve one room for me, please?
+System: Please confirm the booking for 1 room at the Shangri-La Hotel in Vancouver, checking in on the 15th for a stay of 5 nights.
+User: Yes, please proceed with the booking.
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-10-15, location: Vancouver, number_of_rooms: 1, place_name: Shangri-La Hotel, stay_length: 5})
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your booking at the Shangri-La Hotel in Vancouver has been successfully confirmed. You have reserved 1 room for 5 nights, starting from October 15th. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking to book a hotel in Vancouver. Could you help me find one that suits my preferences?
+System: Certainly! To help you find a hotel in Vancouver, could you please let me know your preferred check-in date and how long you plan to stay?
+User: I'll be checking in on the 10th of next month, and I plan to stay for five days. Could you also let me know if there are any hotels with a good star rating?
+System: For a hotel booking in Vancouver with a check-in date on the 10th of next month and a stay of five days, I'll find you a hotel with a suitable star rating. Could you also let me know if you have any preferences regarding the number of rooms and whether smoking is allowed?
+User: I'd prefer a non-smoking hotel, and I only need one room. Thank you!
+System: Thank you for providing the details. I will now proceed to find a hotel in Vancouver with a good star rating, ensuring it is non-smoking and provides one room. Please hold on for a moment while I perform the search. 
+
+APICall(method='SearchHotel', parameters={ location: Vancouver, check_in_date: 2023-11-10, stay_length: 5, number_of_rooms: 1, smoking_allowed: False })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2023-11-10'}, {'location': 'Vancouver', 'number_of_rooms': 3, 'phone_number': '+1 800-663-0666', 'place_name': 'Wedgewood Hotel & Spa Vancouver', 'price_per_night': 510, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '845 Hornby Street', 'check_in_date': '2023-11-10'}, {'location': 'Vancouver', 'number_of_rooms': 1, 'phone_number': '+1 604-697-0202', 'place_name': 'Coast Coal Harbour Vancouver Hotel By Apa', 'price_per_night': 108, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '1180 West Hastings Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: I found a few options for you in Vancouver. The Shangri-La Hotel offers a 5-star experience with a price of $300 per night. Alternatively, there's the Wedgewood Hotel & Spa Vancouver, also 5-star, priced at $510 per night. If you're open to a 4-star option, the Coast Coal Harbour Vancouver Hotel By Apa is available at $108 per night. All these hotels are non-smoking and have availability for your check-in date. Would you like to proceed with a reservation at any of these hotels?
+User: The Shangri-La Hotel sounds like a wonderful choice. Could you please go ahead and make a reservation for one room from the 10th of next month for five days?
+System: To confirm, you would like me to reserve one room at the Shangri-La Hotel in Vancouver, with a check-in date on the 10th of next month for a stay of five days. Please hold on while I make the reservation.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: Vancouver, number_of_rooms: 1, place_name: 'Shangri-La Hotel', stay_length: 5 })
+Search Results
+[{'location': 'Vancouver', 'number_of_rooms': 2, 'phone_number': '+1 604-689-1120', 'place_name': 'Shangri-La Hotel', 'price_per_night': 300, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '1128 West Georgia Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Shangri-La Hotel in Vancouver has been successfully confirmed. The hotel is located at 1128 West Georgia Street, and the price per night is $300. Is there anything else you need assistance with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

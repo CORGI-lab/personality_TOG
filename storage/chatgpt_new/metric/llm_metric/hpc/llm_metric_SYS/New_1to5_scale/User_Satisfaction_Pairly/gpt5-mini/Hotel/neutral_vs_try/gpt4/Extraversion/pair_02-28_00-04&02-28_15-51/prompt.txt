@@ -1,0 +1,86 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm looking for a fabulous hotel experience in Las Vegas. Can you help me find something exciting and lively?
+System: Sure! I can help you with that. Do you have any specific preferences or requirements, like star rating or whether you'd like a smoking or non-smoking room?
+User: I definitely want a place with a high star rating—let's say 4 stars or more. And I'm totally up for a non-smoking room. Also, if there's something with a great view or some cool amenities, that would be amazing!
+System: Great, I've got it. Let me search for hotels in Las Vegas with a 4-star rating or higher and non-smoking rooms. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 4, smoking_allowed: False})
+Search Results
+
+End Search Results
+System: APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: dontcare, smoking_allowed: dontcare})
+Search Results
+
+End Search Results
+System: It seems that there are no available hotels in Las Vegas matching your criteria at the moment. Would you like to adjust your preferences, such as considering different star ratings or allowing smoking rooms, to see if we can find some exciting options for you?
+User: Hmm, that's a bummer! But no worries, I'm flexible. How about we try expanding the search to 3-star hotels as well? I'm still keen on non-smoking rooms and any unique amenities you can find. Let's see what exciting options we can discover!
+System: Let's broaden the search to include 3-star hotels in Las Vegas with non-smoking rooms. Please hold on while I look for some exciting options for you. 
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 3, smoking_allowed: False})
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: I found a couple of exciting 3-star hotels for you in Las Vegas. There's the Best Western Plus Las Vegas West, located at 8669 West Sahara Avenue, with a non-smoking room priced at $117 per night. Another option is the Oasis At Gold Spike on 217 Las Vegas Boulevard North, available for $63 per night. Both offer non-smoking rooms. Would you like more information on any of these or perhaps make a reservation?
+User: Oh, those sound interesting! Tell me more about the Oasis At Gold Spike. Does it have any fun amenities or maybe a pool? And what's the vibe like there? I'm all about having a great time!
+System: The Oasis At Gold Spike is known for its vibrant and lively atmosphere, perfect for someone looking to have a great time. While I don't have specific details about amenities like a pool, the hotel's location on Las Vegas Boulevard North suggests it's in a bustling area with plenty of entertainment options nearby. If you're interested, I can assist you with making a reservation there.
+User: That sounds fantastic! Let's go ahead and make a reservation at the Oasis At Gold Spike. I'm planning to check in on the 15th of this month and stay for 5 nights. Can't wait to experience all the excitement!
+System: Great choice! Please confirm that you want to reserve a non-smoking room at the Oasis At Gold Spike in Las Vegas, checking in on the 15th of this month for a 5-night stay. Once confirmed, I'll proceed with the reservation.
+User: Yes, please confirm the reservation! I'm all set for a fun-filled stay at the Oasis At Gold Spike. Thank you!
+System: APICall(method='ReserveHotel', parameters={check_in_date: 2023-11-15, location: Las Vegas, number_of_rooms: 1, place_name: Oasis At Gold Spike, stay_length: 5})
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Oasis At Gold Spike in Las Vegas has been successfully confirmed. You'll be checking in on the 15th of this month for a 5-night stay. If you need any more assistance or information, feel free to ask. Enjoy your fun-filled stay!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm planning an exciting trip and want to find a fabulous hotel in the vibrant city of New York. Can you help me find something that has a bit of a wow factor? Maybe something with a great location and at least 4 stars? Can't wait to see what you come up with!
+System: Do you have any specific preferences regarding smoking policies or the number of rooms you'd like to book? Let me know so I can find the perfect hotel for you in New York.
+User: Oh, I'm all about the non-smoking vibe, so a non-smoking hotel would be perfect! As for rooms, let's go with one for now. I'm sure you'll find something amazing!
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 4, smoking_allowed: False, number_of_rooms: 1 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 646-744-3100', 'place_name': 'Aka Central Park', 'price_per_night': 232, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '42 West 58th Street'}]
+End Search Results
+System: I found a few fantastic options for you in New York. Here are some non-smoking, 4-star hotels:
+
+1. **Ac Hotel New York Times Square**: Located at 260 West 40th Street, with a price of $176 per night. 
+
+2. **Ace Hotel**: Situated at 20 West 29th Street, priced at $296 per night.
+
+3. **Aka Central Park**: Located at 42 West 58th Street, with a nightly rate of $232.
+
+Would you like more information on any of these hotels, or would you like to proceed with a reservation for one of them?
+User: The Ace Hotel sounds intriguing with its higher price point—I bet it has some really cool amenities or a unique vibe! Could you tell me a bit more about it?
+System: Unfortunately, the specific amenities and unique features of the Ace Hotel aren't provided in the available data. However, it is a non-smoking, 4-star hotel located at 20 West 29th Street, and it's priced at $296 per night. If you'd like, I can assist you with making a reservation, or you can let me know if there's anything else you need.
+User: Alright, even without the extra details, I have a good feeling about this place! Let's go ahead and book a room at the Ace Hotel. I'll be checking in on the 10th and staying for a week. I can already feel the New York energy—so excited!
+System: Please confirm that you'd like to book 1 room at the Ace Hotel from 2023-11-10 for a 7-night stay in New York.
+User: Yes, please confirm the booking for 1 room at the Ace Hotel from November 10th for a 7-night stay. This is going to be an unforgettable trip—I'm thrilled!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: New York, number_of_rooms: 1, place_name: Ace Hotel, stay_length: 7 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-398-2700', 'place_name': 'Ac Hotel New York Times Square', 'price_per_night': 176, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '260 West 40th Street', 'check_in_date': '2023-11-10'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-991-0551', 'place_name': 'Ace Hotel', 'price_per_night': 296, 'smoking_allowed': False, 'star_rating': 4, 'street_address': '20 West 29th Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Ace Hotel in New York has been successfully confirmed for a 7-night stay starting from November 10th. The hotel is located at 20 West 29th Street. If there is anything else you need or any other assistance I can provide, please let me know. Enjoy your trip!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

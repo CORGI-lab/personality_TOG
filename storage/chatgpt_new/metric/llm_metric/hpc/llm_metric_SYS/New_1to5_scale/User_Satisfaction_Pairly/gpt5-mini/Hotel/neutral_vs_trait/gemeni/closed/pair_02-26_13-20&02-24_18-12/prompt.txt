@@ -1,0 +1,118 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I need to find a hotel in London.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Maybe... a three-star?
+
+System: APICall(method='SearchHotel', parameters={location: London, star_rating: 3})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7403 4299', 'place_name': 'Accommodation London Bridge', 'price_per_night': 204, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '58 Great Dover Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7834 0205', 'place_name': 'Airways Hotel London Victoria', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': "29-31 Saint George's Drive"}]
+End Search Results
+System: I found three hotels matching your criteria. Abc Hyde Park Hotel, Accommodation London Bridge, and Airways Hotel London Victoria. Would you like to know more about any of these?
+
+User: Abc Hyde Park Hotel sounds... okay. Tell me more about it.
+
+System: Okay. Abc Hyde Park Hotel has 1 room available, the phone number is +44 20 7706 4660, the price per night is 102, smoking is not allowed, and the address is 121 Sussex Gardens. Is there anything specific you'd like to know?
+
+User: No, that seems... fine. Can you book it for me?
+
+System: Okay. To book the Abc Hyde Park Hotel, I need to know the check-in date and how many days you plan to stay. Could you provide that information?
+
+User: Um... check-in date is... tomorrow? And... just one night.
+
+System: Okay. And what is today's date so I can book it correctly?
+User: Today is October 25, 2024.
+
+System: Okay. So, you'd like to book 1 room at Abc Hyde Park Hotel in London, checking in on October 26, 2024, for one night. Is that correct?
+
+User: Yes, that's... right.
+
+System: APICall(method='ReserveHotel', parameters={place_name: Abc Hyde Park Hotel, check_in_date: 2024-10-26, stay_length: 1, location: London, number_of_rooms: 1})
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens', 'check_in_date': '2024-10-26'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7402 5447', 'place_name': 'Ascot Hyde Park Hotel', 'price_per_night': 210, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '11 Craven Road', 'check_in_date': '2024-10-26'}]
+End Search Results
+System: Okay, the reservation at Abc Hyde Park Hotel for one night, starting tomorrow, October 26, 2024, is confirmed. The price per night is $102. Is that all you need?
+
+User: Yes... that's all. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need to find a hotel in London.
+
+System: Okay, I can help with that. Do you have any preferences for the star rating of the hotel?
+
+User: Uh, maybe a three-star hotel?
+
+System: APICall(method='SearchHotel', parameters={ location: London, star_rating: 3 })
+
+Search Results
+[{'location': 'London', 'number_of_rooms': 1, 'phone_number': '+44 20 7706 4660', 'place_name': 'Abc Hyde Park Hotel', 'price_per_night': 102, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '121 Sussex Gardens'}, {'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7403 4299', 'place_name': 'Accommodation London Bridge', 'price_per_night': 204, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '58 Great Dover Street'}, {'location': 'London', 'number_of_rooms': 3, 'phone_number': '+44 20 7834 0205', 'place_name': 'Airways Hotel London Victoria', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': "29-31 Saint George's Drive"}]
+End Search Results
+System: I found three 3-star hotels in London: Abc Hyde Park Hotel, Accommodation London Bridge, and Airways Hotel London Victoria. Would you like to know more about any of them?
+
+User: Just... the first one, I guess. Abc Hyde Park Hotel. What's it like?
+
+System: Okay, regarding the Abc Hyde Park Hotel, it has 1 room available, the phone number is +44 20 7706 4660, the price per night is $102, smoking is not allowed, and the address is 121 Sussex Gardens. Does that sound like a good option for you?
+
+User: Um... is it safe there?
+
+System: I don't have information about the safety of the hotel. However, I can share the available details again: it has 1 room available, the phone number is +44 20 7706 4660, the price per night is $102, smoking is not allowed, and the address is 121 Sussex Gardens. Would you like to consider another hotel or perhaps proceed with booking this one?
+
+User: Maybe... another hotel.
+
+System: Okay, let's explore the other options. Accommodation London Bridge has 2 rooms available, the phone number is +44 20 7403 4299, the price per night is $204, smoking is not allowed, and the address is 58 Great Dover Street. Airways Hotel London Victoria has 3 rooms available, the phone number is +44 20 7834 0205, the price per night is $279, smoking is allowed, and the address is 29-31 Saint George's Drive. Which one would you like to know more about?
+
+User: Accommodation London Bridge... tell me about that one.
+
+System: Okay, regarding Accommodation London Bridge, it has 2 rooms available, the phone number is +44 20 7403 4299, the price per night is $204, smoking is not allowed, and the address is 58 Great Dover Street. Does that sound like a good option for you?
+
+User: Okay, um... does it have any reviews?
+
+System: I am sorry, I do not have information about reviews. However, I can share the available details again: it has 2 rooms available, the phone number is +44 20 7403 4299, the price per night is $204, smoking is not allowed, and the address is 58 Great Dover Street. Would you like to consider another hotel or perhaps proceed with booking this one?
+
+User: I guess... let's just book it. Accommodation London Bridge.
+
+System: Okay, great! Before I book it, could you please tell me the check-in date and how many nights you'll be staying?
+
+User: Uh... the 28th, and just one night.
+
+System: Okay, so you'd like to book Accommodation London Bridge for one night, starting on the 28th. Could you please confirm the year and also let me know how many rooms you will need?
+
+User: Um... 2024. Just one room.
+
+System: Okay, so to confirm, you'd like to book 1 room at Accommodation London Bridge, checking in on 2024-09-28 for 1 night. Is that correct?
+
+User: Yes, that's correct.
+
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2024-09-28, location: London, number_of_rooms: 1, place_name: Accommodation London Bridge, stay_length: 1 })
+Search Results
+[{'location': 'London', 'number_of_rooms': 2, 'phone_number': '+44 20 7403 4299', 'place_name': 'Accommodation London Bridge', 'price_per_night': 204, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '58 Great Dover Street', 'check_in_date': '2024-09-28'}]
+End Search Results
+System: Okay, your booking at Accommodation London Bridge is confirmed for 1 room, checking in on 2024-09-28 for 1 night. The price per night is $204. Is there anything else I can help you with?
+
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

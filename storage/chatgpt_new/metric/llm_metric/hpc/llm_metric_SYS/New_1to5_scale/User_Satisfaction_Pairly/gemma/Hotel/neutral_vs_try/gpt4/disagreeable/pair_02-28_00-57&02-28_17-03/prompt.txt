@@ -1,0 +1,136 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I want to book a hotel in Las Vegas. Find me something good, and don't waste my time with subpar options.
+System: Could you please let me know your preferred check-in date and how long you plan to stay in Las Vegas? Also, do you have any specific preferences regarding star ratings or smoking allowances?
+User: I don't care about smoking allowances, but it better be a 5-star hotel. I’ll be checking in on the 10th and staying for five days.
+System: I will now search for 5-star hotels in Las Vegas for your stay from the 10th for five days. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 5 })
+Search Results
+
+End Search Results
+System: It seems there are no 5-star hotels available in Las Vegas based on the current search. Would you like me to search for hotels with a different star rating, or do you have any other preferences I should consider?
+User: I can't believe Las Vegas doesn't have any 5-star hotels available! Fine, find me a 4-star hotel, but it better be top-notch. And don’t waste my time with the details unless it’s worth my attention.
+System: I will search for 4-star hotels in Las Vegas for your stay from the 10th for five days. Please hold on for a moment.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 4 })
+Search Results
+
+End Search Results
+System: Unfortunately, it seems there are no 4-star hotels available in Las Vegas based on the current search. Would you like me to explore other star ratings, or is there anything else specific you'd like to adjust in your search criteria?
+User: Unbelievable. Check for 3-star hotels, but they better be decent. I'm not settling for anything less than the best of the worst.
+System: I will search for 3-star hotels in Las Vegas for your stay from the 10th for five days. Please hold on for a moment.
+
+APICall(method='SearchHotel', parameters={ location: Las Vegas, star_rating: 3 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue'}, {'location': 'Las Vegas', 'number_of_rooms': 3, 'phone_number': '+1 702-360-5700', 'place_name': 'Hampton Inn Las Vegas/Summerlin', 'price_per_night': 279, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '7100 Cascade Valley Court'}, {'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-768-9823', 'place_name': 'Oasis At Gold Spike', 'price_per_night': 63, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '217 Las Vegas Boulevard North'}]
+End Search Results
+System: I found some 3-star hotels in Las Vegas for your stay from the 10th for five days. Here are a few options:
+
+1. **Best Western Plus Las Vegas West**
+   - Price per night: $117
+   - Address: 8669 West Sahara Avenue
+   - Smoking allowed: No
+
+2. **Hampton Inn Las Vegas/Summerlin**
+   - Price per night: $279
+   - Address: 7100 Cascade Valley Court
+   - Smoking allowed: Yes
+
+3. **Oasis At Gold Spike**
+   - Price per night: $63
+   - Address: 217 Las Vegas Boulevard North
+   - Smoking allowed: No
+
+Would you like more information on any of these options or would you like to proceed with a reservation?
+User: The prices are a joke for what you're offering. Give me more information about the Best Western Plus Las Vegas West. Let's see if it's worth throwing my money at.
+System: Certainly! Here are more details for **Best Western Plus Las Vegas West**:
+
+- **Price per night**: $117
+- **Address**: 8669 West Sahara Avenue
+- **Phone Number**: +1 702-256-3766
+- **Smoking allowed**: No
+
+Please let me know if this meets your expectations or if you'd like to proceed with a reservation.
+User: I guess it'll have to do. Go ahead and reserve it for me.
+System: Please confirm the check-in date as the 10th and the length of stay as five days at the Best Western Plus Las Vegas West in Las Vegas. How many rooms would you like to book?
+User: Make it two rooms. And hurry it up, I don't have all day.
+System: Please confirm to book 2 rooms at the Best Western Plus Las Vegas West in Las Vegas from the 10th for five days. Once confirmed, I will proceed with the reservation.
+User: Yes, confirm it. Just get it done already.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-10, location: Las Vegas, number_of_rooms: 2, place_name: Best Western Plus Las Vegas West, stay_length: 5 })
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': 1, 'phone_number': '+1 702-256-3766', 'place_name': 'Best Western Plus Las Vegas West', 'price_per_night': 117, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '8669 West Sahara Avenue', 'check_in_date': '2023-10-10'}]
+End Search Results
+System: Your booking for 2 rooms at Best Western Plus Las Vegas West in Las Vegas from the 10th for five days has been successfully confirmed. If you need any further assistance or information, feel free to let me know.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I need a hotel in Las Vegas. Don't waste my time with anything less than 5 stars.
+System: Do you have a specific check-in date and stay length in mind for your stay in Las Vegas?
+User: I'll check in on the 15th and stay for 7 days. And don't try to offer me anything that's not up to my standards.
+System: Thank you for providing the details. To make sure I have everything right, you want a 5-star hotel in Las Vegas, checking in on the 15th and staying for 7 days. Let me confirm the number of rooms you need.
+User: Make it two rooms. And they better allow smoking.
+System: APICall(method='ReserveHotel', parameters={location: Las Vegas, check_in_date: 2023-11-15, stay_length: 7, number_of_rooms: 2, place_name: [Random 5-star hotel based on user's traits], smoking_allowed: True})
+Search Results
+[{'location': 'Las Vegas', 'number_of_rooms': '2', 'phone_number': '+1 702-638-1800', 'place_name': "[Random 5-star hotel based on user's traits]", 'price_per_night': 44, 'smoking_allowed': 'True', 'star_rating': 1, 'street_address': '2219 North Rancho Drive', 'check_in_date': '2023-11-15', 'stay_length': '7'}]
+End Search Results
+System: It seems there was an issue with the reservation. The hotel found is not a 5-star and does not meet your standards. Would you like me to search for another hotel that fits your criteria, perhaps adjusting the smoking allowance or checking for availability in a different 5-star hotel?
+User: How hard can it be to find a decent hotel in Vegas? Try again, and make sure it's 5-star with smoking allowed. I don’t care how long it takes—just get it right this time.
+System: I understand your needs, and I will make sure to find a suitable 5-star hotel in Las Vegas that allows smoking. Let me search again to find the right match for your preferences. Please hold on for a moment while I make the necessary arrangements. 
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 5, smoking_allowed: True})
+Search Results
+
+End Search Results
+System: It appears there are currently no available 5-star hotels in Las Vegas that allow smoking. Would you be open to adjusting your criteria, such as considering a non-smoking hotel, or perhaps exploring different star ratings to find a hotel that meets your needs?
+User: If I have to, I guess I can tolerate a non-smoking hotel, but it better be top-notch in every other way possible. Get me the best 5-star option, and don't mess it up this time.
+System: Thank you for your flexibility. I'll search for the best 5-star hotel in Las Vegas, even if it doesn't allow smoking. Please hold on while I find the most suitable option for you. 
+
+APICall(method='SearchHotel', parameters={location: Las Vegas, star_rating: 5, smoking_allowed: False})
+Search Results
+
+End Search Results
+System: Unfortunately, there are currently no available 5-star hotels in Las Vegas that meet your updated criteria. I recommend trying to adjust the dates of your stay or considering a nearby location to find a suitable option. Let me know if you'd like to proceed with any of these alternatives.
+User: Fine, how about checking nearby areas like Henderson or even the Strip? There must be something that fits my standards. Just find me the best 5-star hotel available.
+System: I will search for a 5-star hotel in nearby areas like Henderson and the Las Vegas Strip. Please hold on while I find a suitable option that meets your standards. 
+
+APICall(method='SearchHotel', parameters={location: Henderson, star_rating: 5, smoking_allowed: False})
+Search Results
+
+End Search Results
+System: It seems there are currently no available 5-star hotels in Henderson that meet your criteria. Let me expand the search to include the Las Vegas Strip for a 5-star hotel. Please hold on as I try to find the best option for you. 
+
+APICall(method='SearchHotel', parameters={location: Las Vegas Strip, star_rating: 5, smoking_allowed: False})
+Search Results
+
+End Search Results
+System: Unfortunately, there are currently no available 5-star hotels on the Las Vegas Strip that meet your criteria. I recommend considering adjusting your travel dates or exploring 4-star options to find a suitable hotel. Let me know how you would like to proceed.
+User: Are you kidding me? First, you can't find a decent hotel in Vegas, and now the Strip is a no-go? Let's try Henderson. If you can't find anything there, then you'd better start looking for a 4-star hotel that can at least pretend to be 5-star. Just make it happen.
+System: I understand your frustration, and I appreciate your patience. Let me search for a 5-star hotel in Henderson one more time, and if that doesn't yield results, I'll proceed to look for a 4-star hotel that meets your high standards. Please hold on while I conduct this search. 
+
+APICall(method='SearchHotel', parameters={location: Henderson, star_rating: 5, smoking_allowed: False})
+Search Results
+
+End Search Results
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

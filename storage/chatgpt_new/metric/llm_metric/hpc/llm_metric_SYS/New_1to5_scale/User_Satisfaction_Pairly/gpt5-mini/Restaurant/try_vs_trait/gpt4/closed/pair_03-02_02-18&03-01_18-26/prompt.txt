@@ -1,0 +1,76 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a restaurant in Fremont. I prefer something simple and straightforward, nothing too fancy. Can you help with that?
+System: What type of cuisine are you interested in? If you don't have a preference, I can suggest something suitable for you.
+User: Something familiar like American cuisine would be fine.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American})
+Search Results
+
+End Search Results
+System: I'm sorry, but it looks like there are no American cuisine restaurants available in Fremont at the moment. Would you like me to check for a similar option, possibly in a moderate price range?
+User: Sure, please check for a similar option.
+System: APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: American, price_range: moderate})
+Search Results
+
+End Search Results
+System: Unfortunately, there are still no American cuisine restaurants in Fremont within a moderate price range. Would you like me to try searching for other familiar cuisines or adjust the price range further?
+User: Please try searching for a different familiar cuisine.
+System: Let's try looking for Italian cuisine in Fremont. I'll check for available options. APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant called Massimo's in Fremont. It's located at 5200 Mowry Avenue Ste M. Would you like more information about this restaurant, like the phone number or other details?
+User: No, that's okay. Can you check if they have any availability for a reservation?
+System: What time would you like to make the reservation for at Massimo's? Additionally, please confirm the date and party size for the reservation.
+User: I'd like to make the reservation for tomorrow at 6:30 PM for two people.
+System: Just to confirm, you'd like to make a reservation for two people at Massimo's in Fremont tomorrow at 6:30 PM. I'll proceed with the reservation. APICall (method='ReserveRestaurant', parameters={restaurant_name: "Massimo's", city: Fremont, time: 18:30, date: 2023-10-07, party_size: 2})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M', 'date': '2023-10-07', 'party_size': '2', 'time': '18:30'}]
+End Search Results
+System: Your reservation for two people at Massimo's in Fremont tomorrow at 6:30 PM has been successfully made. If you need any further assistance or information, feel free to ask.
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a restaurant in Fremont. Can you help me find one that serves Italian food?
+System: Sure, I can help with that. Let me find some Italian restaurants in Fremont for you. Please hold on for a moment. 
+
+APICall (method='FindRestaurants', parameters={city: Fremont, cuisine: Italian})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M'}]
+End Search Results
+System: I found an Italian restaurant in Fremont called Massimo's. It's located at 5200 Mowry Avenue Ste M. The restaurant is in the expensive price range and does not serve alcohol. Would you like more information or assistance with anything else?
+User: No, that's fine. I would like to make a reservation there. Can you help with that?
+System: Sure, I can help with that. For what date and time would you like to make the reservation at Massimo's, and for how many people?
+User: I would like to make a reservation for two people on Saturday at 7:00 pm.
+System: Let me confirm your reservation details. You would like to book a table for two at Massimo's in Fremont for this coming Saturday at 7:00 pm. Is that correct?
+User: Yes, that's correct. Please proceed with the reservation.
+System: Great! I will proceed with the reservation for you. Please hold on for a moment.
+
+APICall (method='ReserveRestaurant', parameters={restaurant_name: "Massimo's", city: Fremont, time: 19:00, date: YYYY-MM-DD (next Saturday's date), party_size: 2})
+Search Results
+[{'city': 'Fremont', 'cuisine': 'Italian', 'has_live_music': False, 'phone_number': '510-792-2000', 'price_range': 'expensive', 'restaurant_name': "Massimo's", 'serves_alcohol': False, 'street_address': '5200 Mowry Avenue Ste M', 'date': "YYYY-MM-DD (next Saturday's date)", 'party_size': '2', 'time': '19:00'}]
+End Search Results
+System: Your reservation at Massimo's in Fremont for two people on Saturday at 7:00 pm has been successfully made. If you need any further assistance or have any questions, feel free to ask. Enjoy your dining experience!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

@@ -1,0 +1,70 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: Hey there! I'm looking to book an exciting stay in the vibrant city of Sydney. Could you help me find a lively hotel with a bit of flair? Maybe something with a great star rating and an atmosphere that’s as buzzing as the city itself!
+System: Sure thing! Sydney sounds like a fantastic choice for an exciting stay. To get started, could you confirm how many rooms you need and the dates you'll be staying? Once I have that information, I'll find you a hotel that matches your vibrant and lively vibe!
+User: I'll need two rooms, and I'm planning to check in on the 15th of next month for a week-long stay. Can't wait to soak in all the energy Sydney has to offer!
+System: Awesome! Sydney is indeed full of life and excitement. Let me find a hotel that matches your vibe. I'll do a quick search and get back to you with some lively options. 
+
+APICall(method='SearchHotel', parameters={ location: Sydney, star_rating: 5, number_of_rooms: 2 })
+Search Results
+[{'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9696 2500', 'place_name': 'Amora Hotel', 'price_per_night': 315, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '11 Jamison Street'}, {'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9240 3100', 'place_name': 'Establishment Hotel', 'price_per_night': 495, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '5 Bridge Lane'}, {'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 8823 8888', 'place_name': 'Fraser Suites Sydney', 'price_per_night': 585, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '488 Kent Street'}]
+End Search Results
+System: I've found a few fantastic options for you in Sydney! How about the Amora Hotel, which is a 5-star hotel located at 11 Jamison Street? It's perfect for soaking up the lively atmosphere of the city. The price per night is $315. If you're looking for something else, there's also the Establishment Hotel and Fraser Suites Sydney, both also 5-star with unique vibes. Let me know if any of these catch your eye, and we can proceed with booking!
+User: The Amora Hotel sounds perfect for my energetic Sydney adventure! Let's go ahead and book it. Two rooms starting from the 15th for a week. I'm all set to dive into the vibrant city life!
+System: Fantastic choice! Let me confirm the details: Booking 2 rooms at the Amora Hotel located at 11 Jamison Street in Sydney, starting from the 15th of next month for a week-long stay. Just a moment while I make the reservation for you.
+
+APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Sydney, number_of_rooms: 2, place_name: Amora Hotel, stay_length: 7 })
+Search Results
+[{'location': 'Sydney', 'number_of_rooms': 3, 'phone_number': '+61 2 9696 2500', 'place_name': 'Amora Hotel', 'price_per_night': 315, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '11 Jamison Street', 'check_in_date': '2023-11-15'}, {'location': 'Sydney', 'number_of_rooms': 2, 'phone_number': '+61 2 9696 2500', 'place_name': 'Amora Hotel Jamison Sydney', 'price_per_night': 230, 'smoking_allowed': False, 'star_rating': 5, 'street_address': '11 Jamison Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation at the Amora Hotel, located at 11 Jamison Street in Sydney, has been successfully made! You have 2 rooms booked from the 15th of next month for a week-long stay. Get ready to dive into the vibrant city life of Sydney! If you need anything else or have any questions, feel free to let me know!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: Hey there! I'm looking for a hotel in the lively city of Rio de Janeiro. Can you help me find something exciting and comfortable? Maybe something with a great view or close to the beach?
+System: Do you have a preferred star rating for the hotel, or any other specific requirements like smoking allowed or number of rooms?
+User: I’d love a place with at least 4 stars, and a good view is a must! I don’t mind either way about smoking, but it should be close to the beach. Oh, and make sure it has a lively atmosphere!
+System: APICall(method='SearchHotel', parameters={ location: Rio de Janeiro, star_rating: 4 })
+Search Results
+[{'location': 'Rio de Janeiro', 'number_of_rooms': 1, 'phone_number': '+55 21 3609-3500', 'place_name': 'Best Western Plus Copacabana Design Hotel', 'price_per_night': 120, 'smoking_allowed': False, 'star_rating': 4, 'street_address': 'Rua Barata Ribeiro, 173 - Copacabana'}, {'location': 'Rio de Janeiro', 'number_of_rooms': 2, 'phone_number': '+55 800 600 0995', 'place_name': 'Everest Rio Hotel', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Rua Prudente de Morais, 1117 - Ipanema'}]
+End Search Results
+System: I found two 4-star hotels in Rio de Janeiro. 
+
+1. **Best Western Plus Copacabana Design Hotel**: It's located at Rua Barata Ribeiro, 173 - Copacabana. The price per night is $120, and smoking is not allowed. 
+
+2. **Everest Rio Hotel**: This one is at Rua Prudente de Morais, 1117 - Ipanema. The price per night is $248, and smoking is allowed. 
+
+Would you like more information on any of these hotels, or is there anything else I can assist you with?
+User: The Everest Rio Hotel in Ipanema sounds intriguing, especially since it's in such a vibrant area! Can you tell me more about the view from the hotel and if it's really close to the beach? I’m excited to hear more!
+System: The Everest Rio Hotel is located in Ipanema, a lively and vibrant area known for its beautiful beaches and energetic atmosphere. The hotel is situated at Rua Prudente de Morais, 1117, which is indeed close to the beach, allowing you easy access to enjoy the scenic views and beach activities. Unfortunately, specific details about the view from the hotel rooms are not available in the information I have. If you have any other questions or need further assistance, feel free to ask!
+User: That sounds perfect! Ipanema is such a fantastic area. I think I'm ready to book the Everest Rio Hotel. Can you go ahead and make a reservation for me? I’d like to check in on the 15th and stay for a week. Let's do it!
+System: Please confirm that you'd like to reserve a room at the Everest Rio Hotel in Ipanema, Rio de Janeiro, checking in on the 15th and staying for 7 days. Also, let me know how many rooms you would like to book.
+User: Yes, please confirm the reservation for one room at the Everest Rio Hotel in Ipanema, Rio de Janeiro, checking in on the 15th and staying for 7 days. I’m all set for this exciting trip!
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 'YYYY-MM-DD', location: 'Rio de Janeiro', number_of_rooms: 1, place_name: 'Everest Rio Hotel', stay_length: 7 })
+Search Results
+[{'location': 'Rio de Janeiro', 'number_of_rooms': 2, 'phone_number': '+55 800 600 0995', 'place_name': 'Everest Rio Hotel', 'price_per_night': 248, 'smoking_allowed': True, 'star_rating': 4, 'street_address': 'Rua Prudente de Morais, 1117 - Ipanema', 'check_in_date': 'YYYY-MM-DD'}]
+End Search Results
+System: Your reservation for one room at the Everest Rio Hotel in Ipanema, Rio de Janeiro, checking in on the 15th for a stay of 7 days, has been successfully confirmed. If there's anything else you need, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

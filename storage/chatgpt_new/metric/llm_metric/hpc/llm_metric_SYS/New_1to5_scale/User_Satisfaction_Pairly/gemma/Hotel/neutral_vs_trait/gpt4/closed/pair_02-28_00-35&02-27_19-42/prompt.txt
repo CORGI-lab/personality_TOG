@@ -1,0 +1,82 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I am looking for a hotel in Philadelphia. Can you help me find one?
+System: Do you have any preferences regarding the star rating or smoking policies for the hotel in Philadelphia?
+User: I'm interested in a non-smoking hotel, preferably with a 3-star rating or higher.
+System: Let me search for hotels in Philadelphia that are non-smoking and have a 3-star rating or higher. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: Philadelphia, star_rating: 3, smoking_allowed: False })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 267-298-1700', 'place_name': 'Aloft Philadelphia Airport', 'price_per_night': 216, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '4301 Island Avenue'}, {'location': 'Philadelphia', 'number_of_rooms': 3, 'phone_number': '+1 215-607-2020', 'place_name': 'Aloft Philadelphia Downtown', 'price_per_night': 297, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '101 North Broad Street'}, {'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-398-3080', 'place_name': 'Best Western Plus Philadelphia Convention Center Hotel', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1225 Vine Street'}]
+End Search Results
+System: I found a few non-smoking hotels in Philadelphia with a 3-star rating or higher. Here are some options:
+
+1. Aloft Philadelphia Airport: Located at 4301 Island Avenue, the price per night is $216.
+
+2. Aloft Philadelphia Downtown: Located at 101 North Broad Street, the price per night is $297.
+
+3. Best Western Plus Philadelphia Convention Center Hotel: Located at 1225 Vine Street, the price per night is $180.
+
+Would you like more information on any of these hotels, or do you have a specific choice in mind?
+User: Can you tell me more about the Best Western Plus Philadelphia Convention Center Hotel?
+System: The Best Western Plus Philadelphia Convention Center Hotel is a non-smoking hotel with a 3-star rating. It is located at 1225 Vine Street in Philadelphia. The price per night is $180. If you have any further questions or need assistance with a reservation, please let me know!
+User: I would like to reserve a room at the Best Western Plus Philadelphia Convention Center Hotel.
+System: How many rooms would you like to reserve, and what will be your check-in date and the length of your stay at the Best Western Plus Philadelphia Convention Center Hotel?
+User: I need one room starting from the 15th for five nights.
+System: Please confirm that you want to book 1 room for 5 nights at the Best Western Plus Philadelphia Convention Center Hotel starting from 2023-11-15.
+User: Yes, that is correct. Please proceed with the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-15, location: Philadelphia, number_of_rooms: 1, place_name: Best Western Plus Philadelphia Convention Center Hotel, stay_length: 5 })
+Search Results
+[{'location': 'Philadelphia', 'number_of_rooms': 2, 'phone_number': '+1 215-398-3080', 'place_name': 'Best Western Plus Philadelphia Convention Center Hotel', 'price_per_night': 180, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '1225 Vine Street', 'check_in_date': '2023-11-15'}]
+End Search Results
+System: Your reservation for 1 room at the Best Western Plus Philadelphia Convention Center Hotel in Philadelphia has been successfully confirmed. You will be staying for 5 nights starting from November 15, 2023. If you need any further assistance, feel free to ask!
+User: Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I would like to find a hotel in New York, please.
+System: Do you have any preferences regarding the star rating for the hotel in New York, or should I search for a random option?
+User: Please find hotels with a 3-star rating.
+System: APICall(method='SearchHotel', parameters={ location: New York, star_rating: 3 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-235-1111', 'place_name': '11 Howard', 'price_per_night': 270, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '11 Howard Street'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 212-749-4000', 'place_name': 'Aloft Harlem', 'price_per_night': 243, 'smoking_allowed': False, 'star_rating': 3, 'street_address': '2296 Frederick Douglass Boulevard'}]
+End Search Results
+System: I found a few 3-star hotels in New York. One option is 11 Howard, located at 11 Howard Street, with a price of $270 per night, and smoking is allowed. Would you like more information on this hotel, or should I provide details about another option?
+User: Can you provide details about another option, please?
+System: Another option is the Adria Hotel & Conference Center, located at 221-17 Northern Boulevard, Bayside, with a price of $234 per night. Smoking is allowed at this hotel. Would you like to book a room here, or would you like to know about another hotel?
+User: Can you tell me about another hotel option, please?
+System: Certainly. The third option is Aloft Harlem, located at 2296 Frederick Douglass Boulevard. The price is $243 per night, and please note that smoking is not allowed at this hotel. Would you like to proceed with booking a room here or need more information on this hotel?
+User: I would prefer a hotel where smoking is allowed. Can you find another option where smoking is permitted?
+System: I have already provided you with two hotels where smoking is allowed: 11 Howard and Adria Hotel & Conference Center. Would you like to proceed with booking a room at one of these, or do you need more information about them?
+User: I would like to book a room at the Adria Hotel & Conference Center, please.
+System: How many rooms would you like to book at the Adria Hotel & Conference Center, and what is your check-in date and length of stay?
+User: I need to book one room starting from the 15th for a week, please.
+System: Please confirm that you would like to book 1 room at the Adria Hotel & Conference Center in New York, starting from the 15th for a 7-night stay.
+User: Yes, that's correct. Please go ahead and make the reservation.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-10-15, location: New York, number_of_rooms: 1, place_name: 'Adria Hotel & Conference Center', stay_length: 7 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 718-631-5900', 'place_name': 'Adria Hotel & Conference Center', 'price_per_night': 234, 'smoking_allowed': True, 'star_rating': 3, 'street_address': '221-17 Northern Boulevard, Bayside', 'check_in_date': '2023-10-15'}]
+End Search Results
+System: Your reservation at the Adria Hotel & Conference Center in New York has been successfully confirmed. Enjoy your stay! Is there anything else I can assist you with?
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }

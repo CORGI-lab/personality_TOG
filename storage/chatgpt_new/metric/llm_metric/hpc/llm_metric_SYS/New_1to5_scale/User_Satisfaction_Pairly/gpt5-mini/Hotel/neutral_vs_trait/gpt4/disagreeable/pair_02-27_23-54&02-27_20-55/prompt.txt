@@ -1,0 +1,80 @@
+pairwise_user_satisfaction_prompt: 
+
+You are evaluating pairwise user satisfaction in task-oriented dialogues.
+
+Compare two dialogues with the same intended user trait. Choose which SYSTEM would feel more satisfying to the USER, considering the whole interaction.
+
+Instructions:
+- Do not evaluate task success; it is measured separately.
+- Do not penalize a system only because the API/search result is empty, unavailable, or limited, unless the system handles that limitation poorly.
+- Focus on helpfulness, tone, responsiveness, patience, clarity, naturalness, and how well the system responds to the user's needs and emotions.
+- Also consider how well the system fits the user's communication style.
+- Do not choose only because one dialogue is shorter or more efficient, unless it clearly improves the user's experience.
+- Do not use the scripted closing sentence "Thanks a lot! That's all I need." as direct evidence of satisfaction, because it is a scripted ending.
+- Choose "tie" only if both dialogues are similarly satisfying.
+- Keep the reason brief and avoid quoting dialogue text directly.
+- Return only valid JSON.
+
+Dialogue A:
+  User: I'm looking for a hotel in New York. What do you have?
+System: Do you have any specific preferences such as star rating or smoking allowance for the hotel in New York?
+User: I want a five-star hotel, and it better allow smoking. The last thing I need is to be stuck in some non-smoking dump. What do you have?
+System: Let me check for hotels in New York with a five-star rating that allow smoking. Please hold on for a moment. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5, smoking_allowed: True })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I found a few five-star hotels in New York that allow smoking. The first option is 1 Hotel Central Park, located at 1414 6th Avenue, with a price of $330 per night. The second option is Baccarat Hotel, located at 28 West 53rd Street, with a price of $525 per night. There's also 1 Hotel Brooklyn Bridge, located at 60 Furman Street, Brooklyn, with a price of $465 per night. Would you like more details on any of these hotels, or do you want to make a reservation?
+User: I don't care about the details. Just book me the Baccarat Hotel. I want to check in on the 10th and stay for five nights. Make it happen.
+System: Please confirm that you would like to reserve 2 rooms at the Baccarat Hotel in New York, checking in on the 10th for a stay of 5 nights.
+User: Yes, confirm it.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: New York, number_of_rooms: 2, place_name: Baccarat Hotel, stay_length: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your reservation at the Baccarat Hotel in New York has been successfully confirmed. You are booked for 2 rooms, checking in on November 10th for a stay of 5 nights. The address is 28 West 53rd Street, and if you need to reach them, the phone number is +1 866-957-5139. Is there anything else you need assistance with?
+User: No, I don't need anything else. Thanks a lot! That's all I need.
+
+Dialogue B:
+  User: I'm looking for a hotel in Los Angeles. It better be the best one you've got.
+System: Do you have a specific star rating in mind for the hotel in Los Angeles, or are you open to any options? This will help me narrow down the best choice for you.
+User: I want nothing less than a 5-star hotel. Don't even bother with anything below that.
+System: Let me find the top 5-star hotels available in Los Angeles for you. Please hold on for a moment while I search. 
+
+APICall(method='SearchHotel', parameters={ location: Los Angeles, star_rating: 5 })
+Search Results
+
+End Search Results
+System: It seems there are no available 5-star hotels in Los Angeles at the moment. You might want to consider either adjusting your star rating preferences or trying a different location. Let me know how you'd like to proceed.
+User: Why is it so hard to find a decent 5-star hotel in a city like Los Angeles? Fine, let's see what you can find in New York instead. But remember, I still want only the best—5 stars or nothing.
+System: Let me search for the top 5-star hotels available in New York for you. Please hold on for a moment while I search. 
+
+APICall(method='SearchHotel', parameters={ location: New York, star_rating: 5 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 212-703-2001', 'place_name': '1 Hotel Central Park', 'price_per_night': 330, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '1414 6th Avenue'}, {'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street'}, {'location': 'New York', 'number_of_rooms': 3, 'phone_number': '+1 347-696-2500', 'place_name': '1 Hotel Brooklyn Bridge', 'price_per_night': 465, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '60 Furman Street, Brooklyn'}]
+End Search Results
+System: I've found some excellent 5-star hotels in New York for you. Here are a few options:
+
+1. **1 Hotel Central Park** - Located at 1414 6th Avenue, priced at $330 per night.
+2. **Baccarat Hotel** - Situated at 28 West 53rd Street, with a nightly rate of $525.
+3. **1 Hotel Brooklyn Bridge** - Found at 60 Furman Street, Brooklyn, costing $465 per night.
+
+All these options allow smoking. Which one do you prefer, or would you like more details about any of them?
+User: Let's go with the Baccarat Hotel. It better be worth that price.
+System: Great choice. To proceed with your reservation at the Baccarat Hotel in New York, could you please provide your check-in date and the number of nights you'll be staying? Additionally, let me know if you require more than one room.
+User: Check-in on the 10th, staying for seven nights. Just one room is fine. Make sure it's a good one.
+System: Please confirm that you want to book 1 room at the Baccarat Hotel in New York, checking in on the 10th for a stay of 7 nights.
+User: Yes, that's right. Confirm it now.
+System: APICall(method='ReserveHotel', parameters={ check_in_date: 2023-11-10, location: New York, number_of_rooms: 1, place_name: Baccarat Hotel, stay_length: 7 })
+Search Results
+[{'location': 'New York', 'number_of_rooms': 2, 'phone_number': '+1 866-957-5139', 'place_name': 'Baccarat Hotel', 'price_per_night': 525, 'smoking_allowed': True, 'star_rating': 5, 'street_address': '28 West 53rd Street', 'check_in_date': '2023-11-10'}]
+End Search Results
+System: Your booking at the Baccarat Hotel in New York has been successfully confirmed. You'll be staying for 7 nights, starting from November 10th. If you need anything else or have further requests, let me know.
+User: Thanks a lot! That's all I need.
+
+Return only valid JSON:
+  {
+    "winner": "A/B/tie",
+    "reason": ""
+  }
